@@ -2,8 +2,7 @@
  * Centralized Authentication Service
  * Eliminates duplicate API calls and provides single source of truth for auth checks
  */
-import authAPI from '../api/authAPI.js';
-import oauthSecurity from '../security/OAuthSecurityConfig.js'; // FIXED: Added missing import
+import authAPI from '../api/authAPI.js';s
 
 class AuthService {
   constructor() {
@@ -92,24 +91,6 @@ class AuthService {
   async _performAuthCheck(source) {
     try {
       console.log(`🔄 Performing secure auth check (source: ${source})`);
-      
-      // Add security validation for OAuth sources
-      if (source.includes('oauth')) {
-        try {
-          // Validate origin for OAuth-related auth checks
-          if (!oauthSecurity.validateOrigin(window.location.origin)) {
-            throw new Error('Authentication check from unauthorized origin');
-          }
-          
-          // Check rate limiting for OAuth auth checks
-          if (!oauthSecurity.checkRateLimit(`auth_check_${source}`)) {
-            throw new Error('Too many authentication attempts');
-          }
-        } catch (securityError) {
-          console.warn('OAuth security validation failed:', securityError.message);
-          // Continue with auth check but log the security concern
-        }
-      }
       
       // Use OAuth-compatible method if available, otherwise fallback
       const response = source.includes('oauth') && authAPI.getOAuthUserInfo 
