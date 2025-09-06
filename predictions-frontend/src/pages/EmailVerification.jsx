@@ -37,15 +37,6 @@ export default function EmailVerification() {
   }, [email, navigate]);
 
   const sendOtp = async () => {
-    // Development bypass
-    const isDevelopment = import.meta.env.DEV || import.meta.env.VITE_API_BASE_URL?.includes('localhost');
-    
-    if (isDevelopment) {
-      console.log('🚧 Development mode: Simulating OTP send');
-      setIsOtpSent(true);
-      return;
-    }
-
     try {
       console.log('📧 Sending OTP to:', email);
       setIsOtpSent(false);
@@ -93,16 +84,6 @@ export default function EmailVerification() {
 
     setIsVerifying(true);
     
-    // Development bypass
-    const isDevelopment = import.meta.env.DEV || import.meta.env.VITE_API_BASE_URL?.includes('localhost');
-    
-    if (isDevelopment) {
-      console.log('🚧 Development mode: Accepting any 6-digit code');
-      setIsVerifying(false);
-      navigate(redirectTo, { replace: true });
-      return;
-    }
-
     try {
       console.log('🔍 Verifying OTP:', otp);
       

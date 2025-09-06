@@ -365,9 +365,9 @@ export default function Signup() {
             </div>
 
             <div className="mb-8">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-center">
                 {[1, 3].map((step, index) => (
-                  <div key={step} className="flex flex-col items-center">
+                  <div key={step} className="flex flex-col items-center mx-auto">
                     <div
                       className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium font-outfit 
                           ${
@@ -385,6 +385,14 @@ export default function Signup() {
                     </div>
                   </div>
                 ))}
+                <div className="relative h-1 bg-primary-600/80 mt-4">
+                <motion.div
+                  className="absolute left-0 top-0 h-full bg-teal-500"
+                  initial={{ width: "0%" }}
+                  animate={{ width: formStep === 3 ? "100%" : "0%" }}
+                  transition={{ duration: 0.4 }}
+                />
+              </div>
               </div>
               <div className="relative h-1 bg-primary-600/80 mt-4">
                 <motion.div
