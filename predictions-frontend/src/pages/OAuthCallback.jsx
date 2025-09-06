@@ -8,9 +8,16 @@ export default function OAuthCallback() {
   React.useMemo(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const destination = urlParams.get('destination');
+    const email = urlParams.get('email'); // OAuth should provide email
     
     if (destination === 'onboarding') {
-      navigate('/auth/oauth/complete', { replace: true });
+      // For new OAuth users, redirect to email verification first
+      if (email) {
+        navigate(`/verify-email?flow=oauth&email=${encodeURIComponent(email)}&redirect=${encodeURIComponent('/auth/oauth/complete')}`, { replace: true });
+      } else {
+        // Fallback if no email provided
+        navigate('/auth/oauth/complete', { replace: true });
+      }
     } else if (destination === 'dashboard') {
       navigate('/home/dashboard', { replace: true });
     } else {
