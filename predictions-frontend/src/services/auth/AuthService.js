@@ -2,7 +2,7 @@
  * Centralized Authentication Service
  * Eliminates duplicate API calls and provides single source of truth for auth checks
  */
-import authAPI from '../api/authAPI.js';s
+import authAPI from '../api/authAPI.js';
 
 class AuthService {
   constructor() {
