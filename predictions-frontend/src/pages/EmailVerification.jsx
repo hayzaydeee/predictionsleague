@@ -266,12 +266,6 @@ export default function EmailVerification() {
               </div>
             </form>
 
-            {/* Flow indicator */}
-            <div className="mt-6 text-center">
-              <p className="text-white/50 font-outfit text-xs">
-                {flowType === 'oauth' ? 'OAuth signup flow' : 'Regular signup flow'}
-              </p>
-            </div>
           </motion.div>
         </Container>
       </Box>
