@@ -1,6 +1,6 @@
 class OAuthAPI {
   constructor() {
-    this.oauthBaseUrl = import.meta.env.VITE_OAUTH_BASE_URL; // Your proxy URL
+    this.oauthBaseUrl = import.meta.env.VITE_API_BASE_URL; // Your backend API URL
     this.frontendBaseUrl = window.location.origin;
   }
 
