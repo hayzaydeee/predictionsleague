@@ -1,6 +1,7 @@
 import { useState, useLayoutEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import authService from '../services/auth/AuthService';
 
 /**
  * Custom hook for handling OAuth callback processing
@@ -8,7 +9,7 @@ import { useAuth } from '../context/AuthContext';
  */
 export const useOAuthCallback = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { dispatch, AUTH_ACTIONS } = useAuth(); // Get dispatch instead of login
   const [state, setState] = useState({
     isProcessing: true,
     error: null,
@@ -48,16 +49,25 @@ export const useOAuthCallback = () => {
         // Now we just need to verify the authentication worked
         console.log('🔐 useOAuthCallback: Verifying OAuth authentication...');
         
-        // Try to verify authentication with backend
-        const loginResult = await login({
-          skipApiCall: false, // Let it call the backend to verify
+        // Use AuthService to verify session instead of calling login endpoint
+        const authResult = await authService.checkAuth({ 
+          force: true, 
+          source: 'oauth-callback' 
         });
         
-        if (!loginResult.success) {
-          throw new Error('OAuth authentication verification failed');
+        if (!authResult.success || !authResult.isAuthenticated) {
+          throw new Error('OAuth authentication verification failed - no valid session');
         }
         
-        console.log('✅ useOAuthCallback: OAuth authentication verified successfully');
+        console.log('✅ useOAuthCallback: OAuth session verified successfully');
+        
+        // Update auth context with verified user data
+        dispatch({
+          type: AUTH_ACTIONS.LOGIN_SUCCESS,
+          payload: { user: authResult.user },
+        });
+        
+        console.log('✅ useOAuthCallback: Auth context updated with OAuth user');
         
         // Small delay to ensure state updates
         await new Promise(resolve => setTimeout(resolve, 100));
