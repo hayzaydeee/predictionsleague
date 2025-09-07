@@ -5,7 +5,7 @@ import authService from '../services/auth/AuthService';
 
 export default function OAuthCallback() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, isAuthenticated, user } = useAuth();
   const [isProcessing, setIsProcessing] = useState(true);
   const [error, setError] = useState(null);
   
@@ -44,11 +44,11 @@ export default function OAuthCallback() {
           };
           
           // Update auth context using the special OAuth login pattern
-          await login({
+          const loginResult = await login({
             skipApiCall: true,
             userData: mockOAuthUser
           });
-          console.log('✅ Mock OAuth authentication set for static demo');
+          console.log('✅ Mock OAuth authentication set for static demo', loginResult);
         } catch (authError) {
           console.error('❌ OAuth authentication failed:', authError);
           setError('Authentication failed. Redirecting to login...');
@@ -57,8 +57,11 @@ export default function OAuthCallback() {
         }
         
         // Small delay to ensure auth state is updated
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 1000));
         
+        // Debug auth state before redirect
+        console.log('🔍 Auth state before redirect:', { isAuthenticated, user: !!user });
+
         if (destination === 'onboarding') {
           console.log('📍 Redirecting to onboarding flow');
           if (email) {
