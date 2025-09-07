@@ -10,6 +10,9 @@ export default function OAuthCallback() {
   const [error, setError] = useState(null);
   
   useEffect(() => {
+    // Prevent multiple runs - check if already processing
+    if (!isProcessing) return;
+
     const processOAuthCallback = async () => {
       try {
         const urlParams = new URLSearchParams(window.location.search);
@@ -80,7 +83,7 @@ export default function OAuthCallback() {
     };
 
     processOAuthCallback();
-  }, [navigate, login]);
+  }, []); // Empty dependency array - run only once on mount
 
   if (error) {
     return (
