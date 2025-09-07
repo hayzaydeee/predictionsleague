@@ -236,6 +236,8 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated: state.isAuthenticated,
     
     // Actions
+    dispatch,
+    AUTH_ACTIONS,
     login,
     logout,
     register,
