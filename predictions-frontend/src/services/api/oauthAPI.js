@@ -10,16 +10,23 @@ class OAuthAPI {
   initiateLogin(provider = 'google', redirectPath = '/home/dashboard') {
     console.log(`🔄 Starting OAuth login with ${provider} via proxy`);
     
-    // Store intended destination
+    // Preserve existing flow type if already set (e.g., from signup page)
+    const existingFlowType = sessionStorage.getItem('oauth_flow_type');
+    const flowType = existingFlowType || 'login';
+    
+    // Store intended destination and OAuth details
     sessionStorage.setItem('oauth_redirect_path', redirectPath);
-    sessionStorage.setItem('oauth_flow_type', 'login');
+    sessionStorage.setItem('oauth_flow_type', flowType);
     sessionStorage.setItem('oauth_provider', provider);
     sessionStorage.setItem('oauth_timestamp', Date.now().toString());
     
-    // Build OAuth proxy URL - rd should point to backend OAuth endpoint
-    const oauthUrl = `${this.oauthBaseUrl}/oauth2/start?rd=/api/oauth2/login`;
+    // Build OAuth proxy URL - determine the correct backend endpoint based on flow type
+    const backendEndpoint = flowType === 'signup' ? '/api/oauth2/register' : '/api/oauth2/login';
+    const oauthUrl = `${this.oauthBaseUrl}/oauth2/start?rd=${backendEndpoint}`;
     
     console.log('🔗 OAuth URL:', oauthUrl);
+    console.log('🔄 OAuth Flow Type:', flowType);
+    console.log('🎯 Backend Endpoint:', backendEndpoint);
     
     // Redirect to your OAuth2 proxy
     window.location.href = oauthUrl;
