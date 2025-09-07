@@ -39,7 +39,6 @@ const PrivateRoute = ({
   
   // Redirect to login if not authenticated
   if (!isAuthenticated) {
-    console.log('🔒 PrivateRoute: Not authenticated, redirecting to login');
     // Save the attempted location for redirecting after login
     return (
       <Navigate 

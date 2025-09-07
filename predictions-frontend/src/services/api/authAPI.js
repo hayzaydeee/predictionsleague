@@ -91,29 +91,21 @@ export const authAPI = {
    */
   async logout() {
     try {
-      console.log("🔄 authAPI.logout: Starting logout process...");
-      
       const response = await apiCall({
         method: 'POST',
         url: '/auth/logout',
       });
 
-      console.log("📥 authAPI.logout: Backend response:", response);
-
       // Clear tokens regardless of response
       clearTokens();
-      console.log("🧹 authAPI.logout: Tokens cleared");
 
       return {
         success: true,
         message: 'Logged out successfully',
       };
     } catch (error) {
-      console.error("❌ authAPI.logout: Error during logout:", error);
-      
       // Clear tokens even if logout API call fails
       clearTokens();
-      console.log("🧹 authAPI.logout: Tokens cleared despite error");
       
       handleApiError(error, { silent: true });
       
@@ -208,7 +200,6 @@ export const authAPI = {
 
       if (response.ok) {
         const user = await response.json();
-        console.log('Auth check response:', user);
         
         // Backend returns the user object directly
         return {
@@ -220,7 +211,6 @@ export const authAPI = {
       }
     } catch (error) {
       // Don't show error notifications for auth checks
-      console.error('getCurrentUser error:', error);
       throw error;
     }
   },
@@ -234,8 +224,6 @@ export const authAPI = {
    */
   async completeOAuthProfile(profileData) {
     try {
-      console.log('🔄 Completing OAuth profile');
-      
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/oauth2/complete-profile`, {
         method: 'POST',
         credentials: 'include',
@@ -277,7 +265,6 @@ export const authAPI = {
         }
       }
     } catch (error) {
-      console.error('OAuth profile completion error:', error);
       handleApiError(error, { customMessage: 'Failed to complete profile. Please try again.' });
       throw error;
     }

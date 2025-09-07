@@ -81,15 +81,12 @@ export default function Signup() {
 
   const handleOAuthSignup = (providerId) => {
     try {
-      console.log(`🔄 Starting OAuth signup with ${providerId}`);
-      
       // Store that this is a signup flow (not login)
       sessionStorage.setItem('oauth_flow_type', 'signup');
       
       // For signup, always redirect to onboarding even if user exists
       oauthAPI.initiateLogin(providerId, '/onboarding/select-team');
     } catch (error) {
-      console.error('❌ OAuth signup error:', error);
       setOauthError(error.message);
     }
   };
@@ -196,19 +193,13 @@ export default function Signup() {
   const handleNextStep = async (e) => {
     // Prevent form submission when clicking Continue
     e.preventDefault();
-    console.log(`➡️ handleNextStep called - Current step: ${formStep}`);
 
     if (!validateStep(formStep)) {
-      console.log(`❌ Step ${formStep} validation failed`);
       return;
     }
 
-    console.log(`✅ Step ${formStep} validation passed`);
-
     // If moving from step 1 to step 2, redirect to shared email verification
     if (formStep === 1) {
-      console.log('📧 Redirecting to email verification page');
-      
       // Store signup data in sessionStorage for after verification
       sessionStorage.setItem('signup_data', JSON.stringify({
         firstName: formData.firstName,
@@ -225,7 +216,6 @@ export default function Signup() {
       return;
     }
 
-    console.log(`Moving to step ${formStep + 1}`);
     setFormStep((prev) => prev + 1);
   };
 
@@ -235,31 +225,16 @@ export default function Signup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("🚀 Form submitted");
 
     if (!validateStep(formStep)) {
-      console.log("❌ Form validation failed");
       return;
     }
-
-    console.log("✅ Form validation passed");
 
     // Clear submit errors but keep field errors initialized
     setErrors(prev => ({ ...prev, submit: null }));
     clearError();
 
-    console.log("📋 Form data being sent:", {
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      username: formData.username,
-      email: formData.email,
-      password: formData.password ? "[HIDDEN]" : "empty",
-      confirmPassword: formData.confirmPassword ? "[HIDDEN]" : "empty",
-      favouriteTeam: formData.favouriteTeam.toUpperCase(),
-    });
-
     try {
-      console.log("🔄 Calling register function...");
       const result = await register({
         firstName: formData.firstName,
         lastName: formData.lastName,
@@ -270,36 +245,23 @@ export default function Signup() {
         favouriteTeam: formData.favouriteTeam.toUpperCase(),
       });
 
-      console.log("📥 Registration result:", result);
-
       if (result.success) {
-        console.log("✅ Registration successful, redirecting to dashboard");
         // Redirect to dashboard after successful registration
         navigate("/home/dashboard", { replace: true });
-      } else {
-        console.log("❌ Registration failed:", result);
       }
     } catch (registrationError) {
-      console.log("💥 Registration error caught:", registrationError);
-      console.log("💥 Error message:", registrationError.message);
-      console.log("💥 Error stack:", registrationError.stack);
-      
       // Extract validation errors if any
       const fieldErrors = getValidationErrors(registrationError);
-      console.log("🔍 Extracted field errors:", fieldErrors);
       
       if (Object.keys(fieldErrors).length > 0) {
         setErrors(prev => ({ ...prev, ...fieldErrors }));
         // Go back to the step with errors
         if (fieldErrors.firstName || fieldErrors.lastName || fieldErrors.email || fieldErrors.password || fieldErrors.confirmPassword) {
-          console.log("↩️ Going back to step 1 due to field errors");
           setFormStep(1);
         } else if (fieldErrors.username || fieldErrors.favouriteTeam) {
-          console.log("↩️ Going back to step 3 due to preference errors");
           setFormStep(3);
         }
       } else {
-        console.log("⚠️ Setting general submit error");
         setErrors(prev => ({ ...prev, submit: "Failed to create account. Please try again." }));
       }
     }
@@ -760,14 +722,6 @@ export default function Signup() {
                     className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-6 rounded-md transition-colors"
                     disabled={isLoading}
                     size="4"
-                    onClick={(e) => {
-                      console.log(`🖱️ Button clicked - Step ${formStep}, Type: ${formStep === 3 ? "submit" : "continue"}`);
-                      console.log("🖱️ isLoading:", isLoading);
-                      console.log("🖱️ Event type:", e.type);
-                      if (formStep === 3) {
-                        console.log("🎯 This should trigger form submission");
-                      }
-                    }}
                   >
                     {isLoading
                       ? "creating account..."

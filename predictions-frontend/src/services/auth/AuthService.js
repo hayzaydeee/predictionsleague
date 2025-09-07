@@ -52,11 +52,8 @@ class AuthService {
    * Uses cache to prevent duplicate API calls
    */
   async checkAuth({ force = false, source = 'unknown' } = {}) {
-    console.log(`🔍 Auth check requested from: ${source}`);
-
     // Return cached result if still valid and not forced
     if (!force && this.isCacheValid()) {
-      console.log('📋 Returning cached auth state');
       return {
         success: true,
         isAuthenticated: this.authCache.isAuthenticated,
@@ -67,7 +64,6 @@ class AuthService {
 
     // If already checking, return the existing promise
     if (this.authCache.isChecking && this.authCache.promise) {
-      console.log('⏳ Auth check already in progress, waiting...');
       return this.authCache.promise;
     }
 
@@ -89,8 +85,6 @@ class AuthService {
    */
   async _performAuthCheck(source) {
     try {
-      console.log(`🔄 Performing auth check (source: ${source})`);
-      
       // Always use getCurrentUser for authentication verification
       const response = await authAPI.getCurrentUser();
       
@@ -102,7 +96,6 @@ class AuthService {
         this.updateCache(true, response.user);
         this.emit('authenticated', { user: response.user, source });
         
-        console.log('✅ Auth check successful');
         return {
           success: true,
           isAuthenticated: true,
@@ -113,7 +106,6 @@ class AuthService {
         this.updateCache(false, null);
         this.emit('unauthenticated', { source });
         
-        console.log('❌ Auth check failed - no valid session');
         return {
           success: true,
           isAuthenticated: false,
@@ -125,7 +117,6 @@ class AuthService {
       this.updateCache(false, null);
       this.emit('error', { error: error.message, source });
       
-      console.error(`❌ Auth check error (source: ${source}):`, error);
       return {
         success: false,
         error: error.message,
@@ -151,7 +142,6 @@ class AuthService {
    * Clear authentication cache
    */
   clearAuth() {
-    console.log('🧹 Clearing auth cache');
     this.authCache = {
       user: null,
       isAuthenticated: false,
@@ -189,19 +179,12 @@ class AuthService {
     this.authCache.isAuthenticated = isAuthenticated;
     this.authCache.user = user;
     this.authCache.lastCheck = Date.now();
-    
-    console.log('📋 Auth cache updated:', {
-      isAuthenticated,
-      user: user ? user.username || user.email : null,
-      timestamp: this.authCache.lastCheck,
-    });
   }
 
   /**
    * Manual cache invalidation
    */
   invalidateCache() {
-    console.log('🗑️ Auth cache invalidated');
     this.authCache.lastCheck = null;
   }
 

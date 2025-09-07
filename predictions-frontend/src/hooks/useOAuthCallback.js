@@ -23,7 +23,6 @@ export const useOAuthCallback = () => {
   useLayoutEffect(() => {
     // Double guard against multiple executions
     if (hasProcessed.current || processingRef.current) {
-      console.log('🛑 OAuth processing already completed or in progress');
       return;
     }
 
@@ -38,17 +37,6 @@ export const useOAuthCallback = () => {
         const destination = urlParams.get('destination');
         const email = urlParams.get('email');
         
-        console.log('🔄 useOAuthCallback: Processing OAuth callback:', {
-          url: window.location.href,
-          destination,
-          email,
-          allParams: Object.fromEntries(urlParams.entries())
-        });
-
-        // The backend should have set HTTP-only cookies during OAuth flow
-        // Now we just need to verify the authentication worked
-        console.log('🔐 useOAuthCallback: Verifying OAuth authentication...');
-        
         // Use AuthService to verify session instead of calling login endpoint
         const authResult = await authService.checkAuth({ 
           force: true, 
@@ -59,15 +47,11 @@ export const useOAuthCallback = () => {
           throw new Error('OAuth authentication verification failed - no valid session');
         }
         
-        console.log('✅ useOAuthCallback: OAuth session verified successfully');
-        
         // Update auth context with verified user data
         dispatch({
           type: AUTH_ACTIONS.LOGIN_SUCCESS,
           payload: { user: authResult.user },
         });
-        
-        console.log('✅ useOAuthCallback: Auth context updated with OAuth user');
         
         // Small delay to ensure state updates
         await new Promise(resolve => setTimeout(resolve, 100));
@@ -76,8 +60,6 @@ export const useOAuthCallback = () => {
         const targetRoute = destination === 'onboarding' 
           ? (email ? `/verify-email?flow=oauth&email=${encodeURIComponent(email)}&redirect=${encodeURIComponent('/auth/oauth/complete')}` : '/auth/oauth/complete')
           : '/home/dashboard';
-        
-        console.log('📍 useOAuthCallback: Navigating to:', targetRoute);
         
         setState({
           isProcessing: false,
@@ -89,7 +71,6 @@ export const useOAuthCallback = () => {
         setTimeout(() => navigate(targetRoute, { replace: true }), 50);
         
       } catch (error) {
-        console.error('❌ useOAuthCallback: Processing failed:', error);
         setState({
           isProcessing: false,
           error: error.message || 'OAuth processing failed',

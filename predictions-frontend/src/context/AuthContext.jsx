@@ -31,8 +31,6 @@ const initialState = {
 
 // Auth reducer
 const authReducer = (state, action) => {
-  console.log('🔄 AuthReducer: Processing action:', action.type, action.payload);
-  
   switch (action.type) {
     case AUTH_ACTIONS.SET_LOADING:
       return {
@@ -42,7 +40,6 @@ const authReducer = (state, action) => {
       };
       
     case AUTH_ACTIONS.LOGIN_SUCCESS:
-      console.log('✅ AuthReducer: LOGIN_SUCCESS - setting authenticated state');
       return {
         ...state,
         status: AUTH_STATES.AUTHENTICATED,
@@ -116,7 +113,6 @@ export const AuthProvider = ({ children }) => {
           }
         } catch (error) {
           // Session invalid, clear auth state
-          console.log('Auth check failed:', error);
           dispatch({ type: AUTH_ACTIONS.LOGOUT });
         }
       } else {
@@ -134,12 +130,10 @@ export const AuthProvider = ({ children }) => {
     try {
       // Special handling for OAuth callback login (no API call needed)
       if (credentials?.skipApiCall && credentials?.userData) {
-        console.log('🔄 AuthContext: Setting OAuth user data:', credentials.userData);
         dispatch({
           type: AUTH_ACTIONS.LOGIN_SUCCESS,
           payload: { user: credentials.userData },
         });
-        console.log('✅ AuthContext: LOGIN_SUCCESS dispatched for OAuth');
         
         return { success: true };
       }
@@ -169,19 +163,13 @@ export const AuthProvider = ({ children }) => {
   
   // Logout function
   const logout = async () => {
-    console.log("🔄 AuthContext.logout: Starting logout...");
     try {
-      console.log("📞 AuthContext.logout: Calling authAPI.logout...");
       await authAPI.logout();
-      console.log("✅ AuthContext.logout: API call successful, dispatching logout action...");
       dispatch({ type: AUTH_ACTIONS.LOGOUT });
-      console.log("🎯 AuthContext.logout: Logout action dispatched");
       return { success: true };
     } catch (error) {
-      console.error("❌ AuthContext.logout: Error occurred:", error);
       // Even if API call fails, clear local state
       dispatch({ type: AUTH_ACTIONS.LOGOUT });
-      console.log("🎯 AuthContext.logout: Logout action dispatched despite error");
       return { success: false, error: error.message };
     }
   };

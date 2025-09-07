@@ -28,14 +28,11 @@ export default function Login() {
 
   const handleOAuthLogin = (providerId) => {
     try {
-      console.log(`🔄 Starting OAuth login with ${providerId}`);
-      
       // Store that this is a login flow (not signup)
       sessionStorage.setItem('oauth_flow_type', 'login');
       
       oauthAPI.initiateLogin(providerId, from);
     } catch (error) {
-      console.error('❌ OAuth login error:', error);
       setOauthError(error.message);
     }
   };

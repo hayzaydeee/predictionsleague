@@ -22,7 +22,6 @@ class OAuthStateManager {
       const state = sessionStorage.getItem(this.STATE_KEY);
       return state ? JSON.parse(state) : null;
     } catch (error) {
-      console.error("Error reading OAuth state:", error);
       return null;
     }
   }

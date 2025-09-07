@@ -47,9 +47,7 @@ export default function EmailVerification() {
       });
       
       setIsOtpSent(true);
-      console.log('✅ OTP sent successfully');
     } catch (error) {
-      console.error('❌ Failed to send OTP:', error);
       setErrors({ submit: 'Failed to send verification code. Please try again.' });
     }
   };
@@ -85,21 +83,17 @@ export default function EmailVerification() {
     setIsVerifying(true);
     
     try {
-      console.log('🔍 Verifying OTP:', otp);
-      
       await authAPI.verifyOtp({
         email: email,
         otp: otp,
         type: 'email_verification'
       });
       
-      console.log('✅ OTP verified successfully');
       setIsVerifying(false);
       
       // Navigate to appropriate destination
       navigate(redirectTo, { replace: true });
     } catch (error) {
-      console.error('❌ OTP verification failed:', error);
       setIsVerifying(false);
       setErrors({ otp: 'Invalid verification code. Please try again.' });
     }

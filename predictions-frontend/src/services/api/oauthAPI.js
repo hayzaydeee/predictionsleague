@@ -8,8 +8,6 @@ class OAuthAPI {
    * Initiate OAuth login through your proxy
    */
   initiateLogin(provider = 'google', redirectPath = '/home/dashboard') {
-    console.log(`🔄 Starting OAuth login with ${provider} via proxy`);
-    
     // Preserve existing flow type if already set (e.g., from signup page)
     const existingFlowType = sessionStorage.getItem('oauth_flow_type');
     const flowType = existingFlowType || 'login';
@@ -23,9 +21,6 @@ class OAuthAPI {
     // Build OAuth proxy URL - same endpoint for both login and signup
     const oauthUrl = `${this.oauthBaseUrl}/oauth2/start?rd=/oauth2/login`;
     
-    console.log('🔗 OAuth URL:', oauthUrl);
-    console.log('🔄 OAuth Flow Type:', flowType);
-    
     // Redirect to your OAuth2 proxy
     window.location.href = oauthUrl;
   }
@@ -34,8 +29,6 @@ class OAuthAPI {
    * Handle OAuth callback - user returns from OAuth proxy
    */
   async handleCallback() {
-    console.log('🔄 Handling OAuth callback');
-    
     const redirectPath = sessionStorage.getItem('oauth_redirect_path') || '/home/dashboard';
     const flowType = sessionStorage.getItem('oauth_flow_type') || 'login';
     const provider = sessionStorage.getItem('oauth_provider') || 'google';
