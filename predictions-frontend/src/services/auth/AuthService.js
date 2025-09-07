@@ -137,35 +137,6 @@ class AuthService {
   }
 
   /**
-   * OAuth-specific authentication check
-   * Used during OAuth callback processing
-   */
-  async checkOAuthAuth() {
-    console.log('🔄 OAuth-specific auth check');
-    
-    try {
-      // Always force check during OAuth (no cache)
-      const result = await this.checkAuth({ 
-        force: true, 
-        source: 'oauth-callback' 
-      });
-      
-      if (result.isAuthenticated) {
-        this.emit('oauth-authenticated', { user: result.user });
-        return {
-          success: true,
-          user: result.user,
-        };
-      } else {
-        throw new Error('OAuth authentication failed - no valid session');
-      }
-    } catch (error) {
-      this.emit('oauth-error', { error: error.message });
-      throw error;
-    }
-  }
-
-  /**
    * Update user data in cache
    */
   updateUser(userData) {
