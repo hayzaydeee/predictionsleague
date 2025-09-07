@@ -30,14 +30,6 @@ const PrivateRoute = ({
       hasUser: !!user,
       referrer: document.referrer
     });
-    
-    // Special logging for potential OAuth redirects
-    if (document.referrer && document.referrer.includes('google')) {
-      console.log('🚨 DETECTED: Potential OAuth redirect hit PrivateRoute!');
-      console.log('🚨 This suggests backend redirected to dashboard instead of callback');
-      console.log('🚨 Backend should redirect to: https://predictionsleague-v1-g787.vercel.app/auth/callback');
-      console.log('🚨 But instead redirected to:', location.pathname);
-    }
   }, [location.pathname, isAuthenticated, isLoading, user]);
   
   // Show loading state while checking authentication

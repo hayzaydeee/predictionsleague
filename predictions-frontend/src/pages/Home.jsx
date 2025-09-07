@@ -34,14 +34,7 @@ export default function Home() {
       currentPath: window.location.pathname,
       referrer: document.referrer
     });
-    
-    // Check if this is an inappropriate OAuth redirect
-    if (document.referrer && document.referrer.includes('google')) {
-      console.log('🚨 CRITICAL: OAuth redirected to Home instead of /auth/callback!');
-      console.log('🚨 This means your backend OAuth success handler is misconfigured');
-      console.log('🚨 Backend should redirect to: https://predictionsleague-v1-g787.vercel.app/auth/callback');
-      console.log('🚨 But instead redirected to:', window.location.href);
-    }
+  
   }, [view]);
   
   // Valid views
