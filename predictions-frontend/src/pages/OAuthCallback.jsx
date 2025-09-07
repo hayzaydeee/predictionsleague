@@ -5,7 +5,7 @@ import authService from '../services/auth/AuthService';
 
 export default function OAuthCallback() {
   const navigate = useNavigate();
-  const { checkAuthStatus } = useAuth();
+  const { login } = useAuth();
   const [isProcessing, setIsProcessing] = useState(true);
   const [error, setError] = useState(null);
   
@@ -23,11 +23,22 @@ export default function OAuthCallback() {
           allParams: Object.fromEntries(urlParams.entries())
         });
 
-        // First, check if the user is authenticated after OAuth
+        // Use OAuth-specific authentication check
         console.log('🔐 Checking OAuth authentication status...');
         try {
-          await checkAuthStatus(); // This should update the auth context
-          console.log('✅ OAuth authentication check complete');
+          const authResult = await authService.checkOAuthAuth();
+          console.log('✅ OAuth authentication successful:', authResult);
+          
+          // Update auth context using the special OAuth login pattern
+          if (authResult.success && authResult.user) {
+            await login({
+              skipApiCall: true,
+              userData: authResult.user
+            });
+            console.log('✅ Auth context updated with OAuth user');
+          } else {
+            throw new Error('No user data received from OAuth');
+          }
         } catch (authError) {
           console.error('❌ OAuth authentication failed:', authError);
           setError('Authentication failed. Redirecting to login...');
@@ -62,7 +73,7 @@ export default function OAuthCallback() {
     };
 
     processOAuthCallback();
-  }, [navigate, checkAuthStatus]);
+  }, [navigate, login]);
 
   if (error) {
     return (
