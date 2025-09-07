@@ -21,7 +21,7 @@ class OAuthAPI {
     sessionStorage.setItem('oauth_timestamp', Date.now().toString());
     
     // Build OAuth proxy URL - same endpoint for both login and signup
-    const oauthUrl = `${this.oauthBaseUrl}/oauth2/start?rd=/api/oauth2/login`;
+    const oauthUrl = `${this.oauthBaseUrl}/oauth2/start?rd=/oauth2/login`;
     
     console.log('🔗 OAuth URL:', oauthUrl);
     console.log('🔄 OAuth Flow Type:', flowType);

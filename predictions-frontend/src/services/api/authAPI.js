@@ -193,7 +193,7 @@ export const authAPI = {
 
   /**
    * Get current user information
-   * Uses the new /api/dashboard/me endpoint
+   * Uses the /dashboard/me endpoint
    * @returns {Promise<Object>} Current user data
    */
   async getCurrentUser() {
@@ -227,7 +227,7 @@ export const authAPI = {
 
   /**
    * Get user info compatible with OAuth flow
-   * Uses the same /api/dashboard/me endpoint as getCurrentUser
+   * Uses the same /dashboard/me endpoint as getCurrentUser
    * @returns {Promise<Object>} OAuth-compatible user data
    */
   async getOAuthUserInfo() {
