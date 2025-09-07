@@ -226,42 +226,6 @@ export const authAPI = {
   },
 
   /**
-   * Get user info compatible with OAuth flow
-   * Uses the same /dashboard/me endpoint as getCurrentUser
-   * @returns {Promise<Object>} OAuth-compatible user data
-   */
-  async getOAuthUserInfo() {
-    try {
-      console.log('🔄 Getting OAuth-compatible user info');
-      
-      // Use the same dashboard/me endpoint for consistency
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/dashboard/me`, {
-        method: 'GET',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        const user = await response.json();
-        console.log('OAuth user info response:', user);
-        
-        // Backend returns the user object directly
-        return {
-          success: true,
-          user: user,
-        };
-      } else {
-        throw new Error(`OAuth user info check failed: ${response.status}`);
-      }
-    } catch (error) {
-      console.error('getOAuthUserInfo error:', error);
-      throw error;
-    }
-  },
-
-  /**
    * Calls the backend endpoint to finish user onboarding
    * @param {Object} profileData - Profile completion data
    * @param {string} profileData.username - Chosen username
@@ -315,38 +279,6 @@ export const authAPI = {
     } catch (error) {
       console.error('OAuth profile completion error:', error);
       handleApiError(error, { customMessage: 'Failed to complete profile. Please try again.' });
-      throw error;
-    }
-  },
-
-  /**
-   * ADDED: Check if current user needs to complete OAuth onboarding
-   * Useful for determining redirect logic
-   * @returns {Promise<Object>} Onboarding status
-   */
-  async checkOAuthOnboardingStatus() {
-    try {
-      // This would ideally call a dedicated endpoint, but for now we use profile check
-      const userInfo = await this.getOAuthUserInfo();
-      
-      if (userInfo.success && userInfo.user) {
-        const user = userInfo.user;
-        const needsOnboarding = !user.username || !user.favouriteTeam;
-        
-        return {
-          success: true,
-          needsOnboarding,
-          user: user,
-          missingFields: {
-            username: !user.username,
-            favouriteTeam: !user.favouriteTeam,
-          }
-        };
-      } else {
-        throw new Error('Could not determine onboarding status');
-      }
-    } catch (error) {
-      console.error('OAuth onboarding status check error:', error);
       throw error;
     }
   },
