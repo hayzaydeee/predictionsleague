@@ -246,14 +246,26 @@ export const authAPI = {
     try {
       console.log('🔄 Getting OAuth-compatible user info');
       
-      // First check if user is authenticated using existing endpoint
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/profile/home`, {
-        method: 'GET',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      // Try OAuth-specific endpoint first, fallback to profile/home
+      let response;
+      try {
+        response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/oauth2/user`, {
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+      } catch (oauthError) {
+        console.log('OAuth-specific endpoint not available, trying profile/home');
+        response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/profile/home`, {
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+      }
 
       if (response.ok) {
         const responseText = await response.text();

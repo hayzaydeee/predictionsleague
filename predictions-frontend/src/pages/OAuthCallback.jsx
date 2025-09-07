@@ -23,22 +23,29 @@ export default function OAuthCallback() {
           allParams: Object.fromEntries(urlParams.entries())
         });
 
-        // Use OAuth-specific authentication check
-        console.log('🔐 Checking OAuth authentication status...');
+        // For static demo dashboard, simulate successful OAuth authentication
+        console.log('🔐 Simulating OAuth authentication for static demo...');
         try {
-          const authResult = await authService.checkOAuthAuth();
-          console.log('✅ OAuth authentication successful:', authResult);
+          // Create a mock user object for OAuth users
+          const mockOAuthUser = {
+            email: email || 'oauth.user@example.com',
+            authenticated: true,
+            source: 'oauth-demo',
+            userID: Date.now().toString(), // Generate a temporary ID
+            username: null, // Will be filled during onboarding  
+            firstName: null,
+            lastName: null,
+            favouriteTeam: null,
+            profilePicture: null,
+            isOAuthUser: true,
+          };
           
           // Update auth context using the special OAuth login pattern
-          if (authResult.success && authResult.user) {
-            await login({
-              skipApiCall: true,
-              userData: authResult.user
-            });
-            console.log('✅ Auth context updated with OAuth user');
-          } else {
-            throw new Error('No user data received from OAuth');
-          }
+          await login({
+            skipApiCall: true,
+            userData: mockOAuthUser
+          });
+          console.log('✅ Mock OAuth authentication set for static demo');
         } catch (authError) {
           console.error('❌ OAuth authentication failed:', authError);
           setError('Authentication failed. Redirecting to login...');
