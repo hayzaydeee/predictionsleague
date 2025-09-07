@@ -49,6 +49,10 @@ export default function OAuthCallback() {
             userData: mockOAuthUser
           });
           console.log('✅ Mock OAuth authentication set for static demo', loginResult);
+          
+          if (!loginResult.success) {
+            throw new Error('Failed to set OAuth authentication');
+          }
         } catch (authError) {
           console.error('❌ OAuth authentication failed:', authError);
           setError('Authentication failed. Redirecting to login...');
@@ -57,10 +61,10 @@ export default function OAuthCallback() {
         }
         
         // Small delay to ensure auth state is updated
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, 500));
         
-        // Debug auth state before redirect
-        console.log('🔍 Auth state before redirect:', { isAuthenticated, user: !!user });
+        // Debug: The auth state won't update here because we're in the same render cycle
+        console.log('🔍 Auth state before redirect (may be stale):', { isAuthenticated, user: !!user });
 
         if (destination === 'onboarding') {
           console.log('📍 Redirecting to onboarding flow');

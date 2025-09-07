@@ -31,6 +31,8 @@ const initialState = {
 
 // Auth reducer
 const authReducer = (state, action) => {
+  console.log('🔄 AuthReducer: Processing action:', action.type, action.payload);
+  
   switch (action.type) {
     case AUTH_ACTIONS.SET_LOADING:
       return {
@@ -40,6 +42,7 @@ const authReducer = (state, action) => {
       };
       
     case AUTH_ACTIONS.LOGIN_SUCCESS:
+      console.log('✅ AuthReducer: LOGIN_SUCCESS - setting authenticated state');
       return {
         ...state,
         status: AUTH_STATES.AUTHENTICATED,
@@ -131,10 +134,12 @@ export const AuthProvider = ({ children }) => {
     try {
       // Special handling for OAuth callback login (no API call needed)
       if (credentials?.skipApiCall && credentials?.userData) {
+        console.log('🔄 AuthContext: Setting OAuth user data:', credentials.userData);
         dispatch({
           type: AUTH_ACTIONS.LOGIN_SUCCESS,
           payload: { user: credentials.userData },
         });
+        console.log('✅ AuthContext: LOGIN_SUCCESS dispatched for OAuth');
         
         return { success: true };
       }
