@@ -193,13 +193,12 @@ export const authAPI = {
 
   /**
    * Get current user information
-   * Uses existing protected endpoint since /auth/me doesn't exist
+   * Uses the new /api/dashboard/me endpoint
    * @returns {Promise<Object>} Current user data
    */
   async getCurrentUser() {
     try {
-      // Use existing protected endpoint to verify authentication
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/profile/home`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/dashboard/me`, {
         method: 'GET',
         credentials: 'include', // Include HTTP-only cookies
         headers: {
@@ -208,25 +207,14 @@ export const authAPI = {
       });
 
       if (response.ok) {
-        const responseText = await response.text();
-        console.log('Auth check response:', responseText);
+        const user = await response.json();
+        console.log('Auth check response:', user);
         
-        // Extract email from response text "Viewing the HomePage of {email}"
-        const emailMatch = responseText.match(/of (.+)$/);
-        const email = emailMatch ? emailMatch[1].trim() : null;
-        
-        if (email) {
-          return {
-            success: true,
-            user: {
-              email: email,
-              authenticated: true,
-              source: 'profile-endpoint'
-            },
-          };
-        } else {
-          throw new Error('Could not extract user info from response');
-        }
+        // Backend returns the user object directly
+        return {
+          success: true,
+          user: user,
+        };
       } else {
         throw new Error(`Authentication check failed: ${response.status}`);
       }
@@ -238,65 +226,32 @@ export const authAPI = {
   },
 
   /**
-   * ADDED: Get user info compatible with OAuth flow
-   * Provides better structure for OAuth users during onboarding
+   * Get user info compatible with OAuth flow
+   * Uses the same /api/dashboard/me endpoint as getCurrentUser
    * @returns {Promise<Object>} OAuth-compatible user data
    */
   async getOAuthUserInfo() {
     try {
       console.log('🔄 Getting OAuth-compatible user info');
       
-      // Try OAuth-specific endpoint first, fallback to profile/home
-      let response;
-      try {
-        response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/oauth2/user`, {
-          method: 'GET',
-          credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-      } catch (oauthError) {
-        console.log('OAuth-specific endpoint not available, trying profile/home');
-        response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/profile/home`, {
-          method: 'GET',
-          credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-      }
+      // Use the same dashboard/me endpoint for consistency
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/dashboard/me`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
 
       if (response.ok) {
-        const responseText = await response.text();
+        const user = await response.json();
+        console.log('OAuth user info response:', user);
         
-        // Extract email from response text
-        const emailMatch = responseText.match(/of (.+)$/);
-        const email = emailMatch ? emailMatch[1].trim() : null;
-        
-        if (email) {
-          // TODO: When your backend provides a proper user info endpoint, use it here
-          // For now, provide OAuth-compatible structure with what we have
-          return {
-            success: true,
-            user: {
-              email: email,
-              authenticated: true,
-              source: 'oauth-compatible',
-              // Placeholder fields for OAuth users
-              // These will be properly populated by your backend
-              userID: null, // Will be filled by backend
-              username: null, // Will be filled during onboarding  
-              firstName: null, // Will be filled by backend
-              lastName: null, // Will be filled by backend
-              favouriteTeam: null, // Will be filled during onboarding
-              profilePicture: null, // Will be filled by backend
-              isOAuthUser: true, // Mark as OAuth user
-            },
-          };
-        } else {
-          throw new Error('Could not extract user info from response');
-        }
+        // Backend returns the user object directly
+        return {
+          success: true,
+          user: user,
+        };
       } else {
         throw new Error(`OAuth user info check failed: ${response.status}`);
       }

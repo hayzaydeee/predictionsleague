@@ -1,7 +1,6 @@
 import { useState, useLayoutEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { setTokens } from '../services/api/baseAPI';
 
 /**
  * Custom hook for handling OAuth callback processing
@@ -45,36 +44,20 @@ export const useOAuthCallback = () => {
           allParams: Object.fromEntries(urlParams.entries())
         });
 
-        // Set mock tokens for static demo
-        setTokens('mock-oauth-token', 'mock-refresh-token');
+        // The backend should have set HTTP-only cookies during OAuth flow
+        // Now we just need to verify the authentication worked
+        console.log('🔐 useOAuthCallback: Verifying OAuth authentication...');
         
-        // Create mock user
-        const mockOAuthUser = {
-          email: email || 'oauth.user@example.com',
-          authenticated: true,
-          source: 'oauth-demo',
-          userID: Date.now().toString(),
-          username: null,
-          firstName: null,
-          lastName: null,
-          favouriteTeam: null,
-          profilePicture: null,
-          isOAuthUser: true,
-        };
-        
-        console.log('🔐 useOAuthCallback: Setting mock OAuth authentication...');
-        
-        // Update auth context
+        // Try to verify authentication with backend
         const loginResult = await login({
-          skipApiCall: true,
-          userData: mockOAuthUser
+          skipApiCall: false, // Let it call the backend to verify
         });
         
         if (!loginResult.success) {
-          throw new Error('Failed to set OAuth authentication');
+          throw new Error('OAuth authentication verification failed');
         }
         
-        console.log('✅ useOAuthCallback: OAuth authentication set successfully');
+        console.log('✅ useOAuthCallback: OAuth authentication verified successfully');
         
         // Small delay to ensure state updates
         await new Promise(resolve => setTimeout(resolve, 100));

@@ -3,7 +3,6 @@
  * Eliminates duplicate API calls and provides single source of truth for auth checks
  */
 import authAPI from '../api/authAPI.js';
-import { getTokens } from '../api/baseAPI.js';
 
 class AuthService {
   constructor() {
@@ -87,53 +86,23 @@ class AuthService {
 
   /**
    * Perform actual authentication check
-   * FIXED: Better OAuth compatibility and error handling
    */
   async _performAuthCheck(source) {
     try {
-      console.log(`🔄 Performing secure auth check (source: ${source})`);
+      console.log(`🔄 Performing auth check (source: ${source})`);
       
-      // Check if we're using mock OAuth tokens
-      const { authToken } = getTokens();
-      if (authToken === 'mock-oauth-token') {
-        console.log('🎭 Mock OAuth authentication detected, using mock user data');
-        const mockUser = {
-          email: 'oauth.user@example.com',
-          authenticated: true,
-          source: 'oauth-demo',
-          userID: Date.now().toString(),
-          username: null,
-          firstName: null,
-          lastName: null,
-          favouriteTeam: null,
-          profilePicture: null,
-          isOAuthUser: true,
-        };
-        
-        this.updateCache(true, mockUser);
-        return {
-          success: true,
-          isAuthenticated: true,
-          user: mockUser,
-          source: 'mock-oauth',
-        };
-      }
-      
-      // Use OAuth-compatible method if available, otherwise fallback
-      const response = source.includes('oauth') && authAPI.getOAuthUserInfo 
-        ? await authAPI.getOAuthUserInfo() 
-        : await authAPI.getCurrentUser();
+      // Always use getCurrentUser for authentication verification
+      const response = await authAPI.getCurrentUser();
       
       if (response.success && response.user) {
-        // Use OAuth-compatible validation
-        if (!this.validateUserData(response.user, source.includes('oauth'))) {
+        if (!this.validateUserData(response.user)) {
           throw new Error('Invalid user data received');
         }
         
         this.updateCache(true, response.user);
         this.emit('authenticated', { user: response.user, source });
         
-        console.log('✅ Auth check successful (security validated)');
+        console.log('✅ Auth check successful');
         return {
           success: true,
           isAuthenticated: true,
@@ -267,9 +236,8 @@ class AuthService {
 
   /**
    * Validate user data for security
-   * FIXED: OAuth-compatible validation with relaxed requirements
    */
-  validateUserData(user, isOAuthUser = false) {
+  validateUserData(user) {
     if (!user || typeof user !== 'object') {
       console.warn('🔒 Invalid user data type');
       return false;
@@ -281,17 +249,11 @@ class AuthService {
       return false;
     }
 
-    // For OAuth users, be more flexible with ID requirements
-    if (!isOAuthUser) {
-      // Traditional users need either 'id' or 'userID'
-      const hasId = user.id || user.userID;
-      if (!hasId) {
-        console.warn('🔒 User data missing required ID field');
-        return false;
-      }
-    } else {
-      // OAuth users might not have all fields during onboarding
-      console.log('🔒 Using relaxed validation for OAuth user');
+    // Check for user ID
+    const hasId = user.id || user.userID;
+    if (!hasId) {
+      console.warn('🔒 User data missing required ID field');
+      return false;
     }
 
     // Validate email format
