@@ -16,12 +16,10 @@ class OAuthAPI {
     sessionStorage.setItem('oauth_provider', provider);
     sessionStorage.setItem('oauth_timestamp', Date.now().toString());
     
-    // Build OAuth proxy URL
-    const callbackUrl = `${this.frontendBaseUrl}/auth/callback`;
-    const oauthUrl = `${this.oauthBaseUrl}/oauth2/start?rd=${encodeURIComponent(callbackUrl)}`;
+    // Build OAuth proxy URL - rd should point to backend OAuth endpoint
+    const oauthUrl = `${this.oauthBaseUrl}/oauth2/start?rd=/api/oauth2/login`;
     
     console.log('🔗 OAuth URL:', oauthUrl);
-    console.log('🔙 Callback URL:', callbackUrl);
     
     // Redirect to your OAuth2 proxy
     window.location.href = oauthUrl;
