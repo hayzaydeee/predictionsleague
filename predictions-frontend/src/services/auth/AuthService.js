@@ -3,6 +3,7 @@
  * Eliminates duplicate API calls and provides single source of truth for auth checks
  */
 import authAPI from '../api/authAPI.js';
+import { getTokens } from '../api/baseAPI.js';
 
 class AuthService {
   constructor() {
@@ -91,6 +92,32 @@ class AuthService {
   async _performAuthCheck(source) {
     try {
       console.log(`🔄 Performing secure auth check (source: ${source})`);
+      
+      // Check if we're using mock OAuth tokens
+      const { authToken } = getTokens();
+      if (authToken === 'mock-oauth-token') {
+        console.log('🎭 Mock OAuth authentication detected, using mock user data');
+        const mockUser = {
+          email: 'oauth.user@example.com',
+          authenticated: true,
+          source: 'oauth-demo',
+          userID: Date.now().toString(),
+          username: null,
+          firstName: null,
+          lastName: null,
+          favouriteTeam: null,
+          profilePicture: null,
+          isOAuthUser: true,
+        };
+        
+        this.updateCache(true, mockUser);
+        return {
+          success: true,
+          isAuthenticated: true,
+          user: mockUser,
+          source: 'mock-oauth',
+        };
+      }
       
       // Use OAuth-compatible method if available, otherwise fallback
       const response = source.includes('oauth') && authAPI.getOAuthUserInfo 
