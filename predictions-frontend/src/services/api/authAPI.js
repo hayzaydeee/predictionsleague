@@ -63,7 +63,7 @@ export const authAPI = {
           password: userData.password,
           firstName: userData.firstName,
           lastName: userData.lastName,
-          favouriteTeam: userData.favouriteTeam,
+          favouriteTeam: userData.favouriteTeam.toUpperCase(), // Convert to uppercase for backend
         },
       });
 
@@ -232,7 +232,7 @@ export const authAPI = {
         },
         body: JSON.stringify({
           username: profileData.username,
-          favouriteTeam: profileData.favouriteTeam
+          favouriteTeam: profileData.favouriteTeam.toUpperCase() // Convert to uppercase for backend
         })
       });
 
