@@ -58,12 +58,15 @@ export const useOAuthCallback = () => {
         
         // Check if user profile is complete
         const user = authResult.user;
+        console.log('user', user);
         console.log('OAuth Callback - User data:', user);
         console.log('OAuth Callback - Username:', user?.username);
         console.log('OAuth Callback - FavouriteTeam:', user?.favouriteTeam);
         console.log('OAuth Callback - Destination param:', destination);
         
-        const isProfileComplete = user && user.username && user.favouriteTeam;
+        // For OAuth users, the primary indicator of completed onboarding is having a favouriteTeam
+        // Username might be null for OAuth users who use their email as identifier
+        const isProfileComplete = user && user.favouriteTeam;
         console.log('OAuth Callback - Profile complete:', isProfileComplete);
         
         // Navigate based on profile completion status or destination parameter
