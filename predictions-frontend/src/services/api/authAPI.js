@@ -45,6 +45,37 @@ export const authAPI = {
   },
 
   /**
+   * Complete user profile (for regular signup flow)
+   * @param {Object} profileData - Profile completion data
+   * @returns {Promise<Object>} Profile completion response
+   */
+  async completeProfile(profileData) {
+    try {
+      const response = await apiCall({
+        method: 'POST',
+        url: '/auth/finish-registration',
+        data: {
+          username: profileData.username,
+          favouriteTeam: mapTeamToBackendFormat(profileData.favouriteTeam),
+        },
+      });
+
+      if (response.success) {
+        return {
+          success: true,
+          user: response.data.user,
+          message: response.data.message || 'Profile completed successfully'
+        };
+      } else {
+        throw new Error(response.error?.message || 'Profile completion failed');
+      }
+    } catch (error) {
+      handleApiError(error, { customMessage: 'Failed to complete profile. Please try again.' });
+      throw error;
+    }
+  },
+
+  /**
    * Register new user
    */
   async register(userData) {

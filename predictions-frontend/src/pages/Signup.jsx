@@ -61,21 +61,9 @@ export default function Signup() {
 
     // Handle returning from email verification
     if (stepParam === '3') {
-      const savedData = sessionStorage.getItem('signup_data');
-      if (savedData) {
-        try {
-          const parsedData = JSON.parse(savedData);
-          setFormData(prev => ({ ...prev, ...parsedData }));
-          setFormStep(3);
-          // Clean up URL and session storage
-          sessionStorage.removeItem('signup_data');
-          navigate(location.pathname, { replace: true });
-        } catch (error) {
-          console.error('Failed to restore signup data:', error);
-          // If data is corrupted, start over
-          navigate('/signup', { replace: true });
-        }
-      }
+      // User account already exists, just proceed to complete profile
+      setFormStep(3);
+      navigate(location.pathname, { replace: true });
     }
   }, [location.search, navigate, location.pathname]);
 
@@ -195,22 +183,37 @@ export default function Signup() {
       return;
     }
 
-    // If moving from step 1 to step 2, redirect to shared email verification
+    // If moving from step 1 to step 2, create incomplete user account
     if (formStep === 1) {
-      // Store signup data in sessionStorage for after verification
-      sessionStorage.setItem('signup_data', JSON.stringify({
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
-        password: formData.password,
-        confirmPassword: formData.confirmPassword
-      }));
-      
-      // Redirect to shared email verification
-      navigate(`/verify-email?flow=signup&email=${encodeURIComponent(formData.email)}&redirect=${encodeURIComponent('/signup?step=3')}`, { 
-        replace: true 
-      });
-      return;
+      try {
+        // Register user with incomplete data (no username/team yet)
+        const result = await register({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          password: formData.password,
+          confirmPassword: formData.confirmPassword,
+          // username and favouriteTeam will be added later
+        });
+        
+        if (result.success) {
+          // User is created but incomplete - redirect to email verification
+          navigate(`/verify-email?flow=signup&email=${encodeURIComponent(formData.email)}&redirect=${encodeURIComponent('/signup?step=3')}`, { 
+            replace: true 
+          });
+          return;
+        } else {
+          throw new Error(result.error || 'Failed to create account');
+        }
+      } catch (error) {
+        const fieldErrors = getValidationErrors(error);
+        if (Object.keys(fieldErrors).length > 0) {
+          setErrors(prev => ({ ...prev, ...fieldErrors }));
+        } else {
+          setErrors(prev => ({ ...prev, submit: 'Failed to create account. Please try again.' }));
+        }
+        return;
+      }
     }
 
     setFormStep((prev) => prev + 1);
@@ -232,18 +235,14 @@ export default function Signup() {
     clearError();
 
     try {
-      const result = await register({
-        firstName: formData.firstName,
-        lastName: formData.lastName,
+      // Complete user profile with username and favourite team
+      const result = await authAPI.completeProfile({
         username: formData.username,
-        email: formData.email,
-        password: formData.password,
-        confirmPassword: formData.confirmPassword,
         favouriteTeam: formData.favouriteTeam.toUpperCase(),
       });
 
       if (result.success) {
-        // Redirect to dashboard after successful registration
+        // Redirect to dashboard after successful profile completion
         navigate("/home/dashboard", { replace: true });
       }
     } catch (registrationError) {

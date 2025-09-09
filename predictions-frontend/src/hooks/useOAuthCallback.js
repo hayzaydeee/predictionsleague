@@ -68,18 +68,12 @@ export const useOAuthCallback = () => {
         const isProfileComplete = user && user.username && user.favouriteTeam ? true : false;
         console.log('OAuth Callback - Profile complete:', isProfileComplete);
         
-        // Navigate based on profile completion status or destination parameter
+        // Navigate based on profile completion status
         let targetRoute;
         if (!isProfileComplete) {
-          // Profile incomplete - go to onboarding
+          // Profile incomplete - go directly to onboarding (skip email verification for OAuth)
           console.log('OAuth Callback - Redirecting to onboarding (incomplete profile)');
           targetRoute = '/auth/finish-onboarding';
-        } else if (destination === 'onboarding') {
-          // Explicit onboarding request (e.g., email verification flow)
-          console.log('OAuth Callback - Redirecting to onboarding (explicit destination)');
-          targetRoute = email 
-            ? `/verify-email?flow=oauth&email=${encodeURIComponent(email)}&redirect=${encodeURIComponent('/auth/finish-onboarding')}` 
-            : '/auth/finish-onboarding';
         } else {
           // Profile complete - go to dashboard
           console.log('OAuth Callback - Redirecting to dashboard (profile complete)');

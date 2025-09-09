@@ -18,12 +18,19 @@ export default function EmailVerification() {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   
-  // Determine flow type (signup or oauth) and email
-  const flowType = searchParams.get('flow') || 'signup'; // 'signup' or 'oauth'
+  // Determine flow type and email (only for regular signup now)
+  const flowType = searchParams.get('flow') || 'signup';
   const email = searchParams.get('email') || location.state?.email || '';
-  const redirectTo = searchParams.get('redirect') || (flowType === 'oauth' ? '/auth/oauth/complete' : '/home/dashboard');
+  const redirectTo = searchParams.get('redirect') || '/home/dashboard';
 
   useEffect(() => {
+    // OAuth users don't need email verification - redirect them away
+    if (flowType === 'oauth') {
+      console.log('OAuth user detected in email verification - redirecting to finish onboarding');
+      navigate('/auth/finish-onboarding', { replace: true });
+      return;
+    }
+
     if (!email) {
       console.error('No email provided for verification');
       navigate('/signup', { replace: true });
