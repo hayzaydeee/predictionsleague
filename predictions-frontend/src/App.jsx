@@ -60,7 +60,7 @@ function App() {
 
                 {/* Onboarding route */}
                 <Route
-                  path="/auth/oauth/complete"
+                  path="/auth/finish-onboarding"
                   element={<OAuthOnboarding />}
                 />
 

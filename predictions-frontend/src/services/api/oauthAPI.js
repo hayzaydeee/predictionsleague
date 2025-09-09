@@ -26,6 +26,17 @@ class OAuthAPI {
   }
 
   /**
+   * Initiate OAuth signup specifically - sets flow type to signup
+   */
+  initiateSignup(provider = 'google') {
+    // Explicitly set flow type to signup
+    sessionStorage.setItem('oauth_flow_type', 'signup');
+    
+    // Use the login method but with signup context
+    this.initiateLogin(provider, '/auth/oauth/complete');
+  }
+
+  /**
    * Handle OAuth callback - user returns from OAuth proxy
    */
   async handleCallback() {

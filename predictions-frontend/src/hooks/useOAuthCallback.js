@@ -56,10 +56,24 @@ export const useOAuthCallback = () => {
         // Small delay to ensure state updates
         await new Promise(resolve => setTimeout(resolve, 100));
         
-        // Navigate based on destination
-        const targetRoute = destination === 'onboarding' 
-          ? (email ? `/verify-email?flow=oauth&email=${encodeURIComponent(email)}&redirect=${encodeURIComponent('/auth/oauth/complete')}` : '/auth/oauth/complete')
-          : '/home/dashboard';
+        // Check if user profile is complete
+        const user = authResult.user;
+        const isProfileComplete = user && user.username && user.favouriteTeam;
+        
+        // Navigate based on profile completion status or destination parameter
+        let targetRoute;
+        if (!isProfileComplete) {
+          // Profile incomplete - go to onboarding
+          targetRoute = '/auth/finish-onboarding';
+        } else if (destination === 'onboarding') {
+          // Explicit onboarding request (e.g., email verification flow)
+          targetRoute = email 
+            ? `/verify-email?flow=oauth&email=${encodeURIComponent(email)}&redirect=${encodeURIComponent('/auth/finish-onboarding')}` 
+            : '/auth/finish-onboarding';
+        } else {
+          // Profile complete - go to dashboard
+          targetRoute = '/home/dashboard';
+        }
         
         setState({
           isProcessing: false,

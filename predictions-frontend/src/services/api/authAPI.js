@@ -224,7 +224,7 @@ export const authAPI = {
    */
   async completeOAuthProfile(profileData) {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/oauth2/complete-profile`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/authfinish-registration`, {
         method: 'POST',
         credentials: 'include',
         headers: {

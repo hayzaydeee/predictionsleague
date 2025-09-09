@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { motion } from 'framer-motion';
 import { Box, Container, Button } from '@radix-ui/themes';
 import authService from '../services/auth/AuthService';
+import { authAPI } from '../services/api/authAPI';
 
 export default function OAuthOnboarding() {
   const [formData, setFormData] = useState({
@@ -84,46 +85,34 @@ export default function OAuthOnboarding() {
 
     setIsLoading(true);
     try {
-      // Complete OAuth profile
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/oauth2/complete-profile`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          username: formData.username,
-          favouriteTeam: formData.favouriteTeam
-        })
+      // Use the proper authAPI function for completing OAuth profile
+      const result = await authAPI.completeOAuthProfile({
+        username: formData.username,
+        favouriteTeam: formData.favouriteTeam
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        if (response.status === 409) {
-          setErrors({ username: 'Username already taken' });
-          return;
-        }
-        throw new Error(errorData.error || 'Failed to complete profile');
+      if (result.success) {
+        // Update auth context with complete user info
+        await login({
+          skipApiCall: true,
+          userData: result.user
+        });
+
+        // Redirect to dashboard
+        navigate('/home/dashboard', { replace: true });
+      } else {
+        throw new Error(result.error || 'Failed to complete profile');
       }
-
-      const result = await response.json();
-      
-      // Update auth context with complete user info
-      await login({
-        skipApiCall: true,
-        userData: {
-          ...userInfo,
-          username: result.user.username,
-          favouriteTeam: result.user.favouriteTeam
-        }
-      });
-
-      // Redirect to dashboard
-      navigate('/home/dashboard', { replace: true });
 
     } catch (error) {
       console.error('Profile completion error:', error);
-      setErrors({ submit: error.message });
+      
+      // Handle specific error cases
+      if (error.message.includes('Username already taken')) {
+        setErrors({ username: 'Username already taken' });
+      } else {
+        setErrors({ submit: error.message });
+      }
     } finally {
       setIsLoading(false);
     }

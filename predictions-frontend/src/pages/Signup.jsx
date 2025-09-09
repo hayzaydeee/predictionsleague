@@ -81,11 +81,8 @@ export default function Signup() {
 
   const handleOAuthSignup = (providerId) => {
     try {
-      // Store that this is a signup flow (not login)
-      sessionStorage.setItem('oauth_flow_type', 'signup');
-      
-      // For signup, always redirect to onboarding even if user exists
-      oauthAPI.initiateLogin(providerId, '/onboarding/select-team');
+      // Use the dedicated signup method which handles flow type automatically
+      oauthAPI.initiateSignup(providerId);
     } catch (error) {
       setOauthError(error.message);
     }

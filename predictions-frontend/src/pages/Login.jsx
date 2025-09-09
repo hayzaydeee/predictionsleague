@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Container, Button, TextField } from "@radix-ui/themes";
+import { Box, Container, Button, } from "@radix-ui/themes";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { EyeOpenIcon, EyeClosedIcon } from "@radix-ui/react-icons";
@@ -9,8 +9,7 @@ import Footer from "../components/landingPage/Footer";
 import OAuthLoginSection from "../components/auth/OAuthLogin";
 import OAuthStatusHandler from "../components/auth/OAuthStatusHandler";
 import oauthAPI from "../services/api/oauthAPI";
-import oauthStateManager from "../services/oauth/OAuthStateManager";
-import authService from "../services/auth/AuthService";
+
 
 export default function Login() {
   const [email, setEmail] = useState("");
