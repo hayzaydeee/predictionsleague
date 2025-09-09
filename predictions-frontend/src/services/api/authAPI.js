@@ -86,7 +86,7 @@ export const authAPI = {
   },
 
   /**
-   * Register new user
+   * Register new user (initial incomplete registration)
    */
   async register(userData) {
     try {
@@ -95,29 +95,26 @@ export const authAPI = {
         throw new Error('Passwords do not match');
       }
 
-      // Only send necessary data to backend (no confirmPassword)
+      // Only send basic user data to backend (no username/favouriteTeam yet)
       const response = await apiCall({
         method: 'POST',
         url: '/auth/register',
         data: {
-          username: userData.username,
           email: userData.email,
           password: userData.password,
           firstName: userData.firstName,
           lastName: userData.lastName,
-          favouriteTeam: mapTeamToBackendFormat(userData.favouriteTeam), // Convert to backend format
+          // username and favouriteTeam will be added later via completeProfile
         },
       });
 
       if (response.success) {
-        // With HTTP-only cookies, tokens are automatically stored by browser
-        // We only need to handle user data and auth state
-        const { user } = response.data;
-        setTokens('http-only', 'http-only'); // Mark as authenticated
-        
+        // For incomplete registration, don't set tokens yet
+        // User needs to verify email and complete profile first
         return {
           success: true,
-          user,
+          message: response.data.message || 'Registration initiated. Please verify your email.',
+          // Don't return user data yet since registration is incomplete
         };
       } else {
         throw new Error(response.error?.message || 'Registration failed');

@@ -174,7 +174,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
   
-  // Register function
+  // Register function (for incomplete registration)
   const register = async (userData) => {
     dispatch({ type: AUTH_ACTIONS.SET_LOADING });
     
@@ -182,12 +182,11 @@ export const AuthProvider = ({ children }) => {
       const response = await authAPI.register(userData);
       
       if (response.success) {
-        dispatch({
-          type: AUTH_ACTIONS.LOGIN_SUCCESS,
-          payload: { user: response.user },
-        });
+        // Don't update auth state yet since registration is incomplete
+        // User needs to verify email and complete profile first
+        dispatch({ type: AUTH_ACTIONS.CLEAR_LOADING });
         
-        return { success: true };
+        return { success: true, message: response.message };
       } else {
         throw new Error(response.error || 'Registration failed');
       }
