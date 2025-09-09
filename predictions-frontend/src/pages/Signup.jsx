@@ -239,6 +239,7 @@ export default function Signup() {
       const result = await authAPI.completeProfile({
         username: formData.username,
         favouriteTeam: formData.favouriteTeam.toUpperCase(),
+        email: formData.email,
       });
 
       if (result.success) {

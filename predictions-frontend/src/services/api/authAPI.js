@@ -47,6 +47,9 @@ export const authAPI = {
   /**
    * Complete user profile (for regular signup flow)
    * @param {Object} profileData - Profile completion data
+   * @param {string} profileData.username - Chosen username
+   * @param {string} profileData.favouriteTeam - Selected favorite team
+   * @param {string} profileData.email - User's email address
    * @returns {Promise<Object>} Profile completion response
    */
   async completeProfile(profileData) {
@@ -57,6 +60,7 @@ export const authAPI = {
         data: {
           username: profileData.username,
           favouriteTeam: mapTeamToBackendFormat(profileData.favouriteTeam),
+          email: profileData.email,
         },
       });
 
