@@ -224,45 +224,26 @@ export const authAPI = {
    */
   async completeOAuthProfile(profileData) {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/auth/finish-registration`, {
+      const response = await apiCall({
         method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+        url: '/auth/finish-registration',
+        data: {
           username: profileData.username,
           favouriteTeam: profileData.favouriteTeam.toUpperCase() // Convert to uppercase for backend
-        })
+        }
       });
 
-      if (response.ok) {
-        const result = await response.json();
+      if (response.success) {
+        // Mark as authenticated with complete profile
+        setTokens('http-only', 'http-only');
         
-        if (result.success) {
-          // Mark as authenticated with complete profile
-          setTokens('http-only', 'http-only');
-          
-          return {
-            success: true,
-            user: result.user,
-            message: result.message || 'Profile completed successfully'
-          };
-        } else {
-          throw new Error(result.error || 'Profile completion failed');
-        }
+        return {
+          success: true,
+          user: response.data.user,
+          message: response.data.message || 'Profile completed successfully'
+        };
       } else {
-        const errorData = await response.json().catch(() => ({}));
-        
-        if (response.status === 409) {
-          throw new Error(errorData.error || 'Username already taken');
-        } else if (response.status === 400) {
-          throw new Error(errorData.error || 'Invalid profile data');
-        } else if (response.status === 401) {
-          throw new Error('Not authenticated - please sign in again');
-        } else {
-          throw new Error(errorData.error || 'Failed to complete profile');
-        }
+        throw new Error(response.error?.message || 'Profile completion failed');
       }
     } catch (error) {
       handleApiError(error, { customMessage: 'Failed to complete profile. Please try again.' });
