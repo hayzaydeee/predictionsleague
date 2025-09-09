@@ -1,5 +1,6 @@
 import baseAPI, { apiCall, setTokens, clearTokens } from './baseAPI.js';
 import { handleApiError } from '../../utils/apiErrorHandler.js';
+import { mapTeamToBackendFormat } from '../../utils/teamUtils.js';
 
 /**
  * Authentication API service
@@ -63,7 +64,7 @@ export const authAPI = {
           password: userData.password,
           firstName: userData.firstName,
           lastName: userData.lastName,
-          favouriteTeam: userData.favouriteTeam.toUpperCase(), // Convert to uppercase for backend
+          favouriteTeam: mapTeamToBackendFormat(userData.favouriteTeam), // Convert to backend format
         },
       });
 
@@ -229,7 +230,7 @@ export const authAPI = {
         url: '/auth/finish-registration',
         data: {
           username: profileData.username,
-          favouriteTeam: profileData.favouriteTeam.toUpperCase() // Convert to uppercase for backend
+          favouriteTeam: mapTeamToBackendFormat(profileData.favouriteTeam) // Convert to backend format
         }
       });
 

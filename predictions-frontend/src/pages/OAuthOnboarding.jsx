@@ -21,8 +21,6 @@ export default function OAuthOnboarding() {
   const teams = [
     "Arsenal", "Chelsea", "Liverpool", 
     "Manchester City", "Manchester United", "Tottenham Hotspur",
-    "Brighton & Hove Albion", "Newcastle United", "West Ham United",
-    "Aston Villa", "Crystal Palace", "Fulham"
   ];
 
   // Get user info on component mount

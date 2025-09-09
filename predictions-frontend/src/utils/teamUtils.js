@@ -110,6 +110,25 @@ export const getTeamLogo = (teamName) => {
 };
 
 /**
+ * Map team display names to backend format
+ * @param {string} teamName - The display team name
+ * @returns {string} Backend formatted team name
+ */
+export const mapTeamToBackendFormat = (teamName) => {
+  const teamMapping = {
+    "Arsenal": "ARSENAL",
+    "Chelsea": "CHELSEA", 
+    "Liverpool": "LIVERPOOL",
+    "Manchester City": "MANCITY",
+    "Manchester United": "MANUTD",
+    "Tottenham Hotspur": "SPURS",
+    // Add any other teams as needed
+  };
+  
+  return teamMapping[teamName] || teamName.toUpperCase();
+};
+
+/**
  * Check if a date's fixture group has any unpredicted fixtures
  * @param {Array} fixtures - Array of fixture objects
  * @returns {boolean} True if any fixtures are unpredicted
