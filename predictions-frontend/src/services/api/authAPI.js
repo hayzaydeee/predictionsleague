@@ -90,25 +90,39 @@ export const authAPI = {
    */
   async register(userData) {
     try {
+      console.log('AuthAPI.register - Starting registration with data:', {
+        email: userData.email,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        hasPassword: !!userData.password
+      });
+
       // Frontend validation: Check if passwords match
       if (userData.password !== userData.confirmPassword) {
         throw new Error('Passwords do not match');
       }
 
       // Only send basic user data to backend (no username/favouriteTeam yet)
+      const requestData = {
+        email: userData.email,
+        password: userData.password,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        // username and favouriteTeam will be added later via completeProfile
+      };
+
+      console.log('AuthAPI.register - Making API call to /auth/register');
+      
       const response = await apiCall({
         method: 'POST',
         url: '/auth/register',
-        data: {
-          email: userData.email,
-          password: userData.password,
-          firstName: userData.firstName,
-          lastName: userData.lastName,
-          // username and favouriteTeam will be added later via completeProfile
-        },
+        data: requestData,
       });
 
+      console.log('AuthAPI.register - API response:', response);
+
       if (response.success) {
+        console.log('AuthAPI.register - Registration successful');
         // For incomplete registration, don't set tokens yet
         // User needs to verify email and complete profile first
         return {
@@ -117,9 +131,11 @@ export const authAPI = {
           // Don't return user data yet since registration is incomplete
         };
       } else {
+        console.error('AuthAPI.register - Registration failed:', response.error);
         throw new Error(response.error?.message || 'Registration failed');
       }
     } catch (error) {
+      console.error('AuthAPI.register - Error caught:', error);
       handleApiError(error, { customMessage: 'Registration failed. Please try again.' });
       throw error;
     }
