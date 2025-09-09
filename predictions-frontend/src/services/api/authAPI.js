@@ -49,19 +49,25 @@ export const authAPI = {
    * @param {Object} profileData - Profile completion data
    * @param {string} profileData.username - Chosen username
    * @param {string} profileData.favouriteTeam - Selected favorite team
-   * @param {string} profileData.email - User's email address
+   * @param {string} [profileData.email] - User's email address (optional - backend can identify from session)
    * @returns {Promise<Object>} Profile completion response
    */
   async completeProfile(profileData) {
     try {
+      const requestData = {
+        username: profileData.username,
+        favouriteTeam: mapTeamToBackendFormat(profileData.favouriteTeam),
+      };
+      
+      // Include email only if provided (backend can identify user from session if not provided)
+      if (profileData.email) {
+        requestData.email = profileData.email;
+      }
+      
       const response = await apiCall({
         method: 'POST',
         url: '/auth/finish-registration',
-        data: {
-          username: profileData.username,
-          favouriteTeam: mapTeamToBackendFormat(profileData.favouriteTeam),
-          email: profileData.email,
-        },
+        data: requestData,
       });
 
       if (response.success) {

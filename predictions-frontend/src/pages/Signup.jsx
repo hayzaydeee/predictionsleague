@@ -22,7 +22,6 @@ export default function Signup() {
     email: "",
     password: "",
     confirmPassword: "",
-    otp: "",
     username: "",
     favouriteTeam: "",
   });
@@ -33,15 +32,12 @@ export default function Signup() {
     email: null,
     password: null,
     confirmPassword: null,
-    otp: null,
     username: null,
     favouriteTeam: null,
     submit: null
   });
   const [formStep, setFormStep] = useState(1);
   const [oauthError, setOauthError] = useState(null);
-  const [isOtpSent, setIsOtpSent] = useState(false);
-  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
 
   const { register, isLoading, error } = useAuth();
   const navigate = useNavigate();
@@ -52,6 +48,7 @@ export default function Signup() {
     const urlParams = new URLSearchParams(location.search);
     const errorParam = urlParams.get('error');
     const stepParam = urlParams.get('step');
+    const emailParam = urlParams.get('email');
     
     if (errorParam) {
       setOauthError(decodeURIComponent(errorParam));
@@ -63,6 +60,15 @@ export default function Signup() {
     if (stepParam === '3') {
       // User account already exists, just proceed to complete profile
       setFormStep(3);
+      
+      // Restore email from URL parameter if available
+      if (emailParam) {
+        setFormData(prev => ({ 
+          ...prev, 
+          email: decodeURIComponent(emailParam) 
+        }));
+      }
+      
       navigate(location.pathname, { replace: true });
     }
   }, [location.search, navigate, location.pathname]);
