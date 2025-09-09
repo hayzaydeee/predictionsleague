@@ -15,7 +15,7 @@ export default function OAuthOnboarding() {
   const [isLoading, setIsLoading] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
   
-  const { login } = useAuth();
+  const { dispatch, AUTH_ACTIONS } = useAuth();
   const navigate = useNavigate();
 
   const teams = [
@@ -92,10 +92,10 @@ export default function OAuthOnboarding() {
       });
 
       if (result.success) {
-        // Update auth context with complete user info
-        await login({
-          skipApiCall: true,
-          userData: result.user
+        // Update auth context directly with complete user info
+        dispatch({
+          type: AUTH_ACTIONS.LOGIN_SUCCESS,
+          payload: { user: result.user },
         });
 
         // Redirect to dashboard
