@@ -4,45 +4,60 @@ import { useAuth } from '../../context/AuthContext.jsx';
 import LoadingState from './LoadingState.jsx';
 
 /**
- * PrivateRoute component - Protects routes that require authentication
+ * PrivateRoute component - Enhanced with OAuth support
+ * Uses AuthContext for smart routing decisions
  * 
  * @param {Object} props
  * @param {React.ReactNode} props.children - The component to render if authenticated
- * @param {string} props.redirectTo - Where to redirect if not authenticated (default: '/login')
+ * @param {string} props.redirectTo - Where to redirect if not authenticated (default: determined by AuthContext)
  * @param {Array<string>} props.requiredRoles - Array of roles required to access this route
  * @param {React.ReactNode} props.fallback - Custom loading component
  */
 const PrivateRoute = ({ 
   children, 
-  redirectTo = '/login', 
+  redirectTo = null, 
   requiredRoles = [], 
   fallback = null 
 }) => {
-  const { isAuthenticated, isLoading, user } = useAuth();
+  const { 
+    canAccessDashboard, 
+    getRequiredRoute, 
+    authState, 
+    isLoading: contextIsLoading,
+    isAuthenticated, // Legacy property for backward compatibility
+    user 
+  } = useAuth();
   const location = useLocation();
   
-  // Add debugging for OAuth callback scenarios
+  // Enhanced debugging with OAuth states
   React.useEffect(() => {
-    console.log('🔒 PrivateRoute check:', {
+    console.log('🔒 Enhanced PrivateRoute check:', {
       path: location.pathname,
+      authState,
+      canAccessDashboard: canAccessDashboard(),
       isAuthenticated,
-      isLoading,
+      contextIsLoading,
       hasUser: !!user,
-      referrer: document.referrer
+      requiredRoute: getRequiredRoute()
     });
-  }, [location.pathname, isAuthenticated, isLoading, user]);
+  }, [location.pathname, authState, isAuthenticated, contextIsLoading, user]);
   
-  // Show loading state while checking authentication
-  if (isLoading) {
+  // Show loading state while AuthContext is processing
+  if (contextIsLoading) {
     return fallback || <LoadingState message="Checking authentication..." />;
   }
   
-  // Redirect to login if not authenticated
-  if (!isAuthenticated) {
-    // Save the attempted location for redirecting after login
+  // Use AuthContext to determine if user can access protected routes
+  if (!canAccessDashboard()) {
+    // Get smart routing decision from AuthContext
+    const requiredRoute = getRequiredRoute();
+    const targetRoute = redirectTo || requiredRoute || '/login';
+    
+    console.log('🔒 PrivateRoute - Redirecting to:', targetRoute);
+    
     return (
       <Navigate 
-        to={redirectTo} 
+        to={targetRoute} 
         state={{ from: location }} 
         replace 
       />
@@ -67,46 +82,57 @@ const PrivateRoute = ({
 };
 
 /**
- * PublicRoute component - For routes that should only be accessible when NOT authenticated
- * (e.g., login, signup pages)
+ * PublicRoute component - Enhanced with OAuth support
+ * For routes that should only be accessible when NOT authenticated
  */
 export const PublicRoute = ({ 
   children, 
-  redirectTo = '/dashboard', 
+  redirectTo = '/home/dashboard', 
   fallback = null 
 }) => {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { 
+    canAccessDashboard, 
+    authState, 
+    isLoading: contextIsLoading,
+    isAuthenticated // Legacy property for backward compatibility
+  } = useAuth();
   
-  // Show loading state while checking authentication
-  if (isLoading) {
+  // Show loading state while AuthContext is processing
+  if (contextIsLoading) {
     return fallback || <LoadingState message="Loading..." />;
   }
   
-  // Redirect to dashboard if already authenticated
-  if (isAuthenticated) {
+  // Redirect to dashboard if user can access protected routes
+  if (canAccessDashboard()) {
+    console.log('🔓 PublicRoute - User authenticated, redirecting to:', redirectTo);
     return <Navigate to={redirectTo} replace />;
   }
   
-  // User is not authenticated, show the public route
+  // User is not fully authenticated, show the public route
   return children;
 };
 
 /**
- * ConditionalRoute component - Renders different content based on auth status
+ * ConditionalRoute component - Enhanced with OAuth support
+ * Renders different content based on auth status
  */
 export const ConditionalRoute = ({ 
   authenticatedComponent, 
   unauthenticatedComponent, 
   fallback = null 
 }) => {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { 
+    canAccessDashboard, 
+    isLoading: contextIsLoading,
+    isAuthenticated // Legacy property for backward compatibility
+  } = useAuth();
   
-  // Show loading state while checking authentication
-  if (isLoading) {
+  // Show loading state while AuthContext is processing
+  if (contextIsLoading) {
     return fallback || <LoadingState message="Loading..." />;
   }
   
-  return isAuthenticated ? authenticatedComponent : unauthenticatedComponent;
+  return canAccessDashboard() ? authenticatedComponent : unauthenticatedComponent;
 };
 
 export default PrivateRoute;

@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { motion } from 'framer-motion';
 import { Box, Container, Button } from '@radix-ui/themes';
-import { authAPI } from '../services/api/authAPI';
 
 export default function OAuthOnboarding() {
   const [formData, setFormData] = useState({
@@ -12,9 +11,8 @@ export default function OAuthOnboarding() {
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
-  const [userEmail, setUserEmail] = useState('');
   
-  const { dispatch, AUTH_ACTIONS } = useAuth();
+  const { completeOAuthProfile, authState, oauthData } = useAuth();
   const navigate = useNavigate();
 
   const teams = [
@@ -22,31 +20,30 @@ export default function OAuthOnboarding() {
     "Manchester City", "Manchester United", "Tottenham Hotspur",
   ];
 
+  // Handle navigation based on AuthContext state
+  useEffect(() => {
+    // If user becomes authenticated, redirect to dashboard
+    if (authState === 'authenticated') {
+      console.log('OAuth Onboarding - User authenticated, redirecting to dashboard');
+      navigate('/home/dashboard', { replace: true });
+    }
+  }, [authState, navigate]);
+
   // Get user info on component mount
   useEffect(() => {
-    const getUserInfo = async () => {
-      try {
-        // Retrieve email from session storage if available
-        const storedEmail = sessionStorage.getItem('oauth_user_email');
-        if (storedEmail) {
-          setUserEmail(storedEmail);
-          console.log('OAuth Onboarding - Retrieved email from session:', storedEmail);
-        } else {
-          console.log('OAuth Onboarding - No email found in session storage');
-        }
-        
-        // For harmonized auth flow: Skip auth check since JWT cookies won't exist yet
-        // The user will get properly authenticated after completing their profile
-        console.log('OAuth Onboarding - Skipping auth check (harmonized flow - no JWT until profile complete)');
-        
-      } catch (error) {
-        console.error('OAuth Onboarding - Failed to initialize:', error);
-        navigate('/login?error=initialization_failed', { replace: true });
+    // OAuth data should be available from AuthContext
+    if (oauthData.email) {
+      console.log('OAuth Onboarding - Email available from AuthContext:', oauthData.email);
+    } else {
+      // Fallback to session storage for backward compatibility
+      const storedEmail = sessionStorage.getItem('oauth_user_email');
+      if (storedEmail) {
+        console.log('OAuth Onboarding - Email retrieved from session storage:', storedEmail);
+      } else {
+        console.log('OAuth Onboarding - No email found in AuthContext or session storage');
       }
-    };
-
-    getUserInfo();
-  }, [navigate]);
+    }
+  }, [oauthData.email]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -83,39 +80,23 @@ export default function OAuthOnboarding() {
     if (!validateForm()) return;
 
     setIsLoading(true);
+    setErrors({});
+    
     try {
-      // Use the proper authAPI function for completing OAuth profile
-      const profileData = {
+      // Use AuthContext method instead of direct API call
+      console.log('OAuth Onboarding - Using AuthContext completeOAuthProfile method');
+      
+      await completeOAuthProfile({
         username: formData.username,
         favouriteTeam: formData.favouriteTeam
-      };
+        // Email automatically included by AuthContext from oauthData or sessionStorage
+      });
       
-      // Include email if available from session storage
-      if (userEmail) {
-        profileData.email = userEmail;
-        console.log('OAuth Onboarding - Including email in profile completion:', userEmail);
-      }
-      
-      const result = await authAPI.completeOAuthProfile(profileData);
-
-      if (result.success) {
-        // Clear the stored email from session storage after successful completion
-        sessionStorage.removeItem('oauth_user_email');
-        
-        // Update auth context directly with complete user info
-        dispatch({
-          type: AUTH_ACTIONS.LOGIN_SUCCESS,
-          payload: { user: result.user },
-        });
-
-        // Redirect to dashboard
-        navigate('/home/dashboard', { replace: true });
-      } else {
-        throw new Error(result.error || 'Failed to complete profile');
-      }
+      // AuthContext handles auth state update and navigation will happen via useEffect
+      console.log('OAuth Onboarding - Profile completion successful');
 
     } catch (error) {
-      console.error('Profile completion error:', error);
+      console.error('OAuth Onboarding - Profile completion error:', error);
       
       // Handle specific error cases
       if (error.message.includes('Username already taken')) {

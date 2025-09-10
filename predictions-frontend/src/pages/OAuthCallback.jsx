@@ -1,8 +1,28 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useOAuthCallback } from '../hooks/useOAuthCallback';
+import { useAuth } from '../context/AuthContext';
 
 export default function OAuthCallback() {
   const { isProcessing, error } = useOAuthCallback();
+  const { authState, getRequiredRoute } = useAuth();
+  const navigate = useNavigate();
+
+  // Handle navigation based on AuthContext state
+  useEffect(() => {
+    if (!isProcessing && !error) {
+      const requiredRoute = getRequiredRoute();
+      
+      if (requiredRoute) {
+        console.log('OAuth Callback - AuthContext determined route:', requiredRoute);
+        setTimeout(() => navigate(requiredRoute, { replace: true }), 100);
+      } else {
+        // No specific route required, go to dashboard
+        console.log('OAuth Callback - No specific route required, going to dashboard');
+        setTimeout(() => navigate('/home/dashboard', { replace: true }), 100);
+      }
+    }
+  }, [isProcessing, error, authState, getRequiredRoute, navigate]);
 
   if (error) {
     return (
