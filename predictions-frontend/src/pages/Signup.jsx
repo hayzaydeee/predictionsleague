@@ -204,7 +204,8 @@ export default function Signup() {
         
         if (result.success) {
           // User is created but incomplete - redirect to email verification
-          navigate(`/verify-email?flow=signup&email=${encodeURIComponent(formData.email)}&redirect=${encodeURIComponent(`/signup?step=3&email=${encodeURIComponent(formData.email)}`)}`, { 
+          const redirectUrl = `/signup?step=3&email=${formData.email}`;
+          navigate(`/verify-email?flow=signup&email=${encodeURIComponent(formData.email)}&redirect=${encodeURIComponent(redirectUrl)}`, { 
             replace: true 
           });
           return;

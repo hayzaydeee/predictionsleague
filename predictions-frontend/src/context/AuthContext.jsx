@@ -184,7 +184,10 @@ export const AuthProvider = ({ children }) => {
       if (response.success) {
         // Don't update auth state yet since registration is incomplete
         // User needs to verify email and complete profile first
-        dispatch({ type: AUTH_ACTIONS.CLEAR_LOADING });
+        // Set back to unauthenticated (not loading) since registration succeeded but user isn't logged in yet
+        dispatch({ 
+          type: AUTH_ACTIONS.LOGOUT // This sets status to UNAUTHENTICATED and clears loading
+        });
         
         return { success: true, message: response.message };
       } else {
