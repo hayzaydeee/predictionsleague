@@ -5,10 +5,11 @@ import { useAuth } from '../context/AuthContext';
 /**
  * Custom hook for handling OAuth callback processing
  * Uses useLayoutEffect and ref guards to prevent race conditions
+ * Simplified to always redirect to dashboard - loader will handle user type detection
  */
 export const useOAuthCallback = () => {
   const navigate = useNavigate();
-  const { dispatch, AUTH_ACTIONS } = useAuth(); // Get dispatch instead of login
+  const { dispatch, AUTH_ACTIONS } = useAuth();
   const [state, setState] = useState({
     isProcessing: true,
     error: null,
@@ -33,7 +34,6 @@ export const useOAuthCallback = () => {
 
       try {
         const urlParams = new URLSearchParams(window.location.search);
-        const destination = urlParams.get('destination');
         const email = urlParams.get('email');
         
         // Store email in session storage if provided by backend
@@ -42,43 +42,16 @@ export const useOAuthCallback = () => {
           console.log('OAuth Callback - Email stored in session:', email);
         }
         
-        // Frontend-only solution: Check if this user has logged in before
-        // We'll use localStorage to track known OAuth users
-        const knownOAuthUsers = JSON.parse(localStorage.getItem('known_oauth_users') || '[]');
-        const isReturningUser = email && knownOAuthUsers.includes(email);
+        setState({
+          isProcessing: false,
+          error: null,
+          completed: true
+        });
         
-        if (isReturningUser) {
-          // Returning user - likely has complete profile
-          console.log('OAuth Callback - Returning user detected, redirecting to dashboard');
-          
-          setState({
-            isProcessing: false,
-            error: null,
-            completed: true
-          });
-          
-          // Navigate to dashboard - if user doesn't have JWT, dashboard will handle auth
-          setTimeout(() => navigate('/home/dashboard', { replace: true }), 50);
-        } else {
-          // New user or first OAuth login - assume needs onboarding
-          console.log('OAuth Callback - New user detected, redirecting to onboarding');
-          
-          // Add email to known users list (will be marked as "known" after successful profile completion)
-          if (email && !knownOAuthUsers.includes(email)) {
-            knownOAuthUsers.push(email);
-            localStorage.setItem('known_oauth_users', JSON.stringify(knownOAuthUsers));
-            console.log('OAuth Callback - Added email to known users list');
-          }
-          
-          setState({
-            isProcessing: false,
-            error: null,
-            completed: true
-          });
-          
-          // Navigate to onboarding
-          setTimeout(() => navigate('/auth/finish-onboarding', { replace: true }), 50);
-        }
+        // Always redirect to dashboard - the loader will handle user type detection
+        // and redirect to onboarding if needed
+        console.log('OAuth Callback - Redirecting to dashboard, loader will handle routing');
+        setTimeout(() => navigate('/home/dashboard', { replace: true }), 50);
         
       } catch (error) {
         setState({

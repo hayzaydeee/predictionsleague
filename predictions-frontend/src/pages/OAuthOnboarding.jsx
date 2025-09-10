@@ -99,16 +99,6 @@ export default function OAuthOnboarding() {
       const result = await authAPI.completeOAuthProfile(profileData);
 
       if (result.success) {
-        // Mark user as known for future OAuth logins
-        if (userEmail) {
-          const knownOAuthUsers = JSON.parse(localStorage.getItem('known_oauth_users') || '[]');
-          if (!knownOAuthUsers.includes(userEmail)) {
-            knownOAuthUsers.push(userEmail);
-            localStorage.setItem('known_oauth_users', JSON.stringify(knownOAuthUsers));
-            console.log('OAuth Onboarding - Marked user as known for future logins');
-          }
-        }
-        
         // Clear the stored email from session storage after successful completion
         sessionStorage.removeItem('oauth_user_email');
         
