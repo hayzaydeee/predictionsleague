@@ -89,16 +89,29 @@ export const authAPI = {
 
       if (response.success) {
         console.log('CompleteProfile - Success! Setting tokens and returning user data');
-        console.log('CompleteProfile - User data from backend:', response.data.user);
+        console.log('CompleteProfile - Response data:', response.data);
         
         // Profile completion successful - user is now fully authenticated
         setTokens('http-only', 'http-only'); // Mark as authenticated
         console.log('CompleteProfile - Tokens set to http-only');
         
+        // Handle case where backend doesn't return user object
+        let userData = response.data.user;
+        if (!userData) {
+          console.log('CompleteProfile - No user data in response, constructing from request');
+          // Construct user data from what we know
+          userData = {
+            username: requestData.username,
+            email: requestData.email,
+            favouriteTeam: requestData.favouriteTeam,
+          };
+        }
+        console.log('CompleteProfile - Final user data:', userData);
+        
         return {
           success: true,
-          user: response.data.user,
-          message: response.data.message || 'Profile completed successfully'
+          user: userData,
+          message: response.data.message || response.data || 'Profile completed successfully'
         };
       } else {
         console.error('CompleteProfile - API returned success: false', response.error);
