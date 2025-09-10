@@ -33,33 +33,17 @@ export default function OAuthOnboarding() {
         if (storedEmail) {
           setUserEmail(storedEmail);
           console.log('OAuth Onboarding - Retrieved email from session:', storedEmail);
+        } else {
+          console.log('OAuth Onboarding - No email found in session storage');
         }
         
-        // For harmonized auth: backend might not have JWT cookies yet
-        // Try to get user info, but don't redirect if it fails
-        try {
-          const authResult = await authService.checkAuth({ 
-            force: true, 
-            source: 'oauth-onboarding' 
-          });
-          
-          if (authResult.isAuthenticated) {
-            setUserInfo(authResult.user);
-            console.log('OAuth Onboarding - User authenticated:', authResult.user);
-          } else {
-            console.log('OAuth Onboarding - No JWT cookies yet (expected for harmonized flow)');
-            // This is expected - user will get JWT after completing profile
-          }
-        } catch (error) {
-          console.log('OAuth Onboarding - Auth check failed (expected if JWT not initialized):', error.message);
-          // Don't redirect - this is expected for harmonized flow
-        }
+        // For harmonized auth flow: Skip auth check since JWT cookies won't exist yet
+        // The user will get properly authenticated after completing their profile
+        console.log('OAuth Onboarding - Skipping auth check (harmonized flow - no JWT until profile complete)');
+        
       } catch (error) {
         console.error('OAuth Onboarding - Failed to initialize:', error);
-        // Only redirect on unexpected errors, not auth failures
-        if (!error.message.includes('Authentication') && !error.message.includes('JWT')) {
-          navigate('/login?error=session_expired', { replace: true });
-        }
+        navigate('/login?error=initialization_failed', { replace: true });
       }
     };
 

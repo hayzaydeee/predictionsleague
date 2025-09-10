@@ -43,55 +43,18 @@ export const useOAuthCallback = () => {
           console.log('OAuth Callback - Email stored in session:', email);
         }
         
-        // For harmonized auth flow: backend won't initialize JWT until step 3
-        // So we need to handle the case where /dashboard/me will fail
-        let authResult;
-        try {
-          // Try to check auth - this might fail if JWT not initialized yet
-          authResult = await authService.checkAuth({ 
-            force: true, 
-            source: 'oauth-callback' 
-          });
-        } catch (error) {
-          console.log('OAuth Callback - Auth check failed (expected if JWT not initialized):', error.message);
-          // This is expected if backend hasn't set JWT cookies yet
-          authResult = { success: false, isAuthenticated: false };
-        }
+        // For harmonized auth flow: backend won't have JWT cookies until profile completion
+        // Skip auth check entirely and go directly to onboarding
+        console.log('OAuth Callback - Harmonized flow: redirecting to onboarding (no JWT check needed)');
         
-        // Handle two scenarios:
-        // 1. JWT cookies exist (user profile complete) → go to dashboard
-        // 2. No JWT cookies (incomplete profile) → go to onboarding
-        if (authResult.success && authResult.isAuthenticated && authResult.user) {
-          // User has JWT and complete profile
-          const user = authResult.user;
-          
-          // Update auth context with verified user data
-          dispatch({
-            type: AUTH_ACTIONS.LOGIN_SUCCESS,
-            payload: { user: authResult.user },
-          });
-          
-          console.log('OAuth Callback - User authenticated with complete profile, redirecting to dashboard');
-          
-          setState({
-            isProcessing: false,
-            error: null,
-            completed: true
-          });
-          
-          setTimeout(() => navigate('/home/dashboard', { replace: true }), 50);
-        } else {
-          // No JWT cookies or incomplete profile → go to onboarding
-          console.log('OAuth Callback - No JWT or incomplete profile, redirecting to onboarding');
-          
-          setState({
-            isProcessing: false,
-            error: null,
-            completed: true
-          });
-          
-          setTimeout(() => navigate('/auth/finish-onboarding', { replace: true }), 50);
-        }
+        setState({
+          isProcessing: false,
+          error: null,
+          completed: true
+        });
+        
+        // Navigate directly to onboarding
+        setTimeout(() => navigate('/auth/finish-onboarding', { replace: true }), 50);
         
       } catch (error) {
         setState({
