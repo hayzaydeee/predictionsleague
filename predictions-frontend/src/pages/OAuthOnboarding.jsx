@@ -169,7 +169,7 @@ export default function OAuthOnboarding() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.3 }}
             >
-              welcome {userInfo.firstName}! just a couple more details to get started
+              welcome! just a couple more details to get started
             </motion.p>
           </div>
 
