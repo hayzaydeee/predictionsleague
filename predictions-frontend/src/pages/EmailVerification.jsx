@@ -61,6 +61,7 @@ export default function EmailVerification() {
 
   const handleChange = (e) => {
     const value = e.target.value.replace(/\D/g, '').slice(0, 6); // Only allow 6 digits
+    console.log('EmailVerification - OTP input changed:', value);
     setOtp(value);
     
     // Clear errors when user starts typing
@@ -85,22 +86,32 @@ export default function EmailVerification() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    console.log('EmailVerification - Submit triggered');
+    console.log('EmailVerification - OTP state:', otp);
+    console.log('EmailVerification - OTP length:', otp.length);
+    console.log('EmailVerification - Email:', email);
+    
     if (!validateOtp()) return;
 
     setIsVerifying(true);
     
     try {
-      await authAPI.verifyOtp({
+      const verifyData = {
         email: email,
         otp: otp,
         type: 'email_verification'
-      });
+      };
+      
+      console.log('EmailVerification - Sending verify request with data:', verifyData);
+      
+      await authAPI.verifyOtp(verifyData);
       
       setIsVerifying(false);
       
       // Navigate to appropriate destination
       navigate(redirectTo, { replace: true });
     } catch (error) {
+      console.error('EmailVerification - Verify error:', error);
       setIsVerifying(false);
       setErrors({ otp: 'Invalid verification code. Please try again.' });
     }
