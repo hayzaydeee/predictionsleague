@@ -1,7 +1,6 @@
 import { useState, useLayoutEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import authService from '../services/auth/AuthService';
 
 /**
  * Custom hook for handling OAuth callback processing
@@ -43,18 +42,43 @@ export const useOAuthCallback = () => {
           console.log('OAuth Callback - Email stored in session:', email);
         }
         
-        // For harmonized auth flow: backend won't have JWT cookies until profile completion
-        // Skip auth check entirely and go directly to onboarding
-        console.log('OAuth Callback - Harmonized flow: redirecting to onboarding (no JWT check needed)');
+        // Frontend-only solution: Check if this user has logged in before
+        // We'll use localStorage to track known OAuth users
+        const knownOAuthUsers = JSON.parse(localStorage.getItem('known_oauth_users') || '[]');
+        const isReturningUser = email && knownOAuthUsers.includes(email);
         
-        setState({
-          isProcessing: false,
-          error: null,
-          completed: true
-        });
-        
-        // Navigate directly to onboarding
-        setTimeout(() => navigate('/auth/finish-onboarding', { replace: true }), 50);
+        if (isReturningUser) {
+          // Returning user - likely has complete profile
+          console.log('OAuth Callback - Returning user detected, redirecting to dashboard');
+          
+          setState({
+            isProcessing: false,
+            error: null,
+            completed: true
+          });
+          
+          // Navigate to dashboard - if user doesn't have JWT, dashboard will handle auth
+          setTimeout(() => navigate('/home/dashboard', { replace: true }), 50);
+        } else {
+          // New user or first OAuth login - assume needs onboarding
+          console.log('OAuth Callback - New user detected, redirecting to onboarding');
+          
+          // Add email to known users list (will be marked as "known" after successful profile completion)
+          if (email && !knownOAuthUsers.includes(email)) {
+            knownOAuthUsers.push(email);
+            localStorage.setItem('known_oauth_users', JSON.stringify(knownOAuthUsers));
+            console.log('OAuth Callback - Added email to known users list');
+          }
+          
+          setState({
+            isProcessing: false,
+            error: null,
+            completed: true
+          });
+          
+          // Navigate to onboarding
+          setTimeout(() => navigate('/auth/finish-onboarding', { replace: true }), 50);
+        }
         
       } catch (error) {
         setState({
