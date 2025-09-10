@@ -203,11 +203,16 @@ export default function Signup() {
         });
         
         if (result.success) {
+          console.log('Registration successful, navigating to email verification...');
           // User is created but incomplete - redirect to email verification
           const redirectUrl = `/signup?step=3&email=${formData.email}`;
-          navigate(`/verify-email?flow=signup&email=${encodeURIComponent(formData.email)}&redirect=${encodeURIComponent(redirectUrl)}`, { 
-            replace: true 
-          });
+          
+          // Small delay to ensure loading state is cleared
+          setTimeout(() => {
+            navigate(`/verify-email?flow=signup&email=${encodeURIComponent(formData.email)}&redirect=${encodeURIComponent(redirectUrl)}`, { 
+              replace: true 
+            });
+          }, 100);
           return;
         } else {
           throw new Error(result.error || 'Failed to create account');

@@ -189,6 +189,9 @@ export const AuthProvider = ({ children }) => {
           type: AUTH_ACTIONS.LOGOUT // This sets status to UNAUTHENTICATED and clears loading
         });
         
+        // Add a small delay to ensure state update is processed
+        await new Promise(resolve => setTimeout(resolve, 50));
+        
         return { success: true, message: response.message };
       } else {
         throw new Error(response.error || 'Registration failed');
