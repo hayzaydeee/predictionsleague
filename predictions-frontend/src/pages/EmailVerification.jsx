@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Box, Container, Button } from '@radix-ui/themes';
@@ -14,6 +14,9 @@ export default function EmailVerification() {
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [userEmail, setUserEmail] = useState('');
   
+  // Prevent multiple OTP sends
+  const hasInitialized = useRef(false);
+  
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -24,6 +27,10 @@ export default function EmailVerification() {
   const redirectTo = searchParams.get('redirect') || '/home/dashboard';
 
   useEffect(() => {
+    // Prevent multiple initializations
+    if (hasInitialized.current) return;
+    hasInitialized.current = true;
+    
     // OAuth users don't need email verification - redirect them away
     if (flowType === 'oauth') {
       console.log('OAuth user detected in email verification - redirecting to finish onboarding');
@@ -39,9 +46,9 @@ export default function EmailVerification() {
 
     setUserEmail(email);
 
-    // Auto-send OTP when component mounts
+    // Auto-send OTP when component mounts (only once)
     sendOtp();
-  }, [email, navigate]);
+  }, [email, navigate, flowType]); // Keep dependencies but use ref guard
 
   const sendOtp = async () => {
     try {

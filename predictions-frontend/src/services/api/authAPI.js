@@ -54,15 +54,30 @@ export const authAPI = {
    */
   async completeProfile(profileData) {
     try {
+      console.log('CompleteProfile - Input data:', profileData);
+      console.log('CompleteProfile - Email present?', !!profileData.email);
+      console.log('CompleteProfile - Email value:', profileData.email);
+      
+      const mappedTeam = mapTeamToBackendFormat(profileData.favouriteTeam);
+      console.log('CompleteProfile - Team mapping:', {
+        original: profileData.favouriteTeam,
+        mapped: mappedTeam
+      });
+      
       const requestData = {
         username: profileData.username,
-        favouriteTeam: mapTeamToBackendFormat(profileData.favouriteTeam),
+        favouriteTeam: mappedTeam,
       };
       
       // Include email only if provided (backend can identify user from session if not provided)
       if (profileData.email) {
         requestData.email = profileData.email;
+        console.log('CompleteProfile - Email added to request:', requestData.email);
+      } else {
+        console.log('CompleteProfile - No email provided, backend will identify from session');
       }
+      
+      console.log('CompleteProfile - Final request data:', requestData);
       
       const response = await apiCall({
         method: 'POST',

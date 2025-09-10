@@ -61,12 +61,27 @@ export default function Signup() {
       // User account already exists, just proceed to complete profile
       setFormStep(3);
       
-      // Restore email from URL parameter if available
+      // Restore email from URL parameter OR sessionStorage
+      let userEmail = null;
+      
       if (emailParam) {
+        userEmail = decodeURIComponent(emailParam);
+        console.log('Signup - Restoring email from URL:', userEmail);
+        // Store in sessionStorage for future use
+        sessionStorage.setItem('signup_email', userEmail);
+      } else {
+        // Try to get from sessionStorage
+        userEmail = sessionStorage.getItem('signup_email');
+        console.log('Signup - Restoring email from sessionStorage:', userEmail);
+      }
+      
+      if (userEmail) {
         setFormData(prev => ({ 
           ...prev, 
-          email: decodeURIComponent(emailParam) 
+          email: userEmail
         }));
+      } else {
+        console.log('Signup - No email found in URL or sessionStorage');
       }
       
       navigate(location.pathname, { replace: true });
@@ -120,6 +135,11 @@ export default function Signup() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value || "" }));
+
+    // Store email in sessionStorage as soon as it's entered
+    if (name === 'email' && value) {
+      sessionStorage.setItem('signup_email', value);
+    }
 
     // Clear error when user starts typing
     if (errors[name]) {
@@ -205,7 +225,7 @@ export default function Signup() {
         if (result.success) {
           console.log('Registration successful, navigating to email verification...');
           // User is created but incomplete - redirect to email verification
-          const redirectUrl = `/signup?step=3&email=${formData.email}`;
+          const redirectUrl = `/signup?step=3`; // Email will come from sessionStorage
           
           // Small delay to ensure loading state is cleared
           setTimeout(() => {
@@ -250,11 +270,14 @@ export default function Signup() {
       // Complete user profile with username and favourite team
       const result = await authAPI.completeProfile({
         username: formData.username,
-        favouriteTeam: formData.favouriteTeam.toUpperCase(),
+        favouriteTeam: formData.favouriteTeam, // Remove .toUpperCase() - let mapping function handle it
         email: formData.email,
       });
 
       if (result.success) {
+        // Cleanup sessionStorage since signup is complete
+        sessionStorage.removeItem('signup_email');
+        
         // Redirect to dashboard after successful profile completion
         navigate("/home/dashboard", { replace: true });
       }
