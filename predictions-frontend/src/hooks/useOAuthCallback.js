@@ -37,57 +37,61 @@ export const useOAuthCallback = () => {
         const destination = urlParams.get('destination');
         const email = urlParams.get('email');
         
-        // Use AuthService to verify session instead of calling login endpoint
-        const authResult = await authService.checkAuth({ 
-          force: true, 
-          source: 'oauth-callback' 
-        });
-        
-        if (!authResult.success || !authResult.isAuthenticated) {
-          throw new Error('OAuth authentication verification failed - no valid session');
+        // Store email in session storage if provided by backend
+        if (email) {
+          sessionStorage.setItem('oauth_user_email', email);
+          console.log('OAuth Callback - Email stored in session:', email);
         }
         
-        // Update auth context with verified user data
-        dispatch({
-          type: AUTH_ACTIONS.LOGIN_SUCCESS,
-          payload: { user: authResult.user },
-        });
+        // For harmonized auth flow: backend won't initialize JWT until step 3
+        // So we need to handle the case where /dashboard/me will fail
+        let authResult;
+        try {
+          // Try to check auth - this might fail if JWT not initialized yet
+          authResult = await authService.checkAuth({ 
+            force: true, 
+            source: 'oauth-callback' 
+          });
+        } catch (error) {
+          console.log('OAuth Callback - Auth check failed (expected if JWT not initialized):', error.message);
+          // This is expected if backend hasn't set JWT cookies yet
+          authResult = { success: false, isAuthenticated: false };
+        }
         
-        // Small delay to ensure state updates
-        await new Promise(resolve => setTimeout(resolve, 100));
-        
-        // Check if user profile is complete
-        const user = authResult.user;
-        console.log('OAuth Callback - User data:', user);
-        console.log('OAuth Callback - Username:', user?.username);
-        console.log('OAuth Callback - FavouriteTeam:', user?.favouriteTeam);
-        console.log('OAuth Callback - Destination param:', destination);
-        
-        // For OAuth users, the primary indicator of completed onboarding is having a favouriteTeam
-        // Username might be null for OAuth users who use their email as identifier
-        const isProfileComplete = user && user.username && user.favouriteTeam ? true : false;
-        console.log('OAuth Callback - Profile complete:', isProfileComplete);
-        
-        // Navigate based on profile completion status
-        let targetRoute;
-        if (!isProfileComplete) {
-          // Profile incomplete - go directly to onboarding (skip email verification for OAuth)
-          console.log('OAuth Callback - Redirecting to onboarding (incomplete profile)');
-          targetRoute = '/auth/finish-onboarding';
+        // Handle two scenarios:
+        // 1. JWT cookies exist (user profile complete) → go to dashboard
+        // 2. No JWT cookies (incomplete profile) → go to onboarding
+        if (authResult.success && authResult.isAuthenticated && authResult.user) {
+          // User has JWT and complete profile
+          const user = authResult.user;
+          
+          // Update auth context with verified user data
+          dispatch({
+            type: AUTH_ACTIONS.LOGIN_SUCCESS,
+            payload: { user: authResult.user },
+          });
+          
+          console.log('OAuth Callback - User authenticated with complete profile, redirecting to dashboard');
+          
+          setState({
+            isProcessing: false,
+            error: null,
+            completed: true
+          });
+          
+          setTimeout(() => navigate('/home/dashboard', { replace: true }), 50);
         } else {
-          // Profile complete - go to dashboard
-          console.log('OAuth Callback - Redirecting to dashboard (profile complete)');
-          targetRoute = '/home/dashboard';
+          // No JWT cookies or incomplete profile → go to onboarding
+          console.log('OAuth Callback - No JWT or incomplete profile, redirecting to onboarding');
+          
+          setState({
+            isProcessing: false,
+            error: null,
+            completed: true
+          });
+          
+          setTimeout(() => navigate('/auth/finish-onboarding', { replace: true }), 50);
         }
-        
-        setState({
-          isProcessing: false,
-          error: null,
-          completed: true
-        });
-        
-        // Navigate after state update
-        setTimeout(() => navigate(targetRoute, { replace: true }), 50);
         
       } catch (error) {
         setState({

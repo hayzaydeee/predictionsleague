@@ -39,7 +39,7 @@ export default function Signup() {
   const [formStep, setFormStep] = useState(1);
   const [oauthError, setOauthError] = useState(null);
 
-  const { register, isLoading, error } = useAuth();
+  const { register, isLoading, error, dispatch, AUTH_ACTIONS } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -275,11 +275,27 @@ export default function Signup() {
       });
 
       if (result.success) {
+        console.log('Signup - CompleteProfile succeeded, result:', result);
+        console.log('Signup - About to dispatch LOGIN_SUCCESS with user:', result.user);
+        
+        // Update auth context with the completed user data
+        dispatch({
+          type: AUTH_ACTIONS.LOGIN_SUCCESS,
+          payload: { user: result.user },
+        });
+        
+        console.log('Signup - LOGIN_SUCCESS dispatched');
+        
         // Cleanup sessionStorage since signup is complete
         sessionStorage.removeItem('signup_email');
+        console.log('Signup - SessionStorage cleaned up');
         
-        // Redirect to dashboard after successful profile completion
-        navigate("/home/dashboard", { replace: true });
+        // Small delay to ensure auth state is updated before navigation
+        console.log('Signup - Waiting 100ms before navigation...');
+        setTimeout(() => {
+          console.log('Signup - Navigating to dashboard...');
+          navigate("/home/dashboard", { replace: true });
+        }, 100);
       }
     } catch (registrationError) {
       // Extract validation errors if any

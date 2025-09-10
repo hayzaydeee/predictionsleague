@@ -85,16 +85,27 @@ export const authAPI = {
         data: requestData,
       });
 
+      console.log('CompleteProfile - API response received:', response);
+
       if (response.success) {
+        console.log('CompleteProfile - Success! Setting tokens and returning user data');
+        console.log('CompleteProfile - User data from backend:', response.data.user);
+        
+        // Profile completion successful - user is now fully authenticated
+        setTokens('http-only', 'http-only'); // Mark as authenticated
+        console.log('CompleteProfile - Tokens set to http-only');
+        
         return {
           success: true,
           user: response.data.user,
           message: response.data.message || 'Profile completed successfully'
         };
       } else {
+        console.error('CompleteProfile - API returned success: false', response.error);
         throw new Error(response.error?.message || 'Profile completion failed');
       }
     } catch (error) {
+      console.error('CompleteProfile - Error caught:', error);
       handleApiError(error, { customMessage: 'Failed to complete profile. Please try again.' });
       throw error;
     }
@@ -290,17 +301,32 @@ export const authAPI = {
    * @param {Object} profileData - Profile completion data
    * @param {string} profileData.username - Chosen username
    * @param {string} profileData.favouriteTeam - Selected favorite team
+   * @param {string} [profileData.email] - User's email address (optional - from OAuth callback)
    * @returns {Promise<Object>} Profile completion response
    */
   async completeOAuthProfile(profileData) {
     try {
+      console.log('CompleteOAuthProfile - Input data:', profileData);
+      
+      const requestData = {
+        username: profileData.username,
+        favouriteTeam: mapTeamToBackendFormat(profileData.favouriteTeam) // Convert to backend format
+      };
+      
+      // Include email if provided from OAuth callback
+      if (profileData.email) {
+        requestData.email = profileData.email;
+        console.log('CompleteOAuthProfile - Email included:', profileData.email);
+      } else {
+        console.log('CompleteOAuthProfile - No email provided, backend will identify from session');
+      }
+      
+      console.log('CompleteOAuthProfile - Final request data:', requestData);
+      
       const response = await apiCall({
         method: 'POST',
         url: '/auth/finish-registration',
-        data: {
-          username: profileData.username,
-          favouriteTeam: mapTeamToBackendFormat(profileData.favouriteTeam) // Convert to backend format
-        }
+        data: requestData
       });
 
       if (response.success) {

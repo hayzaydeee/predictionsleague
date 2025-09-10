@@ -14,6 +14,7 @@ export default function OAuthOnboarding() {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
+  const [userEmail, setUserEmail] = useState('');
   
   const { dispatch, AUTH_ACTIONS } = useAuth();
   const navigate = useNavigate();
@@ -27,20 +28,38 @@ export default function OAuthOnboarding() {
   useEffect(() => {
     const getUserInfo = async () => {
       try {
-        const authResult = await authService.checkAuth({ 
-          force: true, 
-          source: 'oauth-onboarding' 
-        });
+        // Retrieve email from session storage if available
+        const storedEmail = sessionStorage.getItem('oauth_user_email');
+        if (storedEmail) {
+          setUserEmail(storedEmail);
+          console.log('OAuth Onboarding - Retrieved email from session:', storedEmail);
+        }
         
-        if (authResult.isAuthenticated) {
-          setUserInfo(authResult.user);
-        } else {
-          // Not authenticated, redirect to login
-          navigate('/login?error=session_expired', { replace: true });
+        // For harmonized auth: backend might not have JWT cookies yet
+        // Try to get user info, but don't redirect if it fails
+        try {
+          const authResult = await authService.checkAuth({ 
+            force: true, 
+            source: 'oauth-onboarding' 
+          });
+          
+          if (authResult.isAuthenticated) {
+            setUserInfo(authResult.user);
+            console.log('OAuth Onboarding - User authenticated:', authResult.user);
+          } else {
+            console.log('OAuth Onboarding - No JWT cookies yet (expected for harmonized flow)');
+            // This is expected - user will get JWT after completing profile
+          }
+        } catch (error) {
+          console.log('OAuth Onboarding - Auth check failed (expected if JWT not initialized):', error.message);
+          // Don't redirect - this is expected for harmonized flow
         }
       } catch (error) {
-        console.error('Failed to get user info:', error);
-        navigate('/login?error=session_expired', { replace: true });
+        console.error('OAuth Onboarding - Failed to initialize:', error);
+        // Only redirect on unexpected errors, not auth failures
+        if (!error.message.includes('Authentication') && !error.message.includes('JWT')) {
+          navigate('/login?error=session_expired', { replace: true });
+        }
       }
     };
 
@@ -84,12 +103,23 @@ export default function OAuthOnboarding() {
     setIsLoading(true);
     try {
       // Use the proper authAPI function for completing OAuth profile
-      const result = await authAPI.completeOAuthProfile({
+      const profileData = {
         username: formData.username,
         favouriteTeam: formData.favouriteTeam
-      });
+      };
+      
+      // Include email if available from session storage
+      if (userEmail) {
+        profileData.email = userEmail;
+        console.log('OAuth Onboarding - Including email in profile completion:', userEmail);
+      }
+      
+      const result = await authAPI.completeOAuthProfile(profileData);
 
       if (result.success) {
+        // Clear the stored email from session storage after successful completion
+        sessionStorage.removeItem('oauth_user_email');
+        
         // Update auth context directly with complete user info
         dispatch({
           type: AUTH_ACTIONS.LOGIN_SUCCESS,
@@ -253,6 +283,11 @@ export default function OAuthOnboarding() {
             <p className="text-white/50 text-sm font-outfit">
               your google account is already verified ✓
             </p>
+            {userEmail && (
+              <p className="text-teal-300/70 text-xs font-outfit mt-1">
+                signed in as: {userEmail}
+              </p>
+            )}
           </div>
         </motion.div>
       </Container>

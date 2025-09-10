@@ -40,13 +40,16 @@ const authReducer = (state, action) => {
       };
       
     case AUTH_ACTIONS.LOGIN_SUCCESS:
-      return {
+      console.log('AuthContext - LOGIN_SUCCESS action received:', action.payload);
+      const newState = {
         ...state,
         status: AUTH_STATES.AUTHENTICATED,
         user: action.payload.user,
         isAuthenticated: true,
         error: null,
       };
+      console.log('AuthContext - New state after LOGIN_SUCCESS:', newState);
+      return newState;
       
     case AUTH_ACTIONS.LOGOUT:
       return {
