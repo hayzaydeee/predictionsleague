@@ -18,6 +18,7 @@ import RecentPredictionsPanel from "../panels/RecentPredictionsPanel";
 import LeaguesTable from "../tables/LeaguesTable";
 import { ThemeContext } from "../../context/ThemeContext";
 import { text } from "../../utils/themeUtils";
+import { normalizeTeamName } from "../../utils/teamUtils";
 
 const DashboardView = ({
   upcomingMatches,
@@ -42,8 +43,8 @@ const DashboardView = ({
   const formatMatchForPrediction = (match) => {
     return {
       id: match.id,
-      homeTeam: match.home,
-      awayTeam: match.away,
+      homeTeam: normalizeTeamName(match.homeTeam || match.home),
+      awayTeam: normalizeTeamName(match.awayTeam || match.away), 
       date: match.date,
       venue: match.venue || "Stadium",
       gameweek: match.gameweek || essentialData?.season?.currentGameweek || 1,

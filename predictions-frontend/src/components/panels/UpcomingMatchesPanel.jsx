@@ -8,6 +8,7 @@ import {
   ChevronRightIcon,
 } from "@radix-ui/react-icons";
 import { ThemeContext } from "../../context/ThemeContext";
+import { normalizeTeamName } from "../../utils/teamUtils";
 
 const UpcomingMatchesPanel = ({ matches, onViewAll, onPredictMatch }) => {
   const { theme } = useContext(ThemeContext);
@@ -83,6 +84,10 @@ const UpcomingMatchesPanel = ({ matches, onViewAll, onPredictMatch }) => {
             })
             .toLowerCase();
 
+          // Normalize team names from API format
+          const homeTeam = normalizeTeamName(match.homeTeam || match.home);
+          const awayTeam = normalizeTeamName(match.awayTeam || match.away);
+
           return (
             <motion.div
               key={match.id}
@@ -104,7 +109,7 @@ const UpcomingMatchesPanel = ({ matches, onViewAll, onPredictMatch }) => {
                         theme === "dark" ? "text-white" : "text-slate-800"
                       } font-outfit font-medium text-sm`}
                     >
-                      {match.home} vs {match.away}
+                      {homeTeam} vs {awayTeam}
                     </div>
                     {match.predicted && (
                       <div

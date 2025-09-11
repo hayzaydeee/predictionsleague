@@ -40,29 +40,35 @@ export const teamNameMappings = {
   // Arsenal variations
   "Arsenal FC": "Arsenal",
   "Arsenal": "Arsenal",
+  "ARSENAL": "Arsenal",
   
   // Chelsea variations
   "Chelsea FC": "Chelsea",
   "Chelsea": "Chelsea",
+  "CHELSEA": "Chelsea",
   
   // Liverpool variations
   "Liverpool FC": "Liverpool",
   "Liverpool": "Liverpool",
+  "LIVERPOOL": "Liverpool",
   
   // Manchester City variations
   "Manchester City FC": "Man. City",
-  "Manchester City": "Man. City",
+  "Manchester City": "Man. City", 
   "Man. City": "Man. City",
+  "MANCITY": "Man. City",
   
   // Manchester United variations
   "Manchester United FC": "Man. United",
   "Manchester United": "Man. United",
-  "Man. United": "Man. United",
+  "Man. United": "Man. United", 
+  "MANUTD": "Man. United",
   
-  // spurs variations
+  // Spurs variations
   "Tottenham Hotspur FC": "Spurs",
   "Tottenham Hotspur": "Spurs",
   "Tottenham": "Spurs",
+  "SPURS": "Spurs",
 };
 
 /**
