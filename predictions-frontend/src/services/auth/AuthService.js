@@ -192,48 +192,44 @@ class AuthService {
    * Validate user data for security
    */
   validateUserData(user) {
-    console.log('🔒 AuthService - Validating user data:', user);
-    
     if (!user || typeof user !== 'object') {
       console.warn('🔒 Invalid user data type');
       return false;
     }
 
-    // Check for email (always required) - try different field names
-    const email = user.email || user.emailAddress || user.userEmail;
-    if (!email || typeof email !== 'string') {
-      console.warn('🔒 User data missing required email field');
-      console.warn('🔒 Available user fields:', Object.keys(user));
+    // For dashboard/me endpoint, username is sufficient to confirm valid user
+    // Email is not required for all user data sources
+    if (user.username && typeof user.username === 'string') {
       
-      // If this is a nested object structure, check for user.user.email
-      if (user.user && typeof user.user === 'object') {
-        console.warn('🔒 Found nested user object, checking nested fields:', Object.keys(user.user));
-        const nestedEmail = user.user.email || user.user.emailAddress || user.user.userEmail;
-        if (nestedEmail && typeof nestedEmail === 'string') {
-          console.log('🔒 Found email in nested user object');
-          // We should have extracted this at the API level, but let's be defensive
-          return this.validateUserData(user.user);
+      // Basic security check for XSS attempts
+      const suspiciousPatterns = /<script|javascript:|onload=|onerror=/i;
+      for (const [key, value] of Object.entries(user)) {
+        if (typeof value === 'string' && suspiciousPatterns.test(value)) {
+          console.warn(`🔒 Suspicious content detected in user field: ${key}`);
+          return false;
         }
       }
       
-      return false;
+      return true;
     }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      console.warn('🔒 Invalid email format in user data');
-      return false;
-    }
-
-    // Check for suspicious fields or XSS attempts
-    const suspiciousPatterns = /<script|javascript:|onload=|onerror=/i;
-    for (const [key, value] of Object.entries(user)) {
-      if (typeof value === 'string' && suspiciousPatterns.test(value)) {
-        console.warn(`🔒 Suspicious content detected in user field: ${key}`);
+    // Fallback: check for email if username is not available (OAuth scenarios)
+    const email = user.email || user.emailAddress || user.userEmail;
+    if (email && typeof email === 'string') {
+      
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        console.warn('🔒 Invalid email format in user data');
         return false;
       }
+      
+      return true;
     }
+
+    console.warn('🔒 User data missing both username and email');
+    console.warn('🔒 Available user fields:', Object.keys(user));
+    return false;
 
     return true;
   }
