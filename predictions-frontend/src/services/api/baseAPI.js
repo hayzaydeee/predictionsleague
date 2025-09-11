@@ -3,7 +3,7 @@ import { showToast } from '../notificationService.js';
 
 // Create base axios instance
 const baseAPI = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: import.meta.env.VITE_API_BASE_URL || '', // Use empty string for relative URLs
   timeout: parseInt(import.meta.env.VITE_API_TIMEOUT) || 10000,
   withCredentials: true, // Enable HTTP-only cookies
   headers: {

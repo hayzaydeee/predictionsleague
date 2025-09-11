@@ -1,12 +1,20 @@
 // src/services/api/dashboardAPI.js
-import baseAPI from './baseAPI';
+import { apiCall } from './baseAPI';
 
 export const dashboardAPI = {
   // Critical data - loads first (includes user data for StatusBar)
   getEssentialData: async () => {
     try {
-      const response = await baseAPI.get('/dashboard/essential');
-      return response.data.data;
+      const response = await apiCall({
+        method: 'GET',
+        url: '/dashboard/essential',
+      });
+      
+      if (response.success) {
+        return response.data;
+      } else {
+        throw new Error(response.error?.message || 'Failed to fetch essential data');
+      }
     } catch (error) {
       console.error('Failed to fetch essential dashboard data:', error);
       throw error;
@@ -16,8 +24,17 @@ export const dashboardAPI = {
   // Secondary data - loads after essential data (updated to dashboard/ prefix)
   getUpcomingMatches: async (limit = 5) => {
     try {
-      const response = await baseAPI.get(`/dashboard/matches/upcoming?limit=${limit}`);
-      return response.data.data;
+      const response = await apiCall({
+        method: 'GET',
+        url: `/dashboard/matches/upcoming?limit=${limit}`,
+      });
+      
+      if (response.success) {
+        return response.data;
+      } else {
+        console.error('Failed to fetch upcoming matches:', response.error);
+        return []; // Return empty array on error to not break UI
+      }
     } catch (error) {
       console.error('Failed to fetch upcoming matches:', error);
       return []; // Return empty array on error to not break UI
@@ -26,18 +43,35 @@ export const dashboardAPI = {
 
   getRecentPredictions: async (limit = 5) => {
     try {
-      const response = await baseAPI.get(`/dashboard/predictions/recent?limit=${limit}`);
-      return response.data.data;
+      const response = await apiCall({
+        method: 'GET',
+        url: `/dashboard/predictions/recent?limit=${limit}`,
+      });
+      
+      if (response.success) {
+        return response.data;
+      } else {
+        console.error('Failed to fetch recent predictions:', response.error);
+        return [];
+      }
     } catch (error) {
       console.error('Failed to fetch recent predictions:', error);
       return []; // Return empty array on error to not break UI
     }
   },
-
   getUserLeagues: async (limit = 5) => {
     try {
-      const response = await baseAPI.get(`/dashboard/leagues/user?limit=${limit}`);
-      return response.data.data;
+      const response = await apiCall({
+        method: 'GET',
+        url: `/dashboard/leagues/user?limit=${limit}`,
+      });
+      
+      if (response.success) {
+        return response.data;
+      } else {
+        console.error('Failed to fetch user leagues:', response.error);
+        return [];
+      }
     } catch (error) {
       console.error('Failed to fetch user leagues:', error);
       return [];
@@ -46,8 +80,17 @@ export const dashboardAPI = {
 
   getPerformanceInsights: async () => {
     try {
-      const response = await baseAPI.get('/dashboard/user/insights');
-      return response.data.data;
+      const response = await apiCall({
+        method: 'GET',
+        url: '/dashboard/user/insights',
+      });
+      
+      if (response.success) {
+        return response.data;
+      } else {
+        console.error('Failed to fetch performance insights:', response.error);
+        return [];
+      }
     } catch (error) {
       console.error('Failed to fetch performance insights:', error);
       return [];
@@ -56,8 +99,17 @@ export const dashboardAPI = {
 
   getExtendedMatches: async (limit = 10) => {
     try {
-      const response = await baseAPI.get(`/dashboard/matches/upcoming?limit=${limit}`);
-      return response.data.data;
+      const response = await apiCall({
+        method: 'GET',
+        url: `/dashboard/matches/upcoming?limit=${limit}`,
+      });
+      
+      if (response.success) {
+        return response.data;
+      } else {
+        console.error('Failed to fetch extended matches:', response.error);
+        return [];
+      }
     } catch (error) {
       console.error('Failed to fetch extended matches:', error);
       return [];
