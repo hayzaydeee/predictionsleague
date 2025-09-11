@@ -4,9 +4,8 @@ import PredictionsModal from "../predictions/PredictionsModal";
 import ChipInfoModal from "../predictions/ChipInfoModal";
 import { ThemeContext } from "../../context/ThemeContext";
 import { backgrounds } from "../../utils/themeUtils";
-import useDashboardData from "../../hooks/useDashboardData";
 
-// Import from centralized data file
+// Import from centralized data file for non-dashboard views
 import {
   upcomingMatches,
   recentPredictions,
@@ -25,22 +24,25 @@ import {
   LeagueManagementView, // New component
 } from "../dashboardRenders";
 
-export default function ContentPane({ activeItem, navigateToSection, navigationParams = {} }) {
+export default function ContentPane({ 
+  activeItem, 
+  navigateToSection, 
+  navigationParams = {},
+  dashboardData = {} 
+}) {
   // Access theme context
   const { theme } = useContext(ThemeContext);
 
-  // Get dashboard data using the hook
+  // Extract dashboard data from props
   const {
     essentialData,
     essentialLoading,
-    statusBarData,
-    statusBarLoading,
     upcomingMatches: apiUpcomingMatches,
     recentPredictions: apiRecentPredictions,
     leagues: apiLeagues,
     secondaryLoading,
     errors,
-  } = useDashboardData();
+  } = dashboardData;
 
   // Animation variants
   const contentVariants = {
@@ -194,14 +196,14 @@ export default function ContentPane({ activeItem, navigateToSection, navigationP
       case "dashboard":
         return (
           <DashboardView
-            // Use real API data instead of mock data
+            // Use real API data when available, fallback to mock data for other views
             essentialData={essentialData}
-            essentialLoading={essentialLoading}
-            upcomingMatches={apiUpcomingMatches}
-            recentPredictions={apiRecentPredictions}
-            leagues={apiLeagues}
-            secondaryLoading={secondaryLoading}
-            errors={errors}
+            essentialLoading={essentialLoading || false}
+            upcomingMatches={apiUpcomingMatches || upcomingMatches}
+            recentPredictions={apiRecentPredictions || recentPredictions}
+            leagues={apiLeagues || leagues}
+            secondaryLoading={secondaryLoading || {}}
+            errors={errors || {}}
             // Replace the goToPredictions prop with this inline function
             goToPredictions={(match) =>
               handleFixtureSelect({

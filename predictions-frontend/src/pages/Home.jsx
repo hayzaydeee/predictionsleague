@@ -6,6 +6,7 @@ import VerticalMenu from "../components/layout/VerticalMenu";
 import ContentPane from "../components/layout/ContentPane";
 import { Box } from "@radix-ui/themes";
 import { ThemeContext } from "../context/ThemeContext";
+import useDashboardData from "../hooks/useDashboardData";
 
 // Import from centralized data file
 import {
@@ -26,17 +27,29 @@ export default function Home() {
   const navigate = useNavigate();
 
   const { theme } = useContext(ThemeContext);
-  
+
+  // Get dashboard data using the hook - available across all views
+  const {
+    essentialData,
+    essentialLoading,
+    statusBarData,
+    statusBarLoading,
+    upcomingMatches: apiUpcomingMatches,
+    recentPredictions: apiRecentPredictions,
+    leagues: apiLeagues,
+    secondaryLoading,
+    errors,
+  } = useDashboardData();
+
   // Add debugging for OAuth redirect detection
   useEffect(() => {
-    console.log('🏠 Home page loaded:', {
+    console.log("🏠 Home page loaded:", {
       view,
       currentPath: window.location.pathname,
-      referrer: document.referrer
+      referrer: document.referrer,
     });
-  
   }, [view]);
-  
+
   // Valid views
   const validViews = [
     "dashboard",
@@ -54,12 +67,12 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [navigationParams, setNavigationParams] = useState({});
-  
+
   // navigateToSection function to change the active item
   const navigateToSection = (section, params = {}) => {
     // Navigate to the section
     navigate(`/home/${section}`);
-    
+
     // Store additional parameters for the ContentPane to handle
     setNavigationParams(params);
   };
@@ -170,7 +183,10 @@ export default function Home() {
           </div>
           {/* Status Bar moved inside content area */}
           <StatusBar
-           onMakePredictions={() => navigateToSection("predictions")} 
+            user={statusBarData.user}
+            nextMatchData={statusBarData.nextMatchData}
+            loading={statusBarLoading}
+            onMakePredictions={() => navigateToSection("predictions")}
           />
           {/* Breadcrumb & Search Bar */}
           <div
@@ -201,16 +217,14 @@ export default function Home() {
                 >
                   Home
                 </span>
-                <ChevronRightIcon className={`${
-                    theme === "dark"
-                      ? "text-teal-300"
-                      : " text-teal-700"
-                  } mx-1`}/>
+                <ChevronRightIcon
+                  className={`${
+                    theme === "dark" ? "text-teal-300" : " text-teal-700"
+                  } mx-1`}
+                />
                 <span
                   className={`${
-                    theme === "dark"
-                      ? "text-teal-300"
-                      : " text-teal-700"
+                    theme === "dark" ? "text-teal-300" : " text-teal-700"
                   } font-medium`}
                 >
                   {getBreadcrumbTitle()}
@@ -261,13 +275,21 @@ export default function Home() {
                   <div className="w-3 h-3 bg-teal-400 rounded-full animate-bounce"></div>
                 </div>
               </div>
-            ) : null}            <ContentPane
+            ) : null}{" "}
+            <ContentPane
               activeItem={activeItem}
               navigateToSection={navigateToSection}
               navigationParams={navigationParams}
-              upcomingMatches={upcomingMatches}
-              recentPredictions={recentPredictions}
-              leagues={leagues}
+              // Pass dashboard data to ContentPane
+              dashboardData={{
+                essentialData,
+                essentialLoading,
+                upcomingMatches: apiUpcomingMatches,
+                recentPredictions: apiRecentPredictions,
+                leagues: apiLeagues,
+                secondaryLoading,
+                errors,
+              }}
             />
           </div>
         </div>
