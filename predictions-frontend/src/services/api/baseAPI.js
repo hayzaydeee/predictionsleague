@@ -24,8 +24,11 @@ export const setTokens = (accessToken, refreshTokenValue) => {
   refreshToken = refreshTokenValue;
   
   // Store only non-sensitive data in localStorage for UI purposes
-  if (accessToken) {
+  if (accessToken && accessToken !== 'http-only') {
     // Don't store actual tokens - they're in HTTP-only cookies
+    localStorage.setItem('isAuthenticated', 'true');
+  } else if (accessToken === 'http-only') {
+    // Server verification confirmed authentication
     localStorage.setItem('isAuthenticated', 'true');
   } else {
     localStorage.removeItem('isAuthenticated');
@@ -105,16 +108,17 @@ baseAPI.interceptors.response.use(
               return baseAPI(originalRequest);
             }
           } catch (refreshError) {
-            // Refresh failed, clear auth state and redirect to login
+            // Refresh failed, clear auth state but let AuthContext handle redirect
             clearTokens();
-            window.location.href = '/login';
+            console.log('BaseAPI - Token refresh failed, auth state cleared');
             return Promise.reject(error);
           }
         }
         
-        // If retry failed or this is already a retry, redirect to login
+        // If retry failed or this is already a retry, clear state but don't force redirect
+        // Let the AuthContext and routing handle the redirect decision
         clearTokens();
-        window.location.href = '/login';
+        console.log('BaseAPI - Auth failed, letting AuthContext handle redirect');
         break;
         
       case 403:

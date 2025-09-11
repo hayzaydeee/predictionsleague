@@ -243,33 +243,28 @@ export const AuthProvider = ({ children }) => {
           });
         }
         
-        // Check for existing JWT authentication
-        const { isAuthenticated } = getTokens();
-        
-        if (isAuthenticated) {
-          try {
-            // Use centralized auth service to check authentication
-            const authResult = await authService.checkAuth({ 
-              source: 'auth-context-enhanced-init' 
+        // Always attempt server verification (ignore localStorage)
+        // Let HTTP-only cookies be the source of truth
+        try {
+          console.log('AuthContext - Attempting server authentication verification');
+          const authResult = await authService.checkAuth({ 
+            source: 'auth-context-enhanced-init-always-verify' 
+          });
+          
+          if (authResult.isAuthenticated && authResult.user) {
+            console.log('AuthContext - Server confirmed authentication');
+            dispatch({
+              type: AUTH_ACTIONS.LOGIN_SUCCESS,
+              payload: { user: authResult.user },
             });
-            
-            if (authResult.isAuthenticated && authResult.user) {
-              console.log('AuthContext - Existing valid authentication found');
-              dispatch({
-                type: AUTH_ACTIONS.LOGIN_SUCCESS,
-                payload: { user: authResult.user },
-              });
-              return;
-            } else {
-              // Clear invalid auth state
-              console.log('AuthContext - Invalid auth state, clearing');
-              dispatch({ type: AUTH_ACTIONS.LOGOUT });
-            }
-          } catch (error) {
-            // Session invalid, clear auth state
-            console.log('AuthContext - Auth check failed, clearing state:', error.message);
-            dispatch({ type: AUTH_ACTIONS.LOGOUT });
+            return;
+          } else {
+            console.log('AuthContext - Server says not authenticated');
+            // Don't dispatch LOGOUT here, just continue to determine state
           }
+        } catch (error) {
+          console.log('AuthContext - Server auth check failed:', error.message);
+          // Don't dispatch LOGOUT here, just continue to determine state
         }
         
         // No valid JWT found - determine user state
