@@ -238,9 +238,9 @@ export default function OAuthOnboarding() {
             <p className="text-white/50 text-sm font-outfit">
               your google account is already verified ✓
             </p>
-            {userEmail && (
+            {(oauthData.email || sessionStorage.getItem('oauth_user_email')) && (
               <p className="text-teal-300/70 text-xs font-outfit mt-1">
-                signed in as: {userEmail}
+                signed in as: {oauthData.email || sessionStorage.getItem('oauth_user_email')}
               </p>
             )}
           </div>
