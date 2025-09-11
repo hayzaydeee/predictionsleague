@@ -7,7 +7,7 @@ export const dashboardAPI = {
     try {
       const response = await apiCall({
         method: 'GET',
-        url: '/dashboard/essential',
+        url: '/dashboard/me',
       });
       
       if (response.success) {
