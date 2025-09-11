@@ -4,6 +4,7 @@ import PredictionsModal from "../predictions/PredictionsModal";
 import ChipInfoModal from "../predictions/ChipInfoModal";
 import { ThemeContext } from "../../context/ThemeContext";
 import { backgrounds } from "../../utils/themeUtils";
+import useDashboardData from "../../hooks/useDashboardData";
 
 // Import from centralized data file
 import {
@@ -27,6 +28,19 @@ import {
 export default function ContentPane({ activeItem, navigateToSection, navigationParams = {} }) {
   // Access theme context
   const { theme } = useContext(ThemeContext);
+
+  // Get dashboard data using the hook
+  const {
+    essentialData,
+    essentialLoading,
+    statusBarData,
+    statusBarLoading,
+    upcomingMatches: apiUpcomingMatches,
+    recentPredictions: apiRecentPredictions,
+    leagues: apiLeagues,
+    secondaryLoading,
+    errors,
+  } = useDashboardData();
 
   // Animation variants
   const contentVariants = {
@@ -180,9 +194,14 @@ export default function ContentPane({ activeItem, navigateToSection, navigationP
       case "dashboard":
         return (
           <DashboardView
-            upcomingMatches={upcomingMatches}
-            recentPredictions={recentPredictions}
-            leagues={leagues}
+            // Use real API data instead of mock data
+            essentialData={essentialData}
+            essentialLoading={essentialLoading}
+            upcomingMatches={apiUpcomingMatches}
+            recentPredictions={apiRecentPredictions}
+            leagues={apiLeagues}
+            secondaryLoading={secondaryLoading}
+            errors={errors}
             // Replace the goToPredictions prop with this inline function
             goToPredictions={(match) =>
               handleFixtureSelect({
