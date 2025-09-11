@@ -29,18 +29,18 @@ const LeagueManagementView = ({ leagueId, league, onBack }) => {
   // Get theme context
   const { theme } = useContext(ThemeContext);
   
-  // Mock data for development
-  const league = {
-    id: leagueId,
-    name: `Fantasy Premier League 22/23`,
-    description: "Our friendly competition for the 2022/2023 Premier League season. Make your predictions for each match day and climb the leaderboard!",
-    type: 'private',
-    isAdmin: true,
-    members: 12,
-    lastUpdate: new Date(),
-    inviteCode: 'FNPL2223',
-    createdDate: new Date('2022-08-01')
-  };
+  // Use the passed league object, with fallback if not provided
+  if (!league) {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="flex justify-center items-center py-12"
+      >
+        <div className={`w-8 h-8 border-2 ${theme === 'dark' ? 'border-teal-400' : 'border-teal-600'} border-t-transparent rounded-full animate-spin`}></div>
+      </motion.div>
+    );
+  }
 
   useEffect(() => {
     // Initialize form inputs with league data
@@ -59,7 +59,7 @@ const LeagueManagementView = ({ leagueId, league, onBack }) => {
   }, [leagueId]);
 
   const handleCopyInviteCode = () => {
-    navigator.clipboard.writeText(league.inviteCode);
+    navigator.clipboard.writeText(league.joinCode);
     showToast('Invite code copied to clipboard!', 'success');
   };
 
@@ -272,7 +272,7 @@ const MembersContent = ({ members, league, onRemoveMember, onPromoteToAdmin, onC
             <span className={`${text.secondary[theme]} text-sm font-outfit`}>Invite Code:</span>
             <span className={`${
               theme === "dark" ? "text-amber-400" : "text-amber-600"
-            } font-mono font-medium text-lg`}>{league.inviteCode}</span>
+            } font-mono font-medium text-lg`}>{league.joinCode}</span>
             <button 
               onClick={onCopyInviteCode} 
               className={`${
