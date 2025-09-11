@@ -7,8 +7,28 @@ const leagueAPI = {
     try {
       console.log('Fetching user leagues...');
       const response = await api.get('/leagues/user');
-      console.log('User leagues fetched:', response.data?.length || 0, 'leagues');
-      return response.data || [];
+      console.log('Raw API response:', response.data);
+      
+      // Map LeagueOverview response to frontend-compatible format
+      const leagues = (response.data || []).map(league => ({
+        id: league.id, // Already correct from LeagueOverview
+        name: league.name,
+        description: league.description,
+        members: league.members,
+        position: league.position, // User's position in this league
+        points: league.points, // User's points in this league
+        joinCode: league.joinCode,
+        isAdmin: league.isAdmin,
+        type: league.type, // Publicity enum
+        createdAt: league.createdAt,
+        // Backward compatibility aliases
+        userPosition: league.position,
+        numberOfMembers: league.members
+      }));
+      
+      console.log('User leagues fetched:', leagues.length, 'leagues');
+      console.log('Mapped leagues with IDs:', leagues.map(l => ({ id: l.id, name: l.name })));
+      return leagues;
     } catch (error) {
       console.error('Failed to fetch user leagues:', error.message);
       return [];
