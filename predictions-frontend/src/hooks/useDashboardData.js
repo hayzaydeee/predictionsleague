@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { dashboardAPI } from '../services/api/dashboardApi';
+import { leagueAPI } from '../services/api/leagueAPI';
 
 // This hook implements progressive loading with real API calls
 // It uses the hybrid API approach with dashboard/ endpoints for secondary data
@@ -96,7 +97,7 @@ const useDashboardData = () => {
       // Fetch user leagues
       try {
         console.log('🚀 Fetching user leagues...');
-        const leagues = await dashboardAPI.getUserLeagues(5);
+        const leagues = await leagueAPI.getUserLeagues(); // Use proper leagueAPI instead of dashboardAPI
         console.log('✅ User leagues received:', leagues);
         setSecondaryData(prev => ({ ...prev, leagues }));
         setSecondaryLoading(prev => ({ ...prev, leagues: false }));
