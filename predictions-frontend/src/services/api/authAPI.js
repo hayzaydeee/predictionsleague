@@ -293,14 +293,19 @@ export const authAPI = {
       });
 
       if (response.ok) {
-        const user = await response.json();
+        const responseData = await response.json();
         
-        console.log('🔍 AuthAPI.getCurrentUser - Raw response from server:', user);
+        console.log('🔍 AuthAPI.getCurrentUser - Raw response from server:', responseData);
+        
+        // Extract the user object from the response structure
+        const user = responseData.user || responseData;
+        
+        console.log('🔍 AuthAPI.getCurrentUser - Extracted user object:', user);
         
         // Update localStorage to reflect successful authentication
         setTokens('http-only', 'http-only');
         
-        // Backend returns the user object directly
+        // Return the extracted user object
         return {
           success: true,
           user: user,

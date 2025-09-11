@@ -204,6 +204,18 @@ class AuthService {
     if (!email || typeof email !== 'string') {
       console.warn('🔒 User data missing required email field');
       console.warn('🔒 Available user fields:', Object.keys(user));
+      
+      // If this is a nested object structure, check for user.user.email
+      if (user.user && typeof user.user === 'object') {
+        console.warn('🔒 Found nested user object, checking nested fields:', Object.keys(user.user));
+        const nestedEmail = user.user.email || user.user.emailAddress || user.user.userEmail;
+        if (nestedEmail && typeof nestedEmail === 'string') {
+          console.log('🔒 Found email in nested user object');
+          // We should have extracted this at the API level, but let's be defensive
+          return this.validateUserData(user.user);
+        }
+      }
+      
       return false;
     }
 
