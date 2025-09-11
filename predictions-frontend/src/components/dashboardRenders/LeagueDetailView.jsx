@@ -213,7 +213,7 @@ const LeagueDetailView = ({ leagueId, league, onBack, onManage }) => {
             </div>
 
             {/* League Stats Grid */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 shrink-0">
+            <div className="grid grid-cols-3 lg:grid-cols-3 gap-4 lg:gap-6 shrink-0">
               <div className="text-center">
                 <div className="flex items-center justify-center gap-1 mb-1">
                   <PersonIcon className={`w-4 h-4 ${text.muted[theme]}`} />
@@ -251,19 +251,6 @@ const LeagueDetailView = ({ leagueId, league, onBack, onManage }) => {
                 </div>
                 <span className={`text-xs ${text.muted[theme]} font-outfit`}>
                   Your Points
-                </span>
-              </div>
-              <div className="text-center">
-                <div className="flex items-center justify-center gap-1 mb-1">
-                  <TargetIcon className={`w-4 h-4 ${text.muted[theme]}`} />
-                  <span
-                    className={`text-2xl font-bold ${text.primary[theme]} font-outfit`}
-                  >
-                    {league.pointsLeader}
-                  </span>
-                </div>
-                <span className={`text-xs ${text.muted[theme]} font-outfit`}>
-                  Leader Points
                 </span>
               </div>
             </div>
