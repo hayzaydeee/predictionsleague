@@ -43,15 +43,15 @@ const PredictionsView = ({ handleEditPrediction }) => {  // Get theme context an
     // Filter by team
     if (
       filterTeam !== "all" &&
-      prediction.homeTeam !== filterTeam &&
-      prediction.awayTeam !== filterTeam
+      prediction.homeTeam?.name !== filterTeam &&
+      prediction.awayTeam?.name !== filterTeam
     )
       return false;
 
     // Filter by search query
     if (
       searchQuery &&
-      !`${prediction.homeTeam} vs ${prediction.awayTeam}`
+      !`${prediction.homeTeam?.name} vs ${prediction.awayTeam?.name}`
         .toLowerCase()
         .includes(searchQuery.toLowerCase())
     )
@@ -71,7 +71,7 @@ const PredictionsView = ({ handleEditPrediction }) => {  // Get theme context an
     if (sortBy === "date") {
       return new Date(b.date) - new Date(a.date);
     } else if (sortBy === "team") {
-      return a.homeTeam.localeCompare(b.homeTeam);
+      return a.homeTeam?.name?.localeCompare(b.homeTeam?.name) || 0;
     } else if (sortBy === "points") {
       // Handle null points (pending predictions)
       if (a.points === null && b.points !== null) return 1;

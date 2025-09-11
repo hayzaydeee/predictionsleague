@@ -11,28 +11,51 @@ import {
 import { useContext } from "react";
 import { ThemeContext } from "../../context/ThemeContext";
 
-export default function StatusBar({ user, onMakePredictions }) {
+export default function StatusBar({ 
+  user, 
+  onMakePredictions, 
+  loading = false,
+  nextMatchData = null 
+}) {
   // Get theme context
   const { theme, toggleTheme } = useContext(ThemeContext);
 
-  // Sample user data - in a real app, this would come from props or context
+  // Use provided user data or show loading
   const userData = user || {
-    username: "hayzaydee",
-    points: 1250,
-    rank: 1,
+    username: "Loading...",
+    points: 0,
+    rank: 0,
     rankChange: 0,
-    nextMatchTime: "2025-06-12T15:00:00", // ISO format for the next upcoming match
-    predictions: 28, // predictions made this season
-    pendingPredictions: 4, // pending predictions for the upcoming gameweek
+    predictions: 0,
+    pendingPredictions: 0,
   };
 
   // Calculate time until next match
-  const nextMatch = new Date(userData.nextMatchTime);
-  const now = new Date();
-  const timeUntilMatch = nextMatch - now;
-  const hoursUntilMatch = Math.floor(timeUntilMatch / (1000 * 60 * 60));
-  const minutesUntilMatch = Math.floor(
-    (timeUntilMatch % (1000 * 60 * 60)) / (1000 * 60)
+  let timeDisplay = "Loading...";
+  let hoursUntilMatch = 0;
+  let minutesUntilMatch = 0;
+  
+  if (nextMatchData && nextMatchData.nextMatchTime) {
+    const nextMatch = new Date(nextMatchData.nextMatchTime);
+    const now = new Date();
+    const timeUntilMatch = nextMatch - now;
+    hoursUntilMatch = Math.max(0, Math.floor(timeUntilMatch / (1000 * 60 * 60)));
+    minutesUntilMatch = Math.max(0, Math.floor((timeUntilMatch % (1000 * 60 * 60)) / (1000 * 60)));
+    
+    if (timeUntilMatch > 0) {
+      timeDisplay = `${hoursUntilMatch}h ${minutesUntilMatch}m`;
+    } else {
+      timeDisplay = "Live now";
+    }
+  }
+
+  // Skeleton component for loading states
+  const Skeleton = ({ width, height = "h-4" }) => (
+    <div
+      className={`${height} ${width} ${
+        theme === "dark" ? "bg-slate-700/50" : "bg-slate-200"
+      } rounded animate-pulse`}
+    />
   );
 
   return (
@@ -49,54 +72,69 @@ export default function StatusBar({ user, onMakePredictions }) {
       <Box className="container mx-auto px-4 py-3">
         <div className="flex flex-wrap items-center justify-between gap-y-2">
           <div className="flex items-center">
-            <div className="h-9 w-9 bg-indigo-600 rounded-full flex items-center justify-center text-white font-medium mr-3">
-              {userData.username.substring(0, 1).toUpperCase()}
-            </div>{" "}
-            <div>
-              <h3
-                className={`${
-                  theme === "dark" ? "text-teal-100" : "text-teal-700"
-                } font-medium font-outfit`}
-              >
-                {userData.username}
-              </h3>
-              <div
-                className={`flex items-center text-xs ${
-                  theme === "dark" ? "text-white/60" : "text-slate-500"
-                }`}
-              >
-                <span>Rank: {userData.rank.toLocaleString()}</span>{" "}
-                <span
-                  className={`flex items-center ml-2 ${
-                    userData.rankChange > 0
-                      ? theme === "dark"
-                        ? "text-green-400"
-                        : "text-green-600"
-                      : userData.rankChange < 0
-                      ? theme === "dark"
-                        ? "text-red-400"
-                        : "text-red-600"
-                      : theme === "dark"
-                      ? "text-white/60"
-                      : "text-slate-400"
-                  }`}
-                >
-                  {userData.rankChange > 0 ? (
-                    <>
-                      <CaretUpIcon className="mr-0.5" /> {userData.rankChange}
-                    </>
-                  ) : userData.rankChange < 0 ? (
-                    <>
-                      <CaretDownIcon className="mr-0.5" />{" "}
-                      {Math.abs(userData.rankChange)}
-                    </>
-                  ) : (
-                    "-"
-                  )}
-                </span>
+            {loading ? (
+              <div className="h-9 w-9 bg-slate-700/50 rounded-full mr-3 animate-pulse" />
+            ) : (
+              <div className="h-9 w-9 bg-indigo-600 rounded-full flex items-center justify-center text-white font-medium mr-3">
+                {userData.username.substring(0, 1).toUpperCase()}
               </div>
+            )}
+            <div>
+              {loading ? (
+                <>
+                  <Skeleton width="w-24" height="h-5" />
+                  <div className="mt-1">
+                    <Skeleton width="w-20" height="h-3" />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <h3
+                    className={`${
+                      theme === "dark" ? "text-teal-100" : "text-teal-700"
+                    } font-medium font-outfit`}
+                  >
+                    {userData.username}
+                  </h3>
+                  <div
+                    className={`flex items-center text-xs ${
+                      theme === "dark" ? "text-white/60" : "text-slate-500"
+                    }`}
+                  >
+                    <span>Rank: {userData.rank.toLocaleString()}</span>
+                    <span
+                      className={`flex items-center ml-2 ${
+                        userData.rankChange > 0
+                          ? theme === "dark"
+                            ? "text-green-400"
+                            : "text-green-600"
+                          : userData.rankChange < 0
+                          ? theme === "dark"
+                            ? "text-red-400"
+                            : "text-red-600"
+                          : theme === "dark"
+                          ? "text-white/60"
+                          : "text-slate-400"
+                      }`}
+                    >
+                      {userData.rankChange > 0 ? (
+                        <>
+                          <CaretUpIcon className="mr-0.5" /> {userData.rankChange}
+                        </>
+                      ) : userData.rankChange < 0 ? (
+                        <>
+                          <CaretDownIcon className="mr-0.5" />
+                          {Math.abs(userData.rankChange)}
+                        </>
+                      ) : (
+                        "-"
+                      )}
+                    </span>
+                  </div>
+                </>
+              )}
             </div>
-          </div>{" "}
+          </div>
           {/* Stats */}
           <div className="flex space-x-6">
             {/* Points */}
@@ -108,13 +146,17 @@ export default function StatusBar({ user, onMakePredictions }) {
               >
                 POINTS
               </span>
-              <span
-                className={`${
-                  theme === "dark" ? "text-teal-200" : "text-teal-600"
-                } font-bold font-dmSerif text-lg`}
-              >
-                {userData.points.toLocaleString()}
-              </span>
+              {loading ? (
+                <Skeleton width="w-12" height="h-6" />
+              ) : (
+                <span
+                  className={`${
+                    theme === "dark" ? "text-teal-200" : "text-teal-600"
+                  } font-bold font-dmSerif text-lg`}
+                >
+                  {userData.points.toLocaleString()}
+                </span>
+              )}
             </div>
 
             {/* Predictions */}
@@ -126,14 +168,19 @@ export default function StatusBar({ user, onMakePredictions }) {
               >
                 PREDICTIONS
               </span>
-              <span
-                className={`${
-                  theme === "dark" ? "text-teal-200" : "text-teal-600"
-                } font-bold font-dmSerif text-lg`}
-              >
-                {userData.predictions}
-              </span>
+              {loading ? (
+                <Skeleton width="w-8" height="h-6" />
+              ) : (
+                <span
+                  className={`${
+                    theme === "dark" ? "text-teal-200" : "text-teal-600"
+                  } font-bold font-dmSerif text-lg`}
+                >
+                  {userData.predictions}
+                </span>
+              )}
             </div>
+
             {/* Next Match */}
             <div className="hidden md:flex flex-col items-center">
               <span
@@ -143,20 +190,25 @@ export default function StatusBar({ user, onMakePredictions }) {
               >
                 NEXT MATCH IN
               </span>
-              <span
-                className={`${
-                  theme === "dark" ? "text-teal-200" : "text-teal-600"
-                } font-bold font-dmSerif text-lg flex items-center`}
-              >
-                <ClockIcon className="mr-1" /> {hoursUntilMatch}h{" "}
-                {minutesUntilMatch}m
-              </span>
+              {loading || !nextMatchData ? (
+                <Skeleton width="w-16" height="h-6" />
+              ) : (
+                <span
+                  className={`${
+                    theme === "dark" ? "text-teal-200" : "text-teal-600"
+                  } font-bold font-dmSerif text-lg flex items-center`}
+                >
+                  <ClockIcon className="mr-1" /> {timeDisplay}
+                </span>
+              )}
             </div>
-          </div>{" "}
+          </div>
           {/* Action Button & Theme Toggle */}
           <div className="flex items-center space-x-3">
             {/* Action Button */}
-            {userData.pendingPredictions > 0 ? (
+            {loading ? (
+              <Skeleton width="w-32" height="h-9" />
+            ) : userData.pendingPredictions > 0 ? (
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
