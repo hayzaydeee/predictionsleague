@@ -184,6 +184,7 @@ export default function Home() {
           {/* Status Bar moved inside content area */}
           <StatusBar
             user={statusBarData.user}
+            globalRank={essentialData?.stats?.globalRank}
             nextMatchData={statusBarData.nextMatchData}
             loading={statusBarLoading}
             onMakePredictions={() => navigateToSection("predictions")}

@@ -53,11 +53,11 @@ const DashboardView = ({
 
   // Helper functions to format backend data for display
   const formatWeeklyPoints = (weeklyPoints) => {
-    if (!weeklyPoints) return { value: "0", subtitle: "No data", badge: null, trend: null };
+    if (!weeklyPoints) return { value: "0", subtitle: "This week", badge: null, trend: null };
     
     return {
       value: weeklyPoints.value?.toString() || "0",
-      subtitle: `Rank: ${weeklyPoints.rank?.toString() || "N/A"} this week`,
+      subtitle: "This week",
       badge: weeklyPoints.difference ? {
         text: `${weeklyPoints.difference > 0 ? '+' : ''}${weeklyPoints.difference} from last GW`,
         type: weeklyPoints.difference > 0 ? "success" : weeklyPoints.difference < 0 ? "warning" : "neutral",

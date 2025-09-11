@@ -13,6 +13,7 @@ import { ThemeContext } from "../../context/ThemeContext";
 
 export default function StatusBar({ 
   user, 
+  globalRank,
   onMakePredictions, 
   loading = false,
   nextMatchData = null 
@@ -101,7 +102,7 @@ export default function StatusBar({
                       theme === "dark" ? "text-white/60" : "text-slate-500"
                     }`}
                   >
-                    <span>Rank: {userData.rank?.toString() || "N/A"}</span>
+                    <span>Rank: {globalRank?.value?.toString() || "N/A"}</span>
                     <span
                       className={`flex items-center ml-2 ${
                         userData.rankChange > 0
