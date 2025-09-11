@@ -182,7 +182,9 @@ export default function ContentPane({
         apiLeaguesCount: apiLeagues?.length || 0,
         fallbackLeaguesCount: leagues?.length || 0,
         selectedLeague: selectedLeague ? 'found' : 'not found',
-        secondaryLoading
+        secondaryLoading,
+        apiLeagueIds: apiLeagues?.map(l => l.id) || [],
+        fallbackLeagueIds: leagues?.map(l => l.id) || []
       });
 
       // If we're still loading and no league found, show loading
@@ -197,6 +199,35 @@ export default function ContentPane({
             <p className={`text-sm ${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'} font-outfit`}>
               Loading leagues data...
             </p>
+          </motion.div>
+        );
+      }
+
+      // If league not found and not loading, show error
+      if (!selectedLeague) {
+        return (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex flex-col justify-center items-center py-12 space-y-4"
+          >
+            <div className={`text-6xl ${theme === 'dark' ? 'text-slate-600' : 'text-slate-400'}`}>⚠️</div>
+            <h3 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-slate-900'} font-outfit`}>
+              League Not Found
+            </h3>
+            <p className={`text-sm ${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'} font-outfit text-center max-w-md`}>
+              The league you're looking for could not be found. It may have been deleted or you may not have access to it.
+            </p>
+            <button
+              onClick={handleBackToLeagues}
+              className={`mt-4 px-4 py-2 rounded-lg font-medium transition-colors ${
+                theme === 'dark' 
+                  ? 'bg-teal-600 hover:bg-teal-700 text-white' 
+                  : 'bg-teal-600 hover:bg-teal-700 text-white'
+              }`}
+            >
+              Back to Leagues
+            </button>
           </motion.div>
         );
       }
