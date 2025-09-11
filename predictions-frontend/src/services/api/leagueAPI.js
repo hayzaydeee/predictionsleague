@@ -87,6 +87,7 @@ const leagueAPI = {
       console.log('Fetching league standings...', { leagueId });
       const response = await api.get(`/leagues/${leagueId}/standings`);
       console.log('League standings fetched:', response.data?.standings?.length || 0, 'members');
+      console.log('Raw standings response:', response.data);
       // Return the direct format: { leagueId, standings }
       return response.data;
     } catch (error) {
