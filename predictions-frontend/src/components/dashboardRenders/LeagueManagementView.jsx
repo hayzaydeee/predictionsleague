@@ -17,7 +17,7 @@ import { showToast } from '../../services/notificationService';
 import { ThemeContext } from '../../context/ThemeContext';
 import { backgrounds, text, buttons, status } from '../../utils/themeUtils';
 
-const LeagueManagementView = ({ leagueId, onBack }) => {
+const LeagueManagementView = ({ leagueId, league, onBack }) => {
   const [activeTab, setActiveTab] = useState('members');
   const [isLoading, setIsLoading] = useState(false);
   const [members, setMembers] = useState([]);

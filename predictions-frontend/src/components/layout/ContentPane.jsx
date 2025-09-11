@@ -173,10 +173,15 @@ export default function ContentPane({
   const renderContent = () => {
     // Special case for league details/management
     if (activeItem === "leagues" && selectedLeagueId) {
+      // Find the league from available data
+      const selectedLeague = apiLeagues?.find(league => league.id === selectedLeagueId) || 
+                           leagues?.find(league => league.id === selectedLeagueId);
+      
       if (isManagingLeague) {
         return (
           <LeagueManagementView
             leagueId={selectedLeagueId}
+            league={selectedLeague}
             onBack={handleBackToLeagues}
           />
         );
@@ -184,6 +189,7 @@ export default function ContentPane({
         return (
           <LeagueDetailView
             leagueId={selectedLeagueId}
+            league={selectedLeague}
             onBack={handleBackToLeagues}
             onManage={() => setIsManagingLeague(true)}
           />

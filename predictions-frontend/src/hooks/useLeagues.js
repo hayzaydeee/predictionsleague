@@ -31,12 +31,12 @@ const useLeagues = () => {
       const league = await leagueAPI.joinLeague(joinCode);
       console.log('League joined successfully:', league?.name);
       showToast('Successfully joined league!', 'success');
-      await fetchMyLeagues();
-      return { success: true };
+      await fetchMyLeagues(); // This should update the state
+      return league; // Return the league directly
     } catch (err) {
       console.error('Error joining league:', err.message);
       showToast(err.message || 'Failed to join league', 'error');
-      return { success: false, error: err.message };
+      throw err; // Let component handle the error
     }
   };
 
@@ -47,12 +47,12 @@ const useLeagues = () => {
       const league = await leagueAPI.createLeague(leagueData);
       console.log('League created successfully:', league?.name);
       showToast('League created successfully!', 'success');
-      await fetchMyLeagues();
-      return { success: true, league: league };
+      await fetchMyLeagues(); // This should update the state
+      return league; // Return the league directly
     } catch (err) {
       console.error('Error creating league:', err.message);
       showToast(err.message || 'Failed to create league', 'error');
-      return { success: false, error: err.message };
+      throw err; // Let component handle the error
     }
   };
 

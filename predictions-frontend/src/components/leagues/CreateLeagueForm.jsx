@@ -42,11 +42,9 @@ const CreateLeagueForm = ({ onCancel, onSuccess }) => {
         isPrivate: leagueData.type === "private"
       };
       
-      const result = await createLeague(apiData);
-      
-      if (result.success) {
-        onSuccess();
-      }
+      const league = await createLeague(apiData);
+      console.log('League creation completed:', league);
+      onSuccess(); // This will close the modal and the state should already be updated
     } catch (error) {
       console.error("Error creating league:", error);
     } finally {

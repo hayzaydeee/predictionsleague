@@ -75,17 +75,17 @@ const LeaguesView = ({ onViewLeague, onManageLeague }) => {
     console.log('Starting join league with code', { leagueCode });
     setJoiningLeague(true);
 
-    const result = await joinLeague(leagueCode);
-
-    if (result) {
-      console.log('Join league successful');
+    try {
+      const league = await joinLeague(leagueCode);
+      console.log('Join league successful:', league);
       setLeagueCode("");
       setShowJoinModal(false);
-    } else {
-      console.error('Join league failed');
+    } catch (error) {
+      console.error('Join league failed:', error);
+      // Error handling is done in the hook with toast
+    } finally {
+      setJoiningLeague(false);
     }
-
-    setJoiningLeague(false);
   };
 
   // Handle viewing league details

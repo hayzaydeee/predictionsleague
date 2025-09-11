@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { format, parseISO, isValid } from "date-fns";
 import {
@@ -12,21 +12,32 @@ import {
   Pencil2Icon,
   BarChartIcon,
   StackIcon,
+  ExclamationTriangleIcon,
 } from "@radix-ui/react-icons";
 
-import { getSampleLeague, upcomingFixtures } from "../../data/sampleData";
 import { showToast } from "../../services/notificationService";
 import { ThemeContext } from "../../context/ThemeContext";
 import { backgrounds, text, buttons } from "../../utils/themeUtils";
+import leagueAPI from "../../services/api/leagueAPI";
 
-const LeagueDetailView = ({ leagueId, onBack, onManage }) => {
+const LeagueDetailView = ({ leagueId, league, onBack, onManage }) => {
   const [activeTab, setActiveTab] = useState("leaderboard");
 
   // Get theme context
   const { theme } = useContext(ThemeContext);
 
-  // Get league data using the imported function
-  const league = getSampleLeague(leagueId);
+  // Use the passed league object, with fallback to loading state
+  if (!league) {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="flex justify-center items-center py-12"
+      >
+        <div className={`w-8 h-8 border-2 ${theme === 'dark' ? 'border-teal-400' : 'border-teal-600'} border-t-transparent rounded-full animate-spin`}></div>
+      </motion.div>
+    );
+  }
 
   // Safe date formatter that handles invalid dates
   const formatSafeDate = (dateValue, formatString) => {
@@ -49,11 +60,7 @@ const LeagueDetailView = ({ leagueId, onBack, onManage }) => {
     }
   };
 
-  // Handle making or editing a prediction
-  const handlePrediction = (fixtureId) => {
-    console.log(`Make prediction for fixture ${fixtureId}`);
-  };
-
+  // Handle sharing league
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href);
     showToast("League link copied to clipboard!", "success");
@@ -169,7 +176,7 @@ const LeagueDetailView = ({ leagueId, onBack, onManage }) => {
                     <div className="flex items-center gap-1">
                       <CalendarIcon className="w-4 h-4" />
                       <span>
-                        Created {format(league.lastUpdate, "MMM d, yyyy")}
+                        Created {formatSafeDate(league.createdAt, "MMM d, yyyy")}
                       </span>
                     </div>
                     <span
@@ -180,6 +187,18 @@ const LeagueDetailView = ({ leagueId, onBack, onManage }) => {
                     <div className="flex items-center gap-1">
                       <span className="capitalize">{league.type}</span> League
                     </div>
+                    {league.joinCode && (
+                      <>
+                        <span
+                          className={`w-1 h-1 ${
+                            theme === "dark" ? "bg-slate-500" : "bg-slate-400"
+                          } rounded-full`}
+                        />
+                        <div className="flex items-center gap-1">
+                          <span>Code: {league.joinCode}</span>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
@@ -187,7 +206,6 @@ const LeagueDetailView = ({ leagueId, onBack, onManage }) => {
 
             {/* League Stats Grid */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 shrink-0">
-              {" "}
               <div className="text-center">
                 <div className="flex items-center justify-center gap-1 mb-1">
                   <PersonIcon className={`w-4 h-4 ${text.muted[theme]}`} />
@@ -203,11 +221,11 @@ const LeagueDetailView = ({ leagueId, onBack, onManage }) => {
               </div>
               <div className="text-center">
                 <div className="flex items-center justify-center gap-1 mb-1">
-                  {/* <TrophyIcon className="w-4 h-4 text-slate-400" /> */}
+                  <BarChartIcon className={`w-4 h-4 ${text.muted[theme]}`} />
                   <span
                     className={`text-2xl font-bold ${text.primary[theme]} font-outfit`}
                   >
-                    #{league.position || "N/A"}
+                    #{league.position}
                   </span>
                 </div>
                 <span className={`text-xs ${text.muted[theme]} font-outfit`}>
@@ -216,28 +234,28 @@ const LeagueDetailView = ({ leagueId, onBack, onManage }) => {
               </div>
               <div className="text-center">
                 <div className="flex items-center justify-center gap-1 mb-1">
-                  <TargetIcon className={`w-4 h-4 ${text.muted[theme]}`} />
-                  <span
-                    className={`text-2xl font-bold ${text.primary[theme]} font-outfit`}
-                  >
-                    {league.predictions || 0}
-                  </span>
-                </div>
-                <span className={`text-xs ${text.muted[theme]} font-outfit`}>
-                  Predictions
-                </span>
-              </div>
-              <div className="text-center">
-                <div className="flex items-center justify-center gap-1 mb-1">
                   <StarIcon className={`w-4 h-4 ${text.muted[theme]}`} />
                   <span
                     className={`text-2xl font-bold ${text.primary[theme]} font-outfit`}
                   >
-                    {league.points || 0}
+                    {league.points}
                   </span>
                 </div>
                 <span className={`text-xs ${text.muted[theme]} font-outfit`}>
-                  Points
+                  Your Points
+                </span>
+              </div>
+              <div className="text-center">
+                <div className="flex items-center justify-center gap-1 mb-1">
+                  <TargetIcon className={`w-4 h-4 ${text.muted[theme]}`} />
+                  <span
+                    className={`text-2xl font-bold ${text.primary[theme]} font-outfit`}
+                  >
+                    {league.pointsLeader}
+                  </span>
+                </div>
+                <span className={`text-xs ${text.muted[theme]} font-outfit`}>
+                  Leader Points
                 </span>
               </div>
             </div>
@@ -259,7 +277,6 @@ const LeagueDetailView = ({ leagueId, onBack, onManage }) => {
         {[
           { id: "leaderboard", label: "Leaderboard", icon: TargetIcon },
           { id: "predictions", label: "Predictions", icon: StackIcon },
-          { id: "fixtures", label: "Fixtures", icon: CalendarIcon },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -300,12 +317,6 @@ const LeagueDetailView = ({ leagueId, onBack, onManage }) => {
           )}
           {activeTab === "predictions" && (
             <PredictionsContent leagueId={leagueId} />
-          )}
-          {activeTab === "fixtures" && (
-            <FixturesContent
-              fixtures={upcomingFixtures}
-              handlePrediction={handlePrediction}
-            />
           )}
         </AnimatePresence>
       </motion.div>
@@ -501,151 +512,223 @@ const LeaderboardContent = ({ leaderboard, formatSafeDate }) => {
 // Predictions Content Component
 const PredictionsContent = ({ leagueId }) => {
   const { theme } = useContext(ThemeContext);
+  const [predictions, setPredictions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      className="text-center py-12"
-    >
-      <TargetIcon className={`w-12 h-12 ${text.muted[theme]} mx-auto mb-4`} />
-      <h3
-        className={`text-lg font-semibold ${text.primary[theme]} mb-2 font-outfit`}
+  useEffect(() => {
+    const fetchPredictions = async () => {
+      try {
+        setLoading(true);
+        const data = await leagueAPI.getLeaguePredictions(leagueId);
+        setPredictions(data);
+      } catch (err) {
+        console.error('Failed to fetch league predictions:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (leagueId) {
+      fetchPredictions();
+    }
+  }, [leagueId]);
+
+  if (loading) {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="flex justify-center py-12"
       >
-        League Predictions
-      </h3>
-      <p className={`${text.muted[theme]} mb-6 font-outfit`}>
-        View and compare predictions from all league members
-      </p>
-      <button
-        className={`px-6 py-3 ${
-          buttons.primary[theme]
-        } rounded-xl font-medium font-outfit transition-colors shadow-lg ${
-          theme === "dark" ? "shadow-teal-600/20" : "shadow-teal-600/10"
-        }`}
+        <div className={`w-8 h-8 border-2 ${theme === 'dark' ? 'border-teal-400' : 'border-teal-600'} border-t-transparent rounded-full animate-spin`}></div>
+      </motion.div>
+    );
+  }
+
+  if (error) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center py-12"
       >
-        View All Predictions
-      </button>
-    </motion.div>
-  );
-};
-
-// Fixtures Content Component
-const FixturesContent = ({ fixtures, handlePrediction }) => {
-  const { theme } = useContext(ThemeContext);
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      className="space-y-4"
-    >
-      {fixtures && fixtures.length > 0 ? (
-        fixtures.slice(0, 5).map((fixture, index) => (
-          <motion.div
-            key={fixture.id}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: index * 0.1 }}
-            className={`flex items-center justify-between p-4 ${
-              theme === "dark"
-                ? "bg-slate-800/30 border-slate-700/50 hover:border-slate-600/60"
-                : "bg-white border-slate-200 hover:border-slate-300 shadow-sm"
-            } backdrop-blur-sm border rounded-xl transition-all duration-300`}
-          >
-            {" "}
-            <div className="flex items-center gap-4">
-              <div className="text-center">
-                <div
-                  className={`text-sm font-medium ${text.primary[theme]} mb-1 font-outfit`}
-                >
-                  {format(new Date(fixture.date), "MMM d")}
-                </div>
-                <div className={`text-xs ${text.muted[theme]} font-outfit`}>
-                  {format(new Date(fixture.date), "HH:mm")}
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <div className="text-right">
-                  <div
-                    className={`text-sm font-medium ${text.primary[theme]} font-outfit`}
-                  >
-                    {fixture.homeTeam}
-                  </div>
-                </div>
-                <div className={`${text.muted[theme]} text-sm font-outfit`}>
-                  vs
-                </div>
-                <div className="text-left">
-                  <div
-                    className={`text-sm font-medium ${text.primary[theme]} font-outfit`}
-                  >
-                    {fixture.awayTeam}
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              {fixture.status === "pending" ? (
-                <div
-                  className={`flex items-center gap-2 ${
-                    theme === "dark" ? "text-amber-400" : "text-amber-600"
-                  }`}
-                >
-                  <ClockIcon className="w-4 h-4" />
-                  <span className="text-sm font-outfit">Pending</span>
-                </div>
-              ) : (
-                <div className="text-center">
-                  <div
-                    className={`text-lg font-bold ${text.primary[theme]} font-outfit`}
-                  >
-                    {fixture.homeScore} - {fixture.awayScore}
-                  </div>
-                  <div
-                    className={`text-xs ${
-                      theme === "dark" ? "text-emerald-400" : "text-emerald-600"
-                    } font-outfit`}
-                  >
-                    Final
-                  </div>
-                </div>
-              )}
-
-              {fixture.status === "pending" && (
-                <button
-                  onClick={() => handlePrediction(fixture.id)}
-                  className={`flex items-center gap-2 px-3 py-2 ${
-                    theme === "dark"
-                      ? "bg-teal-600/20 hover:bg-teal-600/30 border-teal-500/30 text-teal-400"
-                      : "bg-teal-100 hover:bg-teal-200 border-teal-200 text-teal-600"
-                  } border rounded-lg text-sm font-outfit transition-all duration-200`}
-                >
-                  <Pencil2Icon className="w-4 h-4" />
-                  Predict
-                </button>
-              )}
-            </div>
-          </motion.div>
-        ))
-      ) : (
-        <div className="text-center py-12">
-          <CalendarIcon
-            className={`w-12 h-12 ${text.muted[theme]} mx-auto mb-4`}
-          />
-          <h3
-            className={`text-lg font-semibold ${text.primary[theme]} mb-2 font-outfit`}
-          >
-            No Fixtures
-          </h3>
-          <p className={`${text.muted[theme]} font-outfit`}>
-            Check back later for upcoming matches!
-          </p>
+        <div className={`text-red-500 mb-4`}>
+          <ExclamationTriangleIcon className="w-12 h-12 mx-auto mb-2" />
+          <p className="font-outfit">Failed to load predictions</p>
         </div>
-      )}
+      </motion.div>
+    );
+  }
+
+  if (!predictions || predictions.length === 0) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -20 }}
+        className="text-center py-12"
+      >
+        <TargetIcon className={`w-12 h-12 ${text.muted[theme]} mx-auto mb-4`} />
+        <h3
+          className={`text-lg font-semibold ${text.primary[theme]} mb-2 font-outfit`}
+        >
+          No Predictions Yet
+        </h3>
+        <p className={`${text.muted[theme]} font-outfit`}>
+          League members will appear here once they start making predictions
+        </p>
+      </motion.div>
+    );
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      className="space-y-6"
+    >
+      {predictions.map((prediction, index) => (
+        <motion.div
+          key={prediction.id || index}
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: index * 0.1 }}
+          className={`${
+            theme === "dark"
+              ? "bg-slate-800/30 border-slate-700/50"
+              : "bg-white border-slate-200"
+          } backdrop-blur-sm border rounded-xl p-6 shadow-sm`}
+        >
+          {/* Prediction Header */}
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <h3 className={`text-lg font-semibold ${text.primary[theme]} font-outfit`}>
+                {prediction.fixture.homeTeam} vs {prediction.fixture.awayTeam}
+              </h3>
+              <p className={`text-sm ${text.muted[theme]} font-outfit`}>
+                {new Date(prediction.fixture.date).toLocaleDateString()} • 
+                {prediction.user.username}
+              </p>
+            </div>
+            <div className={`px-3 py-1 rounded-full text-xs font-medium font-outfit ${
+              prediction.status === 'scored' 
+                ? theme === 'dark' ? 'bg-emerald-900/30 text-emerald-400' : 'bg-emerald-100 text-emerald-700'
+                : theme === 'dark' ? 'bg-amber-900/30 text-amber-400' : 'bg-amber-100 text-amber-700'
+            }`}>
+              {prediction.status === 'scored' ? 'Scored' : 'Pending'}
+            </div>
+          </div>
+
+          {/* Score Prediction */}
+          <div className="grid grid-cols-3 gap-4 mb-4">
+            <div className="text-center">
+              <div className={`text-2xl font-bold ${text.primary[theme]} font-outfit`}>
+                {prediction.homeScore}
+              </div>
+              <div className={`text-sm ${text.muted[theme]} font-outfit`}>
+                {prediction.fixture.homeTeam}
+              </div>
+            </div>
+            <div className="text-center flex items-center justify-center">
+              <span className={`${text.muted[theme]} font-outfit`}>-</span>
+            </div>
+            <div className="text-center">
+              <div className={`text-2xl font-bold ${text.primary[theme]} font-outfit`}>
+                {prediction.awayScore}
+              </div>
+              <div className={`text-sm ${text.muted[theme]} font-outfit`}>
+                {prediction.fixture.awayTeam}
+              </div>
+            </div>
+          </div>
+
+          {/* Goalscorers */}
+          {prediction.goalscorers && prediction.goalscorers.length > 0 && (
+            <div className="mb-4">
+              <h4 className={`text-sm font-medium ${text.primary[theme]} mb-2 font-outfit`}>
+                Predicted Goalscorers
+              </h4>
+              <div className="flex flex-wrap gap-2">
+                {prediction.goalscorers.map((scorer, idx) => (
+                  <span
+                    key={idx}
+                    className={`px-3 py-1 rounded-full text-xs font-medium font-outfit ${
+                      theme === 'dark' 
+                        ? 'bg-blue-900/30 text-blue-400 border border-blue-500/30' 
+                        : 'bg-blue-100 text-blue-700 border border-blue-200'
+                    }`}
+                  >
+                    {scorer.player} ({scorer.team})
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Active Chips */}
+          {prediction.chips && prediction.chips.length > 0 && (
+            <div className="mb-4">
+              <h4 className={`text-sm font-medium ${text.primary[theme]} mb-2 font-outfit`}>
+                Active Chips
+              </h4>
+              <div className="flex flex-wrap gap-2">
+                {prediction.chips.map((chip, idx) => (
+                  <span
+                    key={idx}
+                    className={`px-3 py-1 rounded-full text-xs font-medium font-outfit ${
+                      chip === 'doubleDown' 
+                        ? theme === 'dark' ? 'bg-purple-900/30 text-purple-400' : 'bg-purple-100 text-purple-700'
+                        : chip === 'wildcard'
+                        ? theme === 'dark' ? 'bg-orange-900/30 text-orange-400' : 'bg-orange-100 text-orange-700'
+                        : chip === 'opportunist'
+                        ? theme === 'dark' ? 'bg-green-900/30 text-green-400' : 'bg-green-100 text-green-700'
+                        : chip === 'scorerFocus'
+                        ? theme === 'dark' ? 'bg-blue-900/30 text-blue-400' : 'bg-blue-100 text-blue-700'
+                        : theme === 'dark' ? 'bg-gray-900/30 text-gray-400' : 'bg-gray-100 text-gray-700'
+                    }`}
+                  >
+                    {chip === 'doubleDown' ? 'Double Down' :
+                     chip === 'wildcard' ? 'Wildcard' :
+                     chip === 'opportunist' ? 'Opportunist' :
+                     chip === 'scorerFocus' ? 'Scorer Focus' : chip}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Points Breakdown */}
+          {prediction.points && (
+            <div className="border-t pt-4" style={{ borderColor: theme === 'dark' ? 'rgb(51 65 85 / 0.3)' : 'rgb(226 232 240)' }}>
+              <div className="flex justify-between items-center">
+                <span className={`text-sm font-medium ${text.primary[theme]} font-outfit`}>
+                  Total Points
+                </span>
+                <span className={`text-lg font-bold ${text.primary[theme]} font-outfit`}>
+                  {prediction.points.total}
+                </span>
+              </div>
+              {prediction.points.breakdown && (
+                <div className="mt-2 space-y-1">
+                  {Object.entries(prediction.points.breakdown).map(([key, value]) => (
+                    <div key={key} className="flex justify-between text-xs">
+                      <span className={`${text.muted[theme]} font-outfit capitalize`}>
+                        {key.replace(/([A-Z])/g, ' $1').trim()}
+                      </span>
+                      <span className={`${text.muted[theme]} font-outfit`}>
+                        +{value}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </motion.div>
+      ))}
     </motion.div>
   );
 };

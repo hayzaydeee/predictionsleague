@@ -91,6 +91,19 @@ const leagueAPI = {
       console.error('Failed to update league:', error.message);
       throw new Error(`Failed to update league: ${error.message}`);
     }
+  },
+
+  // Get league predictions (all member predictions for league fixtures)
+  getLeaguePredictions: async (leagueId) => {
+    try {
+      console.log('Fetching league predictions...', { leagueId });
+      const response = await api.get(`/leagues/${leagueId}/predictions`);
+      console.log('League predictions fetched:', response.data?.length || 0, 'predictions');
+      return response.data || [];
+    } catch (error) {
+      console.error('Failed to fetch league predictions:', error.message, { leagueId });
+      throw new Error(`Failed to load league predictions: ${error.message}`);
+    }
   }
 };
 
