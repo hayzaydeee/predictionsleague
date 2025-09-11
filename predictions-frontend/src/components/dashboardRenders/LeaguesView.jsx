@@ -106,12 +106,12 @@ const LeaguesView = ({ onViewLeague, onManageLeague }) => {
   };
 
   // Loading state
-  if (isLoading && activeTab === "my-leagues") {
+  if (isLoading) {
     return <LoadingState message="Loading your leagues..." />;
   }
 
   // Error state
-  if (error && activeTab === "my-leagues") {
+  if (error) {
     return (
       <ErrorState error={error} onRetry={() => window.location.reload()} />
     );
