@@ -5,7 +5,9 @@ const leagueAPI = {
   // Get all leagues for current user
   getUserLeagues: async () => {
     try {
+      console.log('Fetching user leagues...');
       const response = await api.get('/leagues/user');
+      console.log('User leagues fetched successfully:', response.data.leagues?.length || 0, 'leagues');
       return response.data.leagues || mockUserLeagues;
     } catch (error) {
       console.warn('Backend unavailable, using mock data:', error.message);
@@ -16,11 +18,14 @@ const leagueAPI = {
   // Get league details by ID
   getLeagueDetails: async (leagueId) => {
     try {
+      console.log('API: Fetching league details...', { leagueId });
       const response = await api.get(`/leagues/${leagueId}`);
+      console.log('API: League details fetched successfully', { leagueId });
       return response.data.league;
     } catch (error) {
-      console.warn('Backend unavailable, using mock data:', error.message);
+      console.warn('API: Backend unavailable for league details, using mock data:', error.message, { leagueId });
       const mockLeague = mockUserLeagues.find(l => l.id === leagueId) || mockUserLeagues[0];
+      console.log('API: Returning mock league', { leagueId, mockLeagueId: mockLeague.id });
       return {
         ...mockLeague,
         standings: mockLeagueStandings,
@@ -32,18 +37,18 @@ const leagueAPI = {
   // Create new league
   createLeague: async (leagueData) => {
     try {
-      // Transform the data to match backend expectations
       const requestBody = {
         name: leagueData.name,
         description: leagueData.description,
         publicity: leagueData.isPrivate ? 'PRIVATE' : 'PUBLIC'
       };
       
+      console.log('Creating league:', requestBody);
       const response = await api.post('/leagues/create', requestBody);
+      console.log('League created successfully:', response.data.league?.id);
       return response.data.league;
     } catch (error) {
-      console.warn('Backend unavailable, using mock data:', error.message);
-      // Simulate league creation
+      console.warn('Backend unavailable for league creation, using mock data:', error.message);
       const newLeague = {
         id: `league-${Date.now()}`,
         name: leagueData.name,
@@ -62,13 +67,14 @@ const leagueAPI = {
   // Join league by code
   joinLeague: async (joinCode) => {
     try {
+      console.log('Joining league with code:', joinCode);
       const response = await api.post('/leagues/join', { joinCode });
+      console.log('League joined successfully:', response.data.league?.id);
       return response.data.league;
     } catch (error) {
-      console.warn('Backend unavailable, using mock data:', error.message);
-      // Simulate joining a league
+      console.warn('Backend unavailable for league join, using mock data:', error.message);
       if (joinCode === 'DEMO123') {
-        return {
+        const mockLeague = {
           id: 'league-demo',
           name: 'Demo League',
           description: 'A demo league for testing',
@@ -76,6 +82,7 @@ const leagueAPI = {
           joinCode: 'DEMO123',
           status: 'active'
         };
+        return mockLeague;
       } else {
         throw new Error('Invalid join code');
       }
@@ -112,17 +119,6 @@ const leagueAPI = {
     } catch (error) {
       console.warn('Backend unavailable, using mock data:', error.message);
       return { id: leagueId, ...updates };
-    }
-  },
-
-  // Get featured leagues
-  getFeaturedLeagues: async () => {
-    try {
-      const response = await api.get('/leagues/featured');
-      return response.data.leagues;
-    } catch (error) {
-      console.warn('Backend unavailable, using mock data:', error.message);
-      return mockFeaturedLeagues;
     }
   }
 };
