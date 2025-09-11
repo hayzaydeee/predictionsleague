@@ -101,7 +101,7 @@ export default function StatusBar({
                       theme === "dark" ? "text-white/60" : "text-slate-500"
                     }`}
                   >
-                    <span>Rank: {userData.rank.toLocaleString()}</span>
+                    <span>Rank: {userData.rank?.toString() || "N/A"}</span>
                     <span
                       className={`flex items-center ml-2 ${
                         userData.rankChange > 0
@@ -154,7 +154,7 @@ export default function StatusBar({
                     theme === "dark" ? "text-teal-200" : "text-teal-600"
                   } font-bold font-dmSerif text-lg`}
                 >
-                  {userData.points.toLocaleString()}
+                  {userData.points?.toString() || "0"}
                 </span>
               )}
             </div>
