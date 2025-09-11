@@ -177,6 +177,30 @@ export default function ContentPane({
       const selectedLeague = apiLeagues?.find(league => league.id === selectedLeagueId) || 
                            leagues?.find(league => league.id === selectedLeagueId);
       
+      console.log('ContentPane league selection:', {
+        selectedLeagueId,
+        apiLeaguesCount: apiLeagues?.length || 0,
+        fallbackLeaguesCount: leagues?.length || 0,
+        selectedLeague: selectedLeague ? 'found' : 'not found',
+        secondaryLoading
+      });
+
+      // If we're still loading and no league found, show loading
+      if (!selectedLeague && secondaryLoading) {
+        return (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex flex-col justify-center items-center py-12 space-y-4"
+          >
+            <div className={`w-8 h-8 border-2 ${theme === 'dark' ? 'border-teal-400' : 'border-teal-600'} border-t-transparent rounded-full animate-spin`}></div>
+            <p className={`text-sm ${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'} font-outfit`}>
+              Loading leagues data...
+            </p>
+          </motion.div>
+        );
+      }
+      
       if (isManagingLeague) {
         return (
           <LeagueManagementView

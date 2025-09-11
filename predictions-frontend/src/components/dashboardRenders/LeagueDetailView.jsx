@@ -26,18 +26,26 @@ const LeagueDetailView = ({ leagueId, league, onBack, onManage }) => {
   // Get theme context
   const { theme } = useContext(ThemeContext);
 
+  console.log('LeagueDetailView props:', { leagueId, league: league ? 'present' : 'missing' });
+
   // Use the passed league object, with fallback to loading state
   if (!league) {
+    console.log('LeagueDetailView: No league data, showing loading state');
     return (
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="flex justify-center items-center py-12"
+        className="flex flex-col justify-center items-center py-12 space-y-4"
       >
         <div className={`w-8 h-8 border-2 ${theme === 'dark' ? 'border-teal-400' : 'border-teal-600'} border-t-transparent rounded-full animate-spin`}></div>
+        <p className={`text-sm ${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'} font-outfit`}>
+          Loading league details...
+        </p>
       </motion.div>
     );
   }
+
+  console.log('LeagueDetailView: League data found:', league.name);
 
   // Safe date formatter that handles invalid dates
   const formatSafeDate = (dateValue, formatString) => {
@@ -311,7 +319,7 @@ const LeagueDetailView = ({ leagueId, league, onBack, onManage }) => {
           {" "}
           {activeTab === "leaderboard" && (
             <LeaderboardContent
-              leaderboard={league.leaderboard}
+              leagueId={leagueId}
               formatSafeDate={formatSafeDate}
             />
           )}
@@ -325,8 +333,57 @@ const LeagueDetailView = ({ leagueId, league, onBack, onManage }) => {
 };
 
 // Leaderboard Content Component
-const LeaderboardContent = ({ leaderboard, formatSafeDate }) => {
+const LeaderboardContent = ({ leagueId, formatSafeDate }) => {
   const { theme } = useContext(ThemeContext);
+  const [standings, setStandings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchStandings = async () => {
+      try {
+        setLoading(true);
+        const data = await leagueAPI.getLeagueStandings(leagueId);
+        setStandings(data.standings || []);
+      } catch (err) {
+        console.error('Failed to fetch league standings:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (leagueId) {
+      fetchStandings();
+    }
+  }, [leagueId]);
+
+  if (loading) {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="flex justify-center py-12"
+      >
+        <div className={`w-8 h-8 border-2 ${theme === 'dark' ? 'border-teal-400' : 'border-teal-600'} border-t-transparent rounded-full animate-spin`}></div>
+      </motion.div>
+    );
+  }
+
+  if (error) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center py-12"
+      >
+        <div className={`text-red-500 mb-4`}>
+          <ExclamationTriangleIcon className="w-12 h-12 mx-auto mb-2" />
+          <p className="font-outfit">Failed to load standings</p>
+        </div>
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div
@@ -352,15 +409,15 @@ const LeaderboardContent = ({ leaderboard, formatSafeDate }) => {
               Leaderboard
             </h2>
             <p className={`${text.muted[theme]} text-sm font-outfit`}>
-              {leaderboard && leaderboard.length > 0
-                ? `${leaderboard.length} members competing`
+              {standings && standings.length > 0
+                ? `${standings.length} members competing`
                 : "No rankings yet"}
             </p>
           </div>
         </div>
       </div>
 
-      {leaderboard && leaderboard.length > 0 ? (
+      {standings && standings.length > 0 ? (
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
@@ -401,17 +458,21 @@ const LeaderboardContent = ({ leaderboard, formatSafeDate }) => {
                 theme === "dark" ? "divide-slate-700/20" : "divide-slate-200"
               }`}
             >
-              {leaderboard.map((player, index) => (
+              {standings.map((player, index) => (
                 <motion.tr
                   key={player.id}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
                   className={`${
-                    theme === "dark"
+                    player.isCurrentUser
+                      ? theme === "dark"
+                        ? "bg-teal-900/20 border-teal-500/30"
+                        : "bg-teal-50 border-teal-200"
+                      : theme === "dark"
                       ? "hover:bg-slate-700/20"
                       : "hover:bg-slate-50"
-                  } transition-colors`}
+                  } transition-colors ${player.isCurrentUser ? 'border-l-2' : ''}`}
                 >
                   <td className="px-6 py-4">
                     <div
@@ -433,24 +494,18 @@ const LeaderboardContent = ({ leaderboard, formatSafeDate }) => {
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 bg-gradient-to-br from-teal-500 to-indigo-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                        {player.name.charAt(0)}
+                        {player.displayName.charAt(0)}
                       </div>
                       <div>
                         <div
                           className={`${text.primary[theme]} font-medium font-outfit`}
                         >
-                          {player.name}
+                          {player.displayName}
                         </div>
                         <div
                           className={`${text.muted[theme]} text-sm font-outfit`}
                         >
-                          {index === 0
-                            ? "🏆 Champion"
-                            : index === 1
-                            ? "🥈 Runner-up"
-                            : index === 2
-                            ? "🥉 Third place"
-                            : "Competitor"}
+                          @{player.username}
                         </div>
                       </div>
                     </div>
@@ -461,7 +516,7 @@ const LeaderboardContent = ({ leaderboard, formatSafeDate }) => {
                         className={`w-4 h-4 ${text.muted[theme]}`}
                       />
                       <span className="font-outfit">
-                        {formatSafeDate(player.joinedDate, "MMM d, yyyy")}
+                        {formatSafeDate(player.joinedAt, "MMM d, yyyy")}
                       </span>
                     </div>
                   </td>

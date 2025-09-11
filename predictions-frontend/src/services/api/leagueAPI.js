@@ -15,18 +15,8 @@ const leagueAPI = {
     }
   },
 
-  // Get league details by ID
-  getLeagueDetails: async (leagueId) => {
-    try {
-      console.log('Fetching league details...', { leagueId });
-      const response = await api.get(`/leagues/${leagueId}`);
-      console.log('League details fetched successfully', { leagueId });
-      return response.data.league;
-    } catch (error) {
-      console.error('Failed to fetch league details:', error.message, { leagueId });
-      throw new Error(`Failed to load league details: ${error.message}`);
-    }
-  },
+  // Note: getLeagueDetails removed - league header data now included in getUserLeagues response
+  // This eliminates redundant API calls for league detail views
 
   // Create new league
   createLeague: async (leagueData) => {
@@ -74,10 +64,13 @@ const leagueAPI = {
   // Get league standings
   getLeagueStandings: async (leagueId) => {
     try {
+      console.log('Fetching league standings...', { leagueId });
       const response = await api.get(`/leagues/${leagueId}/standings`);
-      return response.data.standings;
+      console.log('League standings fetched:', response.data?.standings?.length || 0, 'members');
+      // Return the direct format: { leagueId, standings }
+      return response.data;
     } catch (error) {
-      console.error('Failed to fetch league standings:', error.message);
+      console.error('Failed to fetch league standings:', error.message, { leagueId });
       throw new Error(`Failed to load league standings: ${error.message}`);
     }
   },
@@ -103,6 +96,45 @@ const leagueAPI = {
     } catch (error) {
       console.error('Failed to fetch league predictions:', error.message, { leagueId });
       throw new Error(`Failed to load league predictions: ${error.message}`);
+    }
+  },
+
+  // Get league members (for management view - admin only)
+  getLeagueMembers: async (leagueId) => {
+    try {
+      console.log('Fetching league members...', { leagueId });
+      const response = await api.get(`/leagues/${leagueId}/members`);
+      console.log('League members fetched:', response.data?.length || 0, 'members');
+      return response.data || [];
+    } catch (error) {
+      console.error('Failed to fetch league members:', error.message, { leagueId });
+      throw new Error(`Failed to load league members: ${error.message}`);
+    }
+  },
+
+  // Remove member from league (admin only)
+  removeMember: async (leagueId, memberId) => {
+    try {
+      console.log('Removing member from league...', { leagueId, memberId });
+      const response = await api.delete(`/leagues/${leagueId}/members/${memberId}`);
+      console.log('Member removed successfully');
+      return response.data;
+    } catch (error) {
+      console.error('Failed to remove member:', error.message, { leagueId, memberId });
+      throw new Error(`Failed to remove member: ${error.message}`);
+    }
+  },
+
+  // Promote member to admin (admin only)
+  promoteMember: async (leagueId, memberId) => {
+    try {
+      console.log('Promoting member to admin...', { leagueId, memberId });
+      const response = await api.put(`/leagues/${leagueId}/members/${memberId}/promote`);
+      console.log('Member promoted successfully');
+      return response.data;
+    } catch (error) {
+      console.error('Failed to promote member:', error.message, { leagueId, memberId });
+      throw new Error(`Failed to promote member: ${error.message}`);
     }
   }
 };
