@@ -8,6 +8,7 @@ const leagueAPI = {
       console.log('Fetching user leagues...');
       const response = await api.get('/leagues/user');
       console.log('User leagues fetched successfully:', response.data.leagues?.length || 0, 'leagues');
+      console.log('User leagues data:', response.data.leagues);
       return response.data.leagues || [];
     } catch (error) {
       console.error('Failed to fetch user leagues:', error.message);
