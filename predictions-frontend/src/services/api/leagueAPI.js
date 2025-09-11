@@ -6,16 +6,10 @@ const leagueAPI = {
   getUserLeagues: async () => {
     try {
       const response = await api.get('/leagues/user');
-      return {
-        success: true,
-        leagues: response.data.leagues || mockUserLeagues
-      };
+      return response.data.leagues || mockUserLeagues;
     } catch (error) {
       console.warn('Backend unavailable, using mock data:', error.message);
-      return {
-        success: true,
-        leagues: mockUserLeagues
-      };
+      return mockUserLeagues;
     }
   },
 
@@ -23,20 +17,14 @@ const leagueAPI = {
   getLeagueDetails: async (leagueId) => {
     try {
       const response = await api.get(`/leagues/${leagueId}`);
-      return {
-        success: true,
-        league: response.data.league
-      };
+      return response.data.league;
     } catch (error) {
       console.warn('Backend unavailable, using mock data:', error.message);
       const mockLeague = mockUserLeagues.find(l => l.id === leagueId) || mockUserLeagues[0];
       return {
-        success: true,
-        league: {
-          ...mockLeague,
-          standings: mockLeagueStandings,
-          recentActivity: mockRecentActivity
-        }
+        ...mockLeague,
+        standings: mockLeagueStandings,
+        recentActivity: mockRecentActivity
       };
     }
   },
@@ -44,27 +32,30 @@ const leagueAPI = {
   // Create new league
   createLeague: async (leagueData) => {
     try {
-      const response = await api.post('/leagues', leagueData);
-      return {
-        success: true,
-        league: response.data.league
+      // Transform the data to match backend expectations
+      const requestBody = {
+        name: leagueData.name,
+        description: leagueData.description,
+        publicity: leagueData.isPrivate ? 'PRIVATE' : 'PUBLIC'
       };
+      
+      const response = await api.post('/leagues/create', requestBody);
+      return response.data.league;
     } catch (error) {
       console.warn('Backend unavailable, using mock data:', error.message);
       // Simulate league creation
       const newLeague = {
         id: `league-${Date.now()}`,
-        ...leagueData,
+        name: leagueData.name,
+        description: leagueData.description,
+        publicity: leagueData.isPrivate ? 'PRIVATE' : 'PUBLIC',
         memberCount: 1,
         joinCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
         createdBy: 'temp-user-123',
         createdAt: new Date().toISOString(),
         status: 'active'
       };
-      return {
-        success: true,
-        league: newLeague
-      };
+      return newLeague;
     }
   },
 
@@ -72,30 +63,21 @@ const leagueAPI = {
   joinLeague: async (joinCode) => {
     try {
       const response = await api.post('/leagues/join', { joinCode });
-      return {
-        success: true,
-        league: response.data.league
-      };
+      return response.data.league;
     } catch (error) {
       console.warn('Backend unavailable, using mock data:', error.message);
       // Simulate joining a league
       if (joinCode === 'DEMO123') {
         return {
-          success: true,
-          league: {
-            id: 'league-demo',
-            name: 'Demo League',
-            description: 'A demo league for testing',
-            memberCount: 25,
-            joinCode: 'DEMO123',
-            status: 'active'
-          }
+          id: 'league-demo',
+          name: 'Demo League',
+          description: 'A demo league for testing',
+          memberCount: 25,
+          joinCode: 'DEMO123',
+          status: 'active'
         };
       } else {
-        return {
-          success: false,
-          error: 'Invalid join code'
-        };
+        throw new Error('Invalid join code');
       }
     }
   },
@@ -104,16 +86,10 @@ const leagueAPI = {
   leaveLeague: async (leagueId) => {
     try {
       const response = await api.delete(`/leagues/${leagueId}/leave`);
-      return {
-        success: true,
-        message: response.data.message
-      };
+      return response.data.message;
     } catch (error) {
       console.warn('Backend unavailable, using mock data:', error.message);
-      return {
-        success: true,
-        message: 'Successfully left the league'
-      };
+      return 'Successfully left the league';
     }
   },
 
@@ -121,16 +97,10 @@ const leagueAPI = {
   getLeagueStandings: async (leagueId) => {
     try {
       const response = await api.get(`/leagues/${leagueId}/standings`);
-      return {
-        success: true,
-        standings: response.data.standings
-      };
+      return response.data.standings;
     } catch (error) {
       console.warn('Backend unavailable, using mock data:', error.message);
-      return {
-        success: true,
-        standings: mockLeagueStandings
-      };
+      return mockLeagueStandings;
     }
   },
 
@@ -138,16 +108,10 @@ const leagueAPI = {
   updateLeague: async (leagueId, updates) => {
     try {
       const response = await api.put(`/leagues/${leagueId}`, updates);
-      return {
-        success: true,
-        league: response.data.league
-      };
+      return response.data.league;
     } catch (error) {
       console.warn('Backend unavailable, using mock data:', error.message);
-      return {
-        success: true,
-        league: { id: leagueId, ...updates }
-      };
+      return { id: leagueId, ...updates };
     }
   },
 
@@ -155,16 +119,10 @@ const leagueAPI = {
   getFeaturedLeagues: async () => {
     try {
       const response = await api.get('/leagues/featured');
-      return {
-        success: true,
-        leagues: response.data.leagues
-      };
+      return response.data.leagues;
     } catch (error) {
       console.warn('Backend unavailable, using mock data:', error.message);
-      return {
-        success: true,
-        leagues: mockFeaturedLeagues
-      };
+      return mockFeaturedLeagues;
     }
   }
 };
@@ -175,11 +133,11 @@ const mockUserLeagues = [
     id: 'league-1',
     name: 'Premier League Predictions',
     description: 'Predict Premier League matches with friends',
-    memberCount: 42,
-    currentRank: 3,
-    totalPoints: 284,
+    members: 42,
+    position: 3,
+    points: 284,
     joinCode: 'PL2024',
-    isOwner: true,
+    isAdmin: true,
     status: 'active',
     createdAt: '2024-08-01T00:00:00Z',
     gameweek: 15,
@@ -189,11 +147,11 @@ const mockUserLeagues = [
     id: 'league-2',
     name: 'Office Fantasy League',
     description: 'Workplace predictions competition',
-    memberCount: 18,
-    currentRank: 7,
-    totalPoints: 156,
+    members: 18,
+    position: 7,
+    points: 156,
     joinCode: 'OFFICE24',
-    isOwner: false,
+    isAdmin: false,
     status: 'active',
     createdAt: '2024-09-15T00:00:00Z',
     gameweek: 15,
@@ -203,11 +161,11 @@ const mockUserLeagues = [
     id: 'league-3',
     name: 'Champions League Elite',
     description: 'European competition predictions',
-    memberCount: 156,
-    currentRank: 23,
-    totalPoints: 198,
+    members: 156,
+    position: 23,
+    points: 198,
     joinCode: 'UCL2024',
-    isOwner: false,
+    isAdmin: false,
     status: 'active',
     createdAt: '2024-09-01T00:00:00Z',
     gameweek: 6,

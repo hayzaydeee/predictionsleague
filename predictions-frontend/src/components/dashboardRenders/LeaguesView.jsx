@@ -68,12 +68,9 @@ const LeaguesView = ({ onViewLeague, onManageLeague }) => {
     const result = await joinLeague(leagueCode);
 
     if (result.success) {
-      showToast(result.message, "success");
       setLeagueCode("");
       setShowJoinModal(false);
       setActiveTab("my-leagues");
-    } else {
-      showToast(result.message, "error");
     }
 
     setJoiningLeague(false);
@@ -86,10 +83,7 @@ const LeaguesView = ({ onViewLeague, onManageLeague }) => {
     const result = await joinFeaturedLeague(leagueId);
 
     if (result.success) {
-      showToast(result.message, "success");
       setActiveTab("my-leagues");
-    } else {
-      showToast(result.message, "warning");
     }
 
     setJoiningLeague(false);
