@@ -295,6 +295,8 @@ export const authAPI = {
       if (response.ok) {
         const user = await response.json();
         
+        console.log('🔍 AuthAPI.getCurrentUser - Raw response from server:', user);
+        
         // Update localStorage to reflect successful authentication
         setTokens('http-only', 'http-only');
         

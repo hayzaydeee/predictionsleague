@@ -192,20 +192,24 @@ class AuthService {
    * Validate user data for security
    */
   validateUserData(user) {
+    console.log('🔒 AuthService - Validating user data:', user);
+    
     if (!user || typeof user !== 'object') {
       console.warn('🔒 Invalid user data type');
       return false;
     }
 
-    // Check for email (always required)
-    if (!user.email || typeof user.email !== 'string') {
+    // Check for email (always required) - try different field names
+    const email = user.email || user.emailAddress || user.userEmail;
+    if (!email || typeof email !== 'string') {
       console.warn('🔒 User data missing required email field');
+      console.warn('🔒 Available user fields:', Object.keys(user));
       return false;
     }
 
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(user.email)) {
+    if (!emailRegex.test(email)) {
       console.warn('🔒 Invalid email format in user data');
       return false;
     }
