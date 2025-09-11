@@ -7,26 +7,8 @@ const leagueAPI = {
     try {
       console.log('Fetching user leagues...');
       const response = await api.get('/leagues/user');
-      console.log('Full API response:', response);
-      console.log('Response data:', response.data);
-      
-      // Handle different possible response structures
-      let leagues = [];
-      if (response.data) {
-        if (Array.isArray(response.data)) {
-          // If data is directly an array
-          leagues = response.data;
-        } else if (response.data.leagues && Array.isArray(response.data.leagues)) {
-          // If data has a leagues property
-          leagues = response.data.leagues;
-        } else if (response.data.data && Array.isArray(response.data.data)) {
-          // If nested under data.data
-          leagues = response.data.data;
-        }
-      }
-      
-      console.log('Processed leagues:', leagues?.length || 0, 'leagues');
-      return leagues;
+      console.log('User leagues fetched:', response.data?.length || 0, 'leagues');
+      return response.data || [];
     } catch (error) {
       console.error('Failed to fetch user leagues:', error.message);
       return [];
