@@ -304,7 +304,11 @@ export const authAPI = {
         throw new Error(`Authentication check failed: ${response.status}`);
       }
     } catch (error) {
-      // Don't show error notifications for auth checks
+      // Don't log 401 errors - they're expected for OAuth users during onboarding
+      if (!error.message?.includes('401') && !error.message?.includes('Authentication check failed: 401')) {
+        console.error('AuthAPI.getCurrentUser - Unexpected error:', error);
+      }
+      // Still throw the error so AuthContext can handle it appropriately
       throw error;
     }
   },
