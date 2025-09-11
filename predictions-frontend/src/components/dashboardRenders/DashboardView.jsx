@@ -55,12 +55,9 @@ const DashboardView = ({
   const formatWeeklyPoints = (weeklyPoints) => {
     if (!weeklyPoints) return { value: "0", subtitle: "No data", badge: null, trend: null };
     
-    const rankValue = weeklyPoints.rank;
-    const rankString = (rankValue !== undefined && rankValue !== null) ? rankValue.toLocaleString() : "N/A";
-    
     return {
       value: weeklyPoints.value?.toString() || "0",
-      subtitle: `Rank: ${rankString} this week`,
+      subtitle: `Rank: ${weeklyPoints.rank?.toString() || "N/A"} this week`,
       badge: weeklyPoints.difference ? {
         text: `${weeklyPoints.difference > 0 ? '+' : ''}${weeklyPoints.difference} from last GW`,
         type: weeklyPoints.difference > 0 ? "success" : weeklyPoints.difference < 0 ? "warning" : "neutral",
@@ -92,15 +89,12 @@ const DashboardView = ({
       if (rank !== undefined && rank !== null && rank >= 1000) {
         return `${(rank / 1000).toFixed(1)}K`;
       }
-      return rank !== undefined && rank !== null ? rank.toString() : "N/A";
+      return rank?.toString() || "N/A";
     };
-
-    const percentileValue = globalRank.percentile;
-    const percentileString = (percentileValue !== undefined && percentileValue !== null) ? percentileValue.toFixed(0) : "N/A";
 
     return {
       value: formatRank(globalRank.value),
-      subtitle: `Top ${percentileString}% worldwide`,
+      subtitle: `Top ${globalRank.percentile?.toFixed(0) || "N/A"}% worldwide`,
       badge: null, // Can add trend data here if available from backend
     };
   };
