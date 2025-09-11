@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { dashboardAPI } from '../services/api/dashboardApi';
-import { leagueAPI } from '../services/api/leagueAPI';
+import leagueAPI from '../services/api/leagueAPI';
 
 // This hook implements progressive loading with real API calls
 // It uses the hybrid API approach with dashboard/ endpoints for secondary data
