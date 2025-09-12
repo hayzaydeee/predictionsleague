@@ -8,12 +8,28 @@ import FixtureFilters from "../fixtures/FixtureFilters";
 import { ThemeContext } from "../../context/ThemeContext";
 import { useUserPreferences } from "../../context/UserPreferencesContext";
 import { backgrounds, text } from "../../utils/themeUtils";
-import { fixtures, gameweeks, upcomingMatches } from "../../data/sampleData";
+import { gameweeks, upcomingMatches } from "../../data/sampleData";
+import { useClientSideFixtures } from "../../hooks/useClientSideFixtures";
 
 const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
   // Get theme context and user preferences
   const { theme } = useContext(ThemeContext);
   const { preferences } = useUserPreferences();
+
+  // Fetch fixtures using the new hybrid hook
+  const {
+    fixtures: liveFixtures,
+    isLoading: fixturesLoading,
+    isError: fixturesError,
+    error: fixturesErrorDetails,
+    dataQuality,
+    stats
+  } = useClientSideFixtures({
+    competitions: ['PL', 'CL'], // Premier League and Champions League
+    status: 'SCHEDULED',
+    fallbackToSample: true, // Use sample data if external API fails
+    includeUnpredicted: true
+  });
 
   const [currentGameweek, setCurrentGameweek] = useState(
     gameweeks?.[0]?.id || 36
@@ -43,7 +59,7 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
     );
   };
   // Filter fixtures based on selected filters
-  const filteredFixtures = fixtures.filter((fixture) => {
+  const filteredFixtures = (liveFixtures || []).filter((fixture) => {
     // Filter by status
     if (activeFilter === "unpredicted" && fixture.predicted) return false;
     if (activeFilter === "predicted" && !fixture.predicted) return false;
@@ -89,6 +105,78 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
     handleFixtureSelect(fixture, activeGameweekChips);
   };
 
+  // Loading state
+  if (fixturesLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h1
+              className={`${
+                theme === "dark" ? "text-teal-100" : "text-teal-700"
+              } text-3xl font-bold font-dmSerif`}
+            >
+              Fixtures
+            </h1>
+            <p className={`${text.secondary[theme]} font-outfit`}>
+              Loading fixtures...
+            </p>
+          </div>
+        </div>
+        <div
+          className={`${
+            theme === "dark"
+              ? "backdrop-blur-xl border-slate-700/50 bg-slate-900/60"
+              : "border-slate-200 bg-white/80 backdrop-blur-sm shadow-sm"
+          } rounded-xl border mb-5 overflow-hidden font-outfit p-8`}
+        >
+          <div className="flex items-center justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-500"></div>
+            <span className={`${text.secondary[theme]} ml-3`}>
+              Loading fixtures from {dataQuality?.usingFallback ? 'sample data' : 'live API'}...
+            </span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state (only show if not using fallback)
+  if (fixturesError && !dataQuality?.usingFallback) {
+    return (
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h1
+              className={`${
+                theme === "dark" ? "text-teal-100" : "text-teal-700"
+              } text-3xl font-bold font-dmSerif`}
+            >
+              Fixtures
+            </h1>
+            <p className={`${text.secondary[theme]} font-outfit`}>
+              Error loading fixtures
+            </p>
+          </div>
+        </div>
+        <div
+          className={`${
+            theme === "dark"
+              ? "backdrop-blur-xl border-slate-700/50 bg-slate-900/60"
+              : "border-slate-200 bg-white/80 backdrop-blur-sm shadow-sm"
+          } rounded-xl border mb-5 overflow-hidden font-outfit p-8`}
+        >
+          <div className="text-center">
+            <div className="text-red-500 mb-2">⚠️ Error Loading Fixtures</div>
+            <p className={`${text.secondary[theme]} text-sm`}>
+              {fixturesErrorDetails?.message || 'Unable to load fixtures data'}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -102,6 +190,20 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
           </h1>
           <p className={`${text.secondary[theme]} font-outfit`}>
             View and predict upcoming fixtures
+            {dataQuality && (
+              <span className="ml-2 text-xs">
+                {dataQuality.usingFallback ? (
+                  <span className="text-amber-500">• Using sample data</span>
+                ) : (
+                  <span className="text-green-500">• Live data</span>
+                )}
+                {stats && (
+                  <span className="ml-2">
+                    ({stats.predicted}/{stats.total} predicted)
+                  </span>
+                )}
+              </span>
+            )}
           </p>
         </div>
 
