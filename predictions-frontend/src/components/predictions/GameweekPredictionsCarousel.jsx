@@ -4,13 +4,11 @@ import {
   ChevronLeftIcon, 
   ChevronRightIcon, 
   CalendarIcon,
-  PersonIcon,
   TargetIcon,
   ClockIcon
 } from "@radix-ui/react-icons";
 import { format, parseISO } from "date-fns";
 import { ThemeContext } from "../../context/ThemeContext";
-import { useCarouselScroll } from "../../hooks/useCarouselScroll";
 
 const GameweekPredictionsCarousel = ({
   predictions,
@@ -22,6 +20,7 @@ const GameweekPredictionsCarousel = ({
   const { theme } = useContext(ThemeContext);
   const [activeMatchIndex, setActiveMatchIndex] = useState(0);
   const [selectedPrediction, setSelectedPrediction] = useState(null);
+  const [carouselIndex, setCarouselIndex] = useState(0);
   const carouselRef = useRef(null);
 
   // Group predictions by match within the current gameweek
@@ -47,20 +46,6 @@ const GameweekPredictionsCarousel = ({
   }, {});
 
   const matches = Object.values(predictionsByMatch);
-
-  // Carousel scroll functionality for current match predictions
-  const {
-    currentIndex,
-    canScrollLeft,
-    canScrollRight,
-    scrollLeft,
-    scrollRight,
-    scrollToIndex
-  } = useCarouselScroll({
-    ref: carouselRef,
-    itemsPerView: 3,
-    totalItems: matches[activeMatchIndex]?.predictions.length || 0
-  });
 
   if (matches.length === 0) {
     return (
@@ -91,6 +76,10 @@ const GameweekPredictionsCarousel = ({
   }
 
   const currentMatch = matches[activeMatchIndex];
+  const itemsPerView = 3;
+  const maxCarouselIndex = Math.max(0, currentMatch.predictions.length - itemsPerView);
+  const canScrollLeft = carouselIndex > 0;
+  const canScrollRight = carouselIndex < maxCarouselIndex;
 
   const handlePredictionClick = (prediction) => {
     setSelectedPrediction(prediction);
@@ -101,7 +90,20 @@ const GameweekPredictionsCarousel = ({
 
   const handleMatchChange = (matchIndex) => {
     setActiveMatchIndex(matchIndex);
-    setSelectedPrediction(null); // Reset selection when changing matches
+    setSelectedPrediction(null);
+    setCarouselIndex(0); // Reset carousel when changing matches
+  };
+
+  const scrollLeft = () => {
+    if (canScrollLeft) {
+      setCarouselIndex(prev => Math.max(0, prev - 1));
+    }
+  };
+
+  const scrollRight = () => {
+    if (canScrollRight) {
+      setCarouselIndex(prev => Math.min(maxCarouselIndex, prev + 1));
+    }
   };
 
   return (
@@ -112,27 +114,25 @@ const GameweekPredictionsCarousel = ({
       className="space-y-6"
     >
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <div className={`p-2 rounded-lg ${
-            theme === "dark" 
-              ? "bg-slate-800/50 border-slate-700" 
-              : "bg-slate-50 border-slate-200"
-          } border`}>
-            <TargetIcon className="w-5 h-5 text-teal-600" />
-          </div>
-          <div>
-            <h3 className={`text-xl font-bold ${
-              theme === "dark" ? "text-white" : "text-slate-900"
-            } font-outfit`}>
-              Gameweek {currentGameweek}
-            </h3>
-            <p className={`text-sm ${
-              theme === "dark" ? "text-slate-400" : "text-slate-600"
-            } font-outfit`}>
-              League Predictions
-            </p>
-          </div>
+      <div className="flex items-center space-x-3">
+        <div className={`p-2 rounded-lg ${
+          theme === "dark" 
+            ? "bg-slate-800/50 border-slate-700" 
+            : "bg-slate-50 border-slate-200"
+        } border`}>
+          <TargetIcon className="w-5 h-5 text-teal-600" />
+        </div>
+        <div>
+          <h3 className={`text-xl font-bold ${
+            theme === "dark" ? "text-white" : "text-slate-900"
+          } font-outfit`}>
+            Gameweek {currentGameweek}
+          </h3>
+          <p className={`text-sm ${
+            theme === "dark" ? "text-slate-400" : "text-slate-600"
+          } font-outfit`}>
+            League Predictions
+          </p>
         </div>
       </div>
 
@@ -270,7 +270,7 @@ const GameweekPredictionsCarousel = ({
               </h4>
               
               {/* Carousel Controls */}
-              {currentMatch.predictions.length > 3 && (
+              {currentMatch.predictions.length > itemsPerView && (
                 <div className="flex items-center space-x-2">
                   <button
                     onClick={scrollLeft}
@@ -285,6 +285,11 @@ const GameweekPredictionsCarousel = ({
                   >
                     <ChevronLeftIcon className="w-4 h-4" />
                   </button>
+                  <span className={`text-sm ${
+                    theme === "dark" ? "text-slate-400" : "text-slate-600"
+                  } font-outfit`}>
+                    {carouselIndex + 1}-{Math.min(carouselIndex + itemsPerView, currentMatch.predictions.length)} of {currentMatch.predictions.length}
+                  </span>
                   <button
                     onClick={scrollRight}
                     disabled={!canScrollRight}
@@ -304,12 +309,12 @@ const GameweekPredictionsCarousel = ({
             
             {/* Predictions Cards Container */}
             <div className="relative overflow-hidden">
-              <div
-                ref={carouselRef}
-                className="flex gap-4 transition-transform duration-300 ease-out"
-                style={{
-                  transform: `translateX(-${currentIndex * (100 / 3)}%)`
+              <motion.div
+                className="flex gap-4"
+                animate={{
+                  x: `-${carouselIndex * (100 / itemsPerView)}%`
                 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
               >
                 {currentMatch.predictions.map((prediction, index) => (
                   <motion.div
@@ -318,7 +323,7 @@ const GameweekPredictionsCarousel = ({
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: index * 0.1 }}
                     onClick={() => handlePredictionClick(prediction)}
-                    className={`flex-shrink-0 w-full max-w-xs cursor-pointer transition-all duration-300 ${
+                    className={`flex-shrink-0 w-full md:w-1/3 cursor-pointer transition-all duration-300 ${
                       theme === "dark"
                         ? "bg-slate-800/50 border-slate-700/50 hover:bg-slate-800/70"
                         : "bg-white border-slate-200 hover:shadow-md"
@@ -384,7 +389,7 @@ const GameweekPredictionsCarousel = ({
                           </div>
                           <div className={`text-xs ${
                             theme === "dark" ? "text-slate-500" : "text-slate-500"
-                          } font-outfit mt-1`}>
+                          } font-outfit mt-1 truncate`}>
                             {currentMatch.matchInfo.homeTeam}
                           </div>
                         </div>
@@ -403,7 +408,7 @@ const GameweekPredictionsCarousel = ({
                           </div>
                           <div className={`text-xs ${
                             theme === "dark" ? "text-slate-500" : "text-slate-500"
-                          } font-outfit mt-1`}>
+                          } font-outfit mt-1 truncate`}>
                             {currentMatch.matchInfo.awayTeam}
                           </div>
                         </div>
@@ -438,7 +443,7 @@ const GameweekPredictionsCarousel = ({
                     )}
                   </motion.div>
                 ))}
-              </div>
+              </motion.div>
             </div>
           </div>
         </motion.div>
