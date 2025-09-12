@@ -111,9 +111,16 @@ const leagueAPI = {
   getLeaguePredictions: async (leagueId) => {
     try {
       console.log('Fetching league predictions...', { leagueId });
-      const response = await api.get(`/leagues/${leagueId}/predictions`);
-      console.log('League predictions fetched:', response.data?.length || 0, 'predictions');
-      return response.data || [];
+      
+      // Temporary: Return sample data for testing the carousel
+      // TODO: Replace with actual API call when backend is ready
+      const { leaguePredictions } = await import('../../data/sampleData.js');
+      console.log('League predictions fetched (sample data):', leaguePredictions.length, 'predictions');
+      return leaguePredictions;
+      
+      // const response = await api.get(`/leagues/${leagueId}/predictions`);
+      // console.log('League predictions fetched:', response.data?.length || 0, 'predictions');
+      // return response.data || [];
     } catch (error) {
       console.error('Failed to fetch league predictions:', error.message, { leagueId });
       throw new Error(`Failed to load league predictions: ${error.message}`);

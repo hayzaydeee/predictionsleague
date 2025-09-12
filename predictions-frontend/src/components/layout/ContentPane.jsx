@@ -179,12 +179,7 @@ export default function ContentPane({
       
       console.log('ContentPane league selection:', {
         selectedLeagueId,
-        apiLeaguesCount: apiLeagues?.length || 0,
-        fallbackLeaguesCount: leagues?.length || 0,
-        selectedLeague: selectedLeague ? 'found' : 'not found',
-        secondaryLoading,
-        apiLeagueIds: apiLeagues?.map(l => l.id) || [],
-        fallbackLeagueIds: leagues?.map(l => l.id) || []
+        selectedLeague: selectedLeague ? 'found' : 'not found'
       });
 
       // If we're still loading and no league found, show loading

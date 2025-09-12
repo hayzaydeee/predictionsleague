@@ -19,6 +19,8 @@ import { showToast } from "../../services/notificationService";
 import { ThemeContext } from "../../context/ThemeContext";
 import { backgrounds, text, buttons } from "../../utils/themeUtils";
 import leagueAPI from "../../services/api/leagueAPI";
+import GameweekPredictionsCarousel from "../predictions/GameweekPredictionsCarousel";
+import { teamLogos } from "../../data/sampleData";
 
 const LeagueDetailView = ({ leagueId, league, onBack, onManage }) => {
   const [activeTab, setActiveTab] = useState("leaderboard");
@@ -557,6 +559,8 @@ const PredictionsContent = ({ leagueId }) => {
   const [predictions, setPredictions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [currentGameweek, setCurrentGameweek] = useState(15); // Default to current gameweek
+  const [selectedPrediction, setSelectedPrediction] = useState(null);
 
   useEffect(() => {
     const fetchPredictions = async () => {
@@ -576,6 +580,9 @@ const PredictionsContent = ({ leagueId }) => {
       fetchPredictions();
     }
   }, [leagueId]);
+
+  // Get available gameweeks from predictions
+  const availableGameweeks = [...new Set(predictions.map(p => p.gameweek))].sort((a, b) => b - a);
 
   if (loading) {
     return (
@@ -625,6 +632,12 @@ const PredictionsContent = ({ leagueId }) => {
     );
   }
 
+  const handlePredictionSelect = (prediction) => {
+    setSelectedPrediction(prediction);
+    // Could open a detailed modal here if needed
+    console.log('Selected prediction:', prediction);
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -632,145 +645,38 @@ const PredictionsContent = ({ leagueId }) => {
       exit={{ opacity: 0, y: -20 }}
       className="space-y-6"
     >
-      {predictions.map((prediction, index) => (
-        <motion.div
-          key={prediction.id || index}
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: index * 0.1 }}
-          className={`${
-            theme === "dark"
-              ? "bg-slate-800/30 border-slate-700/50"
-              : "bg-white border-slate-200"
-          } backdrop-blur-sm border rounded-xl p-6 shadow-sm`}
-        >
-          {/* Prediction Header */}
-          <div className="flex justify-between items-start mb-4">
-            <div>
-              <h3 className={`text-lg font-semibold ${text.primary[theme]} font-outfit`}>
-                {prediction.fixture.homeTeam} vs {prediction.fixture.awayTeam}
-              </h3>
-              <p className={`text-sm ${text.muted[theme]} font-outfit`}>
-                {new Date(prediction.fixture.date).toLocaleDateString()} • 
-                {prediction.user.username}
-              </p>
-            </div>
-            <div className={`px-3 py-1 rounded-full text-xs font-medium font-outfit ${
-              prediction.status === 'scored' 
-                ? theme === 'dark' ? 'bg-emerald-900/30 text-emerald-400' : 'bg-emerald-100 text-emerald-700'
-                : theme === 'dark' ? 'bg-amber-900/30 text-amber-400' : 'bg-amber-100 text-amber-700'
-            }`}>
-              {prediction.status === 'scored' ? 'Scored' : 'Pending'}
-            </div>
-          </div>
+      {/* Gameweek Selector */}
+      {availableGameweeks.length > 1 && (
+        <div className="flex items-center space-x-4">
+          <label className={`text-sm font-medium ${text.primary[theme]}`}>
+            Gameweek:
+          </label>
+          <select
+            value={currentGameweek}
+            onChange={(e) => setCurrentGameweek(Number(e.target.value))}
+            className={`px-3 py-2 rounded-lg border text-sm ${
+              theme === 'dark'
+                ? 'bg-slate-800 border-slate-600 text-white'
+                : 'bg-white border-slate-300 text-slate-900'
+            }`}
+          >
+            {availableGameweeks.map(gw => (
+              <option key={gw} value={gw}>
+                Gameweek {gw}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
-          {/* Score Prediction */}
-          <div className="grid grid-cols-3 gap-4 mb-4">
-            <div className="text-center">
-              <div className={`text-2xl font-bold ${text.primary[theme]} font-outfit`}>
-                {prediction.homeScore}
-              </div>
-              <div className={`text-sm ${text.muted[theme]} font-outfit`}>
-                {prediction.fixture.homeTeam}
-              </div>
-            </div>
-            <div className="text-center flex items-center justify-center">
-              <span className={`${text.muted[theme]} font-outfit`}>-</span>
-            </div>
-            <div className="text-center">
-              <div className={`text-2xl font-bold ${text.primary[theme]} font-outfit`}>
-                {prediction.awayScore}
-              </div>
-              <div className={`text-sm ${text.muted[theme]} font-outfit`}>
-                {prediction.fixture.awayTeam}
-              </div>
-            </div>
-          </div>
-
-          {/* Goalscorers */}
-          {prediction.goalscorers && prediction.goalscorers.length > 0 && (
-            <div className="mb-4">
-              <h4 className={`text-sm font-medium ${text.primary[theme]} mb-2 font-outfit`}>
-                Predicted Goalscorers
-              </h4>
-              <div className="flex flex-wrap gap-2">
-                {prediction.goalscorers.map((scorer, idx) => (
-                  <span
-                    key={idx}
-                    className={`px-3 py-1 rounded-full text-xs font-medium font-outfit ${
-                      theme === 'dark' 
-                        ? 'bg-blue-900/30 text-blue-400 border border-blue-500/30' 
-                        : 'bg-blue-100 text-blue-700 border border-blue-200'
-                    }`}
-                  >
-                    {scorer.player} ({scorer.team})
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Active Chips */}
-          {prediction.chips && prediction.chips.length > 0 && (
-            <div className="mb-4">
-              <h4 className={`text-sm font-medium ${text.primary[theme]} mb-2 font-outfit`}>
-                Active Chips
-              </h4>
-              <div className="flex flex-wrap gap-2">
-                {prediction.chips.map((chip, idx) => (
-                  <span
-                    key={idx}
-                    className={`px-3 py-1 rounded-full text-xs font-medium font-outfit ${
-                      chip === 'doubleDown' 
-                        ? theme === 'dark' ? 'bg-purple-900/30 text-purple-400' : 'bg-purple-100 text-purple-700'
-                        : chip === 'wildcard'
-                        ? theme === 'dark' ? 'bg-orange-900/30 text-orange-400' : 'bg-orange-100 text-orange-700'
-                        : chip === 'opportunist'
-                        ? theme === 'dark' ? 'bg-green-900/30 text-green-400' : 'bg-green-100 text-green-700'
-                        : chip === 'scorerFocus'
-                        ? theme === 'dark' ? 'bg-blue-900/30 text-blue-400' : 'bg-blue-100 text-blue-700'
-                        : theme === 'dark' ? 'bg-gray-900/30 text-gray-400' : 'bg-gray-100 text-gray-700'
-                    }`}
-                  >
-                    {chip === 'doubleDown' ? 'Double Down' :
-                     chip === 'wildcard' ? 'Wildcard' :
-                     chip === 'opportunist' ? 'Opportunist' :
-                     chip === 'scorerFocus' ? 'Scorer Focus' : chip}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Points Breakdown */}
-          {prediction.points && (
-            <div className="border-t pt-4" style={{ borderColor: theme === 'dark' ? 'rgb(51 65 85 / 0.3)' : 'rgb(226 232 240)' }}>
-              <div className="flex justify-between items-center">
-                <span className={`text-sm font-medium ${text.primary[theme]} font-outfit`}>
-                  Total Points
-                </span>
-                <span className={`text-lg font-bold ${text.primary[theme]} font-outfit`}>
-                  {prediction.points.total}
-                </span>
-              </div>
-              {prediction.points.breakdown && (
-                <div className="mt-2 space-y-1">
-                  {Object.entries(prediction.points.breakdown).map(([key, value]) => (
-                    <div key={key} className="flex justify-between text-xs">
-                      <span className={`${text.muted[theme]} font-outfit capitalize`}>
-                        {key.replace(/([A-Z])/g, ' $1').trim()}
-                      </span>
-                      <span className={`${text.muted[theme]} font-outfit`}>
-                        +{value}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-        </motion.div>
-      ))}
+      {/* Gameweek Predictions Carousel */}
+      <GameweekPredictionsCarousel
+        predictions={predictions}
+        currentGameweek={currentGameweek}
+        onPredictionSelect={handlePredictionSelect}
+        teamLogos={teamLogos}
+        isReadOnly={true}
+      />
     </motion.div>
   );
 };
