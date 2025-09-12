@@ -86,9 +86,23 @@ const GameweekPredictionsCarousel = ({
 
   const currentMatch = matches[activeMatchIndex];
   const itemsPerView = 3;
-  const maxCarouselIndex = Math.max(0, currentMatch.predictions.length - itemsPerView);
+  const totalItems = currentMatch.predictions.length;
+  const maxCarouselIndex = Math.max(0, totalItems - itemsPerView);
   const canScrollLeft = carouselIndex > 0;
   const canScrollRight = carouselIndex < maxCarouselIndex;
+
+  // Calculate the transform percentage to ensure last cards are fully visible
+  const getTransformX = () => {
+    if (totalItems <= itemsPerView) return 0;
+    
+    // For the last position, ensure we show exactly the last itemsPerView cards
+    if (carouselIndex === maxCarouselIndex) {
+      return -((totalItems - itemsPerView) * (100 / totalItems));
+    }
+    
+    // For other positions, move by one card width
+    return -(carouselIndex * (100 / totalItems));
+  };
 
   const handlePredictionClick = (prediction) => {
     setSelectedPrediction(prediction);
@@ -273,9 +287,6 @@ const GameweekPredictionsCarousel = ({
                 theme === "dark" ? "text-white" : "text-slate-900"
               } font-outfit`}>
                 Member Predictions
-                <span className="ml-3 px-3 py-1 rounded-full text-xs font-medium bg-teal-600 text-white">
-                  {currentMatch.predictions.length}
-                </span>
               </h4>
               
               {/* Carousel Controls */}
@@ -321,7 +332,7 @@ const GameweekPredictionsCarousel = ({
               <motion.div
                 className="flex gap-4"
                 animate={{
-                  x: `-${carouselIndex * (100 / itemsPerView)}%`
+                  x: `${getTransformX()}%`
                 }}
                 transition={{ duration: 0.3, ease: "easeOut" }}
               >
@@ -332,7 +343,7 @@ const GameweekPredictionsCarousel = ({
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: index * 0.1 }}
                     onClick={() => handlePredictionClick(prediction)}
-                    className={`flex-shrink-0 w-full md:w-1/3 cursor-pointer transition-all duration-300 ${
+                    className={`flex-shrink-0 cursor-pointer transition-all duration-300 ${
                       theme === "dark"
                         ? "bg-slate-800/50 border-slate-700/50 hover:bg-slate-800/70"
                         : "bg-white border-slate-200 hover:shadow-md"
@@ -341,6 +352,9 @@ const GameweekPredictionsCarousel = ({
                         ? "ring-2 ring-teal-500 shadow-lg"
                         : ""
                     }`}
+                    style={{
+                      width: `calc(${100 / itemsPerView}% - ${(itemsPerView - 1) * 16 / itemsPerView}px)`
+                    }}
                   >
                     {/* User Info */}
                     <div className="flex items-center justify-between mb-4">

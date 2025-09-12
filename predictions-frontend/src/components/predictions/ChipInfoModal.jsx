@@ -1,12 +1,17 @@
 import { motion } from "framer-motion";
 import { useContext } from "react";
 import { ThemeContext } from "../../context/ThemeContext";
-import { backgrounds, text, buttons, status, getThemeStyles } from "../../utils/themeUtils";
+import {
+  backgrounds,
+  text,
+  buttons,
+  status,
+  getThemeStyles,
+} from "../../utils/themeUtils";
 import {
   Cross2Icon,
   LightningBoltIcon,
   StarIcon,
-  InfoCircledIcon,
   RocketIcon,
   TargetIcon,
 } from "@radix-ui/react-icons";
@@ -14,7 +19,8 @@ import {
 const ChipInfoModal = ({ onClose }) => {
   const { theme } = useContext(ThemeContext);
 
-  return (    <motion.div
+  return (
+    <motion.div
       className="fixed inset-0 bg-slate-950/85 backdrop-blur-lg z-50 flex items-center justify-center overflow-y-auto p-4"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -25,9 +31,10 @@ const ChipInfoModal = ({ onClose }) => {
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-        transition={{ type: "spring", damping: 15 }}        className={`${getThemeStyles(theme, {
+        transition={{ type: "spring", damping: 15 }}
+        className={`${getThemeStyles(theme, {
           dark: "bg-slate-900/95 border-slate-700/60",
-          light: "bg-white/95 border-slate-200/60"
+          light: "bg-white/95 border-slate-200/60",
         })} border rounded-xl p-6 max-w-4xl w-full font-outfit max-h-[90vh] overflow-y-auto shadow-2xl`}
         onClick={(e) => e.stopPropagation()}
       >
@@ -40,14 +47,17 @@ const ChipInfoModal = ({ onClose }) => {
             <div className="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30">
               <LightningBoltIcon className="w-6 h-6 text-emerald-400" />
             </div>
-            <div>              <h3
-                className={`${getThemeStyles(theme, text.primary)} text-2xl font-bold`}
+            <div>
+              {" "}
+              <h3
+                className={`${getThemeStyles(
+                  theme,
+                  text.primary
+                )} text-2xl font-bold`}
               >
                 Chip Strategy Guide
               </h3>
-              <p
-                className={`${getThemeStyles(theme, text.muted)} text-sm`}
-              >
+              <p className={`${getThemeStyles(theme, text.muted)} text-sm`}>
                 Master the art of strategic chip usage to maximize your points
               </p>
             </div>
@@ -55,7 +65,11 @@ const ChipInfoModal = ({ onClose }) => {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={onClose}            className={`p-2 rounded-lg ${getThemeStyles(theme, buttons.outline)} transition-all duration-200 border`}
+            onClick={onClose}
+            className={`p-2 rounded-lg ${getThemeStyles(
+              theme,
+              buttons.outline
+            )} transition-all duration-200 border`}
           >
             <Cross2Icon className="w-5 h-5" />
           </motion.button>
