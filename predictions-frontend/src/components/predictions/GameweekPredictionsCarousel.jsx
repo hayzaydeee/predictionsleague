@@ -47,6 +47,15 @@ const GameweekPredictionsCarousel = ({
 
   const matches = Object.values(predictionsByMatch);
 
+  // Helper function to count goals per scorer
+  const getGoalCounts = (scorers) => {
+    if (!scorers || scorers.length === 0) return {};
+    return scorers.reduce((counts, scorer) => {
+      counts[scorer] = (counts[scorer] || 0) + 1;
+      return counts;
+    }, {});
+  };
+
   if (matches.length === 0) {
     return (
       <motion.div
@@ -414,6 +423,101 @@ const GameweekPredictionsCarousel = ({
                         </div>
                       </div>
                     </div>
+
+                    {/* Predicted Scorers */}
+                    {(prediction.homeScorers?.length > 0 || prediction.awayScorers?.length > 0) && (
+                      <div className={`p-4 rounded-lg mb-4 ${
+                        theme === "dark"
+                          ? "bg-slate-700/30 border-slate-600/30"
+                          : "bg-slate-50 border-slate-200"
+                      } border`}>
+                        <div className={`text-xs font-medium mb-3 ${
+                          theme === "dark" ? "text-slate-400" : "text-slate-600"
+                        } font-outfit`}>
+                          Predicted Scorers
+                        </div>
+                        
+                        <div className="space-y-3">
+                          {/* Home Team Scorers */}
+                          {prediction.homeScorers?.length > 0 && (
+                            <div>
+                              <div className={`text-xs font-medium mb-2 ${
+                                theme === "dark" ? "text-slate-500" : "text-slate-500"
+                              } font-outfit`}>
+                                {currentMatch.matchInfo.homeTeam}
+                              </div>
+                              <div className="flex flex-wrap gap-2">
+                                {Object.entries(getGoalCounts(prediction.homeScorers)).map(([scorer, count]) => (
+                                  <div
+                                    key={scorer}
+                                    className={`relative px-3 py-1.5 rounded-full text-xs font-medium font-outfit ${
+                                      theme === "dark"
+                                        ? "bg-blue-900/30 text-blue-400 border border-blue-800/50"
+                                        : "bg-blue-100 text-blue-700 border border-blue-200"
+                                    }`}
+                                  >
+                                    {scorer}
+                                    {count > 1 && (
+                                      <span className={`absolute -top-1 -right-1 w-4 h-4 text-xs rounded-full flex items-center justify-center font-bold ${
+                                        theme === "dark"
+                                          ? "bg-blue-600 text-white"
+                                          : "bg-blue-600 text-white"
+                                      }`}>
+                                        {count}
+                                      </span>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          
+                          {/* Away Team Scorers */}
+                          {prediction.awayScorers?.length > 0 && (
+                            <div>
+                              <div className={`text-xs font-medium mb-2 ${
+                                theme === "dark" ? "text-slate-500" : "text-slate-500"
+                              } font-outfit`}>
+                                {currentMatch.matchInfo.awayTeam}
+                              </div>
+                              <div className="flex flex-wrap gap-2">
+                                {Object.entries(getGoalCounts(prediction.awayScorers)).map(([scorer, count]) => (
+                                  <div
+                                    key={scorer}
+                                    className={`relative px-3 py-1.5 rounded-full text-xs font-medium font-outfit ${
+                                      theme === "dark"
+                                        ? "bg-red-900/30 text-red-400 border border-red-800/50"
+                                        : "bg-red-100 text-red-700 border border-red-200"
+                                    }`}
+                                  >
+                                    {scorer}
+                                    {count > 1 && (
+                                      <span className={`absolute -top-1 -right-1 w-4 h-4 text-xs rounded-full flex items-center justify-center font-bold ${
+                                        theme === "dark"
+                                          ? "bg-red-600 text-white"
+                                          : "bg-red-600 text-white"
+                                      }`}>
+                                        {count}
+                                      </span>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          
+                          {/* No Scorers Predicted */}
+                          {(!prediction.homeScorers || prediction.homeScorers.length === 0) && 
+                           (!prediction.awayScorers || prediction.awayScorers.length === 0) && (
+                            <div className={`text-center py-2 text-xs ${
+                              theme === "dark" ? "text-slate-500" : "text-slate-500"
+                            } font-outfit`}>
+                              No scorers predicted
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
 
                     {/* Chips Used */}
                     {prediction.chips?.length > 0 && (
