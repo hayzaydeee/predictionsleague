@@ -77,6 +77,26 @@ export const isGameweekMultiplier = (chipId) => {
 };
 
 /**
+ * Check if a chip is a gameweek-level bonus chip
+ * @param {string} chipId - The chip identifier
+ * @returns {boolean} Whether the chip is a gameweek bonus chip
+ */
+export const isGameweekBonus = (chipId) => {
+  return chipId === "defensePlusPlus";
+};
+
+/**
+ * Check if a prediction correctly predicted a clean sheet
+ * @param {Object} prediction - The prediction object
+ * @returns {boolean} Whether a clean sheet was correctly predicted
+ */
+export const isCorrectCleanSheet = (prediction) => {
+  const predictedCleanSheet = prediction.homeScore === 0 || prediction.awayScore === 0;
+  const actualCleanSheet = prediction.actualHomeScore === 0 || prediction.actualAwayScore === 0;
+  return predictedCleanSheet && actualCleanSheet && (prediction.status === "completed");
+};
+
+/**
  * Check if a scorer was correctly predicted
  * @param {string} scorer - The predicted scorer
  * @param {Array} actualScorers - Array of actual scorers
@@ -98,16 +118,11 @@ export const calculatePredictionPoints = (prediction) => {
     const exactScorePoints = 10;
     const baseGoalScorerPoints = (prediction.homeScore + prediction.awayScore) * 2;
     
-    // Calculate clean sheet bonus
-    const isCleanSheet = prediction.homeScore === 0 || prediction.awayScore === 0;
-    const defensePlusBonus = prediction.chips.includes("defensePlusPlus") && isCleanSheet ? 10 : 0;
-    
-    // Calculate scorer focus bonus
+    // Calculate scorer focus bonus (match-level chip)
     const scorerFocusBonus = prediction.chips.includes("scorerFocus") ? baseGoalScorerPoints : 0;
     
-    // Calculate base points before multipliers
-    const pointsBeforeMultiplier = outcomePoints + exactScorePoints + baseGoalScorerPoints + 
-                                  defensePlusBonus + scorerFocusBonus;
+    // Calculate base points before multipliers (excluding gameweek-level bonuses)
+    const pointsBeforeMultiplier = outcomePoints + exactScorePoints + baseGoalScorerPoints + scorerFocusBonus;
     
     // Apply multipliers (Wild card has precedence over Double Down and All-In Week)
     let finalPoints = pointsBeforeMultiplier;
@@ -121,7 +136,6 @@ export const calculatePredictionPoints = (prediction) => {
       outcomePoints,
       exactScorePoints,
       baseGoalScorerPoints,
-      defensePlusBonus,
       scorerFocusBonus,
       pointsBeforeMultiplier,
       finalPoints,
@@ -145,6 +159,7 @@ export const calculatePredictionPoints = (prediction) => {
 export const calculateGameweekPoints = (predictions, gameweekChips = []) => {
   let totalPoints = 0;
   let matchPoints = [];
+  let defensePlusBonusPoints = 0;
   
   // Calculate points for each match
   predictions.forEach(prediction => {
@@ -155,12 +170,21 @@ export const calculateGameweekPoints = (predictions, gameweekChips = []) => {
       breakdown: matchResult
     });
     totalPoints += matchResult.finalPoints;
+    
+    // Calculate Defense++ bonus if chip is active
+    if (gameweekChips.includes("defensePlusPlus") && isCorrectCleanSheet(prediction)) {
+      defensePlusBonusPoints += 10;
+    }
   });
   
-  // Apply All-In Week multiplier if present
+  // Add Defense++ bonus to total
+  totalPoints += defensePlusBonusPoints;
+  
+  // Apply All-In Week multiplier if present (applied to everything including Defense++ bonus)
   const hasAllInWeek = gameweekChips.includes("allInWeek");
   if (hasAllInWeek) {
     totalPoints *= 2;
+    defensePlusBonusPoints *= 2;
     matchPoints = matchPoints.map(match => ({
       ...match,
       points: match.points * 2
@@ -170,7 +194,12 @@ export const calculateGameweekPoints = (predictions, gameweekChips = []) => {
   return {
     totalPoints,
     matchPoints,
+    defensePlusBonusPoints,
+    correctCleanSheets: predictions.filter(p => 
+      gameweekChips.includes("defensePlusPlus") && isCorrectCleanSheet(p)
+    ).length,
     hasAllInWeek,
+    hasDefensePlusPlus: gameweekChips.includes("defensePlusPlus"),
     gameweekChips
   };
 };

@@ -87,21 +87,18 @@ const GameweekPredictionsCarousel = ({
   const currentMatch = matches[activeMatchIndex];
   const itemsPerView = 3;
   const totalItems = currentMatch.predictions.length;
-  const maxCarouselIndex = Math.max(0, totalItems - itemsPerView);
+  // Calculate how many "pages" we need (each page shows itemsPerView cards)
+  const totalPages = Math.ceil(totalItems / itemsPerView);
+  const maxCarouselIndex = Math.max(0, totalPages - 1);
   const canScrollLeft = carouselIndex > 0;
   const canScrollRight = carouselIndex < maxCarouselIndex;
 
-  // Calculate the transform percentage to ensure last cards are fully visible
+  // Calculate the transform percentage to move by full viewport widths
   const getTransformX = () => {
     if (totalItems <= itemsPerView) return 0;
     
-    // For the last position, ensure we show exactly the last itemsPerView cards
-    if (carouselIndex === maxCarouselIndex) {
-      return -((totalItems - itemsPerView) * (100 / totalItems));
-    }
-    
-    // For other positions, move by one card width
-    return -(carouselIndex * (100 / totalItems));
+    // Move by full viewport widths (100% per page)
+    return -(carouselIndex * 100);
   };
 
   const handlePredictionClick = (prediction) => {
@@ -308,7 +305,7 @@ const GameweekPredictionsCarousel = ({
                   <span className={`text-sm ${
                     theme === "dark" ? "text-slate-400" : "text-slate-600"
                   } font-outfit`}>
-                    {carouselIndex + 1}-{Math.min(carouselIndex + itemsPerView, currentMatch.predictions.length)} of {currentMatch.predictions.length}
+                    {(carouselIndex * itemsPerView) + 1}-{Math.min((carouselIndex + 1) * itemsPerView, currentMatch.predictions.length)} of {currentMatch.predictions.length}
                   </span>
                   <button
                     onClick={scrollRight}
