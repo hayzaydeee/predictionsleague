@@ -70,14 +70,29 @@ const leagueAPI = {
     }
   },
 
-  // Leave league
+  // Leave league (regular member)
   leaveLeague: async (leagueId) => {
     try {
-      const response = await api.delete(`/leagues/${leagueId}/leave`);
+      console.log('Leaving league...', { leagueId });
+      const response = await api.post(`/leagues/${leagueId}/leave`);
+      console.log('Left league successfully');
       return response.data.message;
     } catch (error) {
       console.error('Failed to leave league:', error.message);
       throw new Error(`Failed to leave league: ${error.message}`);
+    }
+  },
+
+  // Delete league (admin only)
+  deleteLeague: async (leagueId) => {
+    try {
+      console.log('Deleting league...', { leagueId });
+      const response = await api.delete(`/leagues/${leagueId}/delete`);
+      console.log('League deleted successfully');
+      return response.data.message;
+    } catch (error) {
+      console.error('Failed to delete league:', error.message);
+      throw new Error(`Failed to delete league: ${error.message}`);
     }
   },
 
