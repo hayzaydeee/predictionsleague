@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeftIcon, ChevronRightIcon, CalendarIcon } from "@radix-ui/react-icons";
 import { format, parseISO } from "date-fns";
 import { ThemeContext } from "../../context/ThemeContext";
-import { backgrounds, text, buttons } from "../../utils/themeUtils";
+import { getThemeStyles, backgrounds, text, buttons } from "../../utils/themeUtils";
 
 const GameweekPredictionsCarousel = ({
   predictions,
@@ -43,7 +43,7 @@ const GameweekPredictionsCarousel = ({
 
   if (matches.length === 0) {
     return (
-      <div className={`text-center py-12 ${text.secondary[theme]}`}>
+      <div className={`text-center py-12 ${getThemeStyles(theme, text.secondary)}`}>
         <CalendarIcon className="w-12 h-12 mx-auto mb-4 opacity-50" />
         <p className="text-lg font-medium mb-2">No Predictions Found</p>
         <p className="text-sm">No predictions available for Gameweek {currentGameweek}</p>
@@ -73,7 +73,7 @@ const GameweekPredictionsCarousel = ({
     <div className="space-y-6">
       {/* Match Navigation Tabs */}
       <div className="flex items-center justify-between">
-        <h3 className={`text-lg font-semibold ${text.primary[theme]}`}>
+        <h3 className={`text-lg font-semibold ${getThemeStyles(theme, text.primary)}`}>
           Gameweek {currentGameweek} Predictions
         </h3>
         <div className="flex items-center space-x-2">
@@ -83,12 +83,12 @@ const GameweekPredictionsCarousel = ({
             className={`p-2 rounded-lg transition-colors ${
               matches.length <= 1
                 ? 'opacity-50 cursor-not-allowed'
-                : `${buttons.secondary[theme]} hover:${buttons.secondaryHover[theme]}`
+                : `${getThemeStyles(theme, buttons.secondary)} hover:opacity-80`
             }`}
           >
             <ChevronLeftIcon className="w-4 h-4" />
           </button>
-          <span className={`px-3 py-1 text-sm ${text.secondary[theme]}`}>
+          <span className={`px-3 py-1 text-sm ${getThemeStyles(theme, text.secondary)}`}>
             {activeMatchIndex + 1} of {matches.length}
           </span>
           <button
@@ -97,7 +97,7 @@ const GameweekPredictionsCarousel = ({
             className={`p-2 rounded-lg transition-colors ${
               matches.length <= 1
                 ? 'opacity-50 cursor-not-allowed'
-                : `${buttons.secondary[theme]} hover:${buttons.secondaryHover[theme]}`
+                : `${getThemeStyles(theme, buttons.secondary)} hover:opacity-80`
             }`}
           >
             <ChevronRightIcon className="w-4 h-4" />
@@ -114,15 +114,15 @@ const GameweekPredictionsCarousel = ({
               onClick={() => setActiveMatchIndex(index)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
                 index === activeMatchIndex
-                  ? `${backgrounds.accent[theme]} text-white`
-                  : `${backgrounds.secondary[theme]} ${text.secondary[theme]} hover:${backgrounds.hover[theme]}`
+                  ? 'bg-teal-600 text-white'
+                  : `${getThemeStyles(theme, backgrounds.secondary)} ${getThemeStyles(theme, text.secondary)} hover:opacity-80`
               }`}
             >
               {match.matchInfo.homeTeam} vs {match.matchInfo.awayTeam}
               <span className={`ml-2 px-1.5 py-0.5 rounded text-xs ${
                 index === activeMatchIndex
                   ? 'bg-white/20 text-white'
-                  : `${backgrounds.accent[theme]} text-white`
+                  : 'bg-teal-600 text-white'
               }`}>
                 {match.predictions.length}
               </span>
@@ -139,7 +139,7 @@ const GameweekPredictionsCarousel = ({
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -20 }}
           transition={{ duration: 0.3 }}
-          className={`${backgrounds.secondary[theme]} rounded-xl p-6`}
+          className={`${getThemeStyles(theme, backgrounds.secondary)} rounded-xl p-6`}
         >
           {/* Match Header */}
           <div className="flex items-center justify-between mb-6">
@@ -150,13 +150,13 @@ const GameweekPredictionsCarousel = ({
                   alt={currentMatch.matchInfo.homeTeam}
                   className="w-8 h-8 rounded"
                 />
-                <span className={`font-semibold ${text.primary[theme]}`}>
+                <span className={`font-semibold ${getThemeStyles(theme, text.primary)}`}>
                   {currentMatch.matchInfo.homeTeam}
                 </span>
               </div>
-              <span className={`text-lg font-bold ${text.secondary[theme]}`}>vs</span>
+              <span className={`text-lg font-bold ${getThemeStyles(theme, text.secondary)}`}>vs</span>
               <div className="flex items-center space-x-3">
-                <span className={`font-semibold ${text.primary[theme]}`}>
+                <span className={`font-semibold ${getThemeStyles(theme, text.primary)}`}>
                   {currentMatch.matchInfo.awayTeam}
                 </span>
                 <img
@@ -166,16 +166,16 @@ const GameweekPredictionsCarousel = ({
                 />
               </div>
             </div>
-            <div className={`text-sm ${text.secondary[theme]}`}>
+            <div className={`text-sm ${getThemeStyles(theme, text.secondary)}`}>
               {format(parseISO(currentMatch.matchInfo.date), 'MMM dd, HH:mm')}
             </div>
           </div>
 
           {/* Predictions Grid */}
           <div className="space-y-4">
-            <h4 className={`font-medium ${text.primary[theme]} flex items-center`}>
+            <h4 className={`font-medium ${getThemeStyles(theme, text.primary)} flex items-center`}>
               League Member Predictions
-              <span className={`ml-2 px-2 py-1 rounded text-xs ${backgrounds.accent[theme]} text-white`}>
+              <span className="ml-2 px-2 py-1 rounded text-xs bg-teal-600 text-white">
                 {currentMatch.predictions.length} predictions
               </span>
             </h4>
@@ -188,7 +188,7 @@ const GameweekPredictionsCarousel = ({
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.2 }}
                   onClick={() => handlePredictionClick(prediction)}
-                  className={`${backgrounds.primary[theme]} rounded-lg p-4 border cursor-pointer transition-all hover:shadow-lg ${
+                  className={`${getThemeStyles(theme, backgrounds.card)} rounded-lg p-4 border cursor-pointer transition-all hover:shadow-lg ${
                     selectedPrediction?.id === prediction.id
                       ? `border-teal-500 shadow-lg shadow-teal-500/20`
                       : `border-slate-200 dark:border-slate-700 hover:border-teal-300 dark:hover:border-teal-600`
@@ -197,14 +197,14 @@ const GameweekPredictionsCarousel = ({
                   {/* User Info */}
                   <div className="flex items-center justify-between mb-3">
                     <div>
-                      <p className={`font-medium ${text.primary[theme]}`}>
+                      <p className={`font-medium ${getThemeStyles(theme, text.primary)}`}>
                         {prediction.userDisplayName}
                       </p>
-                      <p className={`text-xs ${text.secondary[theme]}`}>
+                      <p className={`text-xs ${getThemeStyles(theme, text.secondary)}`}>
                         {format(parseISO(prediction.predictedAt || prediction.date), 'MMM dd, HH:mm')}
                       </p>
                     </div>
-                    <div className={`text-right ${prediction.correct === null ? text.secondary[theme] : prediction.correct ? 'text-green-600' : 'text-red-600'}`}>
+                    <div className={`text-right ${prediction.correct === null ? getThemeStyles(theme, text.secondary) : prediction.correct ? 'text-green-600' : 'text-red-600'}`}>
                       <p className="text-lg font-bold">
                         {prediction.points !== null ? `${prediction.points}pts` : '—'}
                       </p>
@@ -217,19 +217,19 @@ const GameweekPredictionsCarousel = ({
                   {/* Score Prediction */}
                   <div className="flex items-center justify-center space-x-4 mb-3">
                     <div className="text-center">
-                      <p className={`text-2xl font-bold ${text.primary[theme]}`}>
+                      <p className={`text-2xl font-bold ${getThemeStyles(theme, text.primary)}`}>
                         {prediction.homeScore}
                       </p>
-                      <p className={`text-xs ${text.secondary[theme]} truncate`}>
+                      <p className={`text-xs ${getThemeStyles(theme, text.secondary)} truncate`}>
                         {currentMatch.matchInfo.homeTeam}
                       </p>
                     </div>
-                    <span className={`text-lg ${text.secondary[theme]}`}>—</span>
+                    <span className={`text-lg ${getThemeStyles(theme, text.secondary)}`}>—</span>
                     <div className="text-center">
-                      <p className={`text-2xl font-bold ${text.primary[theme]}`}>
+                      <p className={`text-2xl font-bold ${getThemeStyles(theme, text.primary)}`}>
                         {prediction.awayScore}
                       </p>
-                      <p className={`text-xs ${text.secondary[theme]} truncate`}>
+                      <p className={`text-xs ${getThemeStyles(theme, text.secondary)} truncate`}>
                         {currentMatch.matchInfo.awayTeam}
                       </p>
                     </div>
@@ -238,28 +238,28 @@ const GameweekPredictionsCarousel = ({
                   {/* Scorers Preview */}
                   {(prediction.homeScorers?.length > 0 || prediction.awayScorers?.length > 0) && (
                     <div className="border-t pt-3">
-                      <p className={`text-xs ${text.secondary[theme]} mb-1`}>Predicted Scorers:</p>
+                      <p className={`text-xs ${getThemeStyles(theme, text.secondary)} mb-1`}>Predicted Scorers:</p>
                       <div className="flex justify-between text-xs">
                         <div className="flex-1">
                           {prediction.homeScorers?.slice(0, 2).map((scorer, i) => (
-                            <span key={i} className={`${text.secondary[theme]} mr-1`}>
+                            <span key={i} className={`${getThemeStyles(theme, text.secondary)} mr-1`}>
                               {scorer}{i < prediction.homeScorers.length - 1 ? ',' : ''}
                             </span>
                           ))}
                           {prediction.homeScorers?.length > 2 && (
-                            <span className={`${text.secondary[theme]}`}>
+                            <span className={`${getThemeStyles(theme, text.secondary)}`}>
                               +{prediction.homeScorers.length - 2}
                             </span>
                           )}
                         </div>
                         <div className="flex-1 text-right">
                           {prediction.awayScorers?.slice(0, 2).map((scorer, i) => (
-                            <span key={i} className={`${text.secondary[theme]} ml-1`}>
+                            <span key={i} className={`${getThemeStyles(theme, text.secondary)} ml-1`}>
                               {scorer}{i < prediction.awayScorers.length - 1 ? ',' : ''}
                             </span>
                           ))}
                           {prediction.awayScorers?.length > 2 && (
-                            <span className={`${text.secondary[theme]}`}>
+                            <span className={`${getThemeStyles(theme, text.secondary)}`}>
                               +{prediction.awayScorers.length - 2}
                             </span>
                           )}
