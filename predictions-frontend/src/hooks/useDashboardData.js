@@ -129,6 +129,27 @@ const useDashboardData = () => {
     fetchSecondaryData();
   }, [essentialData]);
 
+  // Refresh function to refetch leagues data
+  const refreshLeagues = async () => {
+    try {
+      setSecondaryLoading(prev => ({ ...prev, leagues: true }));
+      console.log('🔄 Refreshing leagues data...');
+      
+      const userLeagues = await leagueAPI.getUserLeagues();
+      console.log('✅ Leagues refreshed:', userLeagues);
+      
+      setSecondaryData(prev => ({ ...prev, leagues: userLeagues }));
+      setSecondaryLoading(prev => ({ ...prev, leagues: false }));
+      
+      // Clear any previous league errors
+      setErrors(prev => ({ ...prev, leagues: null }));
+    } catch (error) {
+      console.error('❌ Failed to refresh leagues:', error.message);
+      setErrors(prev => ({ ...prev, leagues: error.message }));
+      setSecondaryLoading(prev => ({ ...prev, leagues: false }));
+    }
+  };
+
   return {
     // Essential data
     essentialData,
@@ -148,6 +169,9 @@ const useDashboardData = () => {
     
     // Error states
     errors,
+    
+    // Refresh functions
+    refreshLeagues,
     
     // Helper to check if any secondary data is still loading
     isSecondaryLoading: Object.values(secondaryLoading).some(loading => loading),

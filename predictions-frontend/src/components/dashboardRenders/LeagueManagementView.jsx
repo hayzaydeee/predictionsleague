@@ -16,8 +16,9 @@ import {
 import { showToast } from '../../services/notificationService';
 import { ThemeContext } from '../../context/ThemeContext';
 import { backgrounds, text, buttons, status } from '../../utils/themeUtils';
+import leagueAPI from '../../services/api/leagueAPI';
 
-const LeagueManagementView = ({ leagueId, league, onBack }) => {
+const LeagueManagementView = ({ leagueId, league, onBack, onRefreshLeagues }) => {
   const [activeTab, setActiveTab] = useState('members');
   const [isLoading, setIsLoading] = useState(false);
   const [members, setMembers] = useState([]);
@@ -84,14 +85,23 @@ const LeagueManagementView = ({ leagueId, league, onBack }) => {
     showToast('Member promoted to admin', 'success');
   };
 
-  const handleDeleteLeague = () => {
+  const handleDeleteLeague = async () => {
     if (confirmDelete) {
       setIsLoading(true);
-      setTimeout(() => {
-        setIsLoading(false);
+      try {
+        await leagueAPI.deleteLeague(leagueId);
         showToast('League deleted successfully', 'success');
+        // Refresh the leagues list to remove the deleted league
+        if (onRefreshLeagues) {
+          onRefreshLeagues();
+        }
         onBack();
-      }, 1000);
+      } catch (error) {
+        console.error('Failed to delete league:', error);
+        showToast(`Failed to delete league: ${error.message}`, 'error');
+      } finally {
+        setIsLoading(false);
+      }
     } else {
       setConfirmDelete(true);
       setTimeout(() => setConfirmDelete(false), 5000);

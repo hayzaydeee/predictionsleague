@@ -39,6 +39,7 @@ export default function Home() {
     leagues: apiLeagues,
     secondaryLoading,
     errors,
+    refreshLeagues,
   } = useDashboardData();
 
   // Add debugging for OAuth redirect detection
@@ -290,6 +291,7 @@ export default function Home() {
                 leagues: apiLeagues,
                 secondaryLoading,
                 errors,
+                refreshLeagues,
               }}
             />
           </div>

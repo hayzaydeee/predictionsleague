@@ -42,6 +42,7 @@ export default function ContentPane({
     leagues: apiLeagues,
     secondaryLoading,
     errors,
+    refreshLeagues,
   } = dashboardData;
 
   // Animation variants
@@ -233,6 +234,7 @@ export default function ContentPane({
             leagueId={selectedLeagueId}
             league={selectedLeague}
             onBack={handleBackToLeagues}
+            onRefreshLeagues={refreshLeagues}
           />
         );
       } else {
