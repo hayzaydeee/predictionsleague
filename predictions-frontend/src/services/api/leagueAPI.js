@@ -61,7 +61,7 @@ const leagueAPI = {
   joinLeague: async (joinCode) => {
     try {
       console.log('Joining league with code:', joinCode);
-      const response = await api.post('/leagues/join', { joinCode });
+      const response = await api.post(`/leagues/${joinCode}/join`);
       console.log('League joined successfully:', response.data.league?.id);
       return response.data.league;
     } catch (error) {
