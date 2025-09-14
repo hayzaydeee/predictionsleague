@@ -751,10 +751,8 @@ const ProfileOverview = () => {
 
             <div className="space-y-3 divide-y divide-slate-600/20">
               {[
-                { key: 'allowDirectMessages', label: 'Allow Direct Messages', description: 'Let other users send you messages' },
                 { key: 'showInLeaderboard', label: 'Show in Leaderboard', description: 'Display your ranking in public leaderboards' },
-                { key: 'shareStats', label: 'Share Statistics', description: 'Allow sharing of your prediction statistics' },
-                { key: 'allowFriendRequests', label: 'Accept Friend Requests', description: 'Allow others to send you friend requests' },
+                { key: 'shareStats', label: 'Share Statistics', description: 'Allow sharing of your prediction statistics' }
               ].map((setting) => (
                 <div key={setting.key} className="flex items-center justify-between py-3">
                   <div>
