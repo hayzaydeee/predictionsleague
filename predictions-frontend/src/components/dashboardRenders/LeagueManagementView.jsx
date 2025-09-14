@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
 import {
   ArrowLeftIcon,
-  PersonIcon,
   GearIcon,
   CalendarIcon,
   TrashIcon,
@@ -11,7 +10,6 @@ import {
   CheckIcon,
   ExclamationTriangleIcon,
   CopyIcon,
-  EyeClosedIcon,
 } from '@radix-ui/react-icons';
 import { showToast } from '../../services/notificationService';
 import { ThemeContext } from '../../context/ThemeContext';
@@ -24,7 +22,6 @@ const LeagueManagementView = ({ leagueId, league, onBack, onRefreshLeagues }) =>
   const [members, setMembers] = useState([]);
   const [nameInput, setNameInput] = useState('');
   const [descriptionInput, setDescriptionInput] = useState('');
-  const [typeInput, setTypeInput] = useState('private');
   const [confirmDelete, setConfirmDelete] = useState(false);
   
   // Get theme context
@@ -47,16 +44,40 @@ const LeagueManagementView = ({ leagueId, league, onBack, onRefreshLeagues }) =>
     // Initialize form inputs with league data
     setNameInput(league.name);
     setDescriptionInput(league.description);
-    setTypeInput(league.type);
     
-    // Mock fetch league members
-    setMembers([
-      { id: 1, name: 'Jane Cooper', joinedDate: '2022-08-01', isAdmin: true, points: 254, predictions: 15 },
-      { id: 2, name: 'Wade Warren', joinedDate: '2022-08-02', isAdmin: false, points: 198, predictions: 12 },
-      { id: 3, name: 'Esther Howard', joinedDate: '2022-08-03', isAdmin: false, points: 211, predictions: 14 },
-      { id: 4, name: 'Cameron Williamson', joinedDate: '2022-08-05', isAdmin: false, points: 187, predictions: 11 },
-      { id: 5, name: 'Brooklyn Simmons', joinedDate: '2022-08-10', isAdmin: false, points: 176, predictions: 9 },
-    ]);
+    // Fetch league members using standings data (reusing same API as leaderboard)
+    const fetchMembers = async () => {
+      try {
+        setIsLoading(true);
+        const data = await leagueAPI.getLeagueStandings(leagueId);
+        
+        // Transform standings data to member format
+        // Backend now includes isAdmin in standings response
+        const membersData = (data.standings || []).map(standing => ({
+          id: standing.id,
+          name: standing.displayName,
+          username: standing.username,
+          joinedDate: standing.joinedAt,
+          points: standing.points,
+          predictions: standing.predictions,
+          isAdmin: standing.isAdmin, // Now provided by backend
+          email: standing.email || null
+        }));
+        
+        setMembers(membersData);
+      } catch (error) {
+        console.error('Failed to fetch members:', error);
+        showToast('Failed to load members', 'error');
+        // Fall back to empty array on error
+        setMembers([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    if (leagueId) {
+      fetchMembers();
+    }
   }, [leagueId]);
 
   const handleCopyInviteCode = () => {
@@ -64,25 +85,48 @@ const LeagueManagementView = ({ leagueId, league, onBack, onRefreshLeagues }) =>
     showToast('Invite code copied to clipboard!', 'success');
   };
 
-  const handleSaveSettings = () => {
-    setIsLoading(true);
-    // Mock API call
-    setTimeout(() => {
-      setIsLoading(false);
+  const handleSaveSettings = async () => {
+    try {
+      setIsLoading(true);
+      await leagueAPI.updateLeague(leagueId, {
+        name: nameInput,
+        description: descriptionInput
+      });
       showToast('League settings updated successfully!', 'success');
-    }, 800);
+      // Refresh leagues list to update the data in parent components
+      if (onRefreshLeagues) {
+        onRefreshLeagues();
+      }
+    } catch (error) {
+      console.error('Failed to update league:', error);
+      showToast(`Failed to update league: ${error.message}`, 'error');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleRemoveMember = (memberId) => {
-    setMembers(members.filter(member => member.id !== memberId));
-    showToast('Member removed from league', 'success');
+  const handleRemoveMember = async (memberId) => {
+    try {
+      await leagueAPI.removeMember(leagueId, memberId);
+      setMembers(members.filter(member => member.id !== memberId));
+      showToast('Member removed from league', 'success');
+    } catch (error) {
+      console.error('Failed to remove member:', error);
+      showToast(`Failed to remove member: ${error.message}`, 'error');
+    }
   };
 
-  const handlePromoteToAdmin = (memberId) => {
-    setMembers(members.map(member => 
-      member.id === memberId ? {...member, isAdmin: true} : member
-    ));
-    showToast('Member promoted to admin', 'success');
+  const handlePromoteToAdmin = async (memberId) => {
+    try {
+      await leagueAPI.promoteMember(leagueId, memberId);
+      setMembers(members.map(member => 
+        member.id === memberId ? {...member, isAdmin: true} : member
+      ));
+      showToast('Member promoted to admin', 'success');
+    } catch (error) {
+      console.error('Failed to promote member:', error);
+      showToast(`Failed to promote member: ${error.message}`, 'error');
+    }
   };
 
   const handleDeleteLeague = async () => {
@@ -230,8 +274,6 @@ const LeagueManagementView = ({ leagueId, league, onBack, onRefreshLeagues }) =>
               setNameInput={setNameInput}
               descriptionInput={descriptionInput}
               setDescriptionInput={setDescriptionInput}
-              typeInput={typeInput}
-              setTypeInput={setTypeInput}
               onSave={handleSaveSettings}
               isLoading={isLoading}
               onDeleteLeague={handleDeleteLeague}
@@ -407,8 +449,6 @@ const SettingsContent = ({
   setNameInput, 
   descriptionInput, 
   setDescriptionInput, 
-  typeInput, 
-  setTypeInput, 
   onSave, 
   isLoading,
   onDeleteLeague,
@@ -464,89 +504,6 @@ const SettingsContent = ({
             placeholder="Describe your league..."
           />
         </div>        
-        <div>
-          <label className={`block text-sm font-medium ${text.secondary[theme]} mb-3 font-outfit`}>
-            League Visibility
-          </label>
-          <div className="grid grid-cols-2 gap-4">
-            <label className="relative cursor-pointer">
-              <input
-                type="radio"
-                value="private"
-                checked={typeInput === 'private'}
-                onChange={() => setTypeInput('private')}
-                className="sr-only"
-              />
-              <div className={`p-4 rounded-xl border-2 transition-all ${
-                typeInput === 'private'
-                  ? `border-amber-500 ${
-                      theme === "dark" ? "bg-amber-500/10" : "bg-amber-50"
-                    }`
-                  : `${
-                      theme === "dark"
-                        ? "border-slate-600/50 bg-slate-700/30 hover:border-slate-500/50"
-                        : "border-slate-200 bg-slate-50 hover:border-slate-300"
-                    }`
-              }`}>
-                <div className="flex items-center gap-3">
-                  <EyeClosedIcon className={`w-5 h-5 ${
-                    typeInput === 'private' 
-                      ? (theme === "dark" ? 'text-amber-400' : 'text-amber-600')
-                      : text.muted[theme]
-                  }`} />
-                  <div>
-                    <div className={`font-medium font-outfit ${
-                      typeInput === 'private' 
-                        ? (theme === "dark" ? 'text-amber-400' : 'text-amber-600')
-                        : text.primary[theme]
-                    }`}>
-                      Private
-                    </div>
-                    <div className={`text-sm font-outfit ${text.muted[theme]}`}>Invite only</div>
-                  </div>
-                </div>
-              </div>
-            </label>            
-            <label className="relative cursor-pointer">
-              <input
-                type="radio"
-                value="public"
-                checked={typeInput === 'public'}
-                onChange={() => setTypeInput('public')}
-                className="sr-only"
-              />
-              <div className={`p-4 rounded-xl border-2 transition-all ${
-                typeInput === 'public'
-                  ? `border-amber-500 ${
-                      theme === "dark" ? "bg-amber-500/10" : "bg-amber-50"
-                    }`
-                  : `${
-                      theme === "dark"
-                        ? "border-slate-600/50 bg-slate-700/30 hover:border-slate-500/50"
-                        : "border-slate-200 bg-slate-50 hover:border-slate-300"
-                    }`
-              }`}>
-                <div className="flex items-center gap-3">
-                  <PersonIcon className={`w-5 h-5 ${
-                    typeInput === 'public' 
-                      ? (theme === "dark" ? 'text-amber-400' : 'text-amber-600')
-                      : text.muted[theme]
-                  }`} />
-                  <div>
-                    <div className={`font-medium font-outfit ${
-                      typeInput === 'public' 
-                        ? (theme === "dark" ? 'text-amber-400' : 'text-amber-600')
-                        : text.primary[theme]
-                    }`}>
-                      Public
-                    </div>
-                    <div className={`text-sm font-outfit ${text.muted[theme]}`}>Anyone can join</div>
-                  </div>
-                </div>
-              </div>
-            </label>
-          </div>
-        </div>
           <div className="flex justify-end pt-4">
           <motion.button
             whileHover={{ scale: 1.02 }}

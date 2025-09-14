@@ -114,8 +114,16 @@ const leagueAPI = {
   // Update league settings (admin only)
   updateLeague: async (leagueId, updates) => {
     try {
-      const response = await api.put(`/leagues/${leagueId}`, updates);
-      return response.data.league;
+      console.log('Updating league settings...', { leagueId, updates });
+      const requestBody = {
+        id: leagueId,
+        name: updates.name,
+        description: updates.description
+      };
+      
+      const response = await api.put('/leagues/update', requestBody);
+      console.log('League updated successfully:', response.data);
+      return response.data;
     } catch (error) {
       console.error('Failed to update league:', error.message);
       throw new Error(`Failed to update league: ${error.message}`);
@@ -142,24 +150,16 @@ const leagueAPI = {
     }
   },
 
-  // Get league members (for management view - admin only)
-  getLeagueMembers: async (leagueId) => {
-    try {
-      console.log('Fetching league members...', { leagueId });
-      const response = await api.get(`/leagues/${leagueId}/members`);
-      console.log('League members fetched:', response.data?.length || 0, 'members');
-      return response.data || [];
-    } catch (error) {
-      console.error('Failed to fetch league members:', error.message, { leagueId });
-      throw new Error(`Failed to load league members: ${error.message}`);
-    }
-  },
-
   // Remove member from league (admin only)
   removeMember: async (leagueId, memberId) => {
     try {
       console.log('Removing member from league...', { leagueId, memberId });
-      const response = await api.delete(`/leagues/${leagueId}/members/${memberId}`);
+      const requestBody = {
+        leagueid: leagueId,
+        userid: memberId
+      };
+      
+      const response = await api.delete('/leagues/remove-user', { data: requestBody });
       console.log('Member removed successfully');
       return response.data;
     } catch (error) {
@@ -172,7 +172,12 @@ const leagueAPI = {
   promoteMember: async (leagueId, memberId) => {
     try {
       console.log('Promoting member to admin...', { leagueId, memberId });
-      const response = await api.put(`/leagues/${leagueId}/members/${memberId}/promote`);
+      const requestBody = {
+        leagueid: leagueId,
+        userid: memberId
+      };
+      
+      const response = await api.put('/leagues/add-admin', requestBody);
       console.log('Member promoted successfully');
       return response.data;
     } catch (error) {
