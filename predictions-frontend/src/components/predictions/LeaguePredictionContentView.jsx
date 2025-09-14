@@ -2,11 +2,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import LeaguePredictionsByMember from "./LeaguePredictionsByMember";
 import LeaguePredictionsList from "./LeaguePredictionsList";
 import GameweekPredictionsCarousel from "./GameweekPredictionsCarousel";
-// Import future components as they're created
-// import LeaguePredictionsTable from "./LeaguePredictionsTable";
-// import LeaguePredictionsStack from "./LeaguePredictionsStack";
-// import LeaguePredictionsCalendar from "./LeaguePredictionsCalendar";
-// import LeaguePredictionsTimeline from "./LeaguePredictionsTimeline";
+import LeaguePredictionsTable from "./LeaguePredictionsTable";
+import LeaguePredictionsStack from "./LeaguePredictionsStack";
+import LeaguePredictionsCalendar from "./LeaguePredictionsCalendar";
+import LeaguePredictionsTimeline from "./LeaguePredictionsTimeline";
 
 const LeaguePredictionContentView = ({ 
   viewMode, 
@@ -70,7 +69,7 @@ const LeaguePredictionContentView = ({
         </motion.div>
       )}
 
-      {/* Placeholder for future view modes */}
+      {/* Table View */}
       {viewMode === "table" && (
         <motion.div
           key="table"
@@ -78,16 +77,17 @@ const LeaguePredictionContentView = ({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="flex items-center justify-center py-20"
         >
-          <div className="text-center">
-            <div className="text-4xl mb-4">🚧</div>
-            <h3 className="text-lg font-semibold mb-2">Table View Coming Soon</h3>
-            <p className="text-sm text-gray-600">This view is under development</p>
-          </div>
+          <LeaguePredictionsTable
+            predictions={predictions}
+            onPredictionSelect={onPredictionSelect}
+            teamLogos={teamLogos}
+            searchQuery={searchQuery}
+          />
         </motion.div>
       )}
 
+      {/* Stack View */}
       {viewMode === "stack" && (
         <motion.div
           key="stack"
@@ -95,16 +95,17 @@ const LeaguePredictionContentView = ({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="flex items-center justify-center py-20"
         >
-          <div className="text-center">
-            <div className="text-4xl mb-4">🚧</div>
-            <h3 className="text-lg font-semibold mb-2">Stack View Coming Soon</h3>
-            <p className="text-sm text-gray-600">This view is under development</p>
-          </div>
+          <LeaguePredictionsStack
+            predictions={predictions}
+            onPredictionSelect={onPredictionSelect}
+            teamLogos={teamLogos}
+            searchQuery={searchQuery}
+          />
         </motion.div>
       )}
 
+      {/* Calendar View */}
       {viewMode === "calendar" && (
         <motion.div
           key="calendar"
@@ -112,16 +113,17 @@ const LeaguePredictionContentView = ({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="flex items-center justify-center py-20"
         >
-          <div className="text-center">
-            <div className="text-4xl mb-4">🚧</div>
-            <h3 className="text-lg font-semibold mb-2">Calendar View Coming Soon</h3>
-            <p className="text-sm text-gray-600">This view is under development</p>
-          </div>
+          <LeaguePredictionsCalendar
+            predictions={predictions}
+            onPredictionSelect={onPredictionSelect}
+            teamLogos={teamLogos}
+            searchQuery={searchQuery}
+          />
         </motion.div>
       )}
 
+      {/* Timeline View */}
       {viewMode === "timeline" && (
         <motion.div
           key="timeline"
@@ -129,13 +131,13 @@ const LeaguePredictionContentView = ({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="flex items-center justify-center py-20"
         >
-          <div className="text-center">
-            <div className="text-4xl mb-4">🚧</div>
-            <h3 className="text-lg font-semibold mb-2">Timeline View Coming Soon</h3>
-            <p className="text-sm text-gray-600">This view is under development</p>
-          </div>
+          <LeaguePredictionsTimeline
+            predictions={predictions}
+            onPredictionSelect={onPredictionSelect}
+            teamLogos={teamLogos}
+            searchQuery={searchQuery}
+          />
         </motion.div>
       )}
     </AnimatePresence>

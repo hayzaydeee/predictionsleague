@@ -216,13 +216,6 @@ const LeagueManagementView = ({ leagueId, league, onBack, onRefreshLeagues }) =>
         }`} />
         <div className="relative p-6">
           <div className="flex items-center gap-4">
-            <div className={`p-3 ${
-              theme === "dark"
-                ? "bg-amber-500/10 border-amber-500/20"
-                : "bg-amber-50 border-amber-200"
-            } rounded-2xl border`}>
-              {/* <Crown1Icon className="w-8 h-8 text-amber-400" /> */}
-            </div>
             <div>
               <h1 className={`text-2xl font-bold ${text.primary[theme]} font-outfit mb-1`}>
                 League Management
