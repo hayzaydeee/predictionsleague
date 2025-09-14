@@ -13,16 +13,6 @@ const ProfileAchievements = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h2 className={`${theme === 'dark' ? 'text-teal-100' : 'text-teal-700'} text-2xl font-bold font-dmSerif mb-2`}>
-          Achievements
-        </h2>
-        <p className={`${text.secondary[theme]} font-outfit`}>
-          Track your progress and unlock rewards
-        </p>
-      </div>
-
       {/* Coming Soon State */}
       <div className={`flex flex-col items-center justify-center py-16 px-8 rounded-xl ${
         theme === "dark"

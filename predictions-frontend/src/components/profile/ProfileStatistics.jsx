@@ -57,16 +57,6 @@ const ProfileStatistics = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h2 className={`${theme === 'dark' ? 'text-teal-100' : 'text-teal-700'} text-2xl font-bold font-dmSerif mb-2`}>
-          Performance Statistics
-        </h2>
-        <p className={`${text.secondary[theme]} font-outfit`}>
-          Detailed analytics of your prediction performance
-        </p>
-      </div>
-
       {/* Monthly Performance Chart */}
       <div className={`${
         theme === "dark"

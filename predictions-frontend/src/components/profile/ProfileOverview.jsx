@@ -139,14 +139,7 @@ const ProfileOverview = () => {
   const displayUser = userProfile || {};
   const displayStats = user?.statistics || {};
 
-  // Sample achievements and activity (would come from API in real app)
-  const achievements = [
-    { name: "Premier Predictor", icon: <StarIcon className="w-3 h-3" />, color: "teal" },
-    { name: "3-Week Streak", icon: <LightningBoltIcon className="w-3 h-3" />, color: "indigo" },
-    { name: "Big Six Expert", icon: <BadgeIcon className="w-3 h-3" />, color: "amber" },
-    { name: "Century Club", icon: <TargetIcon className="w-3 h-3" />, color: "emerald" }
-  ];
-
+  // Sample activity (would come from API in real app)
   const recentActivity = [
     { action: "Predicted Arsenal 2-1 Man City", time: "2 hours ago", points: 12 },
     { action: "Joined Office Rivalry league", time: "1 day ago", points: null },
@@ -230,26 +223,8 @@ const ProfileOverview = () => {
               )}
             </div>
             <p className={`${text.secondary[theme]} font-outfit mb-4`}>
-              Member since {displayUser.memberSince || 'Recently'} • Global Rank #{displayStats.currentRank || 0}
+              Member since {displayUser.memberSince || 'Recently'}
             </p>
-            <div className="flex flex-wrap gap-2">
-              {achievements.map((achievement, index) => (
-                <span 
-                  key={index}
-                  className={`${
-                    achievement.color === 'teal' 
-                      ? theme === 'dark' ? 'bg-teal-700/20 text-teal-300' : 'bg-teal-100 text-teal-700'
-                      : achievement.color === 'indigo'
-                      ? theme === 'dark' ? 'bg-indigo-700/20 text-indigo-300' : 'bg-indigo-100 text-indigo-700'
-                      : achievement.color === 'amber'
-                      ? theme === 'dark' ? 'bg-amber-700/20 text-amber-300' : 'bg-amber-100 text-amber-700'
-                      : theme === 'dark' ? 'bg-emerald-700/20 text-emerald-300' : 'bg-emerald-100 text-emerald-700'
-                  } text-xs font-medium py-1 px-2 rounded-full flex items-center gap-1`}
-                >
-                  {achievement.icon} {achievement.name}
-                </span>
-              ))}
-            </div>
           </div>
         </div>
       </motion.div>
