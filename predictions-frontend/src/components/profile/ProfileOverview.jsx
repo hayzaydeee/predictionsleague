@@ -93,14 +93,17 @@ const ProfileOverview = () => {
   // Initialize form data when user profile data is available
   useEffect(() => {
     if (userProfile) {
-      setEditFormData({
+      // Map API response fields to expected field names
+      const mappedUser = {
         username: userProfile.username || '',
         email: userProfile.email || '',
         firstName: userProfile.firstName || '',
         lastName: userProfile.lastName || '',
-        favoriteTeam: userProfile.favoriteTeam || '',
+        favoriteTeam: userProfile.favouriteTeam || userProfile.favoriteTeam || '',
         bio: userProfile.bio || '',
-      });
+      };
+      
+      setEditFormData(mappedUser);
     }
   }, [userProfile]);
 
@@ -112,14 +115,17 @@ const ProfileOverview = () => {
     setIsEditing(false);
     // Reset form data to original values
     if (userProfile) {
-      setEditFormData({
+      // Map API response fields to expected field names
+      const mappedUser = {
         username: userProfile.username || '',
         email: userProfile.email || '',
         firstName: userProfile.firstName || '',
         lastName: userProfile.lastName || '',
-        favoriteTeam: userProfile.favoriteTeam || '',
+        favoriteTeam: userProfile.favouriteTeam || userProfile.favoriteTeam || '',
         bio: userProfile.bio || '',
-      });
+      };
+      
+      setEditFormData(mappedUser);
     }
   };
 
@@ -215,9 +221,16 @@ const ProfileOverview = () => {
     return <ErrorState message={`Failed to load profile: ${error}`} />;
   }
 
-  // Use user data from temp auth context
+  // Use user data from API response, with proper field mapping
   const displayUser = userProfile || {};
   const displayStats = user?.statistics || {};
+
+  // Map API fields to display fields for consistency
+  const mappedDisplayUser = {
+    ...displayUser,
+    favoriteTeam: displayUser.favouriteTeam || displayUser.favoriteTeam, // Handle both spellings
+    email: displayUser.email || 'Not provided', // Handle null email
+  };
 
   // Sample activity (would come from API in real app)
   const recentActivity = [
@@ -274,7 +287,7 @@ const ProfileOverview = () => {
         <div className="relative flex flex-col md:flex-row items-start md:items-center gap-6">
           <div className="relative">
             <div className="h-24 w-24 bg-gradient-to-br from-teal-600 to-indigo-600 rounded-full flex items-center justify-center text-white text-3xl font-bold font-dmSerif shadow-lg">
-              {displayUser.username?.charAt(0)?.toUpperCase() || 'U'}
+              {mappedDisplayUser.username?.charAt(0)?.toUpperCase() || 'U'}
             </div>
             <div className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full border-2 ${
               theme === 'dark' ? 'bg-emerald-500 border-slate-800' : 'bg-emerald-500 border-white'
@@ -286,7 +299,7 @@ const ProfileOverview = () => {
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-1">
               <h2 className={`${theme === 'dark' ? 'text-teal-100' : 'text-teal-700'} text-2xl font-dmSerif`}>
-                {displayUser.username || 'User'}
+                {mappedDisplayUser.username || 'User'}
               </h2>
               {!isEditing && (
                 <button
@@ -303,7 +316,7 @@ const ProfileOverview = () => {
               )}
             </div>
             <p className={`${text.secondary[theme]} font-outfit mb-4`}>
-              Member since {displayUser.memberSince || 'Recently'}
+              Member since {mappedDisplayUser.memberSince || 'Recently'}
             </p>
           </div>
         </div>
@@ -378,7 +391,7 @@ const ProfileOverview = () => {
                 />
               ) : (
                 <span className={`${text.primary[theme]} font-outfit font-medium`}>
-                  {displayUser.username || 'Not set'}
+                  {mappedDisplayUser.username || 'Not set'}
                 </span>
               )}
             </div>
@@ -399,7 +412,7 @@ const ProfileOverview = () => {
                 />
               ) : (
                 <span className={`${text.primary[theme]} font-outfit font-medium`}>
-                  {displayUser.email || 'Not set'}
+                  {mappedDisplayUser.email || 'Not set'}
                 </span>
               )}
             </div>
@@ -420,7 +433,7 @@ const ProfileOverview = () => {
                 />
               ) : (
                 <span className={`${text.primary[theme]} font-outfit font-medium`}>
-                  {displayUser.firstName || 'Not set'}
+                  {mappedDisplayUser.firstName || 'Not set'}
                 </span>
               )}
             </div>
@@ -441,7 +454,7 @@ const ProfileOverview = () => {
                 />
               ) : (
                 <span className={`${text.primary[theme]} font-outfit font-medium`}>
-                  {displayUser.lastName || 'Not set'}
+                  {mappedDisplayUser.lastName || 'Not set'}
                 </span>
               )}
             </div>
@@ -470,7 +483,7 @@ const ProfileOverview = () => {
               ) : (
                 <div className="flex items-center gap-2">
                   <span className={`${text.primary[theme]} font-outfit font-medium`}>
-                    {displayUser.favoriteTeam || 'Not set'}
+                    {mappedDisplayUser.favoriteTeam || 'Not set'}
                   </span>
                 </div>
               )}
@@ -499,7 +512,7 @@ const ProfileOverview = () => {
             </h3>
           </div>
           <div className="space-y-3">
-            {(displayUser.recentActivity || []).map((activity, index) => (
+            {(mappedDisplayUser.recentActivity || []).map((activity, index) => (
               <div key={index} className={`flex items-center justify-between p-3 rounded-lg ${
                 theme === "dark"
                   ? "bg-slate-700/20 border-slate-600/20"
