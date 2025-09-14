@@ -51,24 +51,42 @@ const LeagueManagementView = ({ leagueId, league, onBack, onRefreshLeagues }) =>
     const fetchMembers = async () => {
       try {
         setIsLoading(true);
+        console.log('🔍 [MEMBERS DEBUG] Fetching league standings for leagueId:', leagueId);
         const data = await leagueAPI.getLeagueStandings(leagueId);
+        
+        console.log('📊 [MEMBERS DEBUG] Raw standings response:', data);
+        console.log('📊 [MEMBERS DEBUG] Standings array:', data.standings);
         
         // Transform standings data to member format
         // Backend now includes isAdmin in standings response
-        const membersData = (data.standings || []).map(standing => ({
-          id: standing.id,
-          name: standing.displayName,
-          username: standing.username,
-          joinedDate: standing.joinedAt,
-          points: standing.points,
-          predictions: standing.predictions,
-          isAdmin: standing.isAdmin, // Now provided by backend
-          email: standing.email || null
-        }));
+        const membersData = (data.standings || []).map((standing, index) => {
+          console.log(`👤 [MEMBERS DEBUG] Processing member ${index + 1}:`, {
+            id: standing.id,
+            displayName: standing.displayName,
+            isAdmin: standing.isAdmin,
+            isAdminType: typeof standing.isAdmin,
+            rawStanding: standing
+          });
+          
+          return {
+            id: standing.id,
+            name: standing.displayName,
+            username: standing.username,
+            joinedDate: standing.joinedAt,
+            points: standing.points,
+            predictions: standing.predictions,
+            isAdmin: standing.isAdmin, // Now provided by backend
+            email: standing.email || null
+          };
+        });
+        
+        console.log('🎯 [MEMBERS DEBUG] Transformed members data:', membersData);
+        console.log('🎯 [MEMBERS DEBUG] Admin members:', membersData.filter(m => m.isAdmin));
+        console.log('🎯 [MEMBERS DEBUG] Regular members:', membersData.filter(m => !m.isAdmin));
         
         setMembers(membersData);
       } catch (error) {
-        console.error('Failed to fetch members:', error);
+        console.error('❌ [MEMBERS DEBUG] Failed to fetch members:', error);
         showToast('Failed to load members', 'error');
         // Fall back to empty array on error
         setMembers([]);
@@ -332,16 +350,6 @@ const MembersContent = ({ members, league, onRemoveMember, onPromoteToAdmin, onC
               <CopyIcon className="w-4 h-4" />
             </button>
           </div>
-            <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className={`${buttons.primary[theme]} px-4 py-2 rounded-xl text-sm font-medium font-outfit flex items-center gap-2 shadow-lg ${
-              theme === "dark" ? "shadow-amber-600/20" : "shadow-amber-600/10"
-            }`}
-          >
-            <PlusIcon className="w-4 h-4" />
-            Invite Member
-          </motion.button>
         </div>
       </div>
     </div>
@@ -386,7 +394,17 @@ const MembersContent = ({ members, league, onRemoveMember, onPromoteToAdmin, onC
                   <span className="font-outfit">{format(new Date(member.joinedDate), 'MMM d, yyyy')}</span>
                 </div>
               </td>              <td className="px-6 py-4">
-                {member.isAdmin ? (
+                {(() => {
+                  console.log(`🎭 [ROLE DEBUG] Member ${member.name}:`, {
+                    id: member.id,
+                    isAdmin: member.isAdmin,
+                    isAdminType: typeof member.isAdmin,
+                    isAdminValue: member.isAdmin,
+                    truthyCheck: !!member.isAdmin,
+                    member: member
+                  });
+                  return member.isAdmin;
+                })() ? (
                   <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium font-outfit ${
                     theme === "dark"
                       ? "bg-amber-500/10 text-amber-400 border-amber-500/20"

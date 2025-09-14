@@ -99,14 +99,31 @@ const leagueAPI = {
   // Get league standings
   getLeagueStandings: async (leagueId) => {
     try {
-      console.log('Fetching league standings...', { leagueId });
+      console.log('🔍 [API DEBUG] Fetching league standings...', { leagueId });
       const response = await api.get(`/leagues/${leagueId}/standings`);
-      console.log('League standings fetched:', response.data?.standings?.length || 0, 'members');
-      console.log('Raw standings response:', response.data);
+      
+      console.log('📊 [API DEBUG] Raw API response:', response);
+      console.log('📊 [API DEBUG] Response data:', response.data);
+      console.log('📊 [API DEBUG] Standings array length:', response.data?.standings?.length || 0);
+      
+      if (response.data?.standings) {
+        response.data.standings.forEach((standing, index) => {
+          console.log(`👤 [API DEBUG] Standing ${index + 1}:`, {
+            id: standing.id,
+            displayName: standing.displayName,
+            isAdmin: standing.isAdmin,
+            isAdminExists: 'isAdmin' in standing,
+            isAdminType: typeof standing.isAdmin,
+            allFields: Object.keys(standing)
+          });
+        });
+      }
+      
+      console.log('✅ [API DEBUG] League standings fetched:', response.data?.standings?.length || 0, 'members');
       // Return the direct format: { leagueId, standings }
       return response.data;
     } catch (error) {
-      console.error('Failed to fetch league standings:', error.message, { leagueId });
+      console.error('❌ [API DEBUG] Failed to fetch league standings:', error.message, { leagueId });
       throw new Error(`Failed to load league standings: ${error.message}`);
     }
   },
