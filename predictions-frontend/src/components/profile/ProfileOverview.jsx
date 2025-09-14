@@ -99,7 +99,7 @@ const ProfileOverview = () => {
         email: userProfile.email || '',
         firstName: userProfile.firstName || '',
         lastName: userProfile.lastName || '',
-        favoriteTeam: userProfile.favouriteTeam || userProfile.favoriteTeam || '',
+        favoriteTeam: formatTeamName(userProfile.favouriteTeam || userProfile.favoriteTeam) || '',
         bio: userProfile.bio || '',
       };
       
@@ -121,7 +121,7 @@ const ProfileOverview = () => {
         email: userProfile.email || '',
         firstName: userProfile.firstName || '',
         lastName: userProfile.lastName || '',
-        favoriteTeam: userProfile.favouriteTeam || userProfile.favoriteTeam || '',
+        favoriteTeam: formatTeamName(userProfile.favouriteTeam || userProfile.favoriteTeam) || '',
         bio: userProfile.bio || '',
       };
       
@@ -211,6 +211,18 @@ const ProfileOverview = () => {
     updateNestedPreference("privacy", setting, value);
   };
 
+  // Utility function to format team names from ALL CAPS to sentence case
+  const formatTeamName = (teamName) => {
+    if (!teamName) return 'Not set';
+    
+    // Convert to lowercase then capitalize first letter of each word
+    return teamName
+      .toLowerCase()
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
   // Show loading state while updating
   if (isLoading) {
     return <LoadingState message="Loading profile..." />;
@@ -228,7 +240,7 @@ const ProfileOverview = () => {
   // Map API fields to display fields for consistency
   const mappedDisplayUser = {
     ...displayUser,
-    favoriteTeam: displayUser.favouriteTeam || displayUser.favoriteTeam, // Handle both spellings
+    favoriteTeam: formatTeamName(displayUser.favouriteTeam || displayUser.favoriteTeam), // Handle both spellings and format
     email: displayUser.email || 'Not provided', // Handle null email
   };
 
@@ -483,7 +495,7 @@ const ProfileOverview = () => {
               ) : (
                 <div className="flex items-center gap-2">
                   <span className={`${text.primary[theme]} font-outfit font-medium`}>
-                    {mappedDisplayUser.favoriteTeam || 'Not set'}
+                    {mappedDisplayUser.favoriteTeam !== 'Not set' ? mappedDisplayUser.favoriteTeam : 'Not set'}
                   </span>
                 </div>
               )}
