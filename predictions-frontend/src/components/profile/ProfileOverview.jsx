@@ -223,6 +223,35 @@ const ProfileOverview = () => {
       .join(' ');
   };
 
+  // Utility function to format member since date
+  const formatMemberSince = (user) => {
+    // Check for various possible date fields that might indicate when user joined
+    const possibleDateFields = [
+      user?.memberSince,
+      user?.joinedAt,
+      user?.createdAt,
+      user?.registrationDate,
+      user?.created_at,
+      user?.joined_at
+    ];
+
+    const memberDate = possibleDateFields.find(date => date != null);
+    
+    if (memberDate) {
+      const date = new Date(memberDate);
+      if (!isNaN(date.getTime())) {
+        // Format as "Month Year" (e.g., "September 2024")
+        return date.toLocaleDateString('en-US', { 
+          month: 'long', 
+          year: 'numeric' 
+        });
+      }
+    }
+    
+    // Fallback if no valid date found
+    return 'Recently';
+  };
+
   // Show loading state while updating
   if (isLoading) {
     return <LoadingState message="Loading profile..." />;
@@ -242,6 +271,7 @@ const ProfileOverview = () => {
     ...displayUser,
     favoriteTeam: formatTeamName(displayUser.favouriteTeam || displayUser.favoriteTeam), // Handle both spellings and format
     email: displayUser.email || 'Not provided', // Handle null email
+    memberSince: formatMemberSince(displayUser), // Format member since date
   };
 
   // Sample activity (would come from API in real app)
