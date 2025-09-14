@@ -170,17 +170,27 @@ const leagueAPI = {
   // Remove member from league (admin only)
   removeMember: async (leagueId, memberId) => {
     try {
-      console.log('Removing member from league...', { leagueId, memberId });
+      console.log('🗑️ [REMOVE MEMBER] Starting removal process...', { leagueId, memberId });
+      console.log('🗑️ [REMOVE MEMBER] Member ID type:', typeof memberId, 'Value:', memberId);
+      console.log('🗑️ [REMOVE MEMBER] League ID type:', typeof leagueId, 'Value:', leagueId);
+      
       const requestBody = {
-        leagueid: leagueId,
-        userid: memberId
+        leagueId: leagueId,  // Changed from leagueid to leagueId (camelCase)
+        userId: memberId     // Changed from userid to userId (camelCase)
       };
       
+      console.log('🗑️ [REMOVE MEMBER] Request URL:', '/leagues/remove-user');
+      console.log('🗑️ [REMOVE MEMBER] Request Method:', 'DELETE');
+      console.log('🗑️ [REMOVE MEMBER] Request Body:', JSON.stringify(requestBody));
+      
       const response = await api.delete('/leagues/remove-user', { data: requestBody });
-      console.log('Member removed successfully');
+      console.log('✅ [REMOVE MEMBER] Member removed successfully:', response.data);
       return response.data;
     } catch (error) {
-      console.error('Failed to remove member:', error.message, { leagueId, memberId });
+      console.error('❌ [REMOVE MEMBER] Failed to remove member:', error.message, { leagueId, memberId });
+      console.error('❌ [REMOVE MEMBER] Full error object:', error);
+      console.error('❌ [REMOVE MEMBER] Error response:', error.response?.data);
+      console.error('❌ [REMOVE MEMBER] Error status:', error.response?.status);
       throw new Error(`Failed to remove member: ${error.message}`);
     }
   },
@@ -188,17 +198,27 @@ const leagueAPI = {
   // Promote member to admin (admin only)
   promoteMember: async (leagueId, memberId) => {
     try {
-      console.log('Promoting member to admin...', { leagueId, memberId });
+      console.log('⬆️ [PROMOTE MEMBER] Starting promotion process...', { leagueId, memberId });
+      console.log('⬆️ [PROMOTE MEMBER] Member ID type:', typeof memberId, 'Value:', memberId);
+      console.log('⬆️ [PROMOTE MEMBER] League ID type:', typeof leagueId, 'Value:', leagueId);
+      
       const requestBody = {
-        leagueid: leagueId,
-        userid: memberId
+        leagueId: leagueId,  // Changed from leagueid to leagueId (camelCase)
+        userId: memberId     // Changed from userid to userId (camelCase)
       };
       
+      console.log('⬆️ [PROMOTE MEMBER] Request URL:', '/leagues/add-admin');
+      console.log('⬆️ [PROMOTE MEMBER] Request Method:', 'PUT');
+      console.log('⬆️ [PROMOTE MEMBER] Request Body:', JSON.stringify(requestBody));
+      
       const response = await api.put('/leagues/add-admin', requestBody);
-      console.log('Member promoted successfully');
+      console.log('✅ [PROMOTE MEMBER] Member promoted successfully:', response.data);
       return response.data;
     } catch (error) {
-      console.error('Failed to promote member:', error.message, { leagueId, memberId });
+      console.error('❌ [PROMOTE MEMBER] Failed to promote member:', error.message, { leagueId, memberId });
+      console.error('❌ [PROMOTE MEMBER] Full error object:', error);
+      console.error('❌ [PROMOTE MEMBER] Error response:', error.response?.data);
+      console.error('❌ [PROMOTE MEMBER] Error status:', error.response?.status);
       throw new Error(`Failed to promote member: ${error.message}`);
     }
   }
