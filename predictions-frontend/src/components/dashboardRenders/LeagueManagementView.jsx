@@ -184,8 +184,7 @@ const LeagueManagementView = ({ leagueId, league, onBack, onRefreshLeagues }) =>
       >
         {[
           { id: 'members', label: 'Members', icon: PersonIcon },
-          { id: 'settings', label: 'Settings', icon: GearIcon },
-          { id: 'danger', label: 'Danger Zone', icon: ExclamationTriangleIcon }
+          { id: 'settings', label: 'Settings', icon: GearIcon }
         ].map((tab) => (
           <button
             key={tab.id}
@@ -235,14 +234,8 @@ const LeagueManagementView = ({ leagueId, league, onBack, onRefreshLeagues }) =>
               setTypeInput={setTypeInput}
               onSave={handleSaveSettings}
               isLoading={isLoading}
-            />
-          )}
-          
-          {activeTab === 'danger' && (
-            <DangerZoneContent
               onDeleteLeague={handleDeleteLeague}
               confirmDelete={confirmDelete}
-              isLoading={isLoading}
             />
           )}
         </AnimatePresence>
@@ -417,7 +410,9 @@ const SettingsContent = ({
   typeInput, 
   setTypeInput, 
   onSave, 
-  isLoading 
+  isLoading,
+  onDeleteLeague,
+  confirmDelete
 }) => {
   const { theme } = useContext(ThemeContext);
   
@@ -574,110 +569,76 @@ const SettingsContent = ({
               </>
             )}          </motion.button>
         </div>
-      </div>
-    </div>
-  </motion.div>
-  );
-};
-
-const DangerZoneContent = ({ onDeleteLeague, confirmDelete, isLoading }) => {
-  const { theme } = useContext(ThemeContext);
-  
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
-      className={`${
-        theme === "dark"
-          ? "bg-slate-800/30 border-slate-700/50"
-          : "bg-white border-slate-200"
-      } backdrop-blur-sm border rounded-2xl overflow-hidden shadow-sm`}
-    >    <div className={`bg-gradient-to-r from-red-500/10 to-red-600/10 border-b ${
-      theme === "dark" ? "border-red-500/20" : "border-red-200"
-    } p-6`}>
-      <div className="flex items-center gap-3">
-        <div className={`p-2 ${
-          theme === "dark"
-            ? "bg-red-500/10 border-red-500/20"
-            : "bg-red-50 border-red-200"
-        } rounded-xl border`}>
-          <ExclamationTriangleIcon className={`w-6 h-6 ${
-            theme === "dark" ? "text-red-400" : "text-red-500"
-          }`} />
-        </div>
-        <div>
-          <h2 className={`text-xl font-semibold ${text.primary[theme]} mb-1 font-outfit`}>Danger Zone</h2>
-          <p className={`${text.secondary[theme]} text-sm font-outfit`}>Irreversible and destructive actions</p>
-        </div>
-      </div>
-    </div>    
-    <div className="p-6">
-      <div className="max-w-2xl">
-        <div className={`${
-          theme === "dark"
-            ? "bg-red-500/5 border-red-500/20"
-            : "bg-red-50 border-red-200"
-        } border rounded-xl p-6`}>
-          <div className="flex items-start gap-4">
-            <div className={`p-2 ${
-              theme === "dark"
-                ? "bg-red-500/10"
-                : "bg-red-100"
-            } rounded-lg`}>
-              <TrashIcon className={`w-5 h-5 ${
-                theme === "dark" ? "text-red-400" : "text-red-500"
-              }`} />
-            </div>
-            <div className="flex-1">
-              <h3 className={`text-lg font-semibold ${text.primary[theme]} mb-2 font-outfit`}>Delete League</h3>
-              <p className={`${text.secondary[theme]} text-sm mb-4 font-outfit`}>
-                Once you delete this league, there is no going back. All predictions, member data, 
-                and league history will be permanently removed from our servers.
-              </p>              
-              <div className="flex items-center gap-3">
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={onDeleteLeague}
-                  disabled={isLoading}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium font-outfit transition-all ${
-                    confirmDelete
-                      ? `${status.error[theme]} shadow-lg ${
-                          theme === "dark" ? "shadow-red-600/20" : "shadow-red-600/10"
-                        }`
-                      : `${
-                          theme === "dark"
-                            ? "bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/20"
-                            : "bg-red-50 hover:bg-red-100 text-red-600 border-red-200"
-                        } border`
-                  } disabled:opacity-50 disabled:cursor-not-allowed`}
-                >
-                  {isLoading ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      <span className="font-outfit">Deleting...</span>
-                    </>
-                  ) : confirmDelete ? (
-                    <>
-                      <CheckIcon className="w-4 h-4" />
-                      <span className="font-outfit">Confirm Delete</span>
-                    </>
-                  ) : (
-                    <>
-                      <TrashIcon className="w-4 h-4" />
-                      <span className="font-outfit">Delete League</span>
-                    </>
-                  )}
-                </motion.button>
+        
+        {/* Danger Zone Section */}
+        <div className="pt-8 mt-8 border-t border-slate-200 dark:border-slate-700">
+          <div className={`${
+            theme === "dark"
+              ? "bg-red-500/5 border-red-500/20"
+              : "bg-red-50 border-red-200"
+          } border rounded-xl p-6`}>
+            <div className="flex items-start gap-4">
+              <div className={`p-2 ${
+                theme === "dark"
+                  ? "bg-red-500/10"
+                  : "bg-red-100"
+              } rounded-lg`}>
+                <TrashIcon className={`w-5 h-5 ${
+                  theme === "dark" ? "text-red-400" : "text-red-500"
+                }`} />
+              </div>
+              <div className="flex-1">
+                <h3 className={`text-lg font-semibold ${text.primary[theme]} mb-2 font-outfit`}>Danger Zone</h3>
+                <p className={`${text.secondary[theme]} text-sm mb-4 font-outfit`}>
+                  Once you delete this league, there is no going back. All predictions, member data, 
+                  and league history will be permanently removed from our servers.
+                </p>
                 
-                {confirmDelete && !isLoading && (
-                  <span className={`${
-                    theme === "dark" ? "text-red-400" : "text-red-500"
-                  } text-sm animate-pulse font-outfit`}>
-                    Click again to confirm deletion
-                  </span>
-                )}              </div>
+                <div className="flex items-center gap-3">
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={onDeleteLeague}
+                    disabled={isLoading}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium font-outfit transition-all ${
+                      confirmDelete
+                        ? `${status.error[theme]} shadow-lg ${
+                            theme === "dark" ? "shadow-red-600/20" : "shadow-red-600/10"
+                          }`
+                        : `${
+                            theme === "dark"
+                              ? "bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/20"
+                              : "bg-red-50 hover:bg-red-100 text-red-600 border-red-200"
+                          } border`
+                    } disabled:opacity-50 disabled:cursor-not-allowed`}
+                  >
+                    {isLoading ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        <span className="font-outfit">Deleting...</span>
+                      </>
+                    ) : confirmDelete ? (
+                      <>
+                        <CheckIcon className="w-4 h-4" />
+                        <span className="font-outfit">Confirm Delete</span>
+                      </>
+                    ) : (
+                      <>
+                        <TrashIcon className="w-4 h-4" />
+                        <span className="font-outfit">Delete League</span>
+                      </>
+                    )}
+                  </motion.button>
+                  
+                  {confirmDelete && !isLoading && (
+                    <span className={`${
+                      theme === "dark" ? "text-red-400" : "text-red-500"
+                    } text-sm animate-pulse font-outfit`}>
+                      Click again to confirm deletion
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
