@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
 import {
   ArrowLeftIcon,
+  PersonIcon,
   GearIcon,
   CalendarIcon,
   TrashIcon,
