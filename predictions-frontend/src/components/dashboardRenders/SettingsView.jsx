@@ -12,25 +12,14 @@ import {
   IconButton,
 } from "../ui/buttons";
 import {
-  PersonIcon,
   BellIcon,
-  EyeNoneIcon,
   GearIcon,
-  TrashIcon,
   DownloadIcon,
   QuestionMarkCircledIcon,
-  GlobeIcon,
   SunIcon,
   MoonIcon,
   CheckIcon,
-  Cross2Icon,
-  ExclamationTriangleIcon,
-  InfoCircledIcon,
-  EyeOpenIcon,
-  LockClosedIcon,
   AccessibilityIcon,
-  HomeIcon,
-  ViewGridIcon,
   ChevronDownIcon,
 } from "@radix-ui/react-icons";
 import LogoManager from "../common/LogoManager";
@@ -39,54 +28,12 @@ const SettingsView = () => {
   const { theme, toggleTheme } = useContext(ThemeContext);
   const { preferences, updatePreference, updateNestedPreference } =
     useUserPreferences();
-  const [profile, setProfile] = useState({
-    username: "john_doe",
-    email: "john@example.com",
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: "",
-  });
 
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [deleteConfirmText, setDeleteConfirmText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState("");
   const [errors, setErrors] = useState({});
 
   // Handlers for different settings
-  const handleProfileUpdate = async () => {
-    setIsLoading(true);
-    setErrors({});
-
-    try {
-      // Basic validation
-      if (
-        profile.newPassword &&
-        profile.newPassword !== profile.confirmPassword
-      ) {
-        setErrors({ confirmPassword: "Passwords do not match" });
-        return;
-      }
-
-      // TODO: Implement profile update API call
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
-      setShowSuccess("Profile updated successfully!");
-      setTimeout(() => setShowSuccess(""), 3000);
-
-      // Clear password fields after successful update
-      setProfile((prev) => ({
-        ...prev,
-        currentPassword: "",
-        newPassword: "",
-        confirmPassword: "",
-      }));
-    } catch (error) {
-      console.error("Profile update failed:", error);
-      setErrors({ general: "Failed to update profile. Please try again." });
-    } finally {
-      setIsLoading(false);
-    }
-  };
   const handleExportData = async () => {
     setIsLoading(true);
     try {
@@ -94,9 +41,7 @@ const SettingsView = () => {
       await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulate export
 
       const exportData = {
-        profile: { username: profile.username, email: profile.email },
         notifications: preferences.notifications,
-        privacy: preferences.privacy,
         preferences,
         exportDate: new Date().toISOString(),
       };
@@ -122,30 +67,6 @@ const SettingsView = () => {
       setErrors({ general: "Failed to export data. Please try again." });
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handleDeleteAccount = async () => {
-    if (deleteConfirmText.toLowerCase() !== "delete my account") {
-      setErrors({
-        deleteConfirm: 'Please type "delete my account" to confirm',
-      });
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      // TODO: Implement account deletion API call
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
-      console.log("Account deletion processed...");
-      // Redirect to login or landing page after deletion
-    } catch (error) {
-      console.error("Account deletion failed:", error);
-      setErrors({ general: "Failed to delete account. Please try again." });
-    } finally {
-      setIsLoading(false);
-      setShowDeleteConfirm(false);
-      setDeleteConfirmText("");
     }
   };
 
@@ -297,108 +218,6 @@ const SettingsView = () => {
       )}
 
       <div className="space-y-8">
-        {/* Profile Management */}
-        <section>
-          <h2
-            className={`${
-              theme === "dark" ? "text-teal-100" : "text-teal-700"
-            } text-xl font-bold mb-4 font-dmSerif`}
-          >
-            Profile Management
-          </h2>
-          <SettingCard
-            title="Account Information"
-            description="Update your personal information and password"
-            icon={PersonIcon}
-          >
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-              <InputField
-                label="Username"
-                value={profile.username}
-                onChange={(e) =>
-                  setProfile((prev) => ({ ...prev, username: e.target.value }))
-                }
-                placeholder="Enter username"
-                required
-              />
-              <InputField
-                label="Email"
-                type="email"
-                value={profile.email}
-                onChange={(e) =>
-                  setProfile((prev) => ({ ...prev, email: e.target.value }))
-                }
-                placeholder="Enter email address"
-                required
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-              <InputField
-                label="Current Password"
-                type="password"
-                value={profile.currentPassword}
-                onChange={(e) =>
-                  setProfile((prev) => ({
-                    ...prev,
-                    currentPassword: e.target.value,
-                  }))
-                }
-                placeholder="Current password"
-              />
-              <InputField
-                label="New Password"
-                type="password"
-                value={profile.newPassword}
-                onChange={(e) =>
-                  setProfile((prev) => ({
-                    ...prev,
-                    newPassword: e.target.value,
-                  }))
-                }
-                placeholder="New password"
-              />
-              <InputField
-                label="Confirm Password"
-                type="password"
-                value={profile.confirmPassword}
-                onChange={(e) =>
-                  setProfile((prev) => ({
-                    ...prev,
-                    confirmPassword: e.target.value,
-                  }))
-                }
-                placeholder="Confirm new password"
-                error={errors.confirmPassword}
-              />
-            </div>
-
-            <div className="flex gap-3">
-              <FormButton
-                variant="primary"
-                onClick={handleProfileUpdate}
-                loading={isLoading}
-                loadingText="Updating..."
-              >
-                Update Profile
-              </FormButton>
-              <SecondaryButton
-                onClick={() =>
-                  setProfile({
-                    username: "john_doe",
-                    email: "john@example.com",
-                    currentPassword: "",
-                    newPassword: "",
-                    confirmPassword: "",
-                  })
-                }
-              >
-                Reset
-              </SecondaryButton>
-            </div>
-          </SettingCard>
-        </section>
-
         {/* Notification Preferences */}
         <section>
           <h2
@@ -487,100 +306,6 @@ const SettingsView = () => {
                   updateNestedPreference(
                     "notifications",
                     "marketingEmails",
-                    value
-                  )
-                }
-              />
-            </div>
-          </SettingCard>
-        </section>
-
-        {/* Privacy Settings */}
-        <section>
-          <h2
-            className={`${
-              theme === "dark" ? "text-teal-100" : "text-teal-700"
-            } text-xl font-bold mb-4 font-dmSerif`}
-          >
-            Privacy Settings
-          </h2>
-          <SettingCard
-            title="Privacy Controls"
-            description="Manage your privacy and visibility settings"
-            icon={EyeOpenIcon}
-          >
-            {" "}
-            <div className="space-y-4">
-              <SelectField
-                label="Profile Visibility"
-                value={preferences.privacy.profileVisibility}
-                onChange={(e) =>
-                  updateNestedPreference(
-                    "privacy",
-                    "profileVisibility",
-                    e.target.value
-                  )
-                }
-                options={[
-                  { value: "public", label: "Public - Anyone can view" },
-                  { value: "friends", label: "Friends Only" },
-                  { value: "private", label: "Private - Only me" },
-                ]}
-              />
-              <SelectField
-                label="Activity Visibility"
-                value={preferences.privacy.activityVisibility}
-                onChange={(e) =>
-                  updateNestedPreference(
-                    "privacy",
-                    "activityVisibility",
-                    e.target.value
-                  )
-                }
-                options={[
-                  { value: "public", label: "Public" },
-                  { value: "friends", label: "Friends Only" },
-                  { value: "private", label: "Private" },
-                ]}
-              />
-            </div>
-            <div className="mt-6 space-y-1 divide-y divide-slate-600/20">
-              <ToggleRow
-                label="Allow Direct Messages"
-                description="Let other users send you messages"
-                checked={preferences.privacy.allowDirectMessages}
-                onChange={(value) =>
-                  updateNestedPreference(
-                    "privacy",
-                    "allowDirectMessages",
-                    value
-                  )
-                }
-              />
-              <ToggleRow
-                label="Show in Leaderboard"
-                description="Display your ranking in public leaderboards"
-                checked={preferences.privacy.showInLeaderboard}
-                onChange={(value) =>
-                  updateNestedPreference("privacy", "showInLeaderboard", value)
-                }
-              />
-              <ToggleRow
-                label="Share Statistics"
-                description="Allow sharing of your prediction statistics"
-                checked={preferences.privacy.shareStats}
-                onChange={(value) =>
-                  updateNestedPreference("privacy", "shareStats", value)
-                }
-              />
-              <ToggleRow
-                label="Accept Friend Requests"
-                description="Allow others to send you friend requests"
-                checked={preferences.privacy.allowFriendRequests}
-                onChange={(value) =>
-                  updateNestedPreference(
-                    "privacy",
-                    "allowFriendRequests",
                     value
                   )
                 }
@@ -827,88 +552,6 @@ const SettingsView = () => {
               </div>
             </SettingCard>
           </div>
-        </section>
-
-        {/* Account Deletion */}
-        <section>
-          <h2
-            className={`${
-              theme === "dark" ? "text-red-100" : "text-red-700"
-            } text-xl font-bold mb-4 font-dmSerif`}
-          >
-            Danger Zone
-          </h2>
-          <SettingCard
-            title="Delete Account"
-            description="Permanently delete your account and all data"
-            icon={TrashIcon}
-          >
-            <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 mb-4">
-              <div className="flex items-start gap-3">
-                <ExclamationTriangleIcon className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-                <div>
-                  <h4 className="text-red-400 font-outfit font-semibold mb-2">
-                    Warning: This action cannot be undone
-                  </h4>
-                  <p className="text-red-300 text-sm font-outfit">
-                    Deleting your account will permanently remove all your
-                    predictions, leagues, statistics, and personal data. This
-                    action is irreversible.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {!showDeleteConfirm ? (
-              <ActionButton
-                color="red"
-                variant="solid"
-                onClick={() => setShowDeleteConfirm(true)}
-                icon={<TrashIcon />}
-              >
-                Delete Account
-              </ActionButton>
-            ) : (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                className="space-y-4"
-              >
-                <InputField
-                  label="Type 'delete my account' to confirm"
-                  value={deleteConfirmText}
-                  onChange={(e) => setDeleteConfirmText(e.target.value)}
-                  placeholder="delete my account"
-                  error={errors.deleteConfirm}
-                />
-                <div className="flex gap-3">
-                  <ActionButton
-                    color="red"
-                    variant="solid"
-                    onClick={handleDeleteAccount}
-                    loading={isLoading}
-                    disabled={
-                      deleteConfirmText.toLowerCase() !== "delete my account"
-                    }
-                  >
-                    Confirm Deletion
-                  </ActionButton>
-                  <SecondaryButton
-                    onClick={() => {
-                      setShowDeleteConfirm(false);
-                      setDeleteConfirmText("");
-                      setErrors((prev) => ({
-                        ...prev,
-                        deleteConfirm: undefined,
-                      }));
-                    }}
-                  >
-                    Cancel
-                  </SecondaryButton>
-                </div>
-              </motion.div>
-            )}
-          </SettingCard>
         </section>
       </div>
     </div>

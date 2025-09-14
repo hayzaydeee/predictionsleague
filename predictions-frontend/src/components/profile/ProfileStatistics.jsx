@@ -7,7 +7,10 @@ import {
   RocketIcon,
   LightningBoltIcon,
   PersonIcon,
-  ActivityLogIcon
+  ActivityLogIcon,
+  MagicWandIcon,
+  BadgeIcon,
+  StarIcon
 } from "@radix-ui/react-icons";
 import { ThemeContext } from "../../context/ThemeContext";
 import { text } from "../../utils/themeUtils";
@@ -57,6 +60,90 @@ const ProfileStatistics = () => {
 
   return (
     <div className="space-y-6">
+      {/* Performance Highlights */}
+      <div className={`${
+        theme === "dark"
+          ? "bg-slate-800/40 border-slate-700/50"
+          : "bg-white border-slate-200 shadow-sm"
+      } backdrop-blur-sm rounded-xl p-6 border`}>
+        <div className="flex items-center gap-2 mb-6">
+          <div className={`p-1.5 rounded-lg border ${
+            theme === "dark"
+              ? "bg-teal-500/10 border-teal-500/20"
+              : "bg-teal-50 border-teal-200"
+          }`}>
+            <MagicWandIcon className={`w-4 h-4 ${
+              theme === "dark" ? "text-teal-400" : "text-teal-600"
+            }`} />
+          </div>
+          <h3 className={`${theme === 'dark' ? 'text-teal-200' : 'text-teal-700'} font-outfit font-semibold text-lg`}>
+            Performance Highlights
+          </h3>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className={`p-4 rounded-lg ${
+            theme === "dark"
+              ? "bg-slate-700/20 border-slate-600/20"
+              : "bg-slate-50/50 border-slate-200/50"
+          } border`}>
+            <div className="flex items-center gap-2 mb-2">
+              <BadgeIcon className={`w-4 h-4 ${
+                theme === "dark" ? "text-amber-400" : "text-amber-600"
+              }`} />
+              <span className={`${text.primary[theme]} font-outfit font-medium text-sm`}>
+                Best Gameweek
+              </span>
+            </div>
+            <p className={`${text.primary[theme]} font-dmSerif text-2xl font-bold`}>
+              GW12
+            </p>
+            <p className={`${text.muted[theme]} font-outfit text-xs`}>
+              189 points scored
+            </p>
+          </div>
+          <div className={`p-4 rounded-lg ${
+            theme === "dark"
+              ? "bg-slate-700/20 border-slate-600/20"
+              : "bg-slate-50/50 border-slate-200/50"
+          } border`}>
+            <div className="flex items-center gap-2 mb-2">
+              <StarIcon className={`w-4 h-4 ${
+                theme === "dark" ? "text-indigo-400" : "text-indigo-600"
+              }`} />
+              <span className={`${text.primary[theme]} font-outfit font-medium text-sm`}>
+                Favorite Fixture
+              </span>
+            </div>
+            <p className={`${text.primary[theme]} font-dmSerif text-lg font-bold`}>
+              Arsenal vs Spurs
+            </p>
+            <p className={`${text.muted[theme]} font-outfit text-xs`}>
+              85% prediction accuracy
+            </p>
+          </div>
+          <div className={`p-4 rounded-lg ${
+            theme === "dark"
+              ? "bg-slate-700/20 border-slate-600/20"
+              : "bg-slate-50/50 border-slate-200/50"
+          } border`}>
+            <div className="flex items-center gap-2 mb-2">
+              <CalendarIcon className={`w-4 h-4 ${
+                theme === "dark" ? "text-emerald-400" : "text-emerald-600"
+              }`} />
+              <span className={`${text.primary[theme]} font-outfit font-medium text-sm`}>
+                Most Active Day
+              </span>
+            </div>
+            <p className={`${text.primary[theme]} font-dmSerif text-lg font-bold`}>
+              Saturday
+            </p>
+            <p className={`${text.muted[theme]} font-outfit text-xs`}>
+              67% of predictions made
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Monthly Performance Chart */}
       <div className={`${
         theme === "dark"

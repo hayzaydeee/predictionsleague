@@ -14,7 +14,7 @@ export const userAPI = {
     try {
       const response = await apiCall({
         method: 'GET',
-        url: '/users/profile',
+        url: '/profile',
       });
 
       if (response.success) {
@@ -46,7 +46,7 @@ export const userAPI = {
     try {
       const response = await apiCall({
         method: 'PUT',
-        url: '/users/profile',
+        url: '/profile',
         data: {
           username: userData.username,
           email: userData.email,
@@ -83,7 +83,7 @@ export const userAPI = {
 
       const response = await apiCall({
         method: 'POST',
-        url: '/users/profile/picture',
+        url: '/profile/picture',
         data: formData,
         headers: {
           'Content-Type': 'multipart/form-data',
