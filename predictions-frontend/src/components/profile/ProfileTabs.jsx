@@ -1,12 +1,10 @@
 import React, { useState, useContext } from "react";
 import { motion } from "framer-motion";
-import { PersonIcon, BadgeIcon, GearIcon, ActivityLogIcon, BarChartIcon } from "@radix-ui/react-icons";
+import { PersonIcon, BadgeIcon, BarChartIcon } from "@radix-ui/react-icons";
 import { ThemeContext } from "../../context/ThemeContext";
 import { text } from "../../utils/themeUtils";
 import ProfileOverview from "./ProfileOverview";
 import ProfileAchievements from "./ProfileAchievements";
-import ProfileSettings from "./ProfileSettings";
-import PredictionHistory from "./PredictionHistory";
 import ProfileStatistics from "./ProfileStatistics";
 
 const ProfileTabs = () => {
@@ -16,9 +14,7 @@ const ProfileTabs = () => {
   const tabs = [
     { id: "profile", label: "Profile", icon: <PersonIcon className="w-4 h-4" /> },
     { id: "achievements", label: "Achievements", icon: <BadgeIcon className="w-4 h-4" /> },
-    { id: "history", label: "History", icon: <ActivityLogIcon className="w-4 h-4" /> },
     { id: "statistics", label: "Statistics", icon: <BarChartIcon className="w-4 h-4" /> },
-    { id: "settings", label: "Settings", icon: <GearIcon className="w-4 h-4" /> },
   ];
 
   const renderTabContent = () => {
@@ -27,12 +23,8 @@ const ProfileTabs = () => {
         return <ProfileOverview />;
       case "achievements":
         return <ProfileAchievements />;
-      case "history":
-        return <PredictionHistory />;
       case "statistics":
         return <ProfileStatistics />;
-      case "settings":
-        return <ProfileSettings />;
       default:
         return <ProfileOverview />;
     }
