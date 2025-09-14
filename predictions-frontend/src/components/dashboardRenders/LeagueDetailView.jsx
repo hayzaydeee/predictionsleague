@@ -13,6 +13,7 @@ import {
   BarChartIcon,
   StackIcon,
   ExclamationTriangleIcon,
+  CopyIcon,
 } from "@radix-ui/react-icons";
 
 import { showToast } from "../../services/notificationService";
@@ -79,6 +80,14 @@ const LeagueDetailView = ({ leagueId, league, onBack, onManage }) => {
     showToast("League link copied to clipboard!", "success");
   };
 
+  // Handle copying join code
+  const handleCopyJoinCode = () => {
+    if (league.joinCode) {
+      navigator.clipboard.writeText(league.joinCode);
+      // TODO: Add toast notification
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -107,16 +116,6 @@ const LeagueDetailView = ({ leagueId, league, onBack, onManage }) => {
         </button>
         <div className="flex items-center gap-3">
           {" "}
-          <button
-            onClick={handleShare}
-            className={`flex items-center gap-2 px-3 py-2 ${
-              theme === "dark"
-                ? "bg-slate-700/60 hover:bg-slate-700/80 border-slate-600/40 text-slate-300 hover:text-white"
-                : "bg-slate-100 hover:bg-slate-200 border-slate-200 text-slate-600 hover:text-slate-800"
-            } border rounded-lg text-sm transition-all duration-200 font-outfit`}
-          >
-            Share
-          </button>
           {league.isAdmin && (
             <button
               onClick={() => onManage(league.id)}
@@ -207,8 +206,19 @@ const LeagueDetailView = ({ leagueId, league, onBack, onManage }) => {
                             theme === "dark" ? "bg-slate-500" : "bg-slate-400"
                           } rounded-full`}
                         />
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-2">
                           <span>Code: {league.joinCode}</span>
+                          <button
+                            onClick={handleCopyJoinCode}
+                            className={`p-1 rounded-md transition-colors ${
+                              theme === "dark"
+                                ? "hover:bg-slate-700 text-slate-400 hover:text-slate-300"
+                                : "hover:bg-slate-200 text-slate-600 hover:text-slate-700"
+                            }`}
+                            title="Copy join code"
+                          >
+                            <CopyIcon className="w-4 h-4" />
+                          </button>
                         </div>
                       </>
                     )}
