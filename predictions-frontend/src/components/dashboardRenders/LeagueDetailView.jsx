@@ -17,9 +17,12 @@ import {
 
 import { showToast } from "../../services/notificationService";
 import { ThemeContext } from "../../context/ThemeContext";
+import { useUserPreferences } from "../../context/UserPreferencesContext";
 import { backgrounds, text, buttons } from "../../utils/themeUtils";
 import leagueAPI from "../../services/api/leagueAPI";
 import GameweekPredictionsCarousel from "../predictions/GameweekPredictionsCarousel";
+import LeaguePredictionViewToggleBar from "../predictions/LeaguePredictionViewToggleBar";
+import LeaguePredictionContentView from "../predictions/LeaguePredictionContentView";
 import { teamLogos } from "../../data/sampleData";
 
 const LeagueDetailView = ({ leagueId, league, onBack, onManage }) => {
@@ -556,11 +559,13 @@ const LeaderboardContent = ({ leagueId, formatSafeDate }) => {
 // Predictions Content Component
 const PredictionsContent = ({ leagueId }) => {
   const { theme } = useContext(ThemeContext);
+  const { preferences, updatePreferences } = useUserPreferences();
   const [predictions, setPredictions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentGameweek, setCurrentGameweek] = useState(15); // Default to current gameweek
   const [selectedPrediction, setSelectedPrediction] = useState(null);
+  const [selectedViewMode, setSelectedViewMode] = useState(preferences?.leaguePredictionViewMode || 'members');
 
   useEffect(() => {
     const fetchPredictions = async () => {
@@ -580,6 +585,12 @@ const PredictionsContent = ({ leagueId }) => {
       fetchPredictions();
     }
   }, [leagueId]);
+
+  // Handle view mode changes with preferences persistence
+  const handleViewModeChange = (viewMode) => {
+    setSelectedViewMode(viewMode);
+    updatePreferences({ leaguePredictionViewMode: viewMode });
+  };
 
   // Get available gameweeks from predictions
   const availableGameweeks = [...new Set(predictions.map(p => p.gameweek))].sort((a, b) => b - a);
@@ -645,6 +656,12 @@ const PredictionsContent = ({ leagueId }) => {
       exit={{ opacity: 0, y: -20 }}
       className="space-y-6"
     >
+      {/* View Toggle Bar */}
+      <LeaguePredictionViewToggleBar
+        selectedView={selectedViewMode}
+        onViewChange={handleViewModeChange}
+      />
+
       {/* Gameweek Selector */}
       {availableGameweeks.length > 1 && (
         <div className="flex items-center space-x-4">
@@ -669,8 +686,9 @@ const PredictionsContent = ({ leagueId }) => {
         </div>
       )}
 
-      {/* Gameweek Predictions Carousel */}
-      <GameweekPredictionsCarousel
+      {/* League Prediction Content with View System */}
+      <LeaguePredictionContentView
+        viewMode={selectedViewMode}
         predictions={predictions}
         currentGameweek={currentGameweek}
         onPredictionSelect={handlePredictionSelect}
