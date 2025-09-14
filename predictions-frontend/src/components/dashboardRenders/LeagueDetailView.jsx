@@ -656,35 +656,40 @@ const PredictionsContent = ({ leagueId }) => {
       exit={{ opacity: 0, y: -20 }}
       className="space-y-6"
     >
-      {/* View Toggle Bar */}
-      <LeaguePredictionViewToggleBar
-        selectedView={selectedViewMode}
-        onViewChange={handleViewModeChange}
-      />
+      {/* Controls Row - Gameweek Selector and View Toggle Bar */}
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+        {/* Gameweek Selector */}
+        {availableGameweeks.length > 1 && (
+          <div className="flex items-center space-x-4">
+            <label className={`text-sm font-medium ${text.primary[theme]}`}>
+              Gameweek:
+            </label>
+            <select
+              value={currentGameweek}
+              onChange={(e) => setCurrentGameweek(Number(e.target.value))}
+              className={`px-3 py-2 rounded-lg border text-sm ${
+                theme === 'dark'
+                  ? 'bg-slate-800 border-slate-600 text-white'
+                  : 'bg-white border-slate-300 text-slate-900'
+              }`}
+            >
+              {availableGameweeks.map(gw => (
+                <option key={gw} value={gw}>
+                  Gameweek {gw}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
-      {/* Gameweek Selector */}
-      {availableGameweeks.length > 1 && (
-        <div className="flex items-center space-x-4">
-          <label className={`text-sm font-medium ${text.primary[theme]}`}>
-            Gameweek:
-          </label>
-          <select
-            value={currentGameweek}
-            onChange={(e) => setCurrentGameweek(Number(e.target.value))}
-            className={`px-3 py-2 rounded-lg border text-sm ${
-              theme === 'dark'
-                ? 'bg-slate-800 border-slate-600 text-white'
-                : 'bg-white border-slate-300 text-slate-900'
-            }`}
-          >
-            {availableGameweeks.map(gw => (
-              <option key={gw} value={gw}>
-                Gameweek {gw}
-              </option>
-            ))}
-          </select>
+        {/* View Toggle Bar */}
+        <div className="flex-shrink-0">
+          <LeaguePredictionViewToggleBar
+            selectedView={selectedViewMode}
+            onViewChange={handleViewModeChange}
+          />
         </div>
-      )}
+      </div>
 
       {/* League Prediction Content with View System */}
       <LeaguePredictionContentView

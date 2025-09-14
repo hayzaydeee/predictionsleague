@@ -11,68 +11,66 @@ import {
 } from "@radix-ui/react-icons";
 import { ThemeContext } from "../../context/ThemeContext";
 
-const LeaguePredictionViewToggleBar = ({ viewMode, setViewMode }) => {
+const LeaguePredictionViewToggleBar = ({ selectedView, onViewChange }) => {
   const { theme } = useContext(ThemeContext);
 
   return (
-    <div className="flex flex-col space-y-2">
-      <div
-        className={`${
-          theme === "dark"
-            ? "bg-primary-800/50 border-primary-700/30"
-            : "bg-slate-100 border-slate-200"
-        } rounded-lg border p-1 flex flex-wrap gap-1`}
-      >
+    <div
+      className={`${
+        theme === "dark"
+          ? "bg-primary-800/50 border-primary-700/30"
+          : "bg-slate-100 border-slate-200"
+      } rounded-lg border p-1 flex gap-1`}
+    >
         <ViewToggleButton
           icon={<PersonIcon />}
-          active={viewMode === "members"}
-          onClick={() => setViewMode("members")}
+          active={selectedView === "members"}
+          onClick={() => onViewChange("members")}
           tooltip="By Member"
           label="Members"
         />
         <ViewToggleButton
           icon={<ListBulletIcon />}
-          active={viewMode === "list"}
-          onClick={() => setViewMode("list")}
+          active={selectedView === "list"}
+          onClick={() => onViewChange("list")}
           tooltip="List View"
           label="List"
         />
         <ViewToggleButton
           icon={<TableIcon />}
-          active={viewMode === "table"}
-          onClick={() => setViewMode("table")}
+          active={selectedView === "table"}
+          onClick={() => onViewChange("table")}
           tooltip="Table View"
           label="Table"
         />
         <ViewToggleButton
           icon={<StackIcon />}
-          active={viewMode === "stack"}
-          onClick={() => setViewMode("stack")}
+          active={selectedView === "stack"}
+          onClick={() => onViewChange("stack")}
           tooltip="Stack View"
           label="Stack"
         />
         <ViewToggleButton
           icon={<CalendarIcon />}
-          active={viewMode === "calendar"}
-          onClick={() => setViewMode("calendar")}
+          active={selectedView === "calendar"}
+          onClick={() => onViewChange("calendar")}
           tooltip="Calendar View"
           label="Calendar"
         />
         <ViewToggleButton
           icon={<ClockIcon />}
-          active={viewMode === "timeline"}
-          onClick={() => setViewMode("timeline")}
+          active={selectedView === "timeline"}
+          onClick={() => onViewChange("timeline")}
           tooltip="Timeline"
           label="Timeline"
         />
         <ViewToggleButton
           icon={<LayoutIcon />}
-          active={viewMode === "carousel"}
-          onClick={() => setViewMode("carousel")}
+          active={selectedView === "carousel"}
+          onClick={() => onViewChange("carousel")}
           tooltip="Carousel View"
           label="Carousel"
         />
-      </div>
     </div>
   );
 };
