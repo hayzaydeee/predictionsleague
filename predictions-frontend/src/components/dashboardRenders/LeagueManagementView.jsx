@@ -11,6 +11,7 @@ import {
   CheckIcon,
   ExclamationTriangleIcon,
   CopyIcon,
+  DoubleArrowUpIcon,
 } from '@radix-ui/react-icons';
 import { showToast } from '../../services/notificationService';
 import { ThemeContext } from '../../context/ThemeContext';
@@ -420,7 +421,7 @@ const MembersContent = ({ members, league, onRemoveMember, onPromoteToAdmin, onC
                       } rounded-lg transition-colors`}
                       title="Promote to admin"
                     >
-                      {/* <ShieldIcon className="w-4 h-4" /> */}
+                      <DoubleArrowUpIcon className="w-4 h-4" />
                     </button>
                     <button 
                       onClick={() => onRemoveMember(member.id)}
