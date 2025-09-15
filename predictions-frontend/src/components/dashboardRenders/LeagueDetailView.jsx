@@ -84,7 +84,7 @@ const LeagueDetailView = ({ leagueId, league, onBack, onManage }) => {
   const handleCopyJoinCode = () => {
     if (league.joinCode) {
       navigator.clipboard.writeText(league.joinCode);
-      // TODO: Add toast notification
+      showToast("Join code copied to clipboard!", "success");
     }
   };
 
