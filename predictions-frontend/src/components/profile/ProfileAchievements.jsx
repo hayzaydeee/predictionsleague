@@ -52,9 +52,6 @@ const ProfileAchievements = () => {
             <h3 className={`${text.primary[theme]} text-2xl font-bold font-dmSerif mb-2`}>
               Achievements Coming Soon!
             </h3>
-            <p className={`${text.secondary[theme]} font-outfit text-lg max-w-md`}>
-              We're working on an exciting achievement system to reward your prediction skills
-            </p>
           </div>
 
           {/* Features Preview */}
