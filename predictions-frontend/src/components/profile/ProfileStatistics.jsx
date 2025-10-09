@@ -27,15 +27,17 @@ const ProfileStatistics = () => {
 
   // Utility function to generate highlight descriptions
   const generateDescription = (type, data) => {
+    if (!data) return 'No data available';
+    
     switch (type) {
       case 'bestGameweek':
-        return `${data.points} points scored`;
+        return data.points !== undefined ? `${data.points} points scored` : 'No data available';
       case 'favoriteFixture':
-        return `${data.accuracy}% prediction accuracy`;
+        return data.accuracy !== undefined ? `${data.accuracy}% prediction accuracy` : 'No data available';
       case 'mostActiveDay':
-        return `${data.percentage}% of predictions made`;
+        return data.percentage !== undefined ? `${data.percentage}% of predictions made` : 'No data available';
       default:
-        return '';
+        return 'No data available';
     }
   };
 
@@ -46,22 +48,36 @@ const ProfileStatistics = () => {
         setIsLoadingHighlights(true);
         const response = await userAPI.getStatisticsHighlights();
         
-        if (response.success) {
-          // Add generated descriptions to the highlights data
-          const highlightsWithDescriptions = {
-            bestGameweek: {
-              ...response.highlights.bestGameweek,
-              description: generateDescription('bestGameweek', response.highlights.bestGameweek)
-            },
-            favoriteFixture: {
-              ...response.highlights.favoriteFixture,
-              description: generateDescription('favoriteFixture', response.highlights.favoriteFixture)
-            },
-            mostActiveDay: {
-              ...response.highlights.mostActiveDay,
-              description: generateDescription('mostActiveDay', response.highlights.mostActiveDay)
-            }
-          };
+        console.log('Highlights API response:', response);
+        
+        if (response.success && response.highlights) {
+          // Validate highlights data structure
+          const highlights = response.highlights;
+          const highlightsWithDescriptions = {};
+
+          // Safely process bestGameweek
+          if (highlights.bestGameweek && highlights.bestGameweek.points !== undefined) {
+            highlightsWithDescriptions.bestGameweek = {
+              ...highlights.bestGameweek,
+              description: generateDescription('bestGameweek', highlights.bestGameweek)
+            };
+          }
+
+          // Safely process favoriteFixture
+          if (highlights.favoriteFixture && highlights.favoriteFixture.accuracy !== undefined) {
+            highlightsWithDescriptions.favoriteFixture = {
+              ...highlights.favoriteFixture,
+              description: generateDescription('favoriteFixture', highlights.favoriteFixture)
+            };
+          }
+
+          // Safely process mostActiveDay
+          if (highlights.mostActiveDay && highlights.mostActiveDay.percentage !== undefined) {
+            highlightsWithDescriptions.mostActiveDay = {
+              ...highlights.mostActiveDay,
+              description: generateDescription('mostActiveDay', highlights.mostActiveDay)
+            };
+          }
           
           setHighlights(highlightsWithDescriptions);
         }
@@ -83,8 +99,13 @@ const ProfileStatistics = () => {
         setIsLoadingTeamStats(true);
         const response = await userAPI.getTeamPerformance();
         
-        if (response.success) {
+        console.log('Team stats API response:', response);
+        
+        if (response.success && response.data && Array.isArray(response.data)) {
           setTeamStats(response.data);
+        } else {
+          console.warn('Team stats data is not in expected array format:', response);
+          setTeamStats([]);
         }
       } catch (error) {
         console.error('Failed to load team stats:', error);
@@ -104,8 +125,13 @@ const ProfileStatistics = () => {
         setIsLoadingMonthlyStats(true);
         const response = await userAPI.getMonthlyPerformance();
         
-        if (response.success) {
+        console.log('Monthly stats API response:', response);
+        
+        if (response.success && response.data && Array.isArray(response.data)) {
           setMonthlyStats(response.data);
+        } else {
+          console.warn('Monthly stats data is not in expected array format:', response);
+          setMonthlyStats([]);
         }
       } catch (error) {
         console.error('Failed to load monthly stats:', error);

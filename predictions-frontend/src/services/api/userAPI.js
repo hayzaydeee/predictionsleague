@@ -370,7 +370,7 @@ export const userAPI = {
     try {
       const response = await apiCall({
         method: 'GET',
-        url: '/user/profile/statistics/team-performance',
+        url: '/profile/statistics/team-performance',
       });
 
       // Return team performance data with 'data' property name for array response
@@ -392,7 +392,7 @@ export const userAPI = {
     try {
       const response = await apiCall({
         method: 'GET',
-        url: '/user/profile/statistics/monthly-performance',
+        url: '/profile/statistics/monthly-performance',
       });
 
       // Return monthly performance data with 'data' property name for array response
