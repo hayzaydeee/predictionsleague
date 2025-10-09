@@ -370,13 +370,13 @@ export const userAPI = {
     try {
       const response = await apiCall({
         method: 'GET',
-        url: '/profile/statistics/team-performance',
+        url: '/user/profile/statistics/team-performance',
       });
 
-      // Return team performance data directly (no nested data object or success prop)
+      // Return team performance data with 'data' property name for array response
       return {
         success: true,
-        teamStats: response,
+        data: response,
       };
     } catch (error) {
       handleApiError(error, { customMessage: 'Failed to load team performance statistics.' });
@@ -392,13 +392,13 @@ export const userAPI = {
     try {
       const response = await apiCall({
         method: 'GET',
-        url: '/profile/statistics/monthly-performance',
+        url: '/user/profile/statistics/monthly-performance',
       });
 
-      // Return monthly performance data directly (no nested data object or success prop)
+      // Return monthly performance data with 'data' property name for array response
       return {
         success: true,
-        monthlyStats: response,
+        data: response,
       };
     } catch (error) {
       handleApiError(error, { customMessage: 'Failed to load monthly performance statistics.' });

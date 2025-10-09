@@ -84,7 +84,7 @@ const ProfileStatistics = () => {
         const response = await userAPI.getTeamPerformance();
         
         if (response.success) {
-          setTeamStats(response.teamStats);
+          setTeamStats(response.data);
         }
       } catch (error) {
         console.error('Failed to load team stats:', error);
@@ -105,7 +105,7 @@ const ProfileStatistics = () => {
         const response = await userAPI.getMonthlyPerformance();
         
         if (response.success) {
-          setMonthlyStats(response.monthlyStats);
+          setMonthlyStats(response.data);
         }
       } catch (error) {
         console.error('Failed to load monthly stats:', error);
