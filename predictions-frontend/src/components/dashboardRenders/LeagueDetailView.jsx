@@ -24,6 +24,7 @@ import leagueAPI from "../../services/api/leagueAPI";
 import GameweekPredictionsCarousel from "../predictions/GameweekPredictionsCarousel";
 import LeaguePredictionViewToggleBar from "../predictions/LeaguePredictionViewToggleBar";
 import LeaguePredictionContentView from "../predictions/LeaguePredictionContentView";
+import LeaguePredictionFilters from "../predictions/LeaguePredictionFilters";
 import { teamLogos } from "../../data/sampleData";
 
 const LeagueDetailView = ({ leagueId, league, onBack, onManage }) => {
@@ -575,7 +576,18 @@ const PredictionsContent = ({ leagueId }) => {
   const [error, setError] = useState(null);
   const [currentGameweek, setCurrentGameweek] = useState(15); // Default to current gameweek
   const [selectedPrediction, setSelectedPrediction] = useState(null);
-  const [selectedViewMode, setSelectedViewMode] = useState(preferences?.leaguePredictionViewMode || 'members');
+  const [selectedViewMode, setSelectedViewMode] = useState(
+    // Migrate old 'members' preference to 'teams'
+    preferences?.leaguePredictionViewMode === 'members' ? 'teams' : (preferences?.leaguePredictionViewMode || 'teams')
+  );
+
+  // Filter states - following standard pattern
+  const [activeFilter, setActiveFilter] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [gameweekFilter, setGameweekFilter] = useState("all");
+  const [memberFilter, setMemberFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("date");
+  const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
     const fetchPredictions = async () => {
@@ -601,6 +613,49 @@ const PredictionsContent = ({ leagueId }) => {
     setSelectedViewMode(viewMode);
     updatePreferences({ leaguePredictionViewMode: viewMode });
   };
+
+  // Filter predictions based on active filters
+  const filteredPredictions = predictions.filter((prediction) => {
+    // Filter by status
+    if (activeFilter === "pending" && prediction.status !== "pending") return false;
+    if (activeFilter === "completed" && prediction.status !== "completed") return false;
+    if (activeFilter === "correct" && !["exact", "partial"].includes(prediction.correct)) return false;
+
+    // Filter by gameweek
+    if (gameweekFilter !== "all" && prediction.gameweek !== Number(gameweekFilter)) return false;
+
+    // Filter by member
+    if (memberFilter !== "all" && prediction.userDisplayName !== memberFilter) return false;
+
+    // Filter by search query
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      return (
+        prediction.userDisplayName?.toLowerCase().includes(query) ||
+        prediction.homeTeam?.toLowerCase().includes(query) ||
+        prediction.awayTeam?.toLowerCase().includes(query)
+      );
+    }
+
+    return true;
+  });
+
+  // Sort predictions
+  const sortedPredictions = [...filteredPredictions].sort((a, b) => {
+    if (sortBy === "date") {
+      return new Date(b.date) - new Date(a.date);
+    } else if (sortBy === "gameweek") {
+      return b.gameweek - a.gameweek;
+    } else if (sortBy === "member") {
+      return a.userDisplayName?.localeCompare(b.userDisplayName) || 0;
+    } else if (sortBy === "points") {
+      if (a.points === null && b.points !== null) return 1;
+      if (a.points !== null && b.points === null) return -1;
+      if (a.points === null && b.points === null) return 0;
+      return b.points - a.points;
+    }
+    return 0;
+  });
 
   // Get available gameweeks from predictions
   const availableGameweeks = [...new Set(predictions.map(p => p.gameweek))].sort((a, b) => b - a);
@@ -632,6 +687,7 @@ const PredictionsContent = ({ leagueId }) => {
     );
   }
 
+  // Show empty state only if no raw predictions exist, let filtered empty state be handled in render
   if (!predictions || predictions.length === 0) {
     return (
       <motion.div
@@ -666,13 +722,56 @@ const PredictionsContent = ({ leagueId }) => {
       exit={{ opacity: 0, y: -20 }}
       className="space-y-6"
     >
-      {/* Controls Row - Gameweek Selector and View Toggle Bar */}
+      {/* Header with View Toggle Bar */}
       <div className="flex items-center justify-between gap-4 flex-wrap">
-        {/* Gameweek Selector */}
+        <div>
+          <h3 className={`text-lg font-semibold ${text.primary[theme]} font-outfit`}>
+            League Predictions
+          </h3>
+          <p className={`${text.secondary[theme]} text-sm font-outfit`}>
+            View and compare member predictions for this league
+          </p>
+        </div>
+
+        {/* View Toggle Bar */}
+        <div className="flex-shrink-0">
+          <LeaguePredictionViewToggleBar
+            viewMode={selectedViewMode}
+            setViewMode={handleViewModeChange}
+          />
+        </div>
+      </div>
+
+      {/* Filters and Content Container */}
+      <div
+        className={`${
+          theme === "dark"
+            ? "backdrop-blur-xl border-slate-700/50 bg-slate-900/60"
+            : "border-slate-200 bg-white/80 backdrop-blur-sm shadow-sm"
+        } rounded-xl border overflow-hidden font-outfit p-5`}
+      >
+        {/* Prediction Filters */}
+        <LeaguePredictionFilters
+          activeFilter={activeFilter}
+          setActiveFilter={setActiveFilter}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          gameweekFilter={gameweekFilter}
+          setGameweekFilter={setGameweekFilter}
+          memberFilter={memberFilter}
+          setMemberFilter={setMemberFilter}
+          sortBy={sortBy}
+          setSortBy={setSortBy}
+          showFilters={showFilters}
+          setShowFilters={setShowFilters}
+          predictions={predictions}
+        />
+
+        {/* Gameweek Selector - Moved below filters */}
         {availableGameweeks.length > 1 && (
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4 mt-4 pt-4 border-t border-slate-700/20">
             <label className={`text-sm font-medium ${text.primary[theme]}`}>
-              Gameweek:
+              Focus Gameweek:
             </label>
             <select
               value={currentGameweek}
@@ -692,24 +791,32 @@ const PredictionsContent = ({ leagueId }) => {
           </div>
         )}
 
-        {/* View Toggle Bar */}
-        <div className="flex-shrink-0">
-          <LeaguePredictionViewToggleBar
-            selectedView={selectedViewMode}
-            onViewChange={handleViewModeChange}
-          />
-        </div>
+        {/* League Prediction Content with View System */}
+        {sortedPredictions.length === 0 ? (
+          <div className="text-center py-12">
+            <TargetIcon className={`w-12 h-12 ${text.muted[theme]} mx-auto mb-4`} />
+            <h3 className={`text-lg font-semibold ${text.primary[theme]} mb-2 font-outfit`}>
+              No Predictions Found
+            </h3>
+            <p className={`${text.secondary[theme]} font-outfit`}>
+              {activeFilter !== "all" || searchQuery || gameweekFilter !== "all" || memberFilter !== "all"
+                ? "Try adjusting your filters to see more predictions."
+                : "League members will appear here once they start making predictions."}
+            </p>
+          </div>
+        ) : (
+          <div className="mt-6">
+            <LeaguePredictionContentView
+              viewMode={selectedViewMode}
+              predictions={sortedPredictions}
+              currentGameweek={currentGameweek}
+              onPredictionSelect={handlePredictionSelect}
+              teamLogos={teamLogos}
+              searchQuery={searchQuery}
+            />
+          </div>
+        )}
       </div>
-
-      {/* League Prediction Content with View System */}
-      <LeaguePredictionContentView
-        viewMode={selectedViewMode}
-        predictions={predictions}
-        currentGameweek={currentGameweek}
-        onPredictionSelect={handlePredictionSelect}
-        teamLogos={teamLogos}
-        isReadOnly={true}
-      />
     </motion.div>
   );
 };

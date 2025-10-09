@@ -10,7 +10,7 @@ import {
 import { format, parseISO } from "date-fns";
 import { ThemeContext } from "../../context/ThemeContext";
 
-const LeaguePredictionsByMember = ({
+const LeaguePredictionsByTeam = ({
   predictions,
   onPredictionSelect,
   teamLogos = {},
@@ -263,4 +263,4 @@ const LeaguePredictionsByMember = ({
   );
 };
 
-export default LeaguePredictionsByMember;
+export default LeaguePredictionsByTeam;

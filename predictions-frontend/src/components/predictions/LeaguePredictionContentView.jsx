@@ -1,8 +1,8 @@
 import { motion, AnimatePresence } from "framer-motion";
-import LeaguePredictionsByMember from "./LeaguePredictionsByMember";
+import LeaguePredictionsByTeam from "./LeaguePredictionsByTeam";
 import LeaguePredictionsList from "./LeaguePredictionsList";
 import GameweekPredictionsCarousel from "./GameweekPredictionsCarousel";
-import LeaguePredictionsTable from "./LeaguePredictionsTable";
+import PredictionTable from "./PredictionTable";
 import LeaguePredictionsStack from "./LeaguePredictionsStack";
 import LeaguePredictionsCalendar from "./LeaguePredictionsCalendar";
 import LeaguePredictionsTimeline from "./LeaguePredictionsTimeline";
@@ -15,18 +15,26 @@ const LeaguePredictionContentView = ({
   searchQuery,
   currentGameweek
 }) => {
+  // Filter predictions based on search query if provided
+  const filteredPredictions = searchQuery 
+    ? predictions.filter(prediction => 
+        prediction.userDisplayName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        prediction.homeTeam?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        prediction.awayTeam?.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : predictions;
   return (
     <AnimatePresence mode="wait">
-      {viewMode === "members" && (
+      {viewMode === "teams" && (
         <motion.div
-          key="members"
+          key="teams"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
         >
-          <LeaguePredictionsByMember
-            predictions={predictions}
+          <LeaguePredictionsByTeam
+            predictions={filteredPredictions}
             onPredictionSelect={onPredictionSelect}
             teamLogos={teamLogos}
             currentGameweek={currentGameweek}
@@ -43,7 +51,7 @@ const LeaguePredictionContentView = ({
           transition={{ duration: 0.2 }}
         >
           <LeaguePredictionsList
-            predictions={predictions}
+            predictions={filteredPredictions}
             onPredictionSelect={onPredictionSelect}
             teamLogos={teamLogos}
             searchQuery={searchQuery}
@@ -60,7 +68,7 @@ const LeaguePredictionContentView = ({
           transition={{ duration: 0.2 }}
         >
           <GameweekPredictionsCarousel
-            predictions={predictions}
+            predictions={filteredPredictions}
             currentGameweek={currentGameweek}
             onPredictionSelect={onPredictionSelect}
             teamLogos={teamLogos}
@@ -78,11 +86,12 @@ const LeaguePredictionContentView = ({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
         >
-          <LeaguePredictionsTable
-            predictions={predictions}
+          <PredictionTable
+            predictions={filteredPredictions}
             onPredictionSelect={onPredictionSelect}
             teamLogos={teamLogos}
             searchQuery={searchQuery}
+            mode="league"
           />
         </motion.div>
       )}
@@ -97,7 +106,7 @@ const LeaguePredictionContentView = ({
           transition={{ duration: 0.2 }}
         >
           <LeaguePredictionsStack
-            predictions={predictions}
+            predictions={filteredPredictions}
             onPredictionSelect={onPredictionSelect}
             teamLogos={teamLogos}
             searchQuery={searchQuery}
@@ -115,7 +124,7 @@ const LeaguePredictionContentView = ({
           transition={{ duration: 0.2 }}
         >
           <LeaguePredictionsCalendar
-            predictions={predictions}
+            predictions={filteredPredictions}
             onPredictionSelect={onPredictionSelect}
             teamLogos={teamLogos}
             searchQuery={searchQuery}
@@ -133,7 +142,7 @@ const LeaguePredictionContentView = ({
           transition={{ duration: 0.2 }}
         >
           <LeaguePredictionsTimeline
-            predictions={predictions}
+            predictions={filteredPredictions}
             onPredictionSelect={onPredictionSelect}
             teamLogos={teamLogos}
             searchQuery={searchQuery}
