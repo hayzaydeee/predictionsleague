@@ -120,10 +120,17 @@ const ProfileStatistics = () => {
         setIsLoadingTeamStats(true);
         const response = await userAPI.getTeamPerformance();
         
-        if (response.success && response.data && Array.isArray(response.data)) {
-          setTeamStats(response.data);
+        if (response.success && response.data) {
+          // Handle nested data structure - the array is in response.data.data
+          const teamData = Array.isArray(response.data) ? response.data : response.data.data;
+          if (Array.isArray(teamData)) {
+            setTeamStats(teamData);
+          } else {
+            console.warn('Team stats data is not in expected array format:', response);
+            setTeamStats([]);
+          }
         } else {
-          console.warn('Team stats data is not in expected array format:', response);
+          console.warn('Team stats response invalid:', response);
           setTeamStats([]);
         }
       } catch (error) {
@@ -144,10 +151,17 @@ const ProfileStatistics = () => {
         setIsLoadingMonthlyStats(true);
         const response = await userAPI.getMonthlyPerformance();
         
-        if (response.success && response.data && Array.isArray(response.data)) {
-          setMonthlyStats(response.data);
+        if (response.success && response.data) {
+          // Handle nested data structure - the array is in response.data.data
+          const monthlyData = Array.isArray(response.data) ? response.data : response.data.data;
+          if (Array.isArray(monthlyData)) {
+            setMonthlyStats(monthlyData);
+          } else {
+            console.warn('Monthly stats data is not in expected array format:', response);
+            setMonthlyStats([]);
+          }
         } else {
-          console.warn('Monthly stats data is not in expected array format:', response);
+          console.warn('Monthly stats response invalid:', response);
           setMonthlyStats([]);
         }
       } catch (error) {
