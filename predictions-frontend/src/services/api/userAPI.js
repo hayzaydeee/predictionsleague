@@ -351,11 +351,8 @@ export const userAPI = {
         url: '/profile/statistics/highlights',
       });
 
-      // Return highlights data directly (no nested data object or success prop)
-      return {
-        success: true,
-        highlights: response,
-      };
+      // Return apiCall response directly - it already has the right structure
+      return response;
     } catch (error) {
       handleApiError(error, { customMessage: 'Failed to load performance highlights.' });
       throw error;
@@ -373,11 +370,8 @@ export const userAPI = {
         url: '/profile/statistics/team-performance',
       });
 
-      // Return team performance data with 'data' property name for array response
-      return {
-        success: true,
-        data: response,
-      };
+      // Return apiCall response directly - it already has the right structure
+      return response;
     } catch (error) {
       handleApiError(error, { customMessage: 'Failed to load team performance statistics.' });
       throw error;
@@ -395,11 +389,8 @@ export const userAPI = {
         url: '/profile/statistics/monthly-performance',
       });
 
-      // Return monthly performance data with 'data' property name for array response
-      return {
-        success: true,
-        data: response,
-      };
+      // Return apiCall response directly - it already has the right structure
+      return response;
     } catch (error) {
       handleApiError(error, { customMessage: 'Failed to load monthly performance statistics.' });
       throw error;

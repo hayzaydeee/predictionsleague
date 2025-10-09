@@ -41,6 +41,29 @@ const ProfileStatistics = () => {
     }
   };
 
+  // Utility function to format team names from ALL CAPS to sentence case
+  const formatTeamName = (teamName) => {
+    if (!teamName) return 'Unknown Team';
+    
+    // Handle special cases and convert to proper format
+    const specialCases = {
+      'MANCITY': 'Manchester City',
+      'MANUNITED': 'Manchester United',
+      'SPURS': 'Tottenham'
+    };
+    
+    if (specialCases[teamName]) {
+      return specialCases[teamName];
+    }
+    
+    // Convert to lowercase then capitalize first letter of each word
+    return teamName
+      .toLowerCase()
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
   // Load highlights data
   useEffect(() => {
     const loadHighlights = async () => {
@@ -48,11 +71,9 @@ const ProfileStatistics = () => {
         setIsLoadingHighlights(true);
         const response = await userAPI.getStatisticsHighlights();
         
-        console.log('Highlights API response:', response);
-        
-        if (response.success && response.highlights) {
+        if (response.success && response.data) {
           // Validate highlights data structure
-          const highlights = response.highlights;
+          const highlights = response.data;
           const highlightsWithDescriptions = {};
 
           // Safely process bestGameweek
@@ -99,8 +120,6 @@ const ProfileStatistics = () => {
         setIsLoadingTeamStats(true);
         const response = await userAPI.getTeamPerformance();
         
-        console.log('Team stats API response:', response);
-        
         if (response.success && response.data && Array.isArray(response.data)) {
           setTeamStats(response.data);
         } else {
@@ -124,8 +143,6 @@ const ProfileStatistics = () => {
       try {
         setIsLoadingMonthlyStats(true);
         const response = await userAPI.getMonthlyPerformance();
-        
-        console.log('Monthly stats API response:', response);
         
         if (response.success && response.data && Array.isArray(response.data)) {
           setMonthlyStats(response.data);
@@ -419,7 +436,7 @@ const ProfileStatistics = () => {
               } border`}>
                 <div className="flex items-center justify-between mb-3">
                   <h4 className={`${text.primary[theme]} font-outfit font-medium`}>
-                    {team.team}
+                    {formatTeamName(team.team)}
                   </h4>
                   <span className={`text-sm px-2 py-1 rounded-full ${
                     team.accuracy >= 80
