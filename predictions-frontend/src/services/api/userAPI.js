@@ -339,6 +339,72 @@ export const userAPI = {
       throw error;
     }
   },
+
+  /**
+   * Get user performance highlights
+   * @returns {Promise<Object>} Performance highlights data
+   */
+  async getStatisticsHighlights() {
+    try {
+      const response = await apiCall({
+        method: 'GET',
+        url: '/profile/statistics/highlights',
+      });
+
+      // Return highlights data directly (no nested data object or success prop)
+      return {
+        success: true,
+        highlights: response,
+      };
+    } catch (error) {
+      handleApiError(error, { customMessage: 'Failed to load performance highlights.' });
+      throw error;
+    }
+  },
+
+  /**
+   * Get user team performance statistics
+   * @returns {Promise<Object>} Team performance data
+   */
+  async getTeamPerformance() {
+    try {
+      const response = await apiCall({
+        method: 'GET',
+        url: '/profile/statistics/team-performance',
+      });
+
+      // Return team performance data directly (no nested data object or success prop)
+      return {
+        success: true,
+        teamStats: response,
+      };
+    } catch (error) {
+      handleApiError(error, { customMessage: 'Failed to load team performance statistics.' });
+      throw error;
+    }
+  },
+
+  /**
+   * Get user monthly performance statistics
+   * @returns {Promise<Object>} Monthly performance data
+   */
+  async getMonthlyPerformance() {
+    try {
+      const response = await apiCall({
+        method: 'GET',
+        url: '/profile/statistics/monthly-performance',
+      });
+
+      // Return monthly performance data directly (no nested data object or success prop)
+      return {
+        success: true,
+        monthlyStats: response,
+      };
+    } catch (error) {
+      handleApiError(error, { customMessage: 'Failed to load monthly performance statistics.' });
+      throw error;
+    }
+  },
 };
 
 export default userAPI;
