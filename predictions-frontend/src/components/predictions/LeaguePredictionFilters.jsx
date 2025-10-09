@@ -2,10 +2,10 @@ import { useState, useContext } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   MagnifyingGlassIcon,
-  FunnelIcon,
-  XMarkIcon,
+  MixerHorizontalIcon,
+  Cross2Icon,
   ChevronDownIcon,
-} from "@heroicons/react/24/outline";
+} from "@radix-ui/react-icons";
 import { ThemeContext } from "../../context/ThemeContext";
 import { text, backgrounds } from "../../utils/themeUtils";
 
@@ -78,7 +78,7 @@ const LeaguePredictionFilters = ({
                 onClick={() => setSearchQuery("")}
                 className={`absolute right-3 top-1/2 transform -translate-y-1/2 ${text.muted[theme]} hover:${text.primary[theme]} transition-colors`}
               >
-                <XMarkIcon className="w-4 h-4" />
+                <Cross2Icon className="w-4 h-4" />
               </button>
             )}
           </div>
@@ -142,7 +142,7 @@ const LeaguePredictionFilters = ({
                 : "bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-800 border border-slate-200"
             }`}
           >
-            <FunnelIcon className="w-4 h-4" />
+            <MixerHorizontalIcon className="w-4 h-4" />
             Filters
             <motion.div
               animate={{ rotate: showFilters ? 180 : 0 }}
