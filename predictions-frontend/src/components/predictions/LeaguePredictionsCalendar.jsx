@@ -26,7 +26,7 @@ const LeaguePredictionsCalendar = ({
     
     const searchLower = searchQuery.toLowerCase();
     return (
-      prediction.userDisplayName.toLowerCase().includes(searchLower) ||
+      prediction.userDisplayName?.toLowerCase().includes(searchLower) ||
       prediction.homeTeam.toLowerCase().includes(searchLower) ||
       prediction.awayTeam.toLowerCase().includes(searchLower) ||
       `${prediction.homeTeam} vs ${prediction.awayTeam}`.toLowerCase().includes(searchLower)

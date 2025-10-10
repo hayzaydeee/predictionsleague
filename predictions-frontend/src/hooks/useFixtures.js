@@ -16,9 +16,9 @@ export {
   useLiveFixtures,
   useUpcomingFixtures,
   usePremierLeagueAndChampionsLeagueFixtures,
-  useCompetitionFixtures,
-  useTeamFixtures,
-  useFixturesByDateRange,
+  useMultipleCompetitions,
+  useCompetitionInfo,
+  useFixturesByTeam,
   useExternalAPIStatus
 } from './useExternalFixtures';
 
@@ -50,6 +50,7 @@ export { useClientSideFixtures as default } from './useClientSideFixtures';
  * 
  * 📊 UTILITY HOOKS:
  * - useExternalAPIStatus() - API health monitoring
- * - useCompetitionFixtures() - Competition-specific fixtures
- * - useTeamFixtures() - Team-specific fixtures
+ * - useMultipleCompetitions() - Multiple competition fixtures
+ * - useCompetitionInfo() - Competition metadata
+ * - useFixturesByTeam() - Team-specific fixtures
  */

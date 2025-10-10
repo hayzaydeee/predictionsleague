@@ -26,8 +26,8 @@ const LeaguePredictionsByTeam = ({
       groups[memberId] = {
         memberInfo: {
           id: prediction.userId,
-          name: prediction.userDisplayName,
-          avatar: prediction.userDisplayName.charAt(0).toUpperCase()
+          name: prediction.userDisplayName || 'Unknown User',
+          avatar: prediction.userDisplayName?.charAt(0).toUpperCase() || '?'
         },
         predictions: []
       };

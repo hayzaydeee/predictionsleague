@@ -440,26 +440,50 @@ const PredictionCarousel = ({
                       width: `calc(${100 / itemsPerView}% - ${(itemsPerView - 1) * 16 / itemsPerView}px)`
                     }}
                   >
-                    {/* User Info */}
+                    {/* User Info / Match Info */}
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center space-x-3">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
-                          theme === "dark" ? "bg-slate-700 text-slate-300" : "bg-slate-100 text-slate-700"
-                        }`}>
-                          {prediction.userDisplayName.charAt(0).toUpperCase()}
-                        </div>
-                        <div>
-                          <p className={`font-semibold ${
-                            theme === "dark" ? "text-white" : "text-slate-900"
-                          } font-outfit`}>
-                            {prediction.userDisplayName}
-                          </p>
-                          <p className={`text-xs ${
-                            theme === "dark" ? "text-slate-500" : "text-slate-500"
-                          } font-outfit`}>
-                            {format(parseISO(prediction.predictedAt || prediction.date), 'MMM dd, HH:mm')}
-                          </p>
-                        </div>
+                        {mode === "league" ? (
+                          <>
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
+                              theme === "dark" ? "bg-slate-700 text-slate-300" : "bg-slate-100 text-slate-700"
+                            }`}>
+                              {prediction.userDisplayName?.charAt(0).toUpperCase() || '?'}
+                            </div>
+                            <div>
+                              <p className={`font-semibold ${
+                                theme === "dark" ? "text-white" : "text-slate-900"
+                              } font-outfit`}>
+                                {prediction.userDisplayName || 'Unknown User'}
+                              </p>
+                              <p className={`text-xs ${
+                                theme === "dark" ? "text-slate-500" : "text-slate-500"
+                              } font-outfit`}>
+                                {format(parseISO(prediction.predictedAt || prediction.date), 'MMM dd, HH:mm')}
+                              </p>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
+                              theme === "dark" ? "bg-teal-900/30 text-teal-300" : "bg-teal-100 text-teal-700"
+                            }`}>
+                              <CalendarIcon className="w-4 h-4" />
+                            </div>
+                            <div>
+                              <p className={`font-semibold ${
+                                theme === "dark" ? "text-white" : "text-slate-900"
+                              } font-outfit`}>
+                                {prediction.homeTeam} vs {prediction.awayTeam}
+                              </p>
+                              <p className={`text-xs ${
+                                theme === "dark" ? "text-slate-500" : "text-slate-500"
+                              } font-outfit`}>
+                                {format(parseISO(prediction.date), 'MMM dd, HH:mm')}
+                              </p>
+                            </div>
+                          </>
+                        )}
                       </div>
                       
                       <div className="text-right">
