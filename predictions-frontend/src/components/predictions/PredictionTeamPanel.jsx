@@ -196,6 +196,33 @@ const PredictionCard = ({ prediction, onSelect, onEdit, teamLogos, theme }) => {
         </div>
       )}
 
+      {/* Chips Used */}
+      {prediction.chips?.length > 0 && (
+        <div className={`border-t pt-3 ${
+          theme === "dark" ? "border-slate-700/50" : "border-slate-200"
+        }`}>
+          <p className={`text-xs ${
+            theme === "dark" ? "text-slate-500" : "text-slate-500"
+          } mb-2 font-outfit`}>
+            Chips Used:
+          </p>
+          <div className="flex flex-wrap gap-1">
+            {prediction.chips.map((chip, chipIndex) => (
+              <span
+                key={chipIndex}
+                className={`px-2 py-1 text-xs rounded-full font-medium font-outfit ${
+                  theme === "dark"
+                    ? "bg-teal-900/30 text-teal-400"
+                    : "bg-teal-100 text-teal-700"
+                }`}
+              >
+                {chip.replace('_', ' ')}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Edit Button */}
       {onEdit && (
         <div className="mt-4 flex justify-end">
