@@ -363,11 +363,13 @@ const PredictionCarousel = ({
           {/* Predictions Carousel */}
           <div className="p-6">
             <div className="flex items-center justify-between mb-6">
-              <h4 className={`font-semibold text-lg ${
-                theme === "dark" ? "text-white" : "text-slate-900"
-              } font-outfit`}>
-                Member Predictions
-              </h4>
+              {mode === "league" && (
+                <h4 className={`font-semibold text-lg ${
+                  theme === "dark" ? "text-white" : "text-slate-900"
+                } font-outfit`}>
+                  Member Predictions
+                </h4>
+              )}
               
               {/* Carousel Controls */}
               {currentMatch.predictions.length > itemsPerView && (
@@ -483,6 +485,13 @@ const PredictionCarousel = ({
                       </div>
                       
                       <div className="text-right">
+                        <div className={`inline-flex items-center gap-2 px-2 py-1 rounded-md text-xs font-medium mb-1 ${
+                          theme === "dark" 
+                            ? "bg-teal-900/30 text-teal-300" 
+                            : "bg-teal-50 text-teal-700"
+                        }`}>
+                          GW {prediction.gameweek}
+                        </div>
                         <div className={`text-lg font-bold font-outfit ${
                           theme === "dark" ? "text-white" : "text-slate-900"
                         }`}>
