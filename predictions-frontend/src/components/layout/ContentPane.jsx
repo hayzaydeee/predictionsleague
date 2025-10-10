@@ -1,7 +1,7 @@
 import { useState, useContext, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import PredictionsModal from "../predictions/PredictionsModal";
-import ChipInfoModal from "../predictions/ChipInfoModal";
+import ChipStrategyModal from "../predictions/ChipStrategyModal";
 import { ThemeContext } from "../../context/ThemeContext";
 import { backgrounds } from "../../utils/themeUtils";
 
@@ -374,7 +374,7 @@ export default function ContentPane({
       {/* Chip Info Modal */}
       <AnimatePresence>
         {isChipInfoModalOpen && (
-          <ChipInfoModal onClose={() => setIsChipInfoModalOpen(false)} />
+          <ChipStrategyModal isOpen={isChipInfoModalOpen} onClose={() => setIsChipInfoModalOpen(false)} />
         )}
       </AnimatePresence>
     </div>

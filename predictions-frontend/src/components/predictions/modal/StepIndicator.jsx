@@ -12,12 +12,7 @@ export default function StepIndicator({ currentStep }) {
   ];
 
   return (
-    <div
-      className={`px-4 py-3 ${getThemeStyles(theme, {
-        dark: "bg-slate-800/30 border-slate-700/60",
-        light: "bg-slate-50/30 border-slate-200/60",
-      })} border-b font-outfit`}
-    >
+    <div className="bg-slate-800/50 border border-slate-700/60 rounded-xl mx-4 mb-4 p-4 font-outfit">
       <div className="flex items-center justify-center">
         <div className="flex items-center gap-3">
           {steps.map((step, index) => (

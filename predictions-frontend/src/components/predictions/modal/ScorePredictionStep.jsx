@@ -4,7 +4,6 @@ import { ThemeContext } from "../../../context/ThemeContext";
 import { getThemeStyles, backgrounds, text } from "../../../utils/themeUtils";
 import { getTeamLogo } from "../../../data/sampleData";
 import { RocketIcon } from "@radix-ui/react-icons";
-import CommunityInsights from "./CommunityInsights";
 
 export default function ScorePredictionStep({ 
   fixture, 
@@ -116,8 +115,6 @@ export default function ScorePredictionStep({
         </div>
       </div>
 
-      {/* Community insights */}
-      <CommunityInsights fixture={fixture} />
     </motion.div>
   );
 }

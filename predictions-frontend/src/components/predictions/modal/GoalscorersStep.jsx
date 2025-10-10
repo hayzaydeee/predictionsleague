@@ -31,19 +31,9 @@ export default function GoalscorersStep({
       transition={{ duration: 0.3 }}
     >
       {/* Score summary */}
-      <div
-        className={`${getThemeStyles(theme, {
-          dark: "bg-slate-800/50 border-slate-700/60",
-          light: "bg-slate-50/50 border-slate-200/60",
-        })} border rounded-xl p-4 mb-6 font-outfit`}
-      >
-        <div
-          className={`${getThemeStyles(theme, {
-            dark: "text-slate-300",
-            light: "text-slate-700",
-          })} text-sm font-medium mb-3 text-center`}
-        >
-          Your predicted score
+      <div className="bg-slate-800/50 border border-slate-700/60 rounded-xl p-6 mb-6">
+        <div className="text-xs font-medium mb-3 text-slate-400 font-outfit text-center">
+          Your Predicted Score
         </div>
         <ScoreDisplay 
           fixture={fixture} 
@@ -54,18 +44,11 @@ export default function GoalscorersStep({
       </div>
 
       {/* Goalscorers section */}
-      <div className="mb-6">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center border border-blue-500/30">
-            <TargetIcon className="w-5 h-5 text-blue-400" />
-          </div>
-          <h3
-            className={`${getThemeStyles(theme, {
-              dark: "text-slate-100",
-              light: "text-slate-900",
-            })} text-xl font-bold font-outfit`}
-          >
-            Goalscorers
+      <div className="bg-slate-800/50 border border-slate-700/60 rounded-xl p-6 mb-6">
+        <div className="flex items-center space-x-2 mb-4">
+          <TargetIcon className="w-5 h-5 text-blue-400" />
+          <h3 className="text-lg font-semibold text-slate-200 font-outfit">
+            Select Goalscorers
           </h3>
         </div>
 
