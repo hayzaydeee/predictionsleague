@@ -114,13 +114,11 @@ const PredictionContentView = ({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
         >
-          <PredictionsByMember
+          <PredictionsByTeam
             predictions={predictions}
             onPredictionSelect={onPredictionSelect}
-            onEditClick={onEditClick}
-            teamLogos={teamLogos}
+            onPredictionEdit={onEditClick}
             searchQuery={searchQuery}
-            mode="personal"
           />
         </motion.div>
       )}
