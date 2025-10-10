@@ -4,7 +4,7 @@ import { format, parseISO } from 'date-fns';
 import { 
   Cross2Icon, 
   CalendarIcon,
-  TrophyIcon,
+  StarIcon,
   PersonIcon,
   ClockIcon
 } from '@radix-ui/react-icons';
@@ -208,7 +208,7 @@ const PredictionBreakdownModal = ({
               {(prediction.homeScorers?.length > 0 || prediction.awayScorers?.length > 0) && (
                 <div className="bg-slate-800/50 border border-slate-700/60 rounded-xl p-6 mb-6">
                   <div className="flex items-center space-x-2 mb-4">
-                    <TrophyIcon className="w-5 h-5 text-amber-400" />
+                    <StarIcon className="w-5 h-5 text-amber-400" />
                     <h3 className="text-lg font-semibold text-slate-200 font-outfit">
                       Predicted Scorers
                     </h3>
