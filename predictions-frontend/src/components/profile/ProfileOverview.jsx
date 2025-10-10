@@ -8,7 +8,6 @@ import {
   CheckIcon,
   Cross2Icon,
   LockClosedIcon,
-  EyeOpenIcon,
   TrashIcon,
   ExclamationTriangleIcon
 } from "@radix-ui/react-icons";
@@ -206,10 +205,7 @@ const ProfileOverview = () => {
     }
   };
 
-  // Privacy toggle handlers
-  const handlePrivacyToggle = (setting, value) => {
-    updateNestedPreference("privacy", setting, value);
-  };
+
 
   // Utility function to format team names from ALL CAPS to sentence case
   const formatTeamName = (teamName) => {
@@ -714,103 +710,6 @@ const ProfileOverview = () => {
               )}
             </motion.div>
           )}
-        </div>
-      </motion.div>
-
-      {/* Privacy Settings Section */}
-      <motion.div variants={itemVariants} className="space-y-4">
-        <div className={`${
-          theme === "dark"
-            ? "bg-slate-800/40 border-slate-700/50"
-            : "bg-white border-slate-200 shadow-sm"
-        } backdrop-blur-sm rounded-xl p-6 border transition-all duration-200`}>
-          <div className="flex items-center gap-2 mb-6">
-            <div className={`p-1.5 rounded-lg border ${
-              theme === "dark"
-                ? "bg-teal-500/10 border-teal-500/20"
-                : "bg-teal-50 border-teal-200"
-            }`}>
-              <EyeOpenIcon className={`w-4 h-4 ${
-                theme === "dark" ? "text-teal-400" : "text-teal-600"
-              }`} />
-            </div>
-            <h3 className={`${theme === 'dark' ? 'text-teal-200' : 'text-teal-700'} font-outfit font-semibold text-base`}>
-              Privacy Settings
-            </h3>
-          </div>
-
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className={`${text.primary[theme]} text-sm font-medium font-outfit block mb-2`}>
-                  Profile Visibility
-                </label>
-                <select
-                  value={preferences.privacy?.profileVisibility || 'public'}
-                  onChange={(e) => handlePrivacyToggle('profileVisibility', e.target.value)}
-                  className={`w-full px-3 py-2 rounded-md font-outfit text-sm border ${
-                    theme === 'dark'
-                      ? 'bg-slate-700 border-slate-600 text-white'
-                      : 'bg-white border-slate-300 text-slate-900'
-                  }`}
-                >
-                  <option value="public">Public - Anyone can view</option>
-                  <option value="friends">Friends Only</option>
-                  <option value="private">Private - Only me</option>
-                </select>
-              </div>
-              <div>
-                <label className={`${text.primary[theme]} text-sm font-medium font-outfit block mb-2`}>
-                  Activity Visibility
-                </label>
-                <select
-                  value={preferences.privacy?.activityVisibility || 'public'}
-                  onChange={(e) => handlePrivacyToggle('activityVisibility', e.target.value)}
-                  className={`w-full px-3 py-2 rounded-md font-outfit text-sm border ${
-                    theme === 'dark'
-                      ? 'bg-slate-700 border-slate-600 text-white'
-                      : 'bg-white border-slate-300 text-slate-900'
-                  }`}
-                >
-                  <option value="public">Public</option>
-                  <option value="friends">Friends Only</option>
-                  <option value="private">Private</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="space-y-3 divide-y divide-slate-600/20">
-              {[
-                { key: 'showInLeaderboard', label: 'Show in Leaderboard', description: 'Display your ranking in public leaderboards' },
-                { key: 'shareStats', label: 'Share Statistics', description: 'Allow sharing of your prediction statistics' }
-              ].map((setting) => (
-                <div key={setting.key} className="flex items-center justify-between py-3">
-                  <div>
-                    <p className={`${text.primary[theme]} font-outfit font-medium`}>
-                      {setting.label}
-                    </p>
-                    <p className={`${text.secondary[theme]} text-sm font-outfit`}>
-                      {setting.description}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => handlePrivacyToggle(setting.key, !preferences.privacy?.[setting.key])}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                      preferences.privacy?.[setting.key]
-                        ? 'bg-teal-600'
-                        : theme === 'dark' ? 'bg-slate-600' : 'bg-slate-300'
-                    }`}
-                  >
-                    <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                        preferences.privacy?.[setting.key] ? 'translate-x-6' : 'translate-x-1'
-                      }`}
-                    />
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
       </motion.div>
 

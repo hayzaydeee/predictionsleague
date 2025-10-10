@@ -9,7 +9,6 @@ import {
   MoonIcon,
   SunIcon,
   BellIcon,
-  LockClosedIcon,
   CheckIcon
 } from "@radix-ui/react-icons";
 import { ThemeContext } from "../../context/ThemeContext";
@@ -28,11 +27,7 @@ const ProfileSettings = () => {
       push: true,
       sms: false
     },
-    privacy: {
-      profileVisible: true,
-      statsVisible: true,
-      predictionsVisible: false
-    }
+
   });
 
   const teams = [
@@ -65,7 +60,7 @@ const ProfileSettings = () => {
             Profile Settings
           </h2>
           <p className={`${text.secondary[theme]} font-outfit`}>
-            Manage your account preferences and privacy settings
+            Manage your account preferences and settings
           </p>
         </div>
         <motion.button
@@ -305,54 +300,7 @@ const ProfileSettings = () => {
         </div>
       </div>
 
-      {/* Privacy */}
-      <div className={`${
-        theme === "dark"
-          ? "bg-slate-800/40 border-slate-700/50"
-          : "bg-white border-slate-200 shadow-sm"
-      } backdrop-blur-sm rounded-xl p-5 border`}>
-        <div className="flex items-center gap-2 mb-4">
-          <div className={`p-1.5 rounded-lg border ${
-            theme === "dark"
-              ? "bg-teal-500/10 border-teal-500/20"
-              : "bg-teal-50 border-teal-200"
-          }`}>
-            <LockClosedIcon className={`w-4 h-4 ${
-              theme === "dark" ? "text-teal-400" : "text-teal-600"
-            }`} />
-          </div>
-          <h3 className={`${theme === 'dark' ? 'text-teal-200' : 'text-teal-700'} font-outfit font-semibold text-base`}>
-            Privacy Settings
-          </h3>
-        </div>
 
-        <div className="space-y-4">
-          {Object.entries(settings.privacy).map(([key, value]) => (
-            <div key={key} className="flex items-center justify-between">
-              <div>
-                <span className={`${text.primary[theme]} font-outfit font-medium`}>
-                  {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
-                </span>
-                <p className={`${text.muted[theme]} text-sm font-outfit`}>
-                  Make your {key.replace('Visible', '').toLowerCase()} public
-                </p>
-              </div>
-              <button
-                onClick={() => handleSettingChange('privacy', key, !value)}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  value ? 'bg-teal-600' : 'bg-slate-200'
-                }`}
-              >
-                <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    value ? 'translate-x-6' : 'translate-x-1'
-                  }`}
-                />
-              </button>
-            </div>
-          ))}
-        </div>
-      </div>
     </div>
   );
 };

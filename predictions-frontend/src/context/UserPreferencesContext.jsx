@@ -31,14 +31,6 @@ export const UserPreferencesProvider = ({ children }) => {  // Default preferenc
       pushNotifications: true,
       liveScoreUpdates: true,
       leagueInvitations: true
-    },
-    privacy: {
-      profileVisibility: 'public',
-      activityVisibility: 'friends',
-      allowDirectMessages: true,
-      showInLeaderboard: true,
-      shareStats: false,
-      allowFriendRequests: true
     }
   };
 

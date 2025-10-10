@@ -163,7 +163,6 @@ export const userAPI = {
    * @param {boolean} preferences.pushNotifications - Push notification preference
    * @param {string} preferences.language - Language preference
    * @param {string} preferences.timezone - Timezone preference
-   * @param {boolean} preferences.privatePredictions - Private predictions setting
    * @returns {Promise<Object>} Updated preferences
    */
   async updatePreferences(preferences) {
