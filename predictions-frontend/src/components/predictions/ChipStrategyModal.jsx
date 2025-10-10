@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { InfoIcon, StarIcon, LightningBoltIcon, TargetIcon, RocketIcon } from "@radix-ui/react-icons";
+import { InfoCircledIcon, StarIcon, LightningBoltIcon, TargetIcon, RocketIcon } from "@radix-ui/react-icons";
 
 const ChipStrategyModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
@@ -24,7 +24,7 @@ const ChipStrategyModal = ({ isOpen, onClose }) => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-emerald-500/20 rounded-xl flex items-center justify-center">
-                <InfoIcon className="w-5 h-5 text-emerald-400" />
+                <InfoCircledIcon className="w-5 h-5 text-emerald-400" />
               </div>
               <div>
                 <h3 className="text-slate-100 text-2xl font-bold font-outfit">
