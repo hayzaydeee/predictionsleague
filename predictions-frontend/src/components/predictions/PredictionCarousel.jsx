@@ -75,24 +75,24 @@ const PredictionCarousel = ({
     
     matches = Object.values(predictionsByMatch);
   } else {
-    // Group by date for personal mode
-    const predictionsByDate = filteredPredictions.reduce((groups, prediction) => {
-      const dateKey = format(parseISO(prediction.date), 'yyyy-MM-dd');
-      if (!groups[dateKey]) {
-        groups[dateKey] = {
+    // Group by gameweek for personal mode (consistent with filtering)
+    const predictionsByGameweek = filteredPredictions.reduce((groups, prediction) => {
+      const gameweekKey = `gw-${prediction.gameweek}`;
+      if (!groups[gameweekKey]) {
+        groups[gameweekKey] = {
           matchInfo: {
-            date: prediction.date,
-            dateKey: dateKey
+            gameweek: prediction.gameweek,
+            gameweekKey: gameweekKey
           },
           predictions: []
         };
       }
-      groups[dateKey].predictions.push(prediction);
+      groups[gameweekKey].predictions.push(prediction);
       return groups;
     }, {});
     
-    matches = Object.values(predictionsByDate).sort((a, b) => 
-      new Date(a.matchInfo.date) - new Date(b.matchInfo.date)
+    matches = Object.values(predictionsByGameweek).sort((a, b) => 
+      b.matchInfo.gameweek - a.matchInfo.gameweek
     );
   }
 
@@ -216,7 +216,7 @@ const PredictionCarousel = ({
           {matches.map((match, index) => {
             const tabLabel = mode === "league" 
               ? `${match.matchInfo.homeTeam} vs ${match.matchInfo.awayTeam}`
-              : format(parseISO(match.matchInfo.date), 'MMM dd, yyyy');
+              : `Gameweek ${match.matchInfo.gameweek}`;
             
             const tabKey = mode === "league"
               ? `${match.matchInfo.homeTeam}_vs_${match.matchInfo.awayTeam}`
@@ -326,18 +326,18 @@ const PredictionCarousel = ({
                   </div>
                 </div>
               ) : (
-                /* Personal Mode - Date Header */
+                /* Personal Mode - Gameweek Header */
                 <div className="flex items-center space-x-4">
                   <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
                     theme === "dark" ? "bg-teal-900/30 text-teal-300" : "bg-teal-100 text-teal-700"
                   }`}>
-                    <CalendarIcon className="w-6 h-6" />
+                    <TargetIcon className="w-6 h-6" />
                   </div>
                   <div>
                     <h4 className={`font-bold text-lg ${
                       theme === "dark" ? "text-white" : "text-slate-900"
                     } font-outfit`}>
-                      {format(parseISO(currentMatch.matchInfo.date), 'EEEE, MMMM do, yyyy')}
+                      Gameweek {currentMatch.matchInfo.gameweek}
                     </h4>
                     <p className={`text-xs ${
                       theme === "dark" ? "text-slate-500" : "text-slate-500"

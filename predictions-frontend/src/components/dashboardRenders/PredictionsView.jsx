@@ -21,7 +21,7 @@ const PredictionsView = ({ handleEditPrediction }) => {  // Get theme context an
   const [gameweekFilter, setGameweekFilter] = useState("all");
   const [sortBy, setSortBy] = useState("date");
   const [filterTeam, setFilterTeam] = useState("all");
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFilters, setShowFilters] = useState(true);
   const [viewMode, setViewMode] = useState(preferences.defaultPredictionsView);
   const [selectedPrediction, setSelectedPrediction] = useState(null);
   const [showBreakdownModal, setShowBreakdownModal] = useState(false);
