@@ -4,46 +4,46 @@ import { ThemeContext } from "../../context/ThemeContext";
 
 const EmptyPredictionState = ({ searchQuery }) => {
   const { theme } = useContext(ThemeContext);
-
+  
   return (
-    <div className="flex flex-col items-center justify-center py-12 px-4">
-      <div
-        className={`w-16 h-16 rounded-full flex items-center justify-center mb-4 ${
-          theme === "dark" ? "bg-primary-800/30" : "bg-gray-100"
-        }`}
-      >
+    <div className={`border rounded-lg p-6 text-center max-w-lg mx-auto ${
+      theme === 'dark'
+        ? 'bg-primary-700/30 border-primary-600/30'
+        : 'bg-white border-gray-200 shadow-sm'
+    }`}>
+      <div className={`rounded-full w-12 h-12 mx-auto mb-3 flex items-center justify-center ${
+        theme === 'dark'
+          ? 'bg-primary-600/30'
+          : 'bg-gray-100'
+      }`}>
         {searchQuery ? (
-          <MagnifyingGlassIcon
-            className={`w-8 h-8 ${
-              theme === "dark" ? "text-white/40" : "text-gray-400"
-            }`}
-          />
+          <MagnifyingGlassIcon className={`w-6 h-6 ${
+            theme === 'dark' ? 'text-teal-300/60' : 'text-gray-400'
+          }`} />
         ) : (
-          <BarChartIcon
-            className={`w-8 h-8 ${
-              theme === "dark" ? "text-white/40" : "text-gray-400"
-            }`}
-          />
+          <BarChartIcon className={`w-6 h-6 ${
+            theme === 'dark' ? 'text-teal-300/60' : 'text-gray-400'
+          }`} />
         )}
       </div>
-      
-      <h3
-        className={`text-lg font-medium mb-2 ${
-          theme === "dark" ? "text-white" : "text-gray-900"
-        }`}
-      >
+      <h3 className={`text-lg mb-2 ${
+        theme === 'dark' ? 'text-teal-100' : 'text-gray-900'
+      }`}>
         {searchQuery ? "No predictions found" : "No predictions available"}
       </h3>
-      
-      <p
-        className={`text-sm text-center max-w-md ${
-          theme === "dark" ? "text-white/60" : "text-gray-500"
-        }`}
-      >
-        {searchQuery
-          ? `No predictions match "${searchQuery}". Try adjusting your search terms.`
-          : "Predictions for Big Six teams will appear here once you start making predictions for their fixtures."}
-      </p>
+      {searchQuery ? (
+        <p className={`text-sm ${
+          theme === 'dark' ? 'text-white/60' : 'text-gray-600'
+        }`}>
+          No predictions match your search for "{searchQuery}". Try adjusting your search terms.
+        </p>
+      ) : (
+        <p className={`text-sm ${
+          theme === 'dark' ? 'text-white/60' : 'text-gray-600'
+        }`}>
+          Predictions for Big Six teams will appear here once you start making predictions for their fixtures.
+        </p>
+      )}
       
       {searchQuery && (
         <button
