@@ -43,15 +43,15 @@ const PredictionsView = ({ handleEditPrediction }) => {  // Get theme context an
     // Filter by team
     if (
       filterTeam !== "all" &&
-      prediction.homeTeam?.name !== filterTeam &&
-      prediction.awayTeam?.name !== filterTeam
+      prediction.homeTeam !== filterTeam &&
+      prediction.awayTeam !== filterTeam
     )
       return false;
 
     // Filter by search query
     if (
       searchQuery &&
-      !`${prediction.homeTeam?.name} vs ${prediction.awayTeam?.name}`
+      !`${prediction.homeTeam} vs ${prediction.awayTeam}`
         .toLowerCase()
         .includes(searchQuery.toLowerCase())
     )
