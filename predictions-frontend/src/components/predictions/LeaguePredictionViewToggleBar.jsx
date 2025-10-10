@@ -26,8 +26,8 @@ const LeaguePredictionViewToggleBar = ({ viewMode, setViewMode }) => {
           icon={<PersonIcon />}
           active={viewMode === "teams"}
           onClick={() => setViewMode("teams")}
-          tooltip="By Team"
-          label="Teams"
+          tooltip="By Member"
+          label="Members"
         />
         <ViewToggleButton
           icon={<ListBulletIcon />}

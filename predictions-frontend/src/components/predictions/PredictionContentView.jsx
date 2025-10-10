@@ -4,7 +4,7 @@ import PredictionTable from "./PredictionTable";
 import PredictionCalendar from "./PredictionCalendar";
 import PredictionStack from "./PredictionStack";
 import PredictionCarousel from "./PredictionCarousel";
-import PredictionsByTeam from "./PredictionsByTeam";
+import PredictionsByMember from "./PredictionsByMember";
 
 const PredictionContentView = ({ 
   viewMode, 
@@ -114,11 +114,13 @@ const PredictionContentView = ({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
         >
-          <PredictionsByTeam
+          <PredictionsByMember
             predictions={predictions}
             onPredictionSelect={onPredictionSelect}
-            onPredictionEdit={onEditClick}
+            onEditClick={onEditClick}
+            teamLogos={teamLogos}
             searchQuery={searchQuery}
+            mode="personal"
           />
         </motion.div>
       )}
