@@ -83,13 +83,16 @@ const PredictionsView = ({ handleEditPrediction }) => {  // Get theme context an
   });
   // The edit button handler passes the prediction to the parent
   const onEditClick = (prediction) => {
+    console.log('onEditClick called with:', prediction);
     handleEditPrediction(prediction);
   };
 
   // Handle prediction card click to open breakdown modal
   const handlePredictionSelect = (prediction) => {
+    console.log('handlePredictionSelect called with:', prediction);
     setSelectedPrediction(prediction);
     setShowBreakdownModal(true);
+    console.log('Modal should now be open, showBreakdownModal:', true);
   };
 
   // Handle modal close
@@ -163,14 +166,13 @@ const PredictionsView = ({ handleEditPrediction }) => {  // Get theme context an
       </div>
 
       {/* Prediction Breakdown Modal */}
-      {showBreakdownModal && selectedPrediction && (
-        <PredictionBreakdownModal
-          prediction={selectedPrediction}
-          teamLogos={teamLogos}
-          onClose={handleCloseModal}
-          onEdit={handleEditFromModal}
-        />
-      )}
+      <PredictionBreakdownModal
+        isOpen={showBreakdownModal}
+        prediction={selectedPrediction}
+        teamLogos={teamLogos}
+        onClose={handleCloseModal}
+        onEdit={handleEditFromModal}
+      />
     </div>
   );
 };

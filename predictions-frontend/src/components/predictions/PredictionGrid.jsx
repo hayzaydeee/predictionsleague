@@ -27,7 +27,10 @@ const RichPredictionCard = ({ prediction, onSelect, onEdit, teamLogos, theme }) 
           ? "bg-slate-700/30 border-slate-600/30 hover:bg-slate-700/50"
           : "bg-slate-50 border-slate-200 hover:bg-slate-100"
       }`}
-      onClick={() => onSelect?.(prediction)}
+      onClick={() => {
+        console.log('Card clicked:', prediction.id, prediction.homeTeam, 'vs', prediction.awayTeam);
+        onSelect?.(prediction);
+      }}
     >
       {/* Prediction Header */}
       <div className="flex items-center justify-between mb-4">
@@ -229,6 +232,7 @@ const RichPredictionCard = ({ prediction, onSelect, onEdit, teamLogos, theme }) 
           <button
             onClick={(e) => {
               e.stopPropagation();
+              console.log('Edit button clicked:', prediction.id, prediction.homeTeam, 'vs', prediction.awayTeam);
               onEdit(prediction);
             }}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
