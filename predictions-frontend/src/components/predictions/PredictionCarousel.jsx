@@ -210,31 +210,41 @@ const PredictionCarousel = ({
         </div>
       </div>
 
-      {/* Match Selector Tabs */}
+      {/* Match/Date Selector Tabs */}
       <div className="overflow-x-auto">
         <div className="flex space-x-2 min-w-max pb-2">
-          {matches.map((match, index) => (
-            <button
-              key={`${match.matchInfo.homeTeam}_vs_${match.matchInfo.awayTeam}`}
-              onClick={() => handleMatchChange(index)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap font-outfit ${
-                index === activeMatchIndex
-                  ? "bg-teal-600 text-white"
-                  : theme === "dark"
-                  ? "bg-slate-800/50 text-slate-300 hover:bg-slate-700/50"
-                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-              }`}
-            >
-              {match.matchInfo.homeTeam} vs {match.matchInfo.awayTeam}
-              <span className={`ml-2 px-1.5 py-0.5 rounded text-xs ${
-                index === activeMatchIndex
-                  ? "bg-white/20 text-white"
-                  : "bg-teal-600 text-white"
-              }`}>
-                {match.predictions.length}
-              </span>
-            </button>
-          ))}
+          {matches.map((match, index) => {
+            const tabLabel = mode === "league" 
+              ? `${match.matchInfo.homeTeam} vs ${match.matchInfo.awayTeam}`
+              : format(parseISO(match.matchInfo.date), 'MMM dd, yyyy');
+            
+            const tabKey = mode === "league"
+              ? `${match.matchInfo.homeTeam}_vs_${match.matchInfo.awayTeam}`
+              : match.matchInfo.dateKey;
+              
+            return (
+              <button
+                key={tabKey}
+                onClick={() => handleMatchChange(index)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap font-outfit ${
+                  index === activeMatchIndex
+                    ? "bg-teal-600 text-white"
+                    : theme === "dark"
+                    ? "bg-slate-800/50 text-slate-300 hover:bg-slate-700/50"
+                    : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                }`}
+              >
+                {tabLabel}
+                <span className={`ml-2 px-1.5 py-0.5 rounded text-xs ${
+                  index === activeMatchIndex
+                    ? "bg-white/20 text-white"
+                    : "bg-teal-600 text-white"
+                }`}>
+                  {match.predictions.length}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -257,63 +267,86 @@ const PredictionCarousel = ({
             theme === "dark" ? "border-slate-700/50" : "border-slate-200"
           }`}>
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-6">
-                {/* Home Team */}
-                <div className="flex items-center space-x-3">
-                  <img
-                    src={teamLogos[currentMatch.matchInfo.homeTeam] || `https://via.placeholder.com/40?text=${currentMatch.matchInfo.homeTeam.substring(0, 3)}`}
-                    alt={currentMatch.matchInfo.homeTeam}
-                    className="w-10 h-10 rounded-lg"
-                  />
+              {mode === "league" ? (
+                <div className="flex items-center space-x-6">
+                  {/* Home Team */}
+                  <div className="flex items-center space-x-3">
+                    <img
+                      src={teamLogos[currentMatch.matchInfo.homeTeam] || `https://via.placeholder.com/40?text=${currentMatch.matchInfo.homeTeam.substring(0, 3)}`}
+                      alt={currentMatch.matchInfo.homeTeam}
+                      className="w-10 h-10 rounded-lg"
+                    />
+                    <div>
+                      <h4 className={`font-bold text-lg ${
+                        theme === "dark" ? "text-white" : "text-slate-900"
+                      } font-outfit`}>
+                        {currentMatch.matchInfo.homeTeam}
+                      </h4>
+                      <p className={`text-xs ${
+                        theme === "dark" ? "text-slate-500" : "text-slate-500"
+                      } font-outfit`}>
+                        Home
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {/* VS */}
+                  <div className="flex flex-col items-center">
+                    <span className={`text-lg font-bold ${
+                      theme === "dark" ? "text-slate-400" : "text-slate-600"
+                    } font-outfit`}>
+                      VS
+                    </span>
+                    <span className={`text-xs ${
+                      theme === "dark" ? "text-slate-500" : "text-slate-500"
+                    } font-outfit`}>
+                      {format(parseISO(currentMatch.matchInfo.date), 'MMM dd')}
+                    </span>
+                  </div>
+                  
+                  {/* Away Team */}
+                  <div className="flex items-center space-x-3">
+                    <div className="text-right">
+                      <h4 className={`font-bold text-lg ${
+                        theme === "dark" ? "text-white" : "text-slate-900"
+                      } font-outfit`}>
+                        {currentMatch.matchInfo.awayTeam}
+                      </h4>
+                      <p className={`text-xs ${
+                        theme === "dark" ? "text-slate-500" : "text-slate-500"
+                      } font-outfit`}>
+                        Away
+                      </p>
+                    </div>
+                    <img
+                      src={teamLogos[currentMatch.matchInfo.awayTeam] || `https://via.placeholder.com/40?text=${currentMatch.matchInfo.awayTeam.substring(0, 3)}`}
+                      alt={currentMatch.matchInfo.awayTeam}
+                      className="w-10 h-10 rounded-lg"
+                    />
+                  </div>
+                </div>
+              ) : (
+                /* Personal Mode - Date Header */
+                <div className="flex items-center space-x-4">
+                  <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                    theme === "dark" ? "bg-teal-900/30 text-teal-300" : "bg-teal-100 text-teal-700"
+                  }`}>
+                    <CalendarIcon className="w-6 h-6" />
+                  </div>
                   <div>
                     <h4 className={`font-bold text-lg ${
                       theme === "dark" ? "text-white" : "text-slate-900"
                     } font-outfit`}>
-                      {currentMatch.matchInfo.homeTeam}
+                      {format(parseISO(currentMatch.matchInfo.date), 'EEEE, MMMM do, yyyy')}
                     </h4>
                     <p className={`text-xs ${
                       theme === "dark" ? "text-slate-500" : "text-slate-500"
                     } font-outfit`}>
-                      Home
+                      {currentMatch.predictions.length} prediction{currentMatch.predictions.length !== 1 ? 's' : ''}
                     </p>
                   </div>
                 </div>
-                
-                {/* VS */}
-                <div className="flex flex-col items-center">
-                  <span className={`text-lg font-bold ${
-                    theme === "dark" ? "text-slate-400" : "text-slate-600"
-                  } font-outfit`}>
-                    VS
-                  </span>
-                  <span className={`text-xs ${
-                    theme === "dark" ? "text-slate-500" : "text-slate-500"
-                  } font-outfit`}>
-                    {format(parseISO(currentMatch.matchInfo.date), 'MMM dd')}
-                  </span>
-                </div>
-                
-                {/* Away Team */}
-                <div className="flex items-center space-x-3">
-                  <div className="text-right">
-                    <h4 className={`font-bold text-lg ${
-                      theme === "dark" ? "text-white" : "text-slate-900"
-                    } font-outfit`}>
-                      {currentMatch.matchInfo.awayTeam}
-                    </h4>
-                    <p className={`text-xs ${
-                      theme === "dark" ? "text-slate-500" : "text-slate-500"
-                    } font-outfit`}>
-                      Away
-                    </p>
-                  </div>
-                  <img
-                    src={teamLogos[currentMatch.matchInfo.awayTeam] || `https://via.placeholder.com/40?text=${currentMatch.matchInfo.awayTeam.substring(0, 3)}`}
-                    alt={currentMatch.matchInfo.awayTeam}
-                    className="w-10 h-10 rounded-lg"
-                  />
-                </div>
-              </div>
+              )}
 
               {/* Match Time */}
               <div className="text-right">
@@ -464,7 +497,7 @@ const PredictionCarousel = ({
                           <div className={`text-xs ${
                             theme === "dark" ? "text-slate-500" : "text-slate-500"
                           } font-outfit mt-1 truncate`}>
-                            {currentMatch.matchInfo.homeTeam}
+                            {prediction.homeTeam}
                           </div>
                         </div>
                         
@@ -483,7 +516,7 @@ const PredictionCarousel = ({
                           <div className={`text-xs ${
                             theme === "dark" ? "text-slate-500" : "text-slate-500"
                           } font-outfit mt-1 truncate`}>
-                            {currentMatch.matchInfo.awayTeam}
+                            {prediction.awayTeam}
                           </div>
                         </div>
                       </div>
@@ -509,7 +542,7 @@ const PredictionCarousel = ({
                               <div className={`text-xs font-medium mb-2 ${
                                 theme === "dark" ? "text-slate-500" : "text-slate-500"
                               } font-outfit`}>
-                                {currentMatch.matchInfo.homeTeam}
+                                {prediction.homeTeam}
                               </div>
                               <div className="flex flex-wrap gap-2">
                                 {Object.entries(getGoalCounts(prediction.homeScorers)).map(([scorer, count]) => (
@@ -543,7 +576,7 @@ const PredictionCarousel = ({
                               <div className={`text-xs font-medium mb-2 ${
                                 theme === "dark" ? "text-slate-500" : "text-slate-500"
                               } font-outfit`}>
-                                {currentMatch.matchInfo.awayTeam}
+                                {prediction.awayTeam}
                               </div>
                               <div className="flex flex-wrap gap-2">
                                 {Object.entries(getGoalCounts(prediction.awayScorers)).map(([scorer, count]) => (
