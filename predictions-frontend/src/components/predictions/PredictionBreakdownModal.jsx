@@ -2,12 +2,12 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format, parseISO } from 'date-fns';
 import { 
-  XMarkIcon, 
+  Cross2Icon, 
   CalendarIcon,
   TrophyIcon,
-  UserIcon,
+  PersonIcon,
   ClockIcon
-} from '@heroicons/react/24/outline';
+} from '@radix-ui/react-icons';
 
 const PredictionBreakdownModal = ({ 
   isOpen, 
@@ -101,7 +101,7 @@ const PredictionBreakdownModal = ({
                 onClick={onClose}
                 className="p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 rounded-lg transition-colors"
               >
-                <XMarkIcon className="w-5 h-5" />
+                <Cross2Icon className="w-5 h-5" />
               </button>
             </div>
 
@@ -225,7 +225,7 @@ const PredictionBreakdownModal = ({
                           {Object.entries(homeGoalCounts).map(([scorer, count]) => (
                             <div key={scorer} className="flex items-center justify-between bg-slate-900/30 border border-slate-700/30 rounded-lg px-3 py-2">
                               <div className="flex items-center space-x-2">
-                                <UserIcon className="w-4 h-4 text-slate-400" />
+                                <PersonIcon className="w-4 h-4 text-slate-400" />
                                 <span className="text-slate-200 text-sm font-outfit">{scorer}</span>
                               </div>
                               <span className="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded-full font-outfit">
@@ -249,7 +249,7 @@ const PredictionBreakdownModal = ({
                           {Object.entries(awayGoalCounts).map(([scorer, count]) => (
                             <div key={scorer} className="flex items-center justify-between bg-slate-900/30 border border-slate-700/30 rounded-lg px-3 py-2">
                               <div className="flex items-center space-x-2">
-                                <UserIcon className="w-4 h-4 text-slate-400" />
+                                <PersonIcon className="w-4 h-4 text-slate-400" />
                                 <span className="text-slate-200 text-sm font-outfit">{scorer}</span>
                               </div>
                               <span className="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded-full font-outfit">
