@@ -384,68 +384,6 @@ const PredictionTeamPanel = ({
             }`}
           >
             <div className="p-4">
-              {/* Team Stats Overview */}
-              <div className={`mb-4 p-3 rounded-lg ${
-                theme === "dark" ? "bg-slate-800/60" : "bg-gray-50"
-              }`}>
-                <div className="flex items-center justify-between mb-2">
-                  <h4 className={`text-sm font-medium ${
-                    theme === "dark" ? "text-white" : "text-gray-900"
-                  }`}>
-                    Team Performance
-                  </h4>
-                </div>
-                <div className="grid grid-cols-4 gap-4 text-center">
-                  <div>
-                    <div className={`text-lg font-bold ${
-                      theme === "dark" ? "text-emerald-400" : "text-emerald-600"
-                    }`}>
-                      {stats.correct}
-                    </div>
-                    <div className={`text-xs ${
-                      theme === "dark" ? "text-white/60" : "text-gray-500"
-                    }`}>
-                      Correct
-                    </div>
-                  </div>
-                  <div>
-                    <div className={`text-lg font-bold ${
-                      theme === "dark" ? "text-red-400" : "text-red-600"
-                    }`}>
-                      {stats.incorrect}
-                    </div>
-                    <div className={`text-xs ${
-                      theme === "dark" ? "text-white/60" : "text-gray-500"
-                    }`}>
-                      Incorrect
-                    </div>
-                  </div>
-                  <div>
-                    <div className={`text-lg font-bold ${
-                      theme === "dark" ? "text-amber-400" : "text-amber-600"
-                    }`}>
-                      {stats.pending}
-                    </div>
-                    <div className={`text-xs ${
-                      theme === "dark" ? "text-white/60" : "text-gray-500"
-                    }`}>
-                      Pending
-                    </div>
-                  </div>
-                  <div>
-                    <div className={`text-lg font-bold ${
-                      theme === "dark" ? "text-blue-400" : "text-blue-600"
-                    }`}>
-                      {stats.completionRate}%
-                    </div>
-                    <div className={`text-xs ${
-                      theme === "dark" ? "text-white/60" : "text-gray-500"
-                    }`}>
-                      Complete
-                    </div>
-                  </div>
-                </div>
-              </div>
 
               {/* Predictions Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
