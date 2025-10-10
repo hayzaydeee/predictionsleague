@@ -21,7 +21,7 @@ import { ThemeContext } from "../../context/ThemeContext";
 import { useUserPreferences } from "../../context/UserPreferencesContext";
 import { backgrounds, text, buttons } from "../../utils/themeUtils";
 import leagueAPI from "../../services/api/leagueAPI";
-import GameweekPredictionsCarousel from "../predictions/GameweekPredictionsCarousel";
+import PredictionCarousel from "../predictions/PredictionCarousel";
 import LeaguePredictionViewToggleBar from "../predictions/LeaguePredictionViewToggleBar";
 import LeaguePredictionContentView from "../predictions/LeaguePredictionContentView";
 import LeaguePredictionFilters from "../predictions/LeaguePredictionFilters";
