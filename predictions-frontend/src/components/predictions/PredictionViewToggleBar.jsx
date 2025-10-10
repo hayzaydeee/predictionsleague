@@ -32,8 +32,8 @@ const PredictionViewToggleBar = ({ viewMode, setViewMode }) => {
           icon={<ListBulletIcon />}
           active={viewMode === "list"}
           onClick={() => setViewMode("list")}
-          tooltip="List View"
-          label="List"
+          tooltip="Grid View"
+          label="Grid"
         />
         <ViewToggleButton
           icon={<TableIcon />}

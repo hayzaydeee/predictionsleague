@@ -398,7 +398,7 @@ const SettingsView = () => {
                   }
                   options={[
                     { value: "teams", label: "By Teams" },
-                    { value: "list", label: "List View" },
+                    { value: "list", label: "Grid View" },
                     { value: "stack", label: "Stack View" },
                     { value: "calendar", label: "Calendar View" },
                     { value: "table", label: "Table View" },
@@ -413,7 +413,7 @@ const SettingsView = () => {
                   }
                   options={[
                     { value: "teams", label: "By Teams" },
-                    { value: "list", label: "List View" },
+                    { value: "list", label: "Grid View" },
                     { value: "table", label: "Table View" },
                     { value: "stack", label: "Stack View" },
                     { value: "calendar", label: "Calendar View" },

@@ -454,11 +454,20 @@ const PredictionCarousel = ({
                               } font-outfit`}>
                                 {prediction.userDisplayName || 'Unknown User'}
                               </p>
-                              <p className={`text-xs ${
-                                theme === "dark" ? "text-slate-500" : "text-slate-500"
-                              } font-outfit`}>
-                                {format(parseISO(prediction.predictedAt || prediction.date), 'MMM dd, HH:mm')}
-                              </p>
+                              <div className="flex items-center gap-2">
+                                <p className={`text-xs ${
+                                  theme === "dark" ? "text-slate-500" : "text-slate-500"
+                                } font-outfit`}>
+                                  {format(parseISO(prediction.predictedAt || prediction.date), 'MMM dd, HH:mm')}
+                                </p>
+                                <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium ${
+                                  theme === "dark" 
+                                    ? "bg-teal-900/30 text-teal-300" 
+                                    : "bg-teal-50 text-teal-700"
+                                }`}>
+                                  GW{prediction.gameweek}
+                                </span>
+                              </div>
                             </div>
                           </>
                         ) : (
@@ -474,24 +483,26 @@ const PredictionCarousel = ({
                               } font-outfit`}>
                                 {prediction.homeTeam} vs {prediction.awayTeam}
                               </p>
-                              <p className={`text-xs ${
-                                theme === "dark" ? "text-slate-500" : "text-slate-500"
-                              } font-outfit`}>
-                                {format(parseISO(prediction.date), 'MMM dd, HH:mm')}
-                              </p>
+                              <div className="flex items-center gap-2">
+                                <p className={`text-xs ${
+                                  theme === "dark" ? "text-slate-500" : "text-slate-500"
+                                } font-outfit`}>
+                                  {format(parseISO(prediction.date), 'MMM dd, HH:mm')}
+                                </p>
+                                <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium ${
+                                  theme === "dark" 
+                                    ? "bg-teal-900/30 text-teal-300" 
+                                    : "bg-teal-50 text-teal-700"
+                                }`}>
+                                  GW{prediction.gameweek}
+                                </span>
+                              </div>
                             </div>
                           </>
                         )}
                       </div>
                       
                       <div className="text-right">
-                        <div className={`inline-flex items-center gap-2 px-2 py-1 rounded-md text-xs font-medium mb-1 ${
-                          theme === "dark" 
-                            ? "bg-teal-900/30 text-teal-300" 
-                            : "bg-teal-50 text-teal-700"
-                        }`}>
-                          GW {prediction.gameweek}
-                        </div>
                         <div className={`text-lg font-bold font-outfit ${
                           theme === "dark" ? "text-white" : "text-slate-900"
                         }`}>
