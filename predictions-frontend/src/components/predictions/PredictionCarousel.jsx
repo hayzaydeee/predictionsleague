@@ -75,25 +75,16 @@ const PredictionCarousel = ({
     
     matches = Object.values(predictionsByMatch);
   } else {
-    // Group by gameweek for personal mode (consistent with filtering)
-    const predictionsByGameweek = filteredPredictions.reduce((groups, prediction) => {
-      const gameweekKey = `gw-${prediction.gameweek}`;
-      if (!groups[gameweekKey]) {
-        groups[gameweekKey] = {
-          matchInfo: {
-            gameweek: prediction.gameweek,
-            gameweekKey: gameweekKey
-          },
-          predictions: []
-        };
-      }
-      groups[gameweekKey].predictions.push(prediction);
-      return groups;
-    }, {});
-    
-    matches = Object.values(predictionsByGameweek).sort((a, b) => 
-      b.matchInfo.gameweek - a.matchInfo.gameweek
-    );
+    // For personal mode, show all filtered predictions in a single group
+    if (filteredPredictions.length > 0) {
+      matches = [{
+        matchInfo: {
+          isPersonalMode: true,
+          totalPredictions: filteredPredictions.length
+        },
+        predictions: filteredPredictions
+      }];
+    }
   }
 
   // Helper function to count goals per scorer
@@ -210,43 +201,40 @@ const PredictionCarousel = ({
         </div>
       </div>
 
-      {/* Match/Date Selector Tabs */}
-      <div className="overflow-x-auto">
-        <div className="flex space-x-2 min-w-max pb-2">
-          {matches.map((match, index) => {
-            const tabLabel = mode === "league" 
-              ? `${match.matchInfo.homeTeam} vs ${match.matchInfo.awayTeam}`
-              : `Gameweek ${match.matchInfo.gameweek}`;
-            
-            const tabKey = mode === "league"
-              ? `${match.matchInfo.homeTeam}_vs_${match.matchInfo.awayTeam}`
-              : match.matchInfo.dateKey;
-              
-            return (
-              <button
-                key={tabKey}
-                onClick={() => handleMatchChange(index)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap font-outfit ${
-                  index === activeMatchIndex
-                    ? "bg-teal-600 text-white"
-                    : theme === "dark"
-                    ? "bg-slate-800/50 text-slate-300 hover:bg-slate-700/50"
-                    : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                }`}
-              >
-                {tabLabel}
-                <span className={`ml-2 px-1.5 py-0.5 rounded text-xs ${
-                  index === activeMatchIndex
+      {/* Match/Date Selector Tabs - Only show for league mode */}
+      {mode === "league" && (
+        <div className="overflow-x-auto">
+          <div className="flex space-x-2 min-w-max pb-2">
+            {matches.map((match, index) => {
+              const tabLabel = `${match.matchInfo.homeTeam} vs ${match.matchInfo.awayTeam}`;
+              const tabKey = `${match.matchInfo.homeTeam}_vs_${match.matchInfo.awayTeam}`;
+                
+              return (
+                <button
+                  key={tabKey}
+                  onClick={() => handleMatchChange(index)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap font-outfit ${
+                    index === activeMatchIndex
+                      ? "bg-teal-600 text-white"
+                      : theme === "dark"
+                      ? "bg-slate-800/50 text-slate-300 hover:bg-slate-700/50"
+                      : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  }`}
+                >
+                  {tabLabel}
+                  <span className={`ml-2 px-1.5 py-0.5 rounded text-xs ${
+                    index === activeMatchIndex
                     ? "bg-white/20 text-white"
                     : "bg-teal-600 text-white"
                 }`}>
                   {match.predictions.length}
                 </span>
-              </button>
-            );
-          })}
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Current Match Display */}
       <AnimatePresence mode="wait">
@@ -302,7 +290,7 @@ const PredictionCarousel = ({
                     } font-outfit`}>
                       {mode === "league" 
                         ? format(parseISO(currentMatch.matchInfo.date), 'MMM dd')
-                        : `GW ${currentMatch.matchInfo.gameweek}`
+                        : "Filtered"
                       }
                     </span>
                   </div>
@@ -329,7 +317,7 @@ const PredictionCarousel = ({
                   </div>
                 </div>
               ) : (
-                /* Personal Mode - Gameweek Header */
+                /* Personal Mode - Your Predictions Header */
                 <div className="flex items-center space-x-4">
                   <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
                     theme === "dark" ? "bg-teal-900/30 text-teal-300" : "bg-teal-100 text-teal-700"
@@ -340,7 +328,7 @@ const PredictionCarousel = ({
                     <h4 className={`font-bold text-lg ${
                       theme === "dark" ? "text-white" : "text-slate-900"
                     } font-outfit`}>
-                      Gameweek {currentMatch.matchInfo.gameweek}
+                      Your Predictions
                     </h4>
                     <p className={`text-xs ${
                       theme === "dark" ? "text-slate-500" : "text-slate-500"
