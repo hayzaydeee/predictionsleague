@@ -4,7 +4,7 @@ import PredictionTable from "./PredictionTable";
 import PredictionCalendar from "./PredictionCalendar";
 import PredictionStack from "./PredictionStack";
 import PredictionCarousel from "./PredictionCarousel";
-import PredictionsByMember from "./PredictionsByMember";
+import PredictionsByTeam from "./PredictionsByTeam";
 
 const PredictionContentView = ({ 
   viewMode, 

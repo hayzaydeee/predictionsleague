@@ -216,19 +216,20 @@ const PredictionsByMember = ({
                     theme === "dark" ? "border-slate-700/50" : "border-slate-200"
                   }`}
                 >
-                  <div className="p-6 space-y-4">
-                    {member.predictions.map((prediction) => (
-                      <motion.div
-                        key={prediction.id}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className={`rounded-lg border p-6 transition-all cursor-pointer ${
-                          theme === "dark"
-                            ? "bg-slate-700/30 border-slate-600/30 hover:bg-slate-700/50"
-                            : "bg-slate-50 border-slate-200 hover:bg-slate-100"
-                        }`}
-                        onClick={() => onPredictionSelect?.(prediction)}
-                      >
+                  <div className="p-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {member.predictions.map((prediction) => (
+                        <motion.div
+                          key={prediction.id}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className={`rounded-lg border p-6 transition-all cursor-pointer ${
+                            theme === "dark"
+                              ? "bg-slate-700/30 border-slate-600/30 hover:bg-slate-700/50"
+                              : "bg-slate-50 border-slate-200 hover:bg-slate-100"
+                          }`}
+                          onClick={() => onPredictionSelect?.(prediction)}
+                        >
                         {/* Prediction Header */}
                         <div className="flex items-center justify-between mb-4">
                           <div className="flex items-center space-x-3">
@@ -438,8 +439,9 @@ const PredictionsByMember = ({
                             </button>
                           </div>
                         )}
-                      </motion.div>
-                    ))}
+                        </motion.div>
+                      ))}
+                    </div>
                   </div>
                 </motion.div>
               )}
