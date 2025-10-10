@@ -7,7 +7,7 @@ import { filterPredictionsByQuery } from "../../utils/predictionUtils";
 import PredictionCard from "./PredictionCard";
 import { ThemeContext } from "../../context/ThemeContext";
 
-const PredictionList = ({
+const PredictionGrid = ({
   predictions,
   onPredictionSelect,
   onEditClick,
@@ -90,4 +90,4 @@ const PredictionList = ({
   );
 };
 
-export default PredictionList;
+export default PredictionGrid;

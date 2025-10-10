@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import PredictionList from "./PredictionList";
+import PredictionGrid from "./PredictionGrid";
 import PredictionTable from "./PredictionTable";
 import PredictionCalendar from "./PredictionCalendar";
 import PredictionStack from "./PredictionStack";
@@ -24,7 +24,7 @@ const PredictionContentView = ({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
         >
-          <PredictionList
+          <PredictionGrid
             predictions={predictions}
             onPredictionSelect={onPredictionSelect}
             onEditClick={onEditClick}

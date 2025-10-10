@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import FixtureCarousel from "./FixtureCarousel";
-import FixtureList from "./FixtureList";
+import FixtureGrid from "./FixtureGrid";
 import FixtureCalendar from "./FixtureCalendar";
 import FixturesByTeam from "./FixturesByTeam";
 import FixtureTable from "./FixtureTable";
@@ -104,7 +104,7 @@ const ContentView = ({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
         >
-          <FixtureList
+          <FixtureGrid
             fixtures={fixtures}
             onFixtureSelect={onFixtureSelect}
             activeGameweekChips={activeGameweekChips}

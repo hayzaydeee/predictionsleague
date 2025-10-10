@@ -5,7 +5,7 @@ import DateHeader from "./DateHeader";
 import EmptyFixtureState from "./EmptyFixtureState";
 import { teamLogos } from "../../data/sampleData";
 
-function FixtureList({ fixtures, onFixtureSelect, searchQuery = "" }) {
+function FixtureGrid({ fixtures, onFixtureSelect, searchQuery = "" }) {
   const [selectedFixture, setSelectedFixture] = useState(null);
 
   // Filter fixtures based on search query - using common utility function
@@ -57,4 +57,4 @@ function FixtureList({ fixtures, onFixtureSelect, searchQuery = "" }) {
   );
 }
 
-export default FixtureList;
+export default FixtureGrid;

@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import PredictionsByMember from "./PredictionsByMember";
-import PredictionList from "./PredictionList";
+import PredictionGrid from "./PredictionGrid";
 import PredictionCarousel from "./PredictionCarousel";
 import PredictionTable from "./PredictionTable";
 import LeaguePredictionsStack from "./LeaguePredictionsStack";
@@ -51,7 +51,7 @@ const LeaguePredictionContentView = ({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
         >
-          <PredictionList
+          <PredictionGrid
             mode="league"
             predictions={filteredPredictions}
             onPredictionSelect={onPredictionSelect}
