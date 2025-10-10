@@ -95,11 +95,13 @@ const PredictionContentView = ({
           transition={{ duration: 0.2 }}
         >
           <PredictionCarousel
+            mode="personal"
             predictions={predictions}
             onPredictionSelect={onPredictionSelect}
             onEditClick={onEditClick}
             teamLogos={teamLogos}
             searchQuery={searchQuery}
+            isReadOnly={false}
           />
         </motion.div>
       )}

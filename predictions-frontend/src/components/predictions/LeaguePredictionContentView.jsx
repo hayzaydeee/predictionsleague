@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import LeaguePredictionsByTeam from "./LeaguePredictionsByTeam";
 import PredictionList from "./PredictionList";
-import GameweekPredictionsCarousel from "./GameweekPredictionsCarousel";
+import PredictionCarousel from "./PredictionCarousel";
 import PredictionTable from "./PredictionTable";
 import LeaguePredictionsStack from "./LeaguePredictionsStack";
 import LeaguePredictionsCalendar from "./LeaguePredictionsCalendar";
@@ -67,12 +67,14 @@ const LeaguePredictionContentView = ({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
         >
-          <GameweekPredictionsCarousel
+          <PredictionCarousel
+            mode="league"
             predictions={filteredPredictions}
             currentGameweek={currentGameweek}
             onPredictionSelect={onPredictionSelect}
             teamLogos={teamLogos}
             isReadOnly={true}
+            searchQuery={searchQuery}
           />
         </motion.div>
       )}
