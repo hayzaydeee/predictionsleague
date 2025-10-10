@@ -178,28 +178,30 @@ const PredictionCarousel = ({
       transition={{ duration: 0.4 }}
       className="space-y-6"
     >
-      {/* Header */}
-      <div className="flex items-center space-x-3">
-        <div className={`p-2 rounded-lg ${
-          theme === "dark" 
-            ? "bg-slate-800/50 border-slate-700" 
-            : "bg-slate-50 border-slate-200"
-        } border`}>
-          <TargetIcon className="w-5 h-5 text-teal-600" />
+      {/* Header - Only show for league mode */}
+      {mode === "league" && (
+        <div className="flex items-center space-x-3">
+          <div className={`p-2 rounded-lg ${
+            theme === "dark" 
+              ? "bg-slate-800/50 border-slate-700" 
+              : "bg-slate-50 border-slate-200"
+          } border`}>
+            <TargetIcon className="w-5 h-5 text-teal-600" />
+          </div>
+          <div>
+            <h3 className={`text-xl font-bold ${
+              theme === "dark" ? "text-white" : "text-slate-900"
+            } font-outfit`}>
+              Gameweek {currentGameweek}
+            </h3>
+            <p className={`text-sm ${
+              theme === "dark" ? "text-slate-400" : "text-slate-600"
+            } font-outfit`}>
+              League Predictions
+            </p>
+          </div>
         </div>
-        <div>
-          <h3 className={`text-xl font-bold ${
-            theme === "dark" ? "text-white" : "text-slate-900"
-          } font-outfit`}>
-            Gameweek {currentGameweek}
-          </h3>
-          <p className={`text-sm ${
-            theme === "dark" ? "text-slate-400" : "text-slate-600"
-          } font-outfit`}>
-            League Predictions
-          </p>
-        </div>
-      </div>
+      )}
 
       {/* Match/Date Selector Tabs - Only show for league mode */}
       {mode === "league" && (
