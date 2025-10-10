@@ -300,7 +300,10 @@ const PredictionCarousel = ({
                     <span className={`text-xs ${
                       theme === "dark" ? "text-slate-500" : "text-slate-500"
                     } font-outfit`}>
-                      {format(parseISO(currentMatch.matchInfo.date), 'MMM dd')}
+                      {mode === "league" 
+                        ? format(parseISO(currentMatch.matchInfo.date), 'MMM dd')
+                        : `GW ${currentMatch.matchInfo.gameweek}`
+                      }
                     </span>
                   </div>
                   
@@ -357,7 +360,10 @@ const PredictionCarousel = ({
                   <span className={`text-sm font-medium ${
                     theme === "dark" ? "text-slate-300" : "text-slate-700"
                   } font-outfit`}>
-                    {format(parseISO(currentMatch.matchInfo.date), 'HH:mm')}
+                    {mode === "league" 
+                      ? format(parseISO(currentMatch.matchInfo.date), 'HH:mm')
+                      : `${currentMatch.predictions.length} match${currentMatch.predictions.length !== 1 ? 'es' : ''}`
+                    }
                   </span>
                 </div>
               </div>
