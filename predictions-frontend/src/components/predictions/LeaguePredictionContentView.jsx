@@ -1,11 +1,10 @@
 import { motion, AnimatePresence } from "framer-motion";
 import LeaguePredictionsByTeam from "./LeaguePredictionsByTeam";
-import LeaguePredictionsList from "./LeaguePredictionsList";
+import PredictionList from "./PredictionList";
 import GameweekPredictionsCarousel from "./GameweekPredictionsCarousel";
 import PredictionTable from "./PredictionTable";
 import LeaguePredictionsStack from "./LeaguePredictionsStack";
 import LeaguePredictionsCalendar from "./LeaguePredictionsCalendar";
-import LeaguePredictionsTimeline from "./LeaguePredictionsTimeline";
 
 const LeaguePredictionContentView = ({ 
   viewMode, 
@@ -50,7 +49,8 @@ const LeaguePredictionContentView = ({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
         >
-          <LeaguePredictionsList
+          <PredictionList
+            mode="league"
             predictions={filteredPredictions}
             onPredictionSelect={onPredictionSelect}
             teamLogos={teamLogos}
@@ -124,24 +124,6 @@ const LeaguePredictionContentView = ({
           transition={{ duration: 0.2 }}
         >
           <LeaguePredictionsCalendar
-            predictions={filteredPredictions}
-            onPredictionSelect={onPredictionSelect}
-            teamLogos={teamLogos}
-            searchQuery={searchQuery}
-          />
-        </motion.div>
-      )}
-
-      {/* Timeline View */}
-      {viewMode === "timeline" && (
-        <motion.div
-          key="timeline"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-        >
-          <LeaguePredictionsTimeline
             predictions={filteredPredictions}
             onPredictionSelect={onPredictionSelect}
             teamLogos={teamLogos}

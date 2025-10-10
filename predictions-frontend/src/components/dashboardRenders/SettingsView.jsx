@@ -401,7 +401,6 @@ const SettingsView = () => {
                     { value: "list", label: "List View" },
                     { value: "stack", label: "Stack View" },
                     { value: "calendar", label: "Calendar View" },
-                    { value: "timeline", label: "Timeline View" },
                     { value: "table", label: "Table View" },
                     { value: "carousel", label: "Carousel View" },
                   ]}
@@ -418,7 +417,6 @@ const SettingsView = () => {
                     { value: "table", label: "Table View" },
                     { value: "stack", label: "Stack View" },
                     { value: "calendar", label: "Calendar View" },
-                    { value: "timeline", label: "Timeline View" },
                     { value: "carousel", label: "Carousel View" },
                   ]}
                 />

@@ -2,7 +2,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import FixtureCarousel from "./FixtureCarousel";
 import FixtureList from "./FixtureList";
 import FixtureCalendar from "./FixtureCalendar";
-import FixtureTimeline from "./FixtureTimeline";
 import FixturesByTeam from "./FixturesByTeam";
 import FixtureTable from "./FixtureTable";
 import FixtureStack from "./FixtureStack";
@@ -74,22 +73,6 @@ const ContentView = ({
           transition={{ duration: 0.2 }}
         >
           <FixtureCalendar
-            fixtures={fixtures}
-            onFixtureSelect={onFixtureSelect}
-            searchQuery={searchQuery}
-          />
-        </motion.div>
-      )}
-
-      {viewMode === "timeline" && (
-        <motion.div
-          key="timeline"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-        >
-          <FixtureTimeline
             fixtures={fixtures}
             onFixtureSelect={onFixtureSelect}
             searchQuery={searchQuery}

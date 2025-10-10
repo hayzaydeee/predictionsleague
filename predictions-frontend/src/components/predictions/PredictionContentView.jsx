@@ -2,7 +2,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import PredictionList from "./PredictionList";
 import PredictionTable from "./PredictionTable";
 import PredictionCalendar from "./PredictionCalendar";
-import PredictionTimeline from "./PredictionTimeline";
 import PredictionStack from "./PredictionStack";
 import PredictionCarousel from "./PredictionCarousel";
 import PredictionsByTeam from "./PredictionsByTeam";
@@ -62,24 +61,6 @@ const PredictionContentView = ({
           transition={{ duration: 0.2 }}
         >
           <PredictionCalendar
-            predictions={predictions}
-            onPredictionSelect={onPredictionSelect}
-            onEditClick={onEditClick}
-            teamLogos={teamLogos}
-            searchQuery={searchQuery}
-          />
-        </motion.div>
-      )}
-
-      {viewMode === "timeline" && (
-        <motion.div
-          key="timeline"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-        >
-          <PredictionTimeline
             predictions={predictions}
             onPredictionSelect={onPredictionSelect}
             onEditClick={onEditClick}

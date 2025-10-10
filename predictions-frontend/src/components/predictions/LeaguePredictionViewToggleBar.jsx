@@ -4,7 +4,6 @@ import {
   LayoutIcon,
   StackIcon,
   CalendarIcon,
-  ClockIcon,
   TableIcon,
   ListBulletIcon,
   PersonIcon,
@@ -57,13 +56,6 @@ const LeaguePredictionViewToggleBar = ({ viewMode, setViewMode }) => {
           onClick={() => setViewMode("calendar")}
           tooltip="Calendar View"
           label="Calendar"
-        />
-        <ViewToggleButton
-          icon={<ClockIcon />}
-          active={viewMode === "timeline"}
-          onClick={() => setViewMode("timeline")}
-          tooltip="Timeline"
-          label="Timeline"
         />
         <ViewToggleButton
           icon={<LayoutIcon />}
