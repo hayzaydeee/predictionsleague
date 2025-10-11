@@ -169,7 +169,10 @@ const PredictionBreakdownModal = ({
                 </div>
 
                 {/* Score Prediction */}
-                <div className={`rounded-lg p-4 mb-4 ${getThemeStyles(theme, backgrounds.tertiary)}`}>
+                <div className={`rounded-lg p-4 mb-4 ${getThemeStyles(theme, {
+                  dark: 'bg-slate-900/50 border border-slate-700/30',
+                  light: 'bg-slate-100 border border-slate-200'
+                })}`}>
                   <div className={`text-xs font-medium mb-3 font-outfit ${getThemeStyles(theme, text.muted)}`}>
                     Predicted Score
                   </div>
@@ -200,7 +203,10 @@ const PredictionBreakdownModal = ({
 
                 {/* Actual Result if available */}
                 {prediction.actualResult && (
-                  <div className={`rounded-lg p-4 ${getThemeStyles(theme, backgrounds.tertiary)}`}>
+                  <div className={`rounded-lg p-4 ${getThemeStyles(theme, {
+                    dark: 'bg-slate-900/50 border border-slate-700/30',
+                    light: 'bg-slate-100 border border-slate-200'
+                  })}`}>
                     <div className={`text-xs font-medium mb-3 font-outfit ${getThemeStyles(theme, text.muted)}`}>
                       Actual Result
                     </div>
@@ -232,7 +238,10 @@ const PredictionBreakdownModal = ({
 
                 {/* Actual Scorers if available */}
                 {prediction.actualResult?.scorers && (
-                  <div className={`rounded-lg p-4 mt-4 ${getThemeStyles(theme, backgrounds.tertiary)}`}>
+                  <div className={`rounded-lg p-4 mt-4 ${getThemeStyles(theme, {
+                    dark: 'bg-slate-900/50 border border-slate-700/30',
+                    light: 'bg-slate-100 border border-slate-200'
+                  })}`}>
                     <div className={`text-xs font-medium mb-3 font-outfit ${getThemeStyles(theme, text.muted)}`}>
                       Actual Scorers
                     </div>
@@ -302,7 +311,10 @@ const PredictionBreakdownModal = ({
                       {prediction.homeScorers?.length > 0 ? (
                         <div className="space-y-2">
                           {Object.entries(homeGoalCounts).map(([scorer, count]) => (
-                            <div key={scorer} className={`flex items-center justify-between rounded-lg px-3 py-2 ${getThemeStyles(theme, backgrounds.tertiary)}`}>
+                            <div key={scorer} className={`flex items-center justify-between rounded-lg px-3 py-2 ${getThemeStyles(theme, {
+                              dark: 'bg-slate-900/30 border border-slate-700/30',
+                              light: 'bg-slate-100 border border-slate-200'
+                            })}`}>
                               <div className="flex items-center space-x-2">
                                 <PersonIcon className={`w-4 h-4 ${getThemeStyles(theme, text.muted)}`} />
                                 <span className={`text-sm font-outfit ${getThemeStyles(theme, text.primary)}`}>{scorer}</span>
@@ -326,7 +338,10 @@ const PredictionBreakdownModal = ({
                       {prediction.awayScorers?.length > 0 ? (
                         <div className="space-y-2">
                           {Object.entries(awayGoalCounts).map(([scorer, count]) => (
-                            <div key={scorer} className={`flex items-center justify-between rounded-lg px-3 py-2 ${getThemeStyles(theme, backgrounds.tertiary)}`}>
+                            <div key={scorer} className={`flex items-center justify-between rounded-lg px-3 py-2 ${getThemeStyles(theme, {
+                              dark: 'bg-slate-900/30 border border-slate-700/30',
+                              light: 'bg-slate-100 border border-slate-200'
+                            })}`}>
                               <div className="flex items-center space-x-2">
                                 <PersonIcon className={`w-4 h-4 ${getThemeStyles(theme, text.muted)}`} />
                                 <span className={`text-sm font-outfit ${getThemeStyles(theme, text.primary)}`}>{scorer}</span>
@@ -379,7 +394,10 @@ const PredictionBreakdownModal = ({
                   
                   <div className="space-y-3">
                     {Object.entries(prediction.pointsBreakdown).map(([category, points]) => (
-                      <div key={category} className={`flex items-center justify-between py-2 border-b last:border-b-0 ${getThemeStyles(theme, backgrounds.border)}`}>
+                      <div key={category} className={`flex items-center justify-between py-2 border-b last:border-b-0 ${getThemeStyles(theme, {
+                        dark: 'border-slate-700/30',
+                        light: 'border-slate-200'
+                      })}`}>
                         <span className={`text-sm font-outfit capitalize ${getThemeStyles(theme, text.secondary)}`}>
                           {category.replace(/([A-Z])/g, ' $1').trim()}
                         </span>
@@ -389,7 +407,10 @@ const PredictionBreakdownModal = ({
                       </div>
                     ))}
                     
-                    <div className={`flex items-center justify-between pt-3 mt-3 border-t ${getThemeStyles(theme, backgrounds.border)}`}>
+                    <div className={`flex items-center justify-between pt-3 mt-3 border-t ${getThemeStyles(theme, {
+                      dark: 'border-slate-600/50',
+                      light: 'border-slate-300'
+                    })}`}>
                       <span className={`font-semibold font-outfit ${getThemeStyles(theme, text.primary)}`}>
                         Total Points
                       </span>
@@ -410,7 +431,10 @@ const PredictionBreakdownModal = ({
                   
                   <div className="space-y-4">
                     {/* Score Accuracy */}
-                    <div className={`rounded-lg p-4 ${getThemeStyles(theme, backgrounds.tertiary)}`}>
+                    <div className={`rounded-lg p-4 ${getThemeStyles(theme, {
+                      dark: 'bg-slate-900/50 border border-slate-700/30',
+                      light: 'bg-slate-100 border border-slate-200'
+                    })}`}>
                       <div className="flex items-center justify-between mb-2">
                         <span className={`text-sm font-outfit ${getThemeStyles(theme, text.secondary)}`}>Score Prediction</span>
                         <span className={`text-sm font-semibold font-outfit ${
@@ -434,7 +458,10 @@ const PredictionBreakdownModal = ({
                     </div>
 
                     {/* Result Accuracy */}
-                    <div className={`rounded-lg p-4 ${getThemeStyles(theme, backgrounds.tertiary)}`}>
+                    <div className={`rounded-lg p-4 ${getThemeStyles(theme, {
+                      dark: 'bg-slate-900/50 border border-slate-700/30',
+                      light: 'bg-slate-100 border border-slate-200'
+                    })}`}>
                       <div className="flex items-center justify-between mb-2">
                         <span className={`text-sm font-outfit ${getThemeStyles(theme, text.secondary)}`}>Result Prediction</span>
                         <span className={`text-sm font-semibold font-outfit ${
@@ -463,7 +490,10 @@ const PredictionBreakdownModal = ({
 
                     {/* Goalscorer Accuracy */}
                     {(prediction.homeScorers?.length > 0 || prediction.awayScorers?.length > 0) && prediction.actualResult?.scorers && (
-                      <div className={`rounded-lg p-4 ${getThemeStyles(theme, backgrounds.tertiary)}`}>
+                      <div className={`rounded-lg p-4 ${getThemeStyles(theme, {
+                        dark: 'bg-slate-900/50 border border-slate-700/30',
+                        light: 'bg-slate-100 border border-slate-200'
+                      })}`}>
                         <div className="flex items-center justify-between mb-2">
                           <span className={`text-sm font-outfit ${getThemeStyles(theme, text.secondary)}`}>Goalscorer Predictions</span>
                           <span className={`text-sm font-semibold font-outfit text-blue-400`}>
@@ -509,7 +539,10 @@ const PredictionBreakdownModal = ({
               )}
 
               {/* Match Info */}
-              <div className={`mt-6 pt-6 border-t ${getThemeStyles(theme, backgrounds.border)}`}>
+              <div className={`mt-6 pt-6 border-t ${getThemeStyles(theme, {
+                dark: 'border-slate-700/60',
+                light: 'border-slate-200'
+              })}`}>
                 <div className={`flex items-center justify-between text-sm font-outfit ${getThemeStyles(theme, text.muted)}`}>
                   <div className="flex items-center space-x-2">
                     <ClockIcon className="w-4 h-4" />
