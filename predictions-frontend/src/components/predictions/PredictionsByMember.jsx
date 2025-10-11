@@ -131,75 +131,55 @@ const PredictionsByMember = ({
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
                   <div className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold ${
-                    theme === "dark" 
-                      ? "bg-teal-900/30 text-teal-300 border border-teal-800/50" 
-                      : "bg-teal-100 text-teal-700 border border-teal-200"
+                    theme === "dark" ? "bg-slate-700 text-slate-300" : "bg-slate-100 text-slate-700"
                   }`}>
                     {member.memberInfo.avatar}
                   </div>
                   <div>
-                    <h3 className={`font-semibold text-lg ${
+                    <h3 className={`text-xl font-bold ${
                       theme === "dark" ? "text-white" : "text-slate-900"
                     } font-outfit`}>
                       {member.memberInfo.name}
                     </h3>
                     <div className="flex items-center space-x-4 mt-1">
-                      <div className={`text-sm ${
+                      <span className={`text-sm ${
                         theme === "dark" ? "text-slate-400" : "text-slate-600"
                       } font-outfit`}>
-                        {stats.total} prediction{stats.total !== 1 ? 's' : ''}
-                      </div>
-                      {stats.totalPoints > 0 && (
-                        <div className={`text-sm font-medium ${
-                          theme === "dark" ? "text-teal-300" : "text-teal-600"
-                        } font-outfit`}>
-                          {stats.totalPoints} pts
-                        </div>
-                      )}
+                        {stats.total} predictions
+                      </span>
+                      <span className={`text-sm font-medium ${
+                        theme === "dark" ? "text-teal-400" : "text-teal-600"
+                      } font-outfit`}>
+                        {stats.totalPoints} pts
+                      </span>
                     </div>
                   </div>
                 </div>
 
                 <div className="flex items-center space-x-4">
-                  <div className="text-center">
-                    <div className={`text-xs font-medium ${
+                  <div className="text-right">
+                    <div className="flex items-center space-x-2 text-sm">
+                      <span className={`${
+                        theme === "dark" ? "text-green-400" : "text-green-600"
+                      } font-medium`}>
+                        {stats.completed} complete
+                      </span>
+                      <span className={`${
+                        theme === "dark" ? "text-amber-400" : "text-amber-600"
+                      } font-medium`}>
+                        {stats.pending} pending
+                      </span>
+                    </div>
+                  </div>
+                  {isExpanded ? (
+                    <ChevronDownIcon className={`w-5 h-5 ${
                       theme === "dark" ? "text-slate-400" : "text-slate-600"
-                    } font-outfit`}>
-                      Status
-                    </div>
-                    <div className="flex items-center space-x-2 mt-1">
-                      <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        theme === "dark"
-                          ? "bg-green-900/30 text-green-400"
-                          : "bg-green-100 text-green-700"
-                      }`}>
-                        {stats.completed} done
-                      </div>
-                      {stats.pending > 0 && (
-                        <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          theme === "dark"
-                            ? "bg-amber-900/30 text-amber-400"
-                            : "bg-amber-100 text-amber-700"
-                        }`}>
-                          {stats.pending} pending
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className={`p-2 rounded-lg ${
-                    theme === "dark" ? "bg-slate-700/50" : "bg-slate-100"
-                  }`}>
-                    {isExpanded ? (
-                      <ChevronDownIcon className={`w-5 h-5 ${
-                        theme === "dark" ? "text-slate-400" : "text-slate-600"
-                      }`} />
-                    ) : (
-                      <ChevronRightIcon className={`w-5 h-5 ${
-                        theme === "dark" ? "text-slate-400" : "text-slate-600"
-                      }`} />
-                    )}
-                  </div>
+                    }`} />
+                  ) : (
+                    <ChevronRightIcon className={`w-5 h-5 ${
+                      theme === "dark" ? "text-slate-400" : "text-slate-600"
+                    }`} />
+                  )}
                 </div>
               </div>
             </button>
