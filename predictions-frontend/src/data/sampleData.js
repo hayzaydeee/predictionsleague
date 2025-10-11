@@ -188,7 +188,7 @@ export const predictions = [
     actualHomeScorers: ["Saka", "Martinelli"],
     actualAwayScorers: ["Son"],
     status: "completed",
-    chips: ["defensePlus"]
+    chips: ["defensePlusPlus"]
   },
   {
     id: 2,
@@ -228,7 +228,7 @@ export const predictions = [
     actualHomeScorers: ["Díaz", "Núñez"],
     actualAwayScorers: ["Haaland", "Foden"],
     status: "completed",
-    chips: ["doublePoints"]
+    chips: ["doubleDown"]
   },  {
     id: 4,
     matchId: 104,
@@ -365,7 +365,7 @@ export const leaguePredictions = [
     date: "2025-09-15T15:00:00Z",
     gameweek: 15,
     status: "completed",
-    chips: ["DOUBLE_DOWN"],
+    chips: ["doubleDown"],
     predictedAt: "2025-09-14T10:30:00Z"
   },
   {
@@ -411,7 +411,7 @@ export const leaguePredictions = [
     date: "2025-09-15T15:00:00Z",
     gameweek: 15,
     status: "completed", 
-    chips: ["SCORER_FOCUS"],
+    chips: ["scorerFocus"],
     predictedAt: "2025-09-13T18:45:00Z"
   },
 
@@ -459,7 +459,7 @@ export const leaguePredictions = [
     date: "2025-09-15T17:30:00Z",
     gameweek: 15,
     status: "pending",
-    chips: ["WILDCARD"],
+    chips: ["wildcard"],
     predictedAt: "2025-09-14T16:30:00Z"
   },
 
@@ -484,7 +484,7 @@ export const leaguePredictions = [
     date: "2025-09-15T15:00:00Z",
     gameweek: 15,
     status: "completed",
-    chips: ["DOUBLE_DOWN"],
+    chips: ["doubleDown"],
     predictedAt: "2025-09-14T12:00:00Z"
   },
   {
@@ -530,7 +530,7 @@ export const leaguePredictions = [
     date: "2025-09-15T15:00:00Z",
     gameweek: 15,
     status: "completed",
-    chips: ["SCORER_FOCUS"],
+    chips: ["scorerFocus"],
     predictedAt: "2025-09-14T08:45:00Z"
   },
   {
@@ -576,7 +576,7 @@ export const leaguePredictions = [
     date: "2025-09-15T15:00:00Z",
     gameweek: 15,
     status: "completed",
-    chips: ["WILDCARD"],
+    chips: ["wildcard"],
     predictedAt: "2025-09-14T15:45:00Z"
   },
 
@@ -601,7 +601,7 @@ export const leaguePredictions = [
     date: "2025-09-15T17:30:00Z",
     gameweek: 15,
     status: "pending",
-    chips: ["DOUBLE_DOWN"],
+    chips: ["doubleDown"],
     predictedAt: "2025-09-14T10:15:00Z"
   },
   {
@@ -647,7 +647,7 @@ export const leaguePredictions = [
     date: "2025-09-15T17:30:00Z",
     gameweek: 15,
     status: "pending",
-    chips: ["SCORER_FOCUS"],
+    chips: ["scorerFocus"],
     predictedAt: "2025-09-14T09:00:00Z"
   },
   {
@@ -693,7 +693,7 @@ export const leaguePredictions = [
     date: "2025-09-15T17:30:00Z",
     gameweek: 15,
     status: "pending",
-    chips: ["WILDCARD"],
+    chips: ["wildcard"],
     predictedAt: "2025-09-14T16:00:00Z"
   },
   {
@@ -764,7 +764,7 @@ export const leaguePredictions = [
     date: "2025-09-16T20:00:00Z",
     gameweek: 15,
     status: "pending",
-    chips: ["DOUBLE_DOWN"],
+    chips: ["doubleDown"],
     predictedAt: "2025-09-15T09:30:00Z"
   },
   {
@@ -787,7 +787,7 @@ export const leaguePredictions = [
     date: "2025-09-16T20:00:00Z",
     gameweek: 15,
     status: "pending",
-    chips: ["SCORER_FOCUS"],
+    chips: ["scorerFocus"],
     predictedAt: "2025-09-15T10:45:00Z"
   },
   {
@@ -833,7 +833,7 @@ export const leaguePredictions = [
     date: "2025-09-16T20:00:00Z",
     gameweek: 15,
     status: "pending",
-    chips: ["WILDCARD"],
+    chips: ["wildcard"],
     predictedAt: "2025-09-15T14:20:00Z"
   },
 
@@ -858,7 +858,7 @@ export const leaguePredictions = [
     date: "2025-09-08T15:00:00Z",
     gameweek: 14,
     status: "completed",
-    chips: ["DOUBLE_DOWN", "SCORER_FOCUS"],
+    chips: ["doubleDown", "scorerFocus"],
     predictedAt: "2025-09-07T10:00:00Z"
   }
 ];
