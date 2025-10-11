@@ -155,7 +155,7 @@ const PredictionFilters = ({
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.2 }}
-            className={`border-t pt-4 ${
+            className={`border-t pt-4 pb-5 ${
               theme === "dark" ? "border-slate-700/50" : "border-slate-200"
             }`}
           >
