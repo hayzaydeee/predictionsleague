@@ -113,16 +113,16 @@ export const isCorrectScorer = (scorer, actualScorers) => {
  */
 export const calculatePredictionPoints = (prediction) => {
   if (prediction.status === "pending") {
-    // Base points calculation
-    const outcomePoints = 5;
-    const exactScorePoints = 10;
+    // Base points calculation - correct scoring system
+    const exactScorePoints = 10; // Exact scoreline = 10 points
+    const outcomePoints = 5; // Correct outcome (if not exact) = 5 points
     const baseGoalScorerPoints = (prediction.homeScore + prediction.awayScore) * 2;
     
     // Calculate scorer focus bonus (match-level chip)
     const scorerFocusBonus = prediction.chips.includes("scorerFocus") ? baseGoalScorerPoints : 0;
     
-    // Calculate base points before multipliers (excluding gameweek-level bonuses)
-    const pointsBeforeMultiplier = outcomePoints + exactScorePoints + baseGoalScorerPoints + scorerFocusBonus;
+    // Calculate base points before multipliers (exact score OR outcome, not both)
+    const pointsBeforeMultiplier = exactScorePoints + baseGoalScorerPoints + scorerFocusBonus;
     
     // Apply multipliers (Wild card has precedence over Double Down and All-In Week)
     let finalPoints = pointsBeforeMultiplier;

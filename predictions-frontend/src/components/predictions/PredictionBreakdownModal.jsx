@@ -562,7 +562,7 @@ const PredictionBreakdownModal = ({
                         {/* Exact Score Points */}
                         <div className="flex items-center justify-between">
                           <span className={`text-sm font-outfit ${getThemeStyles(theme, text.secondary)}`}>
-                            Exact Score ({prediction.homeScore}-{prediction.awayScore})
+                            Exact Scoreline ({prediction.homeScore}-{prediction.awayScore})
                           </span>
                           <span className={`text-sm font-semibold font-outfit ${
                             prediction.homeScore === prediction.actualHomeScore && 
@@ -571,28 +571,31 @@ const PredictionBreakdownModal = ({
                               : 'text-slate-400'
                           }`}>
                             {prediction.homeScore === prediction.actualHomeScore && 
-                             prediction.awayScore === prediction.actualAwayScore ? '+5' : '+0'}
+                             prediction.awayScore === prediction.actualAwayScore ? '+10' : '+0'}
                           </span>
                         </div>
 
-                        {/* Correct Result Points */}
-                        <div className="flex items-center justify-between">
-                          <span className={`text-sm font-outfit ${getThemeStyles(theme, text.secondary)}`}>
-                            Correct Result
-                          </span>
-                          <span className={`text-sm font-semibold font-outfit ${
-                            ((prediction.homeScore > prediction.awayScore && prediction.actualHomeScore > prediction.actualAwayScore) ||
-                             (prediction.homeScore < prediction.awayScore && prediction.actualHomeScore < prediction.actualAwayScore) ||
-                             (prediction.homeScore === prediction.awayScore && prediction.actualHomeScore === prediction.actualAwayScore))
-                              ? 'text-emerald-400' 
-                              : 'text-slate-400'
-                          }`}>
-                            {((prediction.homeScore > prediction.awayScore && prediction.actualHomeScore > prediction.actualAwayScore) ||
-                              (prediction.homeScore < prediction.awayScore && prediction.actualHomeScore < prediction.actualAwayScore) ||
-                              (prediction.homeScore === prediction.awayScore && prediction.actualHomeScore === prediction.actualAwayScore))
-                              ? '+3' : '+0'}
-                          </span>
-                        </div>
+                        {/* Correct Result Points (only if not exact score) */}
+                        {!(prediction.homeScore === prediction.actualHomeScore && 
+                           prediction.awayScore === prediction.actualAwayScore) && (
+                          <div className="flex items-center justify-between">
+                            <span className={`text-sm font-outfit ${getThemeStyles(theme, text.secondary)}`}>
+                              Correct Outcome
+                            </span>
+                            <span className={`text-sm font-semibold font-outfit ${
+                              ((prediction.homeScore > prediction.awayScore && prediction.actualHomeScore > prediction.actualAwayScore) ||
+                               (prediction.homeScore < prediction.awayScore && prediction.actualHomeScore < prediction.actualAwayScore) ||
+                               (prediction.homeScore === prediction.awayScore && prediction.actualHomeScore === prediction.actualAwayScore))
+                                ? 'text-emerald-400' 
+                                : 'text-slate-400'
+                            }`}>
+                              {((prediction.homeScore > prediction.awayScore && prediction.actualHomeScore > prediction.actualAwayScore) ||
+                                (prediction.homeScore < prediction.awayScore && prediction.actualHomeScore < prediction.actualAwayScore) ||
+                                (prediction.homeScore === prediction.awayScore && prediction.actualHomeScore === prediction.actualAwayScore))
+                                ? '+5' : '+0'}
+                            </span>
+                          </div>
+                        )}
 
                         {/* Goalscorer Points */}
                         {(prediction.homeScorers?.length > 0 || prediction.awayScorers?.length > 0) && (
@@ -627,16 +630,16 @@ const PredictionBreakdownModal = ({
                             {(() => {
                               let basePoints = 0;
                               
-                              // Exact score: +5 points
+                              // Exact scoreline: +10 points
                               if (prediction.homeScore === prediction.actualHomeScore && 
                                   prediction.awayScore === prediction.actualAwayScore) {
-                                basePoints += 5;
+                                basePoints += 10;
                               }
-                              // Correct result: +3 points (if not exact score)
+                              // Correct outcome: +5 points (if not exact score)
                               else if ((prediction.homeScore > prediction.awayScore && prediction.actualHomeScore > prediction.actualAwayScore) ||
                                        (prediction.homeScore < prediction.awayScore && prediction.actualHomeScore < prediction.actualAwayScore) ||
                                        (prediction.homeScore === prediction.awayScore && prediction.actualHomeScore === prediction.actualAwayScore)) {
-                                basePoints += 3;
+                                basePoints += 5;
                               }
                               
                               // Goalscorer points: +2 per correct prediction
