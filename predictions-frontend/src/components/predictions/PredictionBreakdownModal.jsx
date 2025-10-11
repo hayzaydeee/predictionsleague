@@ -196,7 +196,7 @@ const PredictionBreakdownModal = ({
                               dark: 'text-blue-300/70',
                               light: 'text-blue-600'
                             })}`}>
-                              ⚽ {scorer} {count > 1 ? `(${count})` : ''}
+                              {scorer} {count > 1 ? `(${count})` : ''}
                             </div>
                           ))}
                         </div>
@@ -222,7 +222,7 @@ const PredictionBreakdownModal = ({
                               dark: 'text-blue-300/70',
                               light: 'text-blue-600'
                             })}`}>
-                              ⚽ {scorer} {count > 1 ? `(${count})` : ''}
+                              {scorer} {count > 1 ? `(${count})` : ''}
                             </div>
                           ))}
                         </div>
@@ -257,7 +257,7 @@ const PredictionBreakdownModal = ({
                                 dark: 'text-emerald-300/70',
                                 light: 'text-emerald-600'
                               })}`}>
-                                ⚽ {scorer}
+                                {scorer}
                               </div>
                             ))}
                           </div>
@@ -283,7 +283,7 @@ const PredictionBreakdownModal = ({
                                 dark: 'text-emerald-300/70',
                                 light: 'text-emerald-600'
                               })}`}>
-                                ⚽ {scorer}
+                                {scorer}
                               </div>
                             ))}
                           </div>
