@@ -377,7 +377,10 @@ const PredictionBreakdownModal = ({
                         light: 'bg-slate-50 border border-slate-200'
                       })}`}>
                         <div className="flex items-center space-x-3">
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-purple-300 border border-purple-500/30 font-outfit">
+                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border font-outfit ${getThemeStyles(theme, {
+                            dark: 'bg-blue-500/10 text-blue-300 border-blue-500/30',
+                            light: 'bg-blue-50 text-blue-700 border-blue-200'
+                          })}`}>
                             {chip}
                           </span>
                           <div>
