@@ -156,7 +156,10 @@ export default function PredictionsModal({
 
   return (
     <motion.div
-      className="fixed inset-0 bg-slate-950/85 backdrop-blur-lg z-50 flex items-center justify-center overflow-y-auto p-4"
+      className={`fixed inset-0 z-50 flex items-center justify-center overflow-y-auto p-4 ${getThemeStyles(theme, {
+        dark: 'bg-slate-950/90',
+        light: 'bg-slate-200/80'
+      })} backdrop-blur-lg`}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -167,21 +170,37 @@ export default function PredictionsModal({
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
         transition={{ duration: 0.2, ease: "easeOut" }}
-        className={`${getThemeStyles(theme, {
-          dark: "bg-slate-900/95 border-slate-700/60",
-          light: "bg-white border-slate-200",
-        })} backdrop-blur-lg rounded-xl border w-full max-w-2xl max-h-[90vh] flex flex-col relative`}
+        className={`w-full max-w-2xl max-h-[90vh] flex flex-col relative rounded-2xl overflow-hidden shadow-2xl ${getThemeStyles(theme, {
+          dark: "bg-slate-900 border border-slate-700/60",
+          light: "bg-white border border-slate-200",
+        })}`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Deadline warning */}
         {deadline.isPast && (
-          <div className="bg-red-500/10 border-b border-red-500/20 p-3">
-            <div className="flex items-center text-red-400 text-sm">
-              <ExclamationTriangleIcon className="w-4 h-4 mr-2" />
-              <span>
-                The prediction deadline for this match has passed. You can no
-                longer make or edit predictions.
-              </span>
+          <div className={`p-4 border-b ${getThemeStyles(theme, {
+            dark: 'bg-red-900/20 border-red-700/30',
+            light: 'bg-red-50 border-red-200'
+          })}`}>
+            <div className={`flex items-center text-sm font-outfit ${getThemeStyles(theme, {
+              dark: 'text-red-300',
+              light: 'text-red-700'
+            })}`}>
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 ${getThemeStyles(theme, {
+                dark: 'bg-red-500/20',
+                light: 'bg-red-100'
+              })}`}>
+                <ExclamationTriangleIcon className="w-4 h-4" />
+              </div>
+              <div>
+                <div className="font-medium mb-1">Deadline Passed</div>
+                <div className={`text-xs ${getThemeStyles(theme, {
+                  dark: 'text-red-400',
+                  light: 'text-red-600'
+                })}`}>
+                  The prediction deadline for this match has passed. You can no longer make or edit predictions.
+                </div>
+              </div>
             </div>
           </div>
         )}
@@ -195,12 +214,15 @@ export default function PredictionsModal({
         />
 
         {/* Step indicator */}
-        <div className="p-4 pb-0">
+        <div className={`p-6 pb-4 border-b ${getThemeStyles(theme, {
+          dark: 'border-slate-700/60',
+          light: 'border-slate-200'
+        })}`}>
           <StepIndicator currentStep={currentStep} totalSteps={3} />
         </div>
 
         {/* Content area */}
-        <div className="overflow-y-auto flex-1 p-4">
+        <div className="overflow-y-auto flex-1 p-6">
           <form onSubmit={handleSubmit}>
             <AnimatePresence mode="wait">
               {/* Step 1: Score Prediction */}
@@ -276,21 +298,30 @@ export default function PredictionsModal({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-slate-900/90 backdrop-blur-sm rounded-xl flex items-center justify-center z-10"
+              className={`absolute inset-0 backdrop-blur-sm rounded-2xl flex items-center justify-center z-10 ${getThemeStyles(theme, {
+                dark: 'bg-slate-900/95',
+                light: 'bg-white/95'
+              })}`}
             >
               <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.8, opacity: 0 }}
-                className="text-center"
+                className="text-center p-8"
               >
-                <div className="w-16 h-16 bg-emerald-500/20 border border-emerald-500/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <CheckIcon className="w-8 h-8 text-emerald-400" />
+                <div className={`w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 ${getThemeStyles(theme, {
+                  dark: 'bg-emerald-500/20 border border-emerald-500/30',
+                  light: 'bg-emerald-100 border border-emerald-200'
+                })}`}>
+                  <CheckIcon className={`w-10 h-10 ${getThemeStyles(theme, {
+                    dark: 'text-emerald-400',
+                    light: 'text-emerald-600'
+                  })}`} />
                 </div>
-                <h3 className="text-slate-100 text-xl font-bold mb-2 font-outfit">
+                <h3 className={`text-2xl font-bold mb-3 font-outfit ${getThemeStyles(theme, text.primary)}`}>
                   {isEditing ? "Prediction Updated!" : "Prediction Submitted!"}
                 </h3>
-                <p className="text-slate-300 text-sm">
+                <p className={`font-outfit ${getThemeStyles(theme, text.secondary)}`}>
                   {isEditing 
                     ? "Your prediction has been successfully updated."
                     : "Your prediction has been successfully submitted."

@@ -95,188 +95,112 @@ const PredictionBreakdownModal = ({
             initial="hidden"
             animate="visible"
             exit="exit"
-            className={`relative w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden ${getThemeStyles(theme, {
-              dark: 'bg-slate-900 border border-slate-700/60',
-              light: 'bg-white border border-slate-200'
-            })}`}
+            className={`relative w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden ${getThemeStyles(theme, backgrounds.card)}`}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className={`relative px-6 py-5 ${getThemeStyles(theme, {
-              dark: 'bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border-b border-slate-700/60',
-              light: 'bg-gradient-to-r from-slate-50 via-white to-slate-50 border-b border-slate-200'
+            <div className={`flex items-center justify-between p-6 border-b ${getThemeStyles(theme, {
+              dark: 'border-slate-700/60',
+              light: 'border-slate-200'
             })}`}>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${getThemeStyles(theme, {
-                    dark: 'bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/30',
-                    light: 'bg-gradient-to-br from-blue-100 to-purple-100 border border-blue-200'
-                  })}`}>
-                    <StarIcon className={`w-5 h-5 ${getThemeStyles(theme, {
-                      dark: 'text-blue-400',
-                      light: 'text-blue-600'
-                    })}`} />
-                  </div>
-                  <div>
-                    <h2 className={`text-xl font-bold font-outfit ${getThemeStyles(theme, text.primary)}`}>
-                      Prediction Details
-                    </h2>
-                    <p className={`text-sm font-outfit ${getThemeStyles(theme, text.muted)}`}>
-                      Complete breakdown and analysis
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                  {onEdit && prediction.status === 'pending' && (
-                    <button
-                      onClick={() => {
-                        onEdit(prediction);
-                        onClose();
-                      }}
-                      className={`px-4 py-2 rounded-xl font-medium text-sm font-outfit transition-all duration-200 ${getThemeStyles(theme, {
-                        dark: 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white shadow-lg shadow-blue-500/25',
-                        light: 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white shadow-lg shadow-blue-500/25'
-                      })}`}
-                    >
-                      Edit Prediction
-                    </button>
-                  )}
+              <h2 className={`text-xl font-bold font-outfit ${getThemeStyles(theme, text.primary)}`}>
+                Prediction Details
+              </h2>
+              <div className="flex items-center space-x-2">
+                {onEdit && prediction.status === 'pending' && (
                   <button
-                    onClick={onClose}
-                    className={`p-2 rounded-xl transition-all duration-200 ${getThemeStyles(theme, {
-                      dark: 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 border border-transparent hover:border-slate-700/30',
-                      light: 'text-slate-500 hover:text-slate-700 hover:bg-slate-100 border border-transparent hover:border-slate-200'
+                    onClick={() => {
+                      onEdit(prediction);
+                      onClose();
+                    }}
+                    className={`px-4 py-2 rounded-lg font-medium text-sm font-outfit transition-colors ${getThemeStyles(theme, {
+                      dark: 'bg-blue-600 hover:bg-blue-700 text-white',
+                      light: 'bg-blue-600 hover:bg-blue-700 text-white'
                     })}`}
                   >
-                    <Cross2Icon className="w-5 h-5" />
+                    Edit Prediction
                   </button>
-                </div>
+                )}
+                <button
+                  onClick={onClose}
+                  className={`p-2 rounded-lg transition-colors ${getThemeStyles(theme, {
+                    dark: 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50',
+                    light: 'text-slate-500 hover:text-slate-700 hover:bg-slate-100'
+                  })}`}
+                >
+                  <Cross2Icon className="w-5 h-5" />
+                </button>
               </div>
             </div>
 
             {/* Content */}
-            <div className={`p-6 max-h-[80vh] overflow-y-auto ${getThemeStyles(theme, {
-              dark: 'bg-slate-900',
-              light: 'bg-white'
-            })}`} style={{
-              scrollbarWidth: 'thin',
-              scrollbarColor: theme === 'dark' ? '#475569 #1e293b' : '#cbd5e1 #f1f5f9'
-            }}>
-              {/* Rich Match Card */}
-              <div className={`rounded-2xl p-6 mb-6 relative overflow-hidden ${getThemeStyles(theme, {
-                dark: 'bg-gradient-to-br from-slate-800/90 to-slate-900/90 border border-slate-700/60',
-                light: 'bg-gradient-to-br from-slate-50 to-white border border-slate-200'
-              })}`}>
-                {/* Subtle background pattern */}
-                <div className="absolute inset-0 opacity-5">
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10"></div>
+            <div className="p-6 max-h-[80vh] overflow-y-auto">
+              {/* Rich Card Header */}
+              <div className={`rounded-xl p-6 mb-6 ${getThemeStyles(theme, backgrounds.secondary)}`}>
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center bg-blue-900/30 text-blue-300">
+                      <CalendarIcon className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className={`font-semibold font-outfit ${getThemeStyles(theme, text.primary)}`}>
+                        {prediction.homeTeam} vs {prediction.awayTeam}
+                      </p>
+                      <p className={`text-xs font-outfit ${getThemeStyles(theme, text.muted)}`}>
+                        GW{prediction.gameweek} • {formattedDate}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="text-right">
+                    <div className={`text-lg font-bold font-outfit ${getThemeStyles(theme, text.primary)}`}>
+                      {prediction.points !== null && prediction.points !== undefined ? prediction.points : '—'}
+                      {prediction.points !== null && prediction.points !== undefined && (
+                        <span className="text-xs font-medium ml-0.5 font-outfit">pts</span>
+                      )}
+                    </div>
+                    <div className={`text-xs font-medium font-outfit ${
+                      prediction.status === 'pending'
+                        ? "text-amber-400"
+                        : "text-green-400"
+                    }`}>
+                      {prediction.status === 'pending' ? 'Pending' : 'Complete'}
+                    </div>
+                  </div>
                 </div>
-                
-                <div className="relative z-10">
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center space-x-4">
-                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${getThemeStyles(theme, {
-                        dark: 'bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/30',
-                        light: 'bg-gradient-to-br from-blue-100 to-purple-100 border border-blue-200'
-                      })}`}>
-                        <CalendarIcon className={`w-6 h-6 ${getThemeStyles(theme, {
-                          dark: 'text-blue-400',
-                          light: 'text-blue-600'
-                        })}`} />
+
+                {/* Score Prediction */}
+                <div className={`rounded-lg p-4 mb-4 ${getThemeStyles(theme, {
+                  dark: 'bg-slate-900/50 border border-slate-700/30',
+                  light: 'bg-slate-100 border border-slate-200'
+                })}`}>
+                  <div className={`text-xs font-medium mb-3 font-outfit ${getThemeStyles(theme, text.muted)}`}>
+                    Predicted Score
+                  </div>
+                  <div className="flex items-center justify-center space-x-6">
+                    <div className="text-center flex-1">
+                      <div className={`text-2xl font-bold font-outfit ${getThemeStyles(theme, text.primary)}`}>
+                        {prediction.homeScore}
                       </div>
-                      <div>
-                        <h3 className={`text-lg font-bold font-outfit ${getThemeStyles(theme, text.primary)}`}>
-                          {prediction.homeTeam} vs {prediction.awayTeam}
-                        </h3>
-                        <div className="flex items-center space-x-3 mt-1">
-                          <span className={`text-sm font-outfit ${getThemeStyles(theme, text.secondary)}`}>
-                            Gameweek {prediction.gameweek}
-                          </span>
-                          <span className={`text-sm font-outfit ${getThemeStyles(theme, text.muted)}`}>
-                            •
-                          </span>
-                          <span className={`text-sm font-outfit ${getThemeStyles(theme, text.secondary)}`}>
-                            {formattedDate}
-                          </span>
-                        </div>
+                      <div className={`text-xs font-outfit mt-1 truncate ${getThemeStyles(theme, text.muted)}`}>
+                        {prediction.homeTeam}
                       </div>
                     </div>
                     
-                    <div className="text-right">
-                      <div className={`inline-flex items-baseline space-x-1 px-3 py-2 rounded-xl ${getThemeStyles(theme, {
-                        dark: 'bg-gradient-to-r from-emerald-900/30 to-blue-900/30 border border-emerald-700/30',
-                        light: 'bg-gradient-to-r from-emerald-50 to-blue-50 border border-emerald-200'
-                      })}`}>
-                        <span className={`text-2xl font-bold font-outfit ${getThemeStyles(theme, {
-                          dark: 'text-emerald-400',
-                          light: 'text-emerald-600'
-                        })}`}>
-                          {prediction.points !== null && prediction.points !== undefined ? prediction.points : '—'}
-                        </span>
-                        {prediction.points !== null && prediction.points !== undefined && (
-                          <span className={`text-sm font-medium font-outfit ${getThemeStyles(theme, text.muted)}`}>
-                            pts
-                          </span>
-                        )}
+                    <div className={`text-lg font-bold font-outfit ${getThemeStyles(theme, text.muted)}`}>
+                      —
+                    </div>
+                    
+                    <div className="text-center flex-1">
+                      <div className={`text-2xl font-bold font-outfit ${getThemeStyles(theme, text.primary)}`}>
+                        {prediction.awayScore}
                       </div>
-                      <div className={`mt-2 inline-flex items-center px-2 py-1 rounded-lg text-xs font-medium font-outfit ${
-                        prediction.status === 'pending'
-                          ? getThemeStyles(theme, {
-                              dark: 'bg-amber-900/30 text-amber-300 border border-amber-700/30',
-                              light: 'bg-amber-100 text-amber-700 border border-amber-200'
-                            })
-                          : getThemeStyles(theme, {
-                              dark: 'bg-emerald-900/30 text-emerald-300 border border-emerald-700/30',
-                              light: 'bg-emerald-100 text-emerald-700 border border-emerald-200'
-                            })
-                      }`}>
-                        {prediction.status === 'pending' ? 'Pending' : 'Complete'}
+                      <div className={`text-xs font-outfit mt-1 truncate ${getThemeStyles(theme, text.muted)}`}>
+                        {prediction.awayTeam}
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-
-              {/* Score Prediction */}
-              <div className={`rounded-2xl p-6 mb-6 ${getThemeStyles(theme, {
-                dark: 'bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-slate-700/60',
-                light: 'bg-gradient-to-br from-slate-50 to-white border border-slate-200'
-              })}`}>
-                <div className={`text-sm font-medium mb-4 font-outfit ${getThemeStyles(theme, text.secondary)}`}>
-                  Predicted Score
-                </div>
-                <div className="flex items-center justify-center space-x-8">
-                  <div className="text-center flex-1">
-                    <div className={`text-4xl font-bold font-outfit mb-2 ${getThemeStyles(theme, text.primary)}`}>
-                      {prediction.homeScore}
-                    </div>
-                    <div className={`text-sm font-outfit px-3 py-1 rounded-lg ${getThemeStyles(theme, {
-                      dark: 'bg-slate-800/50 text-slate-300',
-                      light: 'bg-slate-100 text-slate-600'
-                    })}`}>
-                      {prediction.homeTeam}
-                    </div>
-                  </div>
-                  
-                  <div className={`text-2xl font-bold font-outfit ${getThemeStyles(theme, text.muted)}`}>
-                    —
-                  </div>
-                  
-                  <div className="text-center flex-1">
-                    <div className={`text-4xl font-bold font-outfit mb-2 ${getThemeStyles(theme, text.primary)}`}>
-                      {prediction.awayScore}
-                    </div>
-                    <div className={`text-sm font-outfit px-3 py-1 rounded-lg ${getThemeStyles(theme, {
-                      dark: 'bg-slate-800/50 text-slate-300',
-                      light: 'bg-slate-100 text-slate-600'
-                    })}`}>
-                      {prediction.awayTeam}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-
 
                 {/* Actual Result if available */}
                 {(prediction.actualHomeScore !== null && prediction.actualHomeScore !== undefined && 
@@ -876,6 +800,7 @@ const PredictionBreakdownModal = ({
                   )}
                 </div>
               </div>
+            </div>
           </motion.div>
         </div>
       )}
