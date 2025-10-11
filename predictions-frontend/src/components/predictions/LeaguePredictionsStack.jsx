@@ -1,5 +1,6 @@
 import React, { useContext, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { calculatePoints } from "../../utils/pointsCalculation";
 import { 
   PersonIcon,
   CalendarIcon,
@@ -51,7 +52,8 @@ const LeaguePredictionsStack = ({
   };
 
   const getStatusColor = (prediction) => {
-    if (prediction.points !== null && prediction.points !== undefined) {
+    const points = calculatePoints(prediction);
+    if (points !== null && points !== undefined) {
       return theme === 'dark' 
         ? 'text-green-400 bg-green-500/10 border-green-500/20'
         : 'text-green-700 bg-green-50 border-green-200';
@@ -62,8 +64,9 @@ const LeaguePredictionsStack = ({
   };
 
   const getPointsDisplay = (prediction) => {
-    if (prediction.points !== null && prediction.points !== undefined) {
-      return `${prediction.points} pts`;
+    const points = calculatePoints(prediction);
+    if (points !== null && points !== undefined) {
+      return `${points} pts`;
     }
     return "Pending";
   };
