@@ -97,13 +97,19 @@ const PredictionBreakdownModal = ({
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className={`flex items-center justify-between p-6 border-b ${getThemeStyles(theme, backgrounds.border)}`}>
+            <div className={`flex items-center justify-between p-6 border-b ${getThemeStyles(theme, {
+              dark: 'border-slate-700/60',
+              light: 'border-slate-200'
+            })}`}>
               <h2 className={`text-xl font-bold font-outfit ${getThemeStyles(theme, text.primary)}`}>
                 Prediction Details
               </h2>
               <button
                 onClick={onClose}
-                className={`p-2 rounded-lg transition-colors ${getThemeStyles(theme, text.muted)} ${getThemeStyles(theme, buttons.secondary)}`}
+                className={`p-2 rounded-lg transition-colors ${getThemeStyles(theme, {
+                  dark: 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50',
+                  light: 'text-slate-500 hover:text-slate-700 hover:bg-slate-100'
+                })}`}
               >
                 <Cross2Icon className="w-5 h-5" />
               </button>
