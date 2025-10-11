@@ -53,9 +53,9 @@ const PredictionFilters = ({
     sortBy !== "date";
 
   return (
-    <div className="space-y-4">
+    <div>
       {/* Main Filter Bar */}
-      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
+      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between mb-4">
         {/* Search and Quick Filters */}
         <div className="flex flex-col sm:flex-row gap-3 flex-1">
           {/* Search Input */}
@@ -151,11 +151,15 @@ const PredictionFilters = ({
       <AnimatePresence>
         {showFilters && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2 }}
-            className={`border-t pt-4 pb-5 ${
+            initial={{ opacity: 0, height: 0, marginTop: 0 }}
+            animate={{ opacity: 1, height: "auto", marginTop: 16 }}
+            exit={{ opacity: 0, height: 0, marginTop: 0 }}
+            transition={{ 
+              duration: 0.3,
+              ease: [0.4, 0.0, 0.2, 1],
+              opacity: { duration: 0.2 }
+            }}
+            className={`border-t pt-4 overflow-hidden ${
               theme === "dark" ? "border-slate-700/50" : "border-slate-200"
             }`}
           >
