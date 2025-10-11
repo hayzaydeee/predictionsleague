@@ -139,7 +139,10 @@ const PredictionBreakdownModal = ({
               <div className={`rounded-xl p-6 mb-6 ${getThemeStyles(theme, backgrounds.secondary)}`}>
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 rounded-full flex items-center justify-center bg-blue-900/30 text-blue-300">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${getThemeStyles(theme, {
+                      dark: 'bg-blue-500/10 text-blue-300',
+                      light: 'bg-blue-100 text-blue-600'
+                    })}`}>
                       <CalendarIcon className="w-4 h-4" />
                     </div>
                     <div>
@@ -320,7 +323,10 @@ const PredictionBreakdownModal = ({
                                 <PersonIcon className={`w-4 h-4 ${getThemeStyles(theme, text.muted)}`} />
                                 <span className={`text-sm font-outfit ${getThemeStyles(theme, text.primary)}`}>{scorer}</span>
                               </div>
-                              <span className="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded-full font-outfit">
+                              <span className={`text-xs px-2 py-1 rounded-full font-outfit ${getThemeStyles(theme, {
+                                dark: 'bg-blue-500/10 text-blue-300',
+                                light: 'bg-blue-50 text-blue-700'
+                              })}`}>
                                 {count} goal{count > 1 ? 's' : ''}
                               </span>
                             </div>
@@ -347,7 +353,10 @@ const PredictionBreakdownModal = ({
                                 <PersonIcon className={`w-4 h-4 ${getThemeStyles(theme, text.muted)}`} />
                                 <span className={`text-sm font-outfit ${getThemeStyles(theme, text.primary)}`}>{scorer}</span>
                               </div>
-                              <span className="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded-full font-outfit">
+                              <span className={`text-xs px-2 py-1 rounded-full font-outfit ${getThemeStyles(theme, {
+                                dark: 'bg-blue-500/10 text-blue-300',
+                                light: 'bg-blue-50 text-blue-700'
+                              })}`}>
                                 {count} goal{count > 1 ? 's' : ''}
                               </span>
                             </div>
@@ -701,7 +710,10 @@ const PredictionBreakdownModal = ({
                           {prediction.chips.map((chip, index) => (
                             <div key={index} className="flex items-center justify-between">
                               <div className="flex items-center space-x-2">
-                                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-purple-300 border border-purple-500/30 font-outfit">
+                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border font-outfit ${getThemeStyles(theme, {
+                                  dark: 'bg-blue-500/10 text-blue-300 border-blue-500/30',
+                                  light: 'bg-blue-50 text-blue-700 border-blue-200'
+                                })}`}>
                                   {chip}
                                 </span>
                                 <span className={`text-sm font-outfit ${getThemeStyles(theme, text.secondary)}`}>
