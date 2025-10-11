@@ -8,7 +8,8 @@ import {
   CalendarIcon,
   StarIcon,
   PersonIcon,
-  ClockIcon
+  ClockIcon,
+  MagicWandIcon
 } from '@radix-ui/react-icons';
 
 const PredictionBreakdownModal = ({ 
@@ -366,7 +367,7 @@ const PredictionBreakdownModal = ({
                 <div className={`rounded-xl p-6 mt-6 ${getThemeStyles(theme, backgrounds.secondary)}`}>
                   <div className="flex items-start gap-3 mb-4">
                     <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center mt-0.5">
-                      <SparklesIcon className="w-4 h-4 text-purple-400" />
+                      <MagicWandIcon className="w-4 h-4 text-purple-400" />
                     </div>
                     <h3 className={`text-lg font-semibold font-outfit ${getThemeStyles(theme, text.primary)}`}>
                       Chips Applied
