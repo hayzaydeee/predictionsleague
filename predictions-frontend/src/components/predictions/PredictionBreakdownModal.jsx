@@ -155,7 +155,7 @@ const PredictionBreakdownModal = ({
                     <div className={`text-lg font-bold font-outfit ${getThemeStyles(theme, text.primary)}`}>
                       {prediction.points !== null && prediction.points !== undefined ? prediction.points : '—'}
                       {prediction.points !== null && prediction.points !== undefined && (
-                        <span className="text-xs font-medium ml-0.5">pts</span>
+                        <span className="text-xs font-medium ml-0.5 font-outfit">pts</span>
                       )}
                     </div>
                     <div className={`text-xs font-medium font-outfit ${
@@ -366,7 +366,7 @@ const PredictionBreakdownModal = ({
                 <div className={`rounded-xl p-6 ${getThemeStyles(theme, backgrounds.secondary)}`}>
                   <div className="flex items-center space-x-2 mb-4">
                     <div className="w-5 h-5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-                      <span className="text-white text-xs font-bold">★</span>
+                      <span className="text-white text-xs font-bold font-outfit">★</span>
                     </div>
                     <h3 className={`text-lg font-semibold font-outfit ${getThemeStyles(theme, text.primary)}`}>
                       Chips Used
@@ -451,7 +451,7 @@ const PredictionBreakdownModal = ({
                             : 'Incorrect'}
                         </span>
                       </div>
-                      <div className="text-xs">
+                      <div className="text-xs font-outfit">
                         <span className={`${getThemeStyles(theme, text.muted)}`}>
                           Predicted: {prediction.homeScore}-{prediction.awayScore} | 
                           Actual: {prediction.actualHomeScore}-{prediction.actualAwayScore}
@@ -480,7 +480,7 @@ const PredictionBreakdownModal = ({
                             : 'Incorrect'}
                         </span>
                       </div>
-                      <div className="text-xs">
+                      <div className="text-xs font-outfit">
                         <span className={`${getThemeStyles(theme, text.muted)}`}>
                           Predicted: {prediction.homeScore > prediction.awayScore ? `${prediction.homeTeam} Win` : 
                                      prediction.homeScore < prediction.awayScore ? `${prediction.awayTeam} Win` : 'Draw'} | 
@@ -513,11 +513,11 @@ const PredictionBreakdownModal = ({
                             })()}
                           </span>
                         </div>
-                        <div className="text-xs space-y-1">
+                        <div className="text-xs space-y-1 font-outfit">
                           {prediction.homeScorers?.map((scorer, index) => (
                             <div key={`home-${index}`} className="flex items-center justify-between">
                               <span className={`${getThemeStyles(theme, text.muted)}`}>{prediction.homeTeam}: {scorer}</span>
-                              <span className={`font-medium ${
+                              <span className={`font-medium font-outfit ${
                                 prediction.actualHomeScorers?.includes(scorer) ? 'text-emerald-400' : 'text-red-400'
                               }`}>
                                 {prediction.actualHomeScorers?.includes(scorer) ? '✓' : '✗'}
@@ -527,7 +527,7 @@ const PredictionBreakdownModal = ({
                           {prediction.awayScorers?.map((scorer, index) => (
                             <div key={`away-${index}`} className="flex items-center justify-between">
                               <span className={`${getThemeStyles(theme, text.muted)}`}>{prediction.awayTeam}: {scorer}</span>
-                              <span className={`font-medium ${
+                              <span className={`font-medium font-outfit ${
                                 prediction.actualAwayScorers?.includes(scorer) ? 'text-emerald-400' : 'text-red-400'
                               }`}>
                                 {prediction.actualAwayScorers?.includes(scorer) ? '✓' : '✗'}
@@ -537,6 +537,187 @@ const PredictionBreakdownModal = ({
                         </div>
                       </div>
                     )}
+                  </div>
+                </div>
+              )}
+
+              {/* Points Mathematics Section */}
+              {(prediction.actualHomeScore !== null && prediction.actualHomeScore !== undefined && 
+                prediction.actualAwayScore !== null && prediction.actualAwayScore !== undefined) && (
+                <div className={`rounded-xl p-6 mt-6 ${getThemeStyles(theme, backgrounds.secondary)}`}>
+                  <h3 className={`text-lg font-semibold mb-4 font-outfit ${getThemeStyles(theme, text.primary)}`}>
+                    Points Mathematics
+                  </h3>
+                  
+                  <div className="space-y-4">
+                    {/* Base Points Calculation */}
+                    <div className={`rounded-lg p-4 ${getThemeStyles(theme, {
+                      dark: 'bg-slate-900/50 border border-slate-700/30',
+                      light: 'bg-slate-100 border border-slate-200'
+                    })}`}>
+                      <h4 className={`text-sm font-semibold mb-3 font-outfit ${getThemeStyles(theme, text.primary)}`}>
+                        Base Points Breakdown
+                      </h4>
+                      <div className="space-y-2">
+                        {/* Exact Score Points */}
+                        <div className="flex items-center justify-between">
+                          <span className={`text-sm font-outfit ${getThemeStyles(theme, text.secondary)}`}>
+                            Exact Score ({prediction.homeScore}-{prediction.awayScore})
+                          </span>
+                          <span className={`text-sm font-semibold font-outfit ${
+                            prediction.homeScore === prediction.actualHomeScore && 
+                            prediction.awayScore === prediction.actualAwayScore
+                              ? 'text-emerald-400' 
+                              : 'text-slate-400'
+                          }`}>
+                            {prediction.homeScore === prediction.actualHomeScore && 
+                             prediction.awayScore === prediction.actualAwayScore ? '+5' : '+0'}
+                          </span>
+                        </div>
+
+                        {/* Correct Result Points */}
+                        <div className="flex items-center justify-between">
+                          <span className={`text-sm font-outfit ${getThemeStyles(theme, text.secondary)}`}>
+                            Correct Result
+                          </span>
+                          <span className={`text-sm font-semibold font-outfit ${
+                            ((prediction.homeScore > prediction.awayScore && prediction.actualHomeScore > prediction.actualAwayScore) ||
+                             (prediction.homeScore < prediction.awayScore && prediction.actualHomeScore < prediction.actualAwayScore) ||
+                             (prediction.homeScore === prediction.awayScore && prediction.actualHomeScore === prediction.actualAwayScore))
+                              ? 'text-emerald-400' 
+                              : 'text-slate-400'
+                          }`}>
+                            {((prediction.homeScore > prediction.awayScore && prediction.actualHomeScore > prediction.actualAwayScore) ||
+                              (prediction.homeScore < prediction.awayScore && prediction.actualHomeScore < prediction.actualAwayScore) ||
+                              (prediction.homeScore === prediction.awayScore && prediction.actualHomeScore === prediction.actualAwayScore))
+                              ? '+3' : '+0'}
+                          </span>
+                        </div>
+
+                        {/* Goalscorer Points */}
+                        {(prediction.homeScorers?.length > 0 || prediction.awayScorers?.length > 0) && (
+                          <div className="flex items-center justify-between">
+                            <span className={`text-sm font-outfit ${getThemeStyles(theme, text.secondary)}`}>
+                              Goalscorer Predictions
+                            </span>
+                            <span className={`text-sm font-semibold font-outfit text-blue-400`}>
+                              {(() => {
+                                const homeCorrect = prediction.homeScorers?.filter(scorer => 
+                                  prediction.actualHomeScorers?.includes(scorer)
+                                ).length || 0;
+                                const awayCorrect = prediction.awayScorers?.filter(scorer => 
+                                  prediction.actualAwayScorers?.includes(scorer)
+                                ).length || 0;
+                                const totalCorrect = homeCorrect + awayCorrect;
+                                return `+${totalCorrect * 2}`;
+                              })()}
+                            </span>
+                          </div>
+                        )}
+
+                        {/* Base Points Subtotal */}
+                        <div className={`flex items-center justify-between pt-2 border-t ${getThemeStyles(theme, {
+                          dark: 'border-slate-700/30',
+                          light: 'border-slate-200'
+                        })}`}>
+                          <span className={`text-sm font-semibold font-outfit ${getThemeStyles(theme, text.primary)}`}>
+                            Base Points Subtotal
+                          </span>
+                          <span className={`text-sm font-bold font-outfit text-blue-400`}>
+                            {(() => {
+                              let basePoints = 0;
+                              
+                              // Exact score: +5 points
+                              if (prediction.homeScore === prediction.actualHomeScore && 
+                                  prediction.awayScore === prediction.actualAwayScore) {
+                                basePoints += 5;
+                              }
+                              // Correct result: +3 points (if not exact score)
+                              else if ((prediction.homeScore > prediction.awayScore && prediction.actualHomeScore > prediction.actualAwayScore) ||
+                                       (prediction.homeScore < prediction.awayScore && prediction.actualHomeScore < prediction.actualAwayScore) ||
+                                       (prediction.homeScore === prediction.awayScore && prediction.actualHomeScore === prediction.actualAwayScore)) {
+                                basePoints += 3;
+                              }
+                              
+                              // Goalscorer points: +2 per correct prediction
+                              const homeCorrect = prediction.homeScorers?.filter(scorer => 
+                                prediction.actualHomeScorers?.includes(scorer)
+                              ).length || 0;
+                              const awayCorrect = prediction.awayScorers?.filter(scorer => 
+                                prediction.actualAwayScorers?.includes(scorer)
+                              ).length || 0;
+                              basePoints += (homeCorrect + awayCorrect) * 2;
+                              
+                              return `+${basePoints}`;
+                            })()}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Chip Multipliers */}
+                    {prediction.chips && prediction.chips.length > 0 && (
+                      <div className={`rounded-lg p-4 ${getThemeStyles(theme, {
+                        dark: 'bg-slate-900/50 border border-slate-700/30',
+                        light: 'bg-slate-100 border border-slate-200'
+                      })}`}>
+                        <h4 className={`text-sm font-semibold mb-3 font-outfit ${getThemeStyles(theme, text.primary)}`}>
+                          Chip Effects Applied
+                        </h4>
+                        <div className="space-y-2">
+                          {prediction.chips.map((chip, index) => (
+                            <div key={index} className="flex items-center justify-between">
+                              <div className="flex items-center space-x-2">
+                                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-purple-300 border border-purple-500/30 font-outfit">
+                                  {chip}
+                                </span>
+                                <span className={`text-sm font-outfit ${getThemeStyles(theme, text.secondary)}`}>
+                                  {chip === 'doubleDown' && 'Double all match points (2x)'}
+                                  {chip === 'wildcard' && 'Triple all match points (3x)'}
+                                  {chip === 'scorerFocus' && 'Double goalscorer points (2x)'}
+                                  {chip === 'opportunist' && 'Partial goalscorer credit'}
+                                  {chip === 'defensePlus' && '+10 for clean sheet prediction'}
+                                  {chip === 'allInWeek' && 'Double all gameweek points (2x)'}
+                                </span>
+                              </div>
+                              <span className={`text-sm font-semibold font-outfit text-purple-400`}>
+                                {chip === 'doubleDown' && '×2'}
+                                {chip === 'wildcard' && '×3'}
+                                {chip === 'scorerFocus' && '×2 (scorers)'}
+                                {chip === 'opportunist' && 'Bonus'}
+                                {chip === 'defensePlus' && '+10'}
+                                {chip === 'allInWeek' && '×2 (all)'}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Final Points Calculation */}
+                    <div className={`rounded-lg p-4 ${getThemeStyles(theme, {
+                      dark: 'bg-gradient-to-r from-emerald-900/20 to-blue-900/20 border border-emerald-700/30',
+                      light: 'bg-gradient-to-r from-emerald-100 to-blue-100 border border-emerald-200'
+                    })}`}>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className={`text-lg font-bold font-outfit ${getThemeStyles(theme, text.primary)}`}>
+                            Final Points Earned
+                          </h4>
+                          <p className={`text-xs font-outfit ${getThemeStyles(theme, text.muted)}`}>
+                            Base points + chip effects applied
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-3xl font-bold text-emerald-400 font-outfit">
+                            {prediction.points || 0}
+                          </div>
+                          <div className={`text-xs font-outfit ${getThemeStyles(theme, text.muted)}`}>
+                            points
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}

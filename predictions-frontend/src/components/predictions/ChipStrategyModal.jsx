@@ -93,7 +93,7 @@ const ChipStrategyModal = ({ isOpen, onClose }) => {
                 >
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-10 h-10 bg-emerald-900/40 rounded-lg flex items-center justify-center border border-emerald-700/30">
-                      <span className="text-emerald-400 text-lg font-bold">
+                      <span className="text-emerald-400 text-lg font-bold font-outfit">
                         2x
                       </span>
                     </div>
@@ -101,7 +101,7 @@ const ChipStrategyModal = ({ isOpen, onClose }) => {
                       <h5 className={`${getThemeStyles(theme, text.primary)} text-lg font-semibold font-outfit`}>
                         Double Down
                       </h5>
-                      <div className="text-emerald-300/70 text-xs font-medium">
+                      <div className="text-emerald-300/70 text-xs font-medium font-outfit">
                         2 gameweek cooldown
                       </div>
                     </div>
@@ -115,10 +115,10 @@ const ChipStrategyModal = ({ isOpen, onClose }) => {
                     <div className="flex items-start gap-2">
                       <StarIcon className="w-4 h-4 text-yellow-400 mt-0.5 shrink-0" />
                       <div>
-                        <h6 className="text-emerald-300 text-xs font-medium mb-1">
+                        <h6 className="text-emerald-300 text-xs font-medium mb-1 font-outfit">
                           Strategy Tip:
                         </h6>
-                        <p className={`${getThemeStyles(theme, text.secondary)} text-xs leading-relaxed`}>
+                        <p className={`${getThemeStyles(theme, text.secondary)} text-xs leading-relaxed font-outfit`}>
                           Best used on matches where you have high confidence,
                           especially if you've predicted goalscorers correctly.
                         </p>
@@ -137,7 +137,7 @@ const ChipStrategyModal = ({ isOpen, onClose }) => {
                 >
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-10 h-10 bg-purple-900/40 rounded-lg flex items-center justify-center border border-purple-700/30">
-                      <span className="text-purple-400 text-lg font-bold">
+                      <span className="text-purple-400 text-lg font-bold font-outfit">
                         3x
                       </span>
                     </div>
@@ -145,7 +145,7 @@ const ChipStrategyModal = ({ isOpen, onClose }) => {
                       <h5 className={`${getThemeStyles(theme, text.primary)} text-lg font-semibold font-outfit`}>
                         Wildcard
                       </h5>
-                      <div className="text-purple-300/70 text-xs font-medium">
+                      <div className="text-purple-300/70 text-xs font-medium font-outfit">
                         7 gameweek cooldown
                       </div>
                     </div>
@@ -159,10 +159,10 @@ const ChipStrategyModal = ({ isOpen, onClose }) => {
                     <div className="flex items-start gap-2">
                       <StarIcon className="w-4 h-4 text-yellow-400 mt-0.5 shrink-0" />
                       <div>
-                        <h6 className="text-purple-300 text-xs font-medium mb-1">
+                        <h6 className="text-purple-300 text-xs font-medium mb-1 font-outfit">
                           Strategy Tip:
                         </h6>
-                        <p className={`${getThemeStyles(theme, text.secondary)} text-xs leading-relaxed`}>
+                        <p className={`${getThemeStyles(theme, text.secondary)} text-xs leading-relaxed font-outfit`}>
                           Save for matches where you're extremely confident, or
                           derby matches with existing point multipliers.
                         </p>
@@ -181,13 +181,13 @@ const ChipStrategyModal = ({ isOpen, onClose }) => {
                 >
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-10 h-10 bg-sky-900/40 rounded-lg flex items-center justify-center border border-sky-700/30">
-                      <span className="text-sky-400 text-lg">⚽</span>
+                      <span className="text-sky-400 text-lg font-outfit">⚽</span>
                     </div>
                     <div>
                       <h5 className={`${getThemeStyles(theme, text.primary)} text-lg font-semibold font-outfit`}>
                         Scorer Focus
                       </h5>
-                      <div className="text-sky-300/70 text-xs font-medium">
+                      <div className="text-sky-300/70 text-xs font-medium font-outfit">
                         3 gameweek cooldown
                       </div>
                     </div>
@@ -201,10 +201,10 @@ const ChipStrategyModal = ({ isOpen, onClose }) => {
                     <div className="flex items-start gap-2">
                       <StarIcon className="w-4 h-4 text-amber-400 mt-0.5 shrink-0" />
                       <div>
-                        <h6 className="text-sky-300 text-xs font-medium mb-1">
+                        <h6 className="text-sky-300 text-xs font-medium mb-1 font-outfit">
                           Strategy Tip:
                         </h6>
-                        <p className={`${getThemeStyles(theme, text.secondary)} text-xs leading-relaxed`}>
+                        <p className={`${getThemeStyles(theme, text.secondary)} text-xs leading-relaxed font-outfit`}>
                           Best used in high-scoring matches where you're confident
                           about multiple goalscorers.
                         </p>
@@ -223,13 +223,13 @@ const ChipStrategyModal = ({ isOpen, onClose }) => {
                 >
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-10 h-10 bg-yellow-900/40 rounded-lg flex items-center justify-center border border-yellow-700/30">
-                      <span className="text-yellow-400 text-lg">🎭</span>
+                      <span className="text-yellow-400 text-lg font-outfit">🎭</span>
                     </div>
                     <div>
                       <h5 className={`${getThemeStyles(theme, text.primary)} text-lg font-semibold font-outfit`}>
                         Opportunist
                       </h5>
-                      <div className="text-yellow-300/70 text-xs font-medium">
+                      <div className="text-yellow-300/70 text-xs font-medium font-outfit">
                         2 gameweek cooldown
                       </div>
                     </div>
@@ -244,10 +244,10 @@ const ChipStrategyModal = ({ isOpen, onClose }) => {
                     <div className="flex items-start gap-2">
                       <StarIcon className="w-4 h-4 text-yellow-400 mt-0.5 shrink-0" />
                       <div>
-                        <h6 className="text-yellow-300 text-xs font-medium mb-1">
+                        <h6 className="text-yellow-300 text-xs font-medium mb-1 font-outfit">
                           Strategy Tip:
                         </h6>
-                        <p className={`${getThemeStyles(theme, text.secondary)} text-xs leading-relaxed`}>
+                        <p className={`${getThemeStyles(theme, text.secondary)} text-xs leading-relaxed font-outfit`}>
                           Use when late team news impacts your predictions, such
                           as key players being injured or rested.
                         </p>
@@ -284,13 +284,13 @@ const ChipStrategyModal = ({ isOpen, onClose }) => {
                 >
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-10 h-10 bg-blue-900/40 rounded-lg flex items-center justify-center border border-blue-700/30">
-                      <span className="text-blue-400 text-lg">🛡️</span>
+                      <span className="text-blue-400 text-lg font-outfit">🛡️</span>
                     </div>
                     <div>
                       <h5 className={`${getThemeStyles(theme, text.primary)} text-lg font-semibold font-outfit`}>
                         Defense++
                       </h5>
-                      <div className="text-blue-300/70 text-xs font-medium">
+                      <div className="text-blue-300/70 text-xs font-medium font-outfit">
                         5 gameweek cooldown
                       </div>
                     </div>
@@ -305,10 +305,10 @@ const ChipStrategyModal = ({ isOpen, onClose }) => {
                     <div className="flex items-start gap-2">
                       <StarIcon className="w-4 h-4 text-yellow-400 mt-0.5 shrink-0" />
                       <div>
-                        <h6 className="text-blue-300 text-xs font-medium mb-1">
+                        <h6 className="text-blue-300 text-xs font-medium mb-1 font-outfit">
                           Strategy Tip:
                         </h6>
-                        <p className={`${getThemeStyles(theme, text.secondary)} text-xs leading-relaxed`}>
+                        <p className={`${getThemeStyles(theme, text.secondary)} text-xs leading-relaxed font-outfit`}>
                           Best used when several defensive teams are playing
                           against weaker attacking sides.
                         </p>
@@ -339,7 +339,7 @@ const ChipStrategyModal = ({ isOpen, onClose }) => {
                     </div>
                   </div>
 
-                  <p className={`${getThemeStyles(theme, text.secondary)} text-sm mb-4 leading-relaxed`}>
+                  <p className={`${getThemeStyles(theme, text.secondary)} text-sm mb-4 leading-relaxed font-outfit`}>
                     Doubles all points earned this gameweek (including
                     deductions).
                   </p>
@@ -348,10 +348,10 @@ const ChipStrategyModal = ({ isOpen, onClose }) => {
                     <div className="flex items-start gap-2">
                       <StarIcon className="w-4 h-4 text-yellow-400 mt-0.5 shrink-0" />
                       <div>
-                        <h6 className="text-red-300 text-xs font-medium mb-1">
+                        <h6 className="text-red-300 text-xs font-medium mb-1 font-outfit">
                           Strategy Tip:
                         </h6>
-                        <p className={`${getThemeStyles(theme, text.secondary)} text-xs leading-relaxed`}>
+                        <p className={`${getThemeStyles(theme, text.secondary)} text-xs leading-relaxed font-outfit`}>
                           Use when confident across all matches, but be careful as
                           negative points are also doubled.
                         </p>
@@ -374,7 +374,7 @@ const ChipStrategyModal = ({ isOpen, onClose }) => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <ul className={`space-y-3 text-sm ${getThemeStyles(theme, text.secondary)}`}>
+                <ul className={`space-y-3 text-sm font-outfit ${getThemeStyles(theme, text.secondary)}`}>
                   <li className="flex items-start gap-2">
                     <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-2 shrink-0"></div>
                     <span>
@@ -395,7 +395,7 @@ const ChipStrategyModal = ({ isOpen, onClose }) => {
                     </span>
                   </li>
                 </ul>
-                <ul className={`space-y-3 text-sm ${getThemeStyles(theme, text.secondary)}`}>
+                <ul className={`space-y-3 text-sm font-outfit ${getThemeStyles(theme, text.secondary)}`}>
                   <li className="flex items-start gap-2">
                     <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-2 shrink-0"></div>
                     <span>
