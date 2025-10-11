@@ -223,24 +223,7 @@ const RichPredictionCard = ({ prediction, onSelect, onEdit, teamLogos, theme }) 
         </div>
       )}
 
-      {/* Edit Button */}
-      {onEdit && (
-        <div className="mt-4 flex justify-end">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onEdit(prediction);
-            }}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              theme === "dark"
-                ? "bg-teal-900/30 text-teal-300 hover:bg-teal-900/50"
-                : "bg-teal-100 text-teal-700 hover:bg-teal-200"
-            }`}
-          >
-            Edit Prediction
-          </button>
-        </div>
-      )}
+
     </motion.div>
   );
 };

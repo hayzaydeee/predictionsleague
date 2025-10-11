@@ -397,17 +397,6 @@ const PredictionTable = ({
                     <td className="px-4 py-3 text-center">
                       <div className="flex items-center justify-center gap-2">
                         <button
-                          onClick={(e) => handleEditClick(e, prediction)}
-                          className={`p-1.5 rounded-lg transition-colors ${
-                            theme === "dark"
-                              ? "text-slate-400 hover:text-white hover:bg-slate-700"
-                              : "text-slate-500 hover:text-slate-700 hover:bg-slate-100"
-                          }`}
-                          title="Edit prediction"
-                        >
-                          <Pencil1Icon className="w-4 h-4" />
-                        </button>
-                        <button
                           onClick={() => onPredictionSelect?.(prediction)}
                           className={`p-1.5 rounded-lg transition-colors ${
                             theme === "dark"

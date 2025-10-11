@@ -137,22 +137,7 @@ const SimplePredictionCard = ({
             {isPending ? "Pending" : prediction.correct ? "Correct" : "Incorrect"}
           </div>
           
-          {/* Edit button for pending predictions */}
-          {isPending && onEditClick && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onEditClick(prediction);
-              }}
-              className={`text-xs py-1 px-2 rounded ${
-                theme === "dark"
-                  ? "bg-indigo-900/30 text-indigo-300 hover:bg-indigo-900/50"
-                  : "bg-indigo-100 text-indigo-700 border border-indigo-200 hover:bg-indigo-200"
-              } transition-colors`}
-            >
-              Edit
-            </button>
-          )}
+
         </div>
       </div>
     </motion.div>
