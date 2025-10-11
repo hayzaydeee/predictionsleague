@@ -16,17 +16,41 @@ export default function ScoreDisplay({
     switch (variant) {
       case "review":
         return {
-          container: "bg-purple-500/20 border border-purple-500/30 rounded-lg px-3",
-          scoreBox: theme === "dark" ? "bg-slate-800/60" : "bg-slate-100/60",
-          homeColor: "text-purple-300",
-          awayColor: "text-purple-300"
+          container: getThemeStyles(theme, {
+            dark: "bg-purple-500/20 border border-purple-500/30",
+            light: "bg-purple-100 border border-purple-200"
+          }) + " rounded-lg px-3",
+          scoreBox: getThemeStyles(theme, {
+            dark: "bg-slate-800/60",
+            light: "bg-white/60"
+          }),
+          homeColor: getThemeStyles(theme, {
+            dark: "text-purple-300",
+            light: "text-purple-700"
+          }),
+          awayColor: getThemeStyles(theme, {
+            dark: "text-purple-300",
+            light: "text-purple-700"
+          })
         };
       default: // "summary"
         return {
-          container: "bg-blue-500/20 border border-blue-500/30 rounded-lg px-3",
-          scoreBox: theme === "dark" ? "bg-slate-800/60" : "bg-slate-200/60",
-          homeColor: theme === "dark" ? "text-emerald-300" : "text-emerald-700",
-          awayColor: theme === "dark" ? "text-blue-300" : "text-blue-700"
+          container: getThemeStyles(theme, {
+            dark: "bg-blue-500/20 border border-blue-500/30",
+            light: "bg-blue-100 border border-blue-200"
+          }) + " rounded-lg px-3",
+          scoreBox: getThemeStyles(theme, {
+            dark: "bg-slate-800/60",
+            light: "bg-white/60"
+          }),
+          homeColor: getThemeStyles(theme, {
+            dark: "text-emerald-300",
+            light: "text-emerald-700"
+          }),
+          awayColor: getThemeStyles(theme, {
+            dark: "text-blue-300",
+            light: "text-blue-700"
+          })
         };
     }
   };
@@ -36,7 +60,10 @@ export default function ScoreDisplay({
   return (
     <div className={`flex justify-center items-center ${className}`}>
       <div className="flex items-center">
-        <div className="w-8 h-8 rounded-full bg-slate-700/30 border border-slate-600/50 flex items-center justify-center mr-2">
+        <div className={`w-8 h-8 rounded-full flex items-center justify-center mr-2 ${getThemeStyles(theme, {
+          dark: 'bg-slate-700/30 border border-slate-600/50',
+          light: 'bg-slate-200/50 border border-slate-300/50'
+        })}`}>
           <img
             src={getTeamLogo(fixture.homeTeam)}
             alt={fixture.homeTeam}
@@ -79,7 +106,10 @@ export default function ScoreDisplay({
         >
           {fixture.awayTeam}
         </span>
-        <div className="w-8 h-8 rounded-full bg-slate-700/30 border border-slate-600/50 flex items-center justify-center">
+        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${getThemeStyles(theme, {
+          dark: 'bg-slate-700/30 border border-slate-600/50',
+          light: 'bg-slate-200/50 border border-slate-300/50'
+        })}`}>
           <img
             src={getTeamLogo(fixture.awayTeam)}
             alt={fixture.awayTeam}

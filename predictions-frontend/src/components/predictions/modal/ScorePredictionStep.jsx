@@ -44,21 +44,27 @@ export default function ScorePredictionStep({
         </div>
 
         {/* Rich Card Style Score Prediction */}
-        <div className="bg-slate-800/50 border border-slate-700/60 rounded-xl p-6">
+        <div className={`rounded-xl p-6 ${getThemeStyles(theme, {
+          dark: 'bg-slate-800/50 border border-slate-700/60',
+          light: 'bg-slate-50 border border-slate-200'
+        })}`}>
           {/* Match Info Header */}
-          <div className="text-xs font-medium mb-4 text-slate-400 font-outfit">
+          <div className={`text-xs font-medium mb-4 font-outfit ${getThemeStyles(theme, text.muted)}`}>
             Premier League • GW{fixture.gameweek} • {fixture.venue}
           </div>
 
           {/* Score Input Section */}
-          <div className="bg-slate-900/50 border border-slate-700/30 rounded-lg p-6">
-            <div className="text-xs font-medium mb-4 text-slate-400 font-outfit">
+          <div className={`rounded-lg p-6 ${getThemeStyles(theme, {
+            dark: 'bg-slate-900/50 border border-slate-700/30',
+            light: 'bg-white border border-slate-200'
+          })}`}>
+            <div className={`text-xs font-medium mb-4 font-outfit ${getThemeStyles(theme, text.muted)}`}>
               Enter Score Prediction
             </div>
             
             <div className="flex items-center justify-center space-x-8">
               <div className="text-center flex-1">
-                <div className="text-sm font-medium text-slate-300 font-outfit mb-2 truncate">
+                <div className={`text-sm font-medium font-outfit mb-2 truncate ${getThemeStyles(theme, text.secondary)}`}>
                   {fixture.homeTeam}
                 </div>
                 <div className="relative">
@@ -75,19 +81,22 @@ export default function ScorePredictionStep({
                           : Math.min(9, Math.max(0, parseInt(val) || 0))
                       );
                     }}
-                    className="appearance-none bg-slate-800/80 border border-slate-600/50 text-slate-100 rounded-lg w-20 h-16 text-3xl text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none font-outfit font-bold"
+                    className={`appearance-none rounded-lg w-20 h-16 text-3xl text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none font-outfit font-bold ${getThemeStyles(theme, {
+                      dark: 'bg-slate-800/80 border border-slate-600/50 text-slate-100',
+                      light: 'bg-slate-50 border border-slate-300 text-slate-900'
+                    })}`}
                     aria-label={`${fixture.homeTeam} score`}
                     placeholder="0"
                   />
                 </div>
               </div>
               
-              <div className="text-lg font-bold text-slate-400 font-outfit">
+              <div className={`text-lg font-bold font-outfit ${getThemeStyles(theme, text.muted)}`}>
                 —
               </div>
               
               <div className="text-center flex-1">
-                <div className="text-sm font-medium text-slate-300 font-outfit mb-2 truncate">
+                <div className={`text-sm font-medium font-outfit mb-2 truncate ${getThemeStyles(theme, text.secondary)}`}>
                   {fixture.awayTeam}
                 </div>
                 <div className="relative">
@@ -104,7 +113,10 @@ export default function ScorePredictionStep({
                           : Math.min(9, Math.max(0, parseInt(val) || 0))
                       );
                     }}
-                    className="appearance-none bg-slate-800/80 border border-slate-600/50 text-slate-100 rounded-lg w-20 h-16 text-3xl text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none font-outfit font-bold"
+                    className={`appearance-none rounded-lg w-20 h-16 text-3xl text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none font-outfit font-bold ${getThemeStyles(theme, {
+                      dark: 'bg-slate-800/80 border border-slate-600/50 text-slate-100',
+                      light: 'bg-slate-50 border border-slate-300 text-slate-900'
+                    })}`}
                     aria-label={`${fixture.awayTeam} score`}
                     placeholder="0"
                   />

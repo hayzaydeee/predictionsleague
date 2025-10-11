@@ -28,17 +28,29 @@ export default function ReviewStep({
       transition={{ duration: 0.3 }}
       className="pb-4"
     >
-      <div className="bg-slate-800/50 border border-slate-700/60 rounded-xl p-6 mb-6">
+      <div className={`${getThemeStyles(theme, {
+        dark: "bg-slate-800/50 border border-slate-700/60",
+        light: "bg-slate-50/50 border border-slate-200/60",
+      })} rounded-xl p-6 mb-6`}>
         <div className="flex items-center space-x-2 mb-4">
           <CheckIcon className="w-5 h-5 text-purple-400" />
-          <h3 className="text-lg font-semibold text-slate-200 font-outfit">
+          <h3 className={`text-lg font-semibold font-outfit ${getThemeStyles(theme, {
+            dark: "text-slate-200",
+            light: "text-slate-800",
+          })}`}>
             Review Your Prediction
           </h3>
         </div>
 
         {/* Score summary */}
-        <div className="bg-slate-900/50 border border-slate-700/30 rounded-lg p-4 mb-4">
-          <div className="text-xs font-medium mb-3 text-slate-400 font-outfit text-center">
+        <div className={`${getThemeStyles(theme, {
+          dark: "bg-slate-900/50 border border-slate-700/30",
+          light: "bg-slate-100/50 border border-slate-200/30",
+        })} rounded-lg p-4 mb-4`}>
+          <div className={`text-xs font-medium mb-3 font-outfit text-center ${getThemeStyles(theme, {
+            dark: "text-slate-400",
+            light: "text-slate-600",
+          })}`}>
             Your Predicted Score
           </div>
           <ScoreDisplay 
