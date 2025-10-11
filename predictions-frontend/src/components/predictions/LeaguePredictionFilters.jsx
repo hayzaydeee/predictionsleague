@@ -56,7 +56,7 @@ const LeaguePredictionFilters = ({
   return (
     <div className="space-y-4">
       {/* Main Filter Bar */}
-      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
+      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between pb-4">
         {/* Search and Quick Filters */}
         <div className="flex flex-col sm:flex-row gap-3 flex-1">
           {/* Search Input */}
