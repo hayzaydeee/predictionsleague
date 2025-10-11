@@ -298,7 +298,6 @@ const PredictionBreakdownModal = ({
               {(prediction.homeScorers?.length > 0 || prediction.awayScorers?.length > 0) && (
                 <div className={`rounded-xl p-6 mb-6 ${getThemeStyles(theme, backgrounds.secondary)}`}>
                   <div className="flex items-center space-x-2 mb-4">
-                    <StarIcon className="w-5 h-5 text-amber-400" />
                     <h3 className={`text-lg font-semibold font-outfit ${getThemeStyles(theme, text.primary)}`}>
                       Predicted Scorers
                     </h3>
@@ -366,9 +365,6 @@ const PredictionBreakdownModal = ({
               {prediction.chips && prediction.chips.length > 0 && (
                 <div className={`rounded-xl p-6 mt-6 ${getThemeStyles(theme, backgrounds.secondary)}`}>
                   <div className="flex items-start gap-3 mb-4">
-                    <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center mt-0.5">
-                      <MagicWandIcon className="w-4 h-4 text-purple-400" />
-                    </div>
                     <h3 className={`text-lg font-semibold font-outfit ${getThemeStyles(theme, text.primary)}`}>
                       Chips Applied
                     </h3>
