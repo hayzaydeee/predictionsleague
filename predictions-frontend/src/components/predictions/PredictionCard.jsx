@@ -4,6 +4,7 @@ import { format, parseISO } from "date-fns";
 import { ClockIcon } from "@radix-ui/react-icons";
 import { getTeamLogo } from "../../utils/teamUtils";
 import { ThemeContext } from "../../context/ThemeContext";
+import { calculatePoints } from "../../utils/pointsCalculation";
 
 const PredictionCard = ({
   prediction,
@@ -19,6 +20,9 @@ const PredictionCard = ({
   const getLogoSrc = (teamName) => {
     return teamLogos[teamName] || getTeamLogo(teamName);
   };
+
+  // Calculate accurate points
+  const calculatedPoints = calculatePoints(prediction);
 
   const isPending = prediction.status === "pending";
   
@@ -115,7 +119,7 @@ const PredictionCard = ({
             theme === "dark" ? "text-white/60" : "text-slate-500"
           }`}
         >
-          GW{prediction.gameweek || "36"} • {prediction.points ? `${prediction.points} pts` : "Pending"}
+          GW{prediction.gameweek || "36"} • {calculatedPoints !== null ? `${calculatedPoints} pts` : "Pending"}
         </div>
         <div className="flex items-center gap-2">
           {/* Status chip */}

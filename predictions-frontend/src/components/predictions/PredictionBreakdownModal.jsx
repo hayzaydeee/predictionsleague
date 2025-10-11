@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { format, parseISO } from 'date-fns';
 import { ThemeContext } from '../../context/ThemeContext';
 import { backgrounds, text, getThemeStyles } from '../../utils/themeUtils';
+import { calculatePoints, getPointsBreakdown } from '../../utils/pointsCalculation';
 import { 
   Cross2Icon, 
   CalendarIcon,
@@ -22,6 +23,43 @@ const PredictionBreakdownModal = ({
   const { theme } = useContext(ThemeContext);
   
   if (!prediction) return null;
+
+  // Calculate accurate points using utility function
+  const calculatedPoints = calculatePoints(prediction);
+  const pointsBreakdownData = getPointsBreakdown(prediction);
+
+  // Calculate base points (without chip multipliers) for mathematics section
+  const calculateBasePoints = () => {
+    if (prediction.actualHomeScore === null || prediction.actualHomeScore === undefined ||
+        prediction.actualAwayScore === null || prediction.actualAwayScore === undefined) {
+      return 0;
+    }
+
+    let basePoints = 0;
+    
+    // Score prediction points
+    if (prediction.homeScore === prediction.actualHomeScore && 
+        prediction.awayScore === prediction.actualAwayScore) {
+      basePoints += 10;
+    } else if ((prediction.homeScore > prediction.awayScore && prediction.actualHomeScore > prediction.actualAwayScore) ||
+               (prediction.homeScore < prediction.awayScore && prediction.actualHomeScore < prediction.actualAwayScore) ||
+               (prediction.homeScore === prediction.awayScore && prediction.actualHomeScore === prediction.actualAwayScore)) {
+      basePoints += 5;
+    }
+    
+    // Goalscorer points
+    const homeCorrect = prediction.homeScorers?.filter(scorer => 
+      prediction.actualHomeScorers?.includes(scorer)
+    ).length || 0;
+    const awayCorrect = prediction.awayScorers?.filter(scorer => 
+      prediction.actualAwayScorers?.includes(scorer)
+    ).length || 0;
+    basePoints += (homeCorrect + awayCorrect) * 2;
+    
+    return basePoints;
+  };
+
+  const basePoints = calculateBasePoints();
 
   const getTeamLogo = (teamName) => {
     return `/src/assets/clubs/${teamName.toLowerCase().replace(/\s+/g, '-')}.png`;
@@ -157,8 +195,8 @@ const PredictionBreakdownModal = ({
                   
                   <div className="text-right">
                     <div className={`text-lg font-bold font-outfit ${getThemeStyles(theme, text.primary)}`}>
-                      {prediction.points !== null && prediction.points !== undefined ? prediction.points : '—'}
-                      {prediction.points !== null && prediction.points !== undefined && (
+                      {calculatedPoints !== null && calculatedPoints !== undefined ? calculatedPoints : '—'}
+                      {calculatedPoints !== null && calculatedPoints !== undefined && (
                         <span className="text-xs font-medium ml-0.5 font-outfit">pts</span>
                       )}
                     </div>
@@ -352,23 +390,29 @@ const PredictionBreakdownModal = ({
               )}
 
               {/* Points Breakdown */}
-              {prediction.pointsBreakdown && (
+              {pointsBreakdownData && (
                 <div className={`rounded-xl p-6 mt-6 ${getThemeStyles(theme, backgrounds.secondary)}`}>
                   <h3 className={`text-lg font-semibold mb-4 font-outfit ${getThemeStyles(theme, text.primary)}`}>
                     Points Breakdown
                   </h3>
                   
                   <div className="space-y-3">
-                    {Object.entries(prediction.pointsBreakdown).map(([category, points]) => (
+                    {Object.entries(pointsBreakdownData).map(([category, points]) => (
                       <div key={category} className={`flex items-center justify-between py-2 border-b last:border-b-0 ${getThemeStyles(theme, {
                         dark: 'border-slate-700/30',
                         light: 'border-slate-200'
                       })}`}>
                         <span className={`text-sm font-outfit capitalize ${getThemeStyles(theme, text.secondary)}`}>
-                          {category.replace(/([A-Z])/g, ' $1').trim()}
+                          {category === 'exactScore' && 'Exact Score'}
+                          {category === 'correctOutcome' && 'Correct Outcome'}
+                          {category === 'goalscorers' && 'Goalscorers'}
+                          {category === 'wildcard' && 'Wildcard Multiplier'}
+                          {category === 'doubleDown' && 'Double Down Multiplier'}
+                          {category === 'scorerFocus' && 'Scorer Focus Multiplier'}
+                          {category === 'defensePlusPlus' && 'Defense++ Bonus'}
                         </span>
                         <span className={`font-semibold font-outfit ${getThemeStyles(theme, text.primary)}`}>
-                          +{points}
+                          {typeof points === 'number' ? `+${points}` : points}
                         </span>
                       </div>
                     ))}
@@ -381,7 +425,7 @@ const PredictionBreakdownModal = ({
                         Total Points
                       </span>
                       <span className="text-lg font-bold text-green-400 font-outfit">
-                        {prediction.points}
+                        {calculatedPoints}
                       </span>
                     </div>
                   </div>
@@ -592,32 +636,7 @@ const PredictionBreakdownModal = ({
                             Base Points Subtotal
                           </span>
                           <span className={`text-sm font-bold font-outfit text-blue-400`}>
-                            {(() => {
-                              let basePoints = 0;
-                              
-                              // Exact scoreline: +10 points
-                              if (prediction.homeScore === prediction.actualHomeScore && 
-                                  prediction.awayScore === prediction.actualAwayScore) {
-                                basePoints += 10;
-                              }
-                              // Correct outcome: +5 points (if not exact score)
-                              else if ((prediction.homeScore > prediction.awayScore && prediction.actualHomeScore > prediction.actualAwayScore) ||
-                                       (prediction.homeScore < prediction.awayScore && prediction.actualHomeScore < prediction.actualAwayScore) ||
-                                       (prediction.homeScore === prediction.awayScore && prediction.actualHomeScore === prediction.actualAwayScore)) {
-                                basePoints += 5;
-                              }
-                              
-                              // Goalscorer points: +2 per correct prediction
-                              const homeCorrect = prediction.homeScorers?.filter(scorer => 
-                                prediction.actualHomeScorers?.includes(scorer)
-                              ).length || 0;
-                              const awayCorrect = prediction.awayScorers?.filter(scorer => 
-                                prediction.actualAwayScorers?.includes(scorer)
-                              ).length || 0;
-                              basePoints += (homeCorrect + awayCorrect) * 2;
-                              
-                              return `+${basePoints}`;
-                            })()}
+                            +{basePoints}
                           </span>
                         </div>
                       </div>
@@ -681,38 +700,7 @@ const PredictionBreakdownModal = ({
                         </div>
                         <div className="text-right">
                           <div className="text-3xl font-bold text-emerald-400 font-outfit">
-                            {(() => {
-                              let basePoints = 0;
-                              
-                              // Calculate base points
-                              if (prediction.homeScore === prediction.actualHomeScore && 
-                                  prediction.awayScore === prediction.actualAwayScore) {
-                                basePoints += 10; // Exact scoreline
-                              } else if ((prediction.homeScore > prediction.awayScore && prediction.actualHomeScore > prediction.actualAwayScore) ||
-                                         (prediction.homeScore < prediction.awayScore && prediction.actualHomeScore < prediction.actualAwayScore) ||
-                                         (prediction.homeScore === prediction.awayScore && prediction.actualHomeScore === prediction.actualAwayScore)) {
-                                basePoints += 5; // Correct outcome
-                              }
-                              
-                              // Goalscorer points
-                              const homeCorrect = prediction.homeScorers?.filter(scorer => 
-                                prediction.actualHomeScorers?.includes(scorer)
-                              ).length || 0;
-                              const awayCorrect = prediction.awayScorers?.filter(scorer => 
-                                prediction.actualAwayScorers?.includes(scorer)
-                              ).length || 0;
-                              basePoints += (homeCorrect + awayCorrect) * 2;
-                              
-                              // Apply chip multipliers
-                              let finalPoints = basePoints;
-                              if (prediction.chips?.includes("wildcard")) {
-                                finalPoints = basePoints * 3;
-                              } else if (prediction.chips?.includes("doubleDown")) {
-                                finalPoints = basePoints * 2;
-                              }
-                              
-                              return finalPoints;
-                            })()}
+                            {calculatedPoints}
                           </div>
                           <div className={`text-xs font-outfit ${getThemeStyles(theme, text.muted)}`}>
                             points
