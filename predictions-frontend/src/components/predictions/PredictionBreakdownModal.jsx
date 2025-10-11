@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { format, parseISO } from 'date-fns';
 import { ThemeContext } from '../../context/ThemeContext';
 import { backgrounds, text, getThemeStyles } from '../../utils/themeUtils';
+import { getTeamLogo } from '../../data/sampleData';
 import { 
   Cross2Icon, 
   CalendarIcon,
@@ -22,10 +23,6 @@ const PredictionBreakdownModal = ({
   const { theme } = useContext(ThemeContext);
   
   if (!prediction) return null;
-
-  const getTeamLogo = (teamName) => {
-    return `/src/assets/clubs/${teamName.toLowerCase().replace(/\s+/g, '-')}.png`;
-  };
 
   const formattedDate = format(parseISO(prediction.date), 'MMM dd, HH:mm');
 
@@ -217,32 +214,28 @@ const PredictionBreakdownModal = ({
                     </div>
                     
                     {/* Score Display with Team Logos */}
-                    <div className="flex items-start justify-between">
+                    <div className="flex items-center justify-center gap-8">
                       {/* Home Team */}
-                      <div className="flex-1 text-center">
-                        <div className="flex items-center justify-center gap-3 mb-3">
+                      <div className="text-center">
+                        <div className="flex flex-col items-center gap-3">
                           <img
                             src={getTeamLogo(prediction.homeTeam)}
                             alt={prediction.homeTeam}
-                            className="w-12 h-12 object-contain"
+                            className="w-16 h-16 object-contain"
                           />
-                          <div className="text-3xl font-bold text-emerald-400 font-outfit">
+                          <div className="text-4xl font-bold text-emerald-400 font-outfit">
                             {prediction.actualHomeScore}
                           </div>
                         </div>
-                        <div className={`text-sm font-medium font-outfit mb-2 ${getThemeStyles(theme, text.secondary)}`}>
-                          {prediction.homeTeam}
-                        </div>
                         {/* Home Team Scorers */}
                         {prediction.actualHomeScorers?.length > 0 && (
-                          <div className="space-y-1">
+                          <div className="mt-3 space-y-1">
                             {prediction.actualHomeScorers.map((scorer, index) => (
-                              <div key={index} className={`flex items-center justify-center gap-1 text-xs font-outfit ${getThemeStyles(theme, {
+                              <div key={index} className={`text-xs font-outfit ${getThemeStyles(theme, {
                                 dark: 'text-emerald-300',
                                 light: 'text-emerald-700'
                               })}`}>
-                                <span>⚽</span>
-                                <span>{scorer}</span>
+                                {scorer}
                               </div>
                             ))}
                           </div>
@@ -250,37 +243,33 @@ const PredictionBreakdownModal = ({
                       </div>
                       
                       {/* VS Divider */}
-                      <div className="flex items-center px-6">
+                      <div className="flex items-center">
                         <div className={`text-2xl font-bold font-outfit ${getThemeStyles(theme, text.muted)}`}>
                           VS
                         </div>
                       </div>
                       
                       {/* Away Team */}
-                      <div className="flex-1 text-center">
-                        <div className="flex items-center justify-center gap-3 mb-3">
-                          <div className="text-3xl font-bold text-emerald-400 font-outfit">
-                            {prediction.actualAwayScore}
-                          </div>
+                      <div className="text-center">
+                        <div className="flex flex-col items-center gap-3">
                           <img
                             src={getTeamLogo(prediction.awayTeam)}
                             alt={prediction.awayTeam}
-                            className="w-12 h-12 object-contain"
+                            className="w-16 h-16 object-contain"
                           />
-                        </div>
-                        <div className={`text-sm font-medium font-outfit mb-2 ${getThemeStyles(theme, text.secondary)}`}>
-                          {prediction.awayTeam}
+                          <div className="text-4xl font-bold text-emerald-400 font-outfit">
+                            {prediction.actualAwayScore}
+                          </div>
                         </div>
                         {/* Away Team Scorers */}
                         {prediction.actualAwayScorers?.length > 0 && (
-                          <div className="space-y-1">
+                          <div className="mt-3 space-y-1">
                             {prediction.actualAwayScorers.map((scorer, index) => (
-                              <div key={index} className={`flex items-center justify-center gap-1 text-xs font-outfit ${getThemeStyles(theme, {
+                              <div key={index} className={`text-xs font-outfit ${getThemeStyles(theme, {
                                 dark: 'text-emerald-300',
                                 light: 'text-emerald-700'
                               })}`}>
-                                <span>⚽</span>
-                                <span>{scorer}</span>
+                                {scorer}
                               </div>
                             ))}
                           </div>

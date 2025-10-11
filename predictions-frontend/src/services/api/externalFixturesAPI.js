@@ -158,7 +158,6 @@ const transformers = {
       gameweek: fixture.gameweek,
       homeScore: fixture.homeScore,
       awayScore: fixture.awayScore,
-      referee: fixture.referee
     };
   }
 };
