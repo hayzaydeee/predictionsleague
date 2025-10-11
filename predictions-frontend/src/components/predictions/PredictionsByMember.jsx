@@ -7,7 +7,9 @@ import {
   PersonIcon,
   CalendarIcon,
   TargetIcon,
-  ClockIcon
+  ClockIcon,
+  PlusIcon,
+  MinusIcon
 } from "@radix-ui/react-icons";
 import { ThemeContext } from "../../context/ThemeContext";
 import EmptyState from "../common/EmptyState";
@@ -111,78 +113,64 @@ const PredictionsByMember = ({
         const stats = getMemberStats(member.predictions);
         
         return (
-          <motion.div
+          <div
             key={member.memberInfo.id}
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className={`rounded-xl border transition-all duration-200 ${
+            className={`rounded-lg border overflow-hidden ${
               theme === "dark"
-                ? "bg-slate-800/50 border-slate-700/50 hover:bg-slate-800/70"
-                : "bg-white border-slate-200 hover:shadow-md"
-            } backdrop-blur-sm`}
+                ? "bg-slate-800/50 border-slate-600/50"
+                : "bg-white border-gray-200 shadow-sm"
+            }`}
           >
             {/* Member Header */}
-            <button
-              onClick={() => toggleMember(member.memberInfo.id)}
-              className={`w-full p-6 text-left transition-colors ${
-                theme === "dark" ? "hover:bg-slate-700/30" : "hover:bg-slate-50"
+            <div
+              className={`flex items-center justify-between p-3 cursor-pointer transition-colors ${
+                theme === "dark" ? "bg-slate-900/60" : "hover:bg-gray-50"
               }`}
+              onClick={() => toggleMember(member.memberInfo.id)}
             >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold ${
-                    theme === "dark" ? "bg-slate-700 text-slate-300" : "bg-slate-100 text-slate-700"
-                  }`}>
-                    {member.memberInfo.avatar}
-                  </div>
-                  <div>
-                    <h3 className={`text-xl font-bold ${
-                      theme === "dark" ? "text-white" : "text-slate-900"
-                    } font-outfit`}>
-                      {member.memberInfo.name}
-                    </h3>
-                    <div className="flex items-center space-x-4 mt-1">
-                      <span className={`text-sm ${
-                        theme === "dark" ? "text-slate-400" : "text-slate-600"
-                      } font-outfit`}>
-                        {stats.total} predictions
-                      </span>
-                      <span className={`text-sm font-medium ${
-                        theme === "dark" ? "text-teal-400" : "text-teal-600"
-                      } font-outfit`}>
-                        {stats.totalPoints} pts
-                      </span>
-                    </div>
-                  </div>
+              <div className="flex items-center">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3 ${
+                  theme === "dark" ? "bg-slate-700 text-slate-300" : "bg-slate-100 text-slate-700"
+                }`}>
+                  {member.memberInfo.avatar}
                 </div>
-
-                <div className="flex items-center space-x-4">
-                  <div className="text-right">
-                    <div className="flex items-center space-x-2 text-sm">
-                      <span className={`${
-                        theme === "dark" ? "text-green-400" : "text-green-600"
-                      } font-medium`}>
-                        {stats.completed} complete
-                      </span>
-                      <span className={`${
-                        theme === "dark" ? "text-amber-400" : "text-amber-600"
-                      } font-medium`}>
-                        {stats.pending} pending
-                      </span>
-                    </div>
+                <div>
+                  <h3 className={`font-medium ${
+                    theme === "dark" ? "text-white" : "text-gray-900"
+                  }`}>
+                    {member.memberInfo.name}
+                  </h3>
+                  <div className={`text-xs ${
+                    theme === "dark" ? "text-white/60" : "text-gray-500"
+                  }`}>
+                    {stats.total} prediction{stats.total !== 1 ? 's' : ''}
                   </div>
-                  {isExpanded ? (
-                    <ChevronDownIcon className={`w-5 h-5 ${
-                      theme === "dark" ? "text-slate-400" : "text-slate-600"
-                    }`} />
-                  ) : (
-                    <ChevronRightIcon className={`w-5 h-5 ${
-                      theme === "dark" ? "text-slate-400" : "text-slate-600"
-                    }`} />
-                  )}
                 </div>
               </div>
-            </button>
+
+              <div className="flex items-center space-x-3">
+                {/* Stats Display */}
+                <div className="flex flex-col items-end">
+                  <div className={`text-xs font-medium ${
+                    theme === "dark" ? "text-white/90" : "text-gray-800"
+                  }`}>
+                    {stats.totalPoints} pts
+                  </div>
+                  <div className={`text-xs ${
+                    theme === "dark" ? "text-white/60" : "text-gray-500"
+                  }`}>
+                    {stats.completed}/{stats.total} complete
+                  </div>
+                </div>
+                
+                {/* Expand/Collapse Icon */}
+                {isExpanded ? (
+                  <MinusIcon className={`w-4 h-4 ${theme === "dark" ? "text-white/60" : "text-gray-400"}`} />
+                ) : (
+                  <PlusIcon className={`w-4 h-4 ${theme === "dark" ? "text-white/60" : "text-gray-400"}`} />
+                )}
+              </div>
+            </div>
 
             {/* Member Predictions - Expanded */}
             <AnimatePresence>
@@ -191,12 +179,12 @@ const PredictionsByMember = ({
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: "auto", opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.3 }}
+                  transition={{ duration: 0.2 }}
                   className={`border-t overflow-hidden ${
-                    theme === "dark" ? "border-slate-700/50" : "border-slate-200"
+                    theme === "dark" ? "border-slate-600/50 bg-slate-900/60" : "border-gray-200"
                   }`}
                 >
-                  <div className="p-6">
+                  <div className="p-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       {member.predictions.map((prediction) => (
                         <motion.div
@@ -436,7 +424,7 @@ const PredictionsByMember = ({
                 </motion.div>
               )}
             </AnimatePresence>
-          </motion.div>
+          </div>
         );
       })}
     </motion.div>
