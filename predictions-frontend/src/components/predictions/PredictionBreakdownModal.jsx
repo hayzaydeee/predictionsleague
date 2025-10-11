@@ -361,26 +361,56 @@ const PredictionBreakdownModal = ({
                 </div>
               )}
 
-              {/* Chips Used */}
-              {prediction.chipsUsed?.length > 0 && (
-                <div className={`rounded-xl p-6 ${getThemeStyles(theme, backgrounds.secondary)}`}>
-                  <div className="flex items-center space-x-2 mb-4">
-                    <div className="w-5 h-5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-                      <span className="text-white text-xs font-bold font-outfit">★</span>
+              {/* Chips Applied */}
+              {prediction.chips && prediction.chips.length > 0 && (
+                <div className={`rounded-xl p-6 mt-6 ${getThemeStyles(theme, backgrounds.secondary)}`}>
+                  <div className="flex items-start gap-3 mb-4">
+                    <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center mt-0.5">
+                      <SparklesIcon className="w-4 h-4 text-purple-400" />
                     </div>
                     <h3 className={`text-lg font-semibold font-outfit ${getThemeStyles(theme, text.primary)}`}>
-                      Chips Used
+                      Chips Applied
                     </h3>
                   </div>
 
-                  <div className="flex flex-wrap gap-2">
-                    {prediction.chipsUsed.map((chip, index) => (
-                      <span
-                        key={index}
-                        className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-purple-300 border border-purple-500/30 font-outfit"
-                      >
-                        {chip}
-                      </span>
+                  <div className="space-y-3">
+                    {prediction.chips.map((chip, index) => (
+                      <div key={index} className={`flex items-center justify-between p-3 rounded-lg ${getThemeStyles(theme, {
+                        dark: 'bg-slate-800/50 border border-slate-700/30',
+                        light: 'bg-slate-50 border border-slate-200'
+                      })}`}>
+                        <div className="flex items-center space-x-3">
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-purple-300 border border-purple-500/30 font-outfit">
+                            {chip}
+                          </span>
+                          <div>
+                            <div className={`text-sm font-medium font-outfit ${getThemeStyles(theme, text.primary)}`}>
+                              {chip === 'doubleDown' && 'Double Down'}
+                              {chip === 'wildcard' && 'Wildcard'}
+                              {chip === 'scorerFocus' && 'Scorer Focus'}
+                              {chip === 'opportunist' && 'Opportunist'}
+                              {chip === 'defensePlusPlus' && 'Defense++'}
+                              {chip === 'allInWeek' && 'All-In Week'}
+                            </div>
+                            <div className={`text-xs font-outfit ${getThemeStyles(theme, text.muted)}`}>
+                              {chip === 'doubleDown' && 'Double all match points (2x)'}
+                              {chip === 'wildcard' && 'Triple all match points (3x)'}
+                              {chip === 'scorerFocus' && 'Double goalscorer points (2x)'}
+                              {chip === 'opportunist' && 'Change predictions until 30min before kickoff'}
+                              {chip === 'defensePlusPlus' && '+10 bonus for each correct clean sheet prediction'}
+                              {chip === 'allInWeek' && 'Double all gameweek points (2x)'}
+                            </div>
+                          </div>
+                        </div>
+                        <div className={`text-sm font-semibold font-outfit ${getThemeStyles(theme, text.primary)}`}>
+                          {chip === 'doubleDown' && '×2'}
+                          {chip === 'wildcard' && '×3'}
+                          {chip === 'scorerFocus' && '×2'}
+                          {chip === 'opportunist' && '⏱️'}
+                          {chip === 'defensePlusPlus' && '+10'}
+                          {chip === 'allInWeek' && '×2'}
+                        </div>
+                      </div>
                     ))}
                   </div>
                 </div>
