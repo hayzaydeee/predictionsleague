@@ -31,7 +31,10 @@ const ChipStrategyModal = ({ isOpen, onClose }) => {
         <div className={`${getThemeStyles(theme, backgrounds.secondary)} p-6 border-b`}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-emerald-500/20 rounded-xl flex items-center justify-center">
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${getThemeStyles(theme, {
+                dark: 'bg-emerald-500/20',
+                light: 'bg-emerald-100'
+              })}`}>
                 <InfoCircledIcon className="w-5 h-5 text-emerald-400" />
               </div>
               <div>
@@ -101,7 +104,10 @@ const ChipStrategyModal = ({ isOpen, onClose }) => {
                       <h5 className={`${getThemeStyles(theme, text.primary)} text-lg font-semibold font-outfit`}>
                         Double Down
                       </h5>
-                      <div className="text-emerald-300/70 text-xs font-medium font-outfit">
+                      <div className={`text-xs font-medium font-outfit ${getThemeStyles(theme, {
+                        dark: 'text-emerald-300/70',
+                        light: 'text-emerald-600'
+                      })}`}>
                         2 gameweek cooldown
                       </div>
                     </div>
@@ -115,7 +121,10 @@ const ChipStrategyModal = ({ isOpen, onClose }) => {
                     <div className="flex items-start gap-2">
                       <StarIcon className="w-4 h-4 text-yellow-400 mt-0.5 shrink-0" />
                       <div>
-                        <h6 className="text-emerald-300 text-xs font-medium mb-1 font-outfit">
+                        <h6 className={`text-xs font-medium mb-1 font-outfit ${getThemeStyles(theme, {
+                          dark: 'text-emerald-300',
+                          light: 'text-emerald-700'
+                        })}`}>
                           Strategy Tip:
                         </h6>
                         <p className={`${getThemeStyles(theme, text.secondary)} text-xs leading-relaxed font-outfit`}>
@@ -145,7 +154,10 @@ const ChipStrategyModal = ({ isOpen, onClose }) => {
                       <h5 className={`${getThemeStyles(theme, text.primary)} text-lg font-semibold font-outfit`}>
                         Wildcard
                       </h5>
-                      <div className="text-purple-300/70 text-xs font-medium font-outfit">
+                      <div className={`text-xs font-medium font-outfit ${getThemeStyles(theme, {
+                        dark: 'text-purple-300/70',
+                        light: 'text-purple-600'
+                      })}`}>
                         7 gameweek cooldown
                       </div>
                     </div>
@@ -159,7 +171,10 @@ const ChipStrategyModal = ({ isOpen, onClose }) => {
                     <div className="flex items-start gap-2">
                       <StarIcon className="w-4 h-4 text-yellow-400 mt-0.5 shrink-0" />
                       <div>
-                        <h6 className="text-purple-300 text-xs font-medium mb-1 font-outfit">
+                        <h6 className={`text-xs font-medium mb-1 font-outfit ${getThemeStyles(theme, {
+                          dark: 'text-purple-300',
+                          light: 'text-purple-700'
+                        })}`}>
                           Strategy Tip:
                         </h6>
                         <p className={`${getThemeStyles(theme, text.secondary)} text-xs leading-relaxed font-outfit`}>
@@ -187,7 +202,10 @@ const ChipStrategyModal = ({ isOpen, onClose }) => {
                       <h5 className={`${getThemeStyles(theme, text.primary)} text-lg font-semibold font-outfit`}>
                         Scorer Focus
                       </h5>
-                      <div className="text-sky-300/70 text-xs font-medium font-outfit">
+                      <div className={`text-xs font-medium font-outfit ${getThemeStyles(theme, {
+                        dark: 'text-sky-300/70',
+                        light: 'text-sky-600'
+                      })}`}>
                         3 gameweek cooldown
                       </div>
                     </div>
@@ -201,7 +219,10 @@ const ChipStrategyModal = ({ isOpen, onClose }) => {
                     <div className="flex items-start gap-2">
                       <StarIcon className="w-4 h-4 text-amber-400 mt-0.5 shrink-0" />
                       <div>
-                        <h6 className="text-sky-300 text-xs font-medium mb-1 font-outfit">
+                        <h6 className={`text-xs font-medium mb-1 font-outfit ${getThemeStyles(theme, {
+                          dark: 'text-sky-300',
+                          light: 'text-sky-700'
+                        })}`}>
                           Strategy Tip:
                         </h6>
                         <p className={`${getThemeStyles(theme, text.secondary)} text-xs leading-relaxed font-outfit`}>
@@ -229,7 +250,10 @@ const ChipStrategyModal = ({ isOpen, onClose }) => {
                       <h5 className={`${getThemeStyles(theme, text.primary)} text-lg font-semibold font-outfit`}>
                         Opportunist
                       </h5>
-                      <div className="text-yellow-300/70 text-xs font-medium font-outfit">
+                      <div className={`text-xs font-medium font-outfit ${getThemeStyles(theme, {
+                        dark: 'text-yellow-300/70',
+                        light: 'text-yellow-600'
+                      })}`}>
                         2 gameweek cooldown
                       </div>
                     </div>
@@ -244,7 +268,10 @@ const ChipStrategyModal = ({ isOpen, onClose }) => {
                     <div className="flex items-start gap-2">
                       <StarIcon className="w-4 h-4 text-yellow-400 mt-0.5 shrink-0" />
                       <div>
-                        <h6 className="text-yellow-300 text-xs font-medium mb-1 font-outfit">
+                        <h6 className={`text-xs font-medium mb-1 font-outfit ${getThemeStyles(theme, {
+                          dark: 'text-yellow-300',
+                          light: 'text-yellow-700'
+                        })}`}>
                           Strategy Tip:
                         </h6>
                         <p className={`${getThemeStyles(theme, text.secondary)} text-xs leading-relaxed font-outfit`}>
@@ -290,7 +317,10 @@ const ChipStrategyModal = ({ isOpen, onClose }) => {
                       <h5 className={`${getThemeStyles(theme, text.primary)} text-lg font-semibold font-outfit`}>
                         Defense++
                       </h5>
-                      <div className="text-blue-300/70 text-xs font-medium font-outfit">
+                      <div className={`text-xs font-medium font-outfit ${getThemeStyles(theme, {
+                        dark: 'text-blue-300/70',
+                        light: 'text-blue-600'
+                      })}`}>
                         5 gameweek cooldown
                       </div>
                     </div>
@@ -305,7 +335,10 @@ const ChipStrategyModal = ({ isOpen, onClose }) => {
                     <div className="flex items-start gap-2">
                       <StarIcon className="w-4 h-4 text-yellow-400 mt-0.5 shrink-0" />
                       <div>
-                        <h6 className="text-blue-300 text-xs font-medium mb-1 font-outfit">
+                        <h6 className={`text-xs font-medium mb-1 font-outfit ${getThemeStyles(theme, {
+                          dark: 'text-blue-300',
+                          light: 'text-blue-700'
+                        })}`}>
                           Strategy Tip:
                         </h6>
                         <p className={`${getThemeStyles(theme, text.secondary)} text-xs leading-relaxed font-outfit`}>
@@ -333,7 +366,10 @@ const ChipStrategyModal = ({ isOpen, onClose }) => {
                       <h5 className={`${getThemeStyles(theme, text.primary)} text-lg font-semibold font-outfit`}>
                         All-In Week
                       </h5>
-                      <div className="text-red-300/70 text-xs font-medium">
+                      <div className={`text-xs font-medium ${getThemeStyles(theme, {
+                        dark: 'text-red-300/70',
+                        light: 'text-red-600'
+                      })}`}>
                         2 uses per season
                       </div>
                     </div>
@@ -348,7 +384,10 @@ const ChipStrategyModal = ({ isOpen, onClose }) => {
                     <div className="flex items-start gap-2">
                       <StarIcon className="w-4 h-4 text-yellow-400 mt-0.5 shrink-0" />
                       <div>
-                        <h6 className="text-red-300 text-xs font-medium mb-1 font-outfit">
+                        <h6 className={`text-xs font-medium mb-1 font-outfit ${getThemeStyles(theme, {
+                          dark: 'text-red-300',
+                          light: 'text-red-700'
+                        })}`}>
                           Strategy Tip:
                         </h6>
                         <p className={`${getThemeStyles(theme, text.secondary)} text-xs leading-relaxed font-outfit`}>
