@@ -713,7 +713,38 @@ const PredictionBreakdownModal = ({
                         </div>
                         <div className="text-right">
                           <div className="text-3xl font-bold text-emerald-400 font-outfit">
-                            {prediction.points || 0}
+                            {(() => {
+                              let basePoints = 0;
+                              
+                              // Calculate base points
+                              if (prediction.homeScore === prediction.actualHomeScore && 
+                                  prediction.awayScore === prediction.actualAwayScore) {
+                                basePoints += 10; // Exact scoreline
+                              } else if ((prediction.homeScore > prediction.awayScore && prediction.actualHomeScore > prediction.actualAwayScore) ||
+                                         (prediction.homeScore < prediction.awayScore && prediction.actualHomeScore < prediction.actualAwayScore) ||
+                                         (prediction.homeScore === prediction.awayScore && prediction.actualHomeScore === prediction.actualAwayScore)) {
+                                basePoints += 5; // Correct outcome
+                              }
+                              
+                              // Goalscorer points
+                              const homeCorrect = prediction.homeScorers?.filter(scorer => 
+                                prediction.actualHomeScorers?.includes(scorer)
+                              ).length || 0;
+                              const awayCorrect = prediction.awayScorers?.filter(scorer => 
+                                prediction.actualAwayScorers?.includes(scorer)
+                              ).length || 0;
+                              basePoints += (homeCorrect + awayCorrect) * 2;
+                              
+                              // Apply chip multipliers
+                              let finalPoints = basePoints;
+                              if (prediction.chips?.includes("wildcard")) {
+                                finalPoints = basePoints * 3;
+                              } else if (prediction.chips?.includes("doubleDown")) {
+                                finalPoints = basePoints * 2;
+                              }
+                              
+                              return finalPoints;
+                            })()}
                           </div>
                           <div className={`text-xs font-outfit ${getThemeStyles(theme, text.muted)}`}>
                             points
