@@ -174,6 +174,16 @@ const DashboardView = ({
       }));
       
       setUpcomingFixtures(processedFixtures);
+      
+      console.log('📊 Setting upcomingFixtures:', {
+        count: processedFixtures.length,
+        fixtures: processedFixtures.map(f => ({ 
+          id: f.id, 
+          home: f.homeTeam, 
+          away: f.awayTeam 
+        })),
+        hasDuplicateIds: processedFixtures.length !== new Set(processedFixtures.map(f => f.id)).size
+      });
     };
 
     processFixtures();

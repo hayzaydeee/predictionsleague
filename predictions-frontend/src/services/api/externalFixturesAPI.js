@@ -206,13 +206,23 @@ export const externalFixturesAPI = {
         .map(transformers.transformFixture)
         .filter(fixture => fixture !== null);
 
+      // Deduplicate fixtures by ID (defensive against backend duplicates)
+      const uniqueFixtures = transformedFixtures.filter((fixture, index, array) => 
+        array.findIndex(f => f.id === fixture.id) === index
+      );
+
       console.log('Transformed fixtures:', transformedFixtures);
+      console.log('Deduplicated fixtures:', {
+        original: transformedFixtures.length,
+        unique: uniqueFixtures.length,
+        duplicatesRemoved: transformedFixtures.length - uniqueFixtures.length
+      });
 
       return {
         success: true,
         data: {
-          fixtures: transformedFixtures,
-          totalCount: response.totalCount || transformedFixtures.length,
+          fixtures: uniqueFixtures,
+          totalCount: response.totalCount || uniqueFixtures.length,
           gameweek: response.gameweek,
           source: 'backend-api',
           timestamp: response.timestamp || new Date().toISOString()

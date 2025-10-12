@@ -15,6 +15,11 @@ import { LOGO_SIZES } from "../../utils/teamLogos";
 const UpcomingMatchesPanel = ({ matches, onViewAll, onPredictMatch }) => {
   const { theme } = useContext(ThemeContext);
 
+  console.log('🎯 UpcomingMatchesPanel rendered with:', {
+    matchCount: matches?.length || 0,
+    matches: matches?.map(m => ({ id: m.id, home: m.homeTeam, away: m.awayTeam })) || []
+  });
+
   return (
     <div
       className={`${
