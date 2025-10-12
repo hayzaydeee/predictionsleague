@@ -151,6 +151,7 @@ export const TEAM_NAME_MAPPING = {
 
   // Manchester City
   "Man City": "Manchester City",
+  "Man. City": "Manchester City",
   "Manchester City": "Manchester City",
   "Manchester City FC": "Manchester City",
   MCFC: "Manchester City",
@@ -158,6 +159,7 @@ export const TEAM_NAME_MAPPING = {
 
   // Manchester United
   "Man United": "Manchester United",
+  "Man. United": "Manchester United",
   "Manchester United": "Manchester United",
   "Manchester United FC": "Manchester United",
   MUFC: "Manchester United",

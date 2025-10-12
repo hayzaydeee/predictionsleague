@@ -9,6 +9,8 @@ import {
 } from "@radix-ui/react-icons";
 import { format, parseISO, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth, isToday } from "date-fns";
 import { ThemeContext } from "../../context/ThemeContext";
+import TeamLogo from "../ui/TeamLogo";
+import { LOGO_SIZES } from "../../utils/teamLogos";
 
 const LeaguePredictionsCalendar = ({
   predictions,
@@ -64,10 +66,7 @@ const LeaguePredictionsCalendar = ({
   // Generate all calendar days including previous/next month padding
   const allCalendarDays = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
 
-  const getTeamLogo = (teamName) => {
-    const normalizedName = teamName?.toLowerCase().replace(/\s+/g, '');
-    return teamLogos[normalizedName];
-  };
+
 
   const formatPrediction = (prediction) => {
     if (prediction.homeScore !== null && prediction.awayScore !== null) {

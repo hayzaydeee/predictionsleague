@@ -12,6 +12,8 @@ import {
   ClockIcon,
   MagicWandIcon
 } from '@radix-ui/react-icons';
+import TeamLogo from "../ui/TeamLogo";
+import { LOGO_SIZES } from "../../utils/teamLogos";
 
 const PredictionBreakdownModal = ({ 
   isOpen, 
@@ -61,9 +63,7 @@ const PredictionBreakdownModal = ({
 
   const basePoints = calculateBasePoints();
 
-  const getTeamLogo = (teamName) => {
-    return `/src/assets/clubs/${teamName.toLowerCase().replace(/\s+/g, '-')}.png`;
-  };
+
 
   const formattedDate = format(parseISO(prediction.date), 'MMM dd, HH:mm');
 

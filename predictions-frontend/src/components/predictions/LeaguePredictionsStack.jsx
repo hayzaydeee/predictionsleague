@@ -11,6 +11,8 @@ import {
 } from "@radix-ui/react-icons";
 import { format, parseISO } from "date-fns";
 import { ThemeContext } from "../../context/ThemeContext";
+import TeamLogo from "../ui/TeamLogo";
+import { LOGO_SIZES } from "../../utils/teamLogos";
 
 const LeaguePredictionsStack = ({
   predictions,
@@ -39,10 +41,7 @@ const LeaguePredictionsStack = ({
     return new Date(b.predictedAt || b.date) - new Date(a.predictedAt || a.date);
   });
 
-  const getTeamLogo = (teamName) => {
-    const normalizedName = teamName?.toLowerCase().replace(/\s+/g, '');
-    return teamLogos[normalizedName];
-  };
+
 
   const formatPrediction = (prediction) => {
     if (prediction.homeScore !== null && prediction.awayScore !== null) {
@@ -208,13 +207,11 @@ const LeaguePredictionsStack = ({
                 <div className="space-y-3 mb-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      {getTeamLogo(prediction.homeTeam) && (
-                        <img 
-                          src={getTeamLogo(prediction.homeTeam)} 
-                          alt={prediction.homeTeam} 
-                          className="w-6 h-6"
-                        />
-                      )}
+                      <TeamLogo
+                        teamName={prediction.homeTeam}
+                        size={LOGO_SIZES.sm}
+                        theme={theme}
+                      />
                       <span className={`font-medium ${
                         theme === 'dark' ? 'text-slate-300' : 'text-slate-700'
                       }`}>
@@ -238,13 +235,11 @@ const LeaguePredictionsStack = ({
 
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      {getTeamLogo(prediction.awayTeam) && (
-                        <img 
-                          src={getTeamLogo(prediction.awayTeam)} 
-                          alt={prediction.awayTeam} 
-                          className="w-6 h-6"
-                        />
-                      )}
+                      <TeamLogo
+                        teamName={prediction.awayTeam}
+                        size={LOGO_SIZES.sm}
+                        theme={theme}
+                      />
                       <span className={`font-medium ${
                         theme === 'dark' ? 'text-slate-300' : 'text-slate-700'
                       }`}>
