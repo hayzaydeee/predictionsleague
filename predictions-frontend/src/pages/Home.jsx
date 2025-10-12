@@ -10,7 +10,6 @@ import useDashboardData from "../hooks/useDashboardData";
 
 // Import from centralized data file
 import {
-  upcomingMatches,
   recentPredictions,
   leagues,
 } from "../data/sampleData";

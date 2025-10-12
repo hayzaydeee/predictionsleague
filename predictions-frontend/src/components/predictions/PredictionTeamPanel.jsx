@@ -3,12 +3,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { PlusIcon, MinusIcon, CalendarIcon } from "@radix-ui/react-icons";
 import { format, parseISO } from "date-fns";
 import { getTeamPredictionStats } from "../../utils/predictionUtils";
-import { normalizeTeamName, getTeamLogo } from "../../utils/teamUtils";
-import { getLogoUrl } from "../../utils/logoCache";
+import { normalizeTeamName } from "../../utils/teamUtils";
 import { ThemeContext } from "../../context/ThemeContext";
+import TeamLogo from "../ui/TeamLogo";
+import { LOGO_SIZES } from "../../utils/teamLogos";
 
-// Rich Prediction Card Component
-const PredictionCard = ({ prediction, onSelect, onEdit, teamLogos, theme }) => {
+// Rich Prediction Card Component  
+const PredictionCard = ({ prediction, onSelect, onEdit, theme }) => {
   const getGoalCounts = (scorers) => {
     if (!scorers || scorers.length === 0) return {};
     return scorers.reduce((counts, scorer) => {
@@ -238,36 +239,7 @@ const PredictionTeamPanel = ({
   const { theme } = useContext(ThemeContext);
   const stats = getTeamPredictionStats(predictions);
 
-  // Handle team logo with better caching and fallbacks
-  const getTeamLogoSrc = (teamName) => {
-    // Use the getLogoUrl helper first to try all variants with context logos
-    if (teamLogos) {
-      const logoUrl = getLogoUrl(teamName, teamLogos, normalizeTeamName);
-
-      // If we got a non-placeholder logo, use it
-      if (!logoUrl.includes("placeholder")) {
-        return logoUrl;
-      }
-    }
-
-    // Fall back to the utility function which uses local assets
-    const logo = getTeamLogo(teamName);
-
-    // Debug logging
-    if (logo.includes("placeholder")) {
-      console.log(
-        `No logo found for ${teamName} in either context or local assets`
-      );
-      if (teamLogos) {
-        console.log(
-          "Available logo team names:",
-          Object.keys(teamLogos).sort().join(", ")
-        );
-      }
-    }
-
-    return logo;
-  };
+  // Team logos now handled by TeamLogo component - no custom function needed
 
   return (
     <div
@@ -285,10 +257,11 @@ const PredictionTeamPanel = ({
         onClick={() => onToggle(team)}
       >
         <div className="flex items-center">
-          <img
-            src={getTeamLogoSrc(team)}
-            alt={team}
-            className="w-8 h-8 object-contain mr-3"
+          <TeamLogo
+            teamName={team}
+            size={LOGO_SIZES.sm}
+            theme={theme}
+            className="mr-3 flex-shrink-0"
           />
           <div>
             <h3
@@ -375,7 +348,6 @@ const PredictionTeamPanel = ({
                     prediction={prediction}
                     onSelect={onPredictionSelect}
                     onEdit={onPredictionEdit}
-                    teamLogos={teamLogos}
                     theme={theme}
                   />
                 ))}

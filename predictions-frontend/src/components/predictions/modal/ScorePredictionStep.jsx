@@ -2,7 +2,6 @@ import { useContext } from "react";
 import { motion } from "framer-motion";
 import { ThemeContext } from "../../../context/ThemeContext";
 import { getThemeStyles, backgrounds, text } from "../../../utils/themeUtils";
-import { getTeamLogo } from "../../../data/sampleData";
 import { RocketIcon } from "@radix-ui/react-icons";
 
 export default function ScorePredictionStep({ 

@@ -25,7 +25,7 @@ import PredictionCarousel from "../predictions/PredictionCarousel";
 import LeaguePredictionViewToggleBar from "../predictions/LeaguePredictionViewToggleBar";
 import LeaguePredictionContentView from "../predictions/LeaguePredictionContentView";
 import LeaguePredictionFilters from "../predictions/LeaguePredictionFilters";
-import { teamLogos } from "../../data/sampleData";
+
 
 const LeagueDetailView = ({ leagueId, league, onBack, onManage }) => {
   const [activeTab, setActiveTab] = useState("leaderboard");

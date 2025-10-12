@@ -2,24 +2,19 @@ import { useContext } from "react";
 import { motion } from "framer-motion";
 import { format, parseISO } from "date-fns";
 import { ClockIcon } from "@radix-ui/react-icons";
-import { getTeamLogo } from "../../utils/teamUtils";
 import { ThemeContext } from "../../context/ThemeContext";
 import { calculatePoints } from "../../utils/pointsCalculation";
+import TeamLogo from "../ui/TeamLogo";
+import { LOGO_SIZES } from "../../utils/teamLogos";
 
 const SimplePredictionCard = ({
   prediction,
-  teamLogos = {},
   selected = false,
   onClick,
   onEditClick,
 }) => {
   // Get theme context
   const { theme } = useContext(ThemeContext);
-
-  // Use getTeamLogo utility with fallback to context logos
-  const getLogoSrc = (teamName) => {
-    return teamLogos[teamName] || getTeamLogo(teamName);
-  };
 
   // Calculate accurate points
   const calculatedPoints = calculatePoints(prediction);
@@ -57,10 +52,11 @@ const SimplePredictionCard = ({
         </div>
       </div>
       <div className="flex items-center">
-        <img
-          src={getLogoSrc(prediction.homeTeam)}
-          alt={prediction.homeTeam}
-          className="w-10 h-10 object-contain"
+        <TeamLogo
+          teamName={prediction.homeTeam}
+          size={LOGO_SIZES.md}
+          theme={theme}
+          className="flex-shrink-0"
         />
         <div className="mx-2 flex-grow">
           <div className="flex justify-between items-center">
@@ -107,10 +103,11 @@ const SimplePredictionCard = ({
             </span>
           </div>
         </div>
-        <img
-          src={getLogoSrc(prediction.awayTeam)}
-          alt={prediction.awayTeam}
-          className="w-10 h-10 object-contain"
+        <TeamLogo
+          teamName={prediction.awayTeam}
+          size={LOGO_SIZES.md}
+          theme={theme}
+          className="flex-shrink-0"
         />
       </div>
       <div className="mt-2 flex justify-between items-center">

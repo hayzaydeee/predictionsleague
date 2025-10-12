@@ -201,7 +201,7 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
           onApplyChip={handleApplyGameweekChip}
           toggleChipInfoModal={toggleChipInfoModal}
           activeMatchChips={[]}
-          upcomingFixtures={upcomingMatches || []}
+          upcomingFixtures={liveFixtures || []}
         />
       </motion.div>
 

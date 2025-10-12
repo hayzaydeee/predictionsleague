@@ -1,7 +1,8 @@
 import { useContext } from "react";
 import { ThemeContext } from "../../../context/ThemeContext";
-import { getTeamLogo } from "../../../data/sampleData";
 import { ChevronRightIcon, ExclamationTriangleIcon } from "@radix-ui/react-icons";
+import TeamLogo from "../../ui/TeamLogo";
+import { LOGO_SIZES } from "../../../utils/teamLogos";
 
 // Helper functions for team colors
 const getTeamColorStyles = (teamType) => {
@@ -114,11 +115,12 @@ export default function GoalscorerSelector({
     >
       {/* Team header */}
       <div className={`px-3 py-2 ${colorStyles.bg} border-b ${colorStyles.borderHeader} flex items-center`}>
-        <div className={`w-6 h-6 rounded-full ${colorStyles.bgIcon} border ${colorStyles.borderIcon} p-0.5 flex items-center justify-center mr-2`}>
-          <img
-            src={getTeamLogo(team)}
-            alt={team}
-            className="w-4 h-4 object-contain"
+        <div className="mr-2">
+          <TeamLogo
+            teamName={team}
+            size={LOGO_SIZES.xs}
+            theme={theme}
+            className="flex-shrink-0"
           />
         </div>
         <div

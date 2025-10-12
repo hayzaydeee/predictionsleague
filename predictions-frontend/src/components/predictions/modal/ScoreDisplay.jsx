@@ -1,7 +1,8 @@
 import { useContext } from "react";
 import { ThemeContext } from "../../../context/ThemeContext";
 import { getThemeStyles } from "../../../utils/themeUtils";
-import { getTeamLogo } from "../../../data/sampleData";
+import TeamLogo from "../../ui/TeamLogo";
+import { LOGO_SIZES } from "../../../utils/teamLogos";
 
 export default function ScoreDisplay({ 
   fixture, 
@@ -60,14 +61,12 @@ export default function ScoreDisplay({
   return (
     <div className={`flex justify-center items-center ${className}`}>
       <div className="flex items-center">
-        <div className={`w-8 h-8 rounded-full flex items-center justify-center mr-2 ${getThemeStyles(theme, {
-          dark: 'bg-slate-700/30 border border-slate-600/50',
-          light: 'bg-slate-200/50 border border-slate-300/50'
-        })}`}>
-          <img
-            src={getTeamLogo(fixture.homeTeam)}
-            alt={fixture.homeTeam}
-            className="w-6 h-6 object-contain"
+        <div className="mr-2">
+          <TeamLogo
+            teamName={fixture.homeTeam}
+            size={LOGO_SIZES.sm}
+            theme={theme}
+            className="flex-shrink-0"
           />
         </div>
         <span
@@ -106,14 +105,12 @@ export default function ScoreDisplay({
         >
           {fixture.awayTeam}
         </span>
-        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${getThemeStyles(theme, {
-          dark: 'bg-slate-700/30 border border-slate-600/50',
-          light: 'bg-slate-200/50 border border-slate-300/50'
-        })}`}>
-          <img
-            src={getTeamLogo(fixture.awayTeam)}
-            alt={fixture.awayTeam}
-            className="w-6 h-6 object-contain"
+        <div className="ml-2">
+          <TeamLogo
+            teamName={fixture.awayTeam}
+            size={LOGO_SIZES.sm}
+            theme={theme}
+            className="flex-shrink-0"
           />
         </div>
       </div>
