@@ -14,6 +14,7 @@ const FIXTURES_ENDPOINT = '/fixtures';
 // Match status constants
 const MATCH_STATUS = {
   SCHEDULED: 'SCHEDULED',
+  TIMED: 'TIMED', // Backend uses TIMED for scheduled matches
   LIVE: 'LIVE', 
   IN_PLAY: 'IN_PLAY',
   PAUSED: 'PAUSED',
@@ -163,8 +164,11 @@ export const externalFixturesAPI = {
 
       console.log('Raw backend response:', response);
 
+      // Backend returns direct array of fixtures, not wrapped in {fixtures: []}
+      const fixturesArray = Array.isArray(response) ? response : (response.fixtures || []);
+      
       // Transform fixtures (filter out nulls from failed transforms)
-      const transformedFixtures = (response.fixtures || [])
+      const transformedFixtures = fixturesArray
         .map(transformers.transformFixture)
         .filter(fixture => fixture !== null);
 
@@ -207,7 +211,10 @@ export const externalFixturesAPI = {
       console.log('Attempting to fetch live fixtures from backend...');
       const response = await apiClient.request('/live');
 
-      const transformedFixtures = (response.fixtures || [])
+      // Backend returns direct array of fixtures, not wrapped in {fixtures: []}
+      const fixturesArray = Array.isArray(response) ? response : (response.fixtures || []);
+      
+      const transformedFixtures = fixturesArray
         .map(transformers.transformFixture)
         .filter(fixture => fixture !== null);
 

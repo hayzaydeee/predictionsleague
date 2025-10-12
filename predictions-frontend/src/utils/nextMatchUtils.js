@@ -18,7 +18,9 @@ export const getNextMatch = (fixtures) => {
   const upcomingMatches = fixtures
     .filter(fixture => {
       const matchDate = new Date(fixture.date);
-      return matchDate > now && fixture.status === 'SCHEDULED';
+      // Accept both SCHEDULED and TIMED status for upcoming matches
+      const isUpcoming = fixture.status === 'SCHEDULED' || fixture.status === 'TIMED';
+      return matchDate > now && isUpcoming;
     })
     .sort((a, b) => new Date(a.date) - new Date(b.date));
 
