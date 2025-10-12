@@ -75,6 +75,17 @@ export const useExternalFixtures = (options = {}) => {
       return failureCount < 2;
     }
   });
+
+  // Return the query data with proper destructuring
+  return {
+    fixtures: query.data?.fixtures,
+    isLoading: query.isLoading,
+    isError: query.isError,
+    error: query.error,
+    dataUpdatedAt: query.dataUpdatedAt,
+    // Include all other query properties
+    ...query
+  };
 };
 
 /**
