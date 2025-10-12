@@ -59,10 +59,6 @@ export const useUserPredictions = (options = {}) => {
  */
 export const useClientSideFixtures = (options = {}) => {
   const {
-    competitions = ['PL', 'CL'], // Default to Premier League and Champions League
-    status = 'SCHEDULED',
-    dateFrom,
-    dateTo,
     enabled = true,
     fallbackToSample = true,
     includeUnpredicted = true,
@@ -70,17 +66,13 @@ export const useClientSideFixtures = (options = {}) => {
     filters = {}
   } = options;
 
-  // Fetch external fixtures
+  // Fetch external fixtures (simplified to current gameweek only)
   const {
     data: externalData,
     isLoading: externalLoading,
     error: externalError,
     isError: externalIsError
   } = useExternalFixtures({
-    competitions,
-    status,
-    dateFrom,
-    dateTo,
     enabled,
     fallbackToSample
   });
@@ -98,7 +90,7 @@ export const useClientSideFixtures = (options = {}) => {
   const hybridQuery = useQuery({
     queryKey: [
       HYBRID_QUERY_KEYS.HYBRID_FIXTURES, 
-      { competitions, status, dateFrom, dateTo, filters }
+      { filters }
     ],
     queryFn: async () => {
       const externalFixtures = externalData?.fixtures || [];

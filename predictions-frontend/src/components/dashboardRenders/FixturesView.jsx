@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import GameweekChipsPanel from "../panels/GameweekChipsPanel";
 import ViewToggleBar from "../ui/ViewToggleBar";
@@ -10,13 +10,24 @@ import { useUserPreferences } from "../../context/UserPreferencesContext";
 import { backgrounds, text } from "../../utils/themeUtils";
 import { gameweeks, upcomingMatches } from "../../data/sampleData";
 import { useFixtures } from "../../hooks/useFixtures";
+import { fixtureFilters } from "../../services/api/externalFixturesAPI";
+import ViewToggleBar from "../ui/ViewToggleBar";
+import ActiveChipsBanner from "../ui/ActiveChipsBanner";
+import ContentView from "../fixtures/ContentView";
+import FixtureFilters from "../fixtures/FixtureFilters";
+import { ThemeContext } from "../../context/ThemeContext";
+import { useUserPreferences } from "../../context/UserPreferencesContext";
+import { backgrounds, text } from "../../utils/themeUtils";
+import { gameweeks, upcomingMatches } from "../../data/sampleData";
+import { useFixtures } from "../../hooks/useFixtures";
+import { fixtureFilters } from "../../services/api/externalFixturesAPI";
 
 const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
   // Get theme context and user preferences
   const { theme } = useContext(ThemeContext);
   const { preferences } = useUserPreferences();
 
-  // Fetch fixtures using the consolidated fixtures hook
+  // Fetch fixtures using the simplified fixtures hook
   const {
     fixtures: liveFixtures,
     isLoading: fixturesLoading,
@@ -25,10 +36,7 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
     dataQuality,
     stats
   } = useFixtures({
-    competitions: ['PL', 'CL'], // Premier League and Champions League
-    status: 'SCHEDULED',
-    fallbackToSample: true, // Use sample data if external API fails
-    includeUnpredicted: true
+    fallbackToSample: true // Use sample data if external API fails
   });
 
   // API Status and Error Handling
@@ -62,10 +70,8 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
     );
   };
   // Filter fixtures based on selected filters using client-side filtering
-  const filteredFixtures = React.useMemo(() => {
+  const filteredFixtures = useMemo(() => {
     if (!liveFixtures) return [];
-    
-    const { fixtureFilters } = require('../../services/api/externalFixturesAPI');
     
     return fixtureFilters.applyFilters(liveFixtures, {
       date: dateFilter,

@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { useQuery, useQueries, useQueryClient } from '@tanstack/react-query';
-import { externalFixturesAPI } from '../services/api/externalFixturesAPI';
+import { externalFixturesAPI, fixtureFilters } from '../services/api/externalFixturesAPI';
 
 // Query keys for React Query
 const QUERY_KEYS = {
@@ -86,7 +86,6 @@ export const useTodaysFixtures = (options = {}) => {
   const todaysFixtures = React.useMemo(() => {
     if (!allFixtures?.fixtures) return null;
     
-    const { fixtureFilters } = require('../services/api/externalFixturesAPI');
     return {
       ...allFixtures,
       fixtures: fixtureFilters.getTodaysFixtures(allFixtures.fixtures)
