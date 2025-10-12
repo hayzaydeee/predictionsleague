@@ -40,17 +40,20 @@ const DashboardView = ({
   // Error states
   errors = {},
 }) => {
+  // Memoize hook options to prevent unnecessary re-renders
+  const externalFixturesOptions = useMemo(() => ({
+    fallbackToSample: true,
+    staleTime: 15 * 60 * 1000, // 15 minutes for dashboard
+    cacheTime: 30 * 60 * 1000, // 30 minutes
+  }), []);
+
   // Fetch external fixtures for real upcoming matches data
   const {
     fixtures: externalFixtures,
     isLoading: externalFixturesLoading,
     isError: externalFixturesError,
     error: externalFixturesErrorDetails,
-  } = useExternalFixtures({
-    fallbackToSample: true,
-    staleTime: 15 * 60 * 1000, // 15 minutes for dashboard
-    cacheTime: 30 * 60 * 1000, // 30 minutes
-  });
+  } = useExternalFixtures(externalFixturesOptions);
 
   // Debug: Log fixture data availability
   console.log('📊 DashboardView - External fixtures loaded:', {
@@ -62,11 +65,21 @@ const DashboardView = ({
   // State for processed upcoming fixtures
   const [upcomingFixtures, setUpcomingFixtures] = useState([]);
 
+  // Memoize fixtures array to prevent useEffect from running on reference changes
+  const memoizedExternalFixtures = useMemo(() => externalFixtures, [
+    externalFixtures?.length,
+    externalFixtures?.[0]?.id // Use first fixture ID as a stable reference
+  ]);
+
   // Process external fixtures to get upcoming matches for dashboard
   useEffect(() => {
+    // Don't process if still loading
+    if (externalFixturesLoading) {
+      return;
+    }
     
     const processFixtures = async () => {
-      if (!externalFixtures || !Array.isArray(externalFixtures)) {
+      if (!memoizedExternalFixtures || !Array.isArray(memoizedExternalFixtures)) {
         console.log('📊 DashboardView - No valid fixtures data, setting empty array');
         setUpcomingFixtures([]);
         return;
@@ -74,12 +87,12 @@ const DashboardView = ({
       
       const now = new Date();
       console.log('📊 Processing external fixtures for dashboard:', {
-        totalFixtures: externalFixtures.length,
+        totalFixtures: memoizedExternalFixtures.length,
         currentTime: now.toISOString(),
-        sampleFixture: externalFixtures[0]
+        sampleFixture: memoizedExternalFixtures[0]
       });
       
-      const upcoming = externalFixtures
+      const upcoming = memoizedExternalFixtures
         .filter(fixture => {
           const fixtureDate = new Date(fixture.date);
           const isUpcoming = fixtureDate > now && 
@@ -164,7 +177,7 @@ const DashboardView = ({
     };
 
     processFixtures();
-  }, [externalFixtures, externalFixturesError]);
+  }, [memoizedExternalFixtures, externalFixturesError, externalFixturesLoading]);
 
   // Helper function to format match data for the predictions modal
   const formatMatchForPrediction = (match) => {
