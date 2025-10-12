@@ -10,7 +10,7 @@ import { useUserPreferences } from "../../context/UserPreferencesContext";
 import { text } from "../../utils/themeUtils";
 
 // Import data and utilities
-import { predictions } from "../../data/sampleData";
+import { predictions, teamLogos } from "../../data/sampleData";
 
 const PredictionsView = ({ handleEditPrediction }) => {  // Get theme context and user preferences
   const { theme } = useContext(ThemeContext);
@@ -120,6 +120,7 @@ const PredictionsView = ({ handleEditPrediction }) => {  // Get theme context an
       </div>      {/* Potential Points Summary - Always visible but only shows pending predictions */}
       <PotentialPointsSummary
         predictions={pendingPredictions}
+        teamLogos={teamLogos}
       />
 
       {/* Content container with filters and predictions */}

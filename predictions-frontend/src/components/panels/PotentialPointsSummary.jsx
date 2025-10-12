@@ -9,6 +9,7 @@ import {
   StarIcon,
   RocketIcon,
 } from "@radix-ui/react-icons";
+import RulesAndPointsModal from "../common/RulesAndPointsModal";
 import { calculatePredictionPoints } from "../../utils/chipUtils";
 import { ThemeContext } from "../../context/ThemeContext";
 import { getThemeStyles, text } from "../../utils/themeUtils";
@@ -17,6 +18,7 @@ const PotentialPointsSummary = ({ predictions, teamLogos }) => {
   const [showDetailedPointsBreakdown, setShowDetailedPointsBreakdown] =
     useState(false);
   const [isCollapsed, setIsCollapsed] = useState(true);
+  const [showRulesModal, setShowRulesModal] = useState(false);
   // Get theme context
   const { theme } = useContext(ThemeContext);
   // Use the already filtered pending predictions passed from parent component
@@ -65,25 +67,43 @@ const PotentialPointsSummary = ({ predictions, teamLogos }) => {
               </p>
             </div>
           </div>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            className={`p-2 rounded-lg transition-all duration-200 border ${getThemeStyles(
-              theme,
-              {
-                dark: "bg-slate-700/50 hover:bg-slate-700/70 text-slate-300 hover:text-slate-200 border-slate-600/50 hover:border-slate-500/50",
-                light:
-                  "bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-700 border-slate-300 hover:border-slate-400",
-              }
-            )}`}
-          >
-            <ChevronDownIcon
-              className={`w-4 h-4 transition-transform duration-200 ${
-                isCollapsed ? "rotate-180" : ""
-              }`}
-            />
-          </motion.button>
+          <div className="flex items-center gap-2">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setShowRulesModal(true)}
+              className={`p-2 rounded-lg transition-all duration-200 border ${getThemeStyles(
+                theme,
+                {
+                  dark: "bg-slate-700/50 hover:bg-slate-700/70 text-slate-300 hover:text-slate-200 border-slate-600/50 hover:border-slate-500/50",
+                  light:
+                    "bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-700 border-slate-300 hover:border-slate-400",
+                }
+              )}`}
+              title="View Rules & Points"
+            >
+              <InfoCircledIcon className="w-4 h-4" />
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setIsCollapsed(!isCollapsed)}
+              className={`p-2 rounded-lg transition-all duration-200 border ${getThemeStyles(
+                theme,
+                {
+                  dark: "bg-slate-700/50 hover:bg-slate-700/70 text-slate-300 hover:text-slate-200 border-slate-600/50 hover:border-slate-500/50",
+                  light:
+                    "bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-700 border-slate-300 hover:border-slate-400",
+                }
+              )}`}
+            >
+              <ChevronDownIcon
+                className={`w-4 h-4 transition-transform duration-200 ${
+                  isCollapsed ? "rotate-180" : ""
+                }`}
+              />
+            </motion.button>
+          </div>
         </div>{" "}
       </div>
 
@@ -309,7 +329,7 @@ const PotentialPointsSummary = ({ predictions, teamLogos }) => {
                               )}`}
                             >
                               <img
-                                src={teamLogos[prediction.homeTeam]}
+                                src={teamLogos?.[prediction.homeTeam] || '/assets/clubs/default.png'}
                                 alt={prediction.homeTeam}
                                 className="w-4 h-4 object-contain"
                               />
@@ -594,7 +614,7 @@ const DetailedBreakdown = ({
             )}`}
           >
             <img
-              src={teamLogos[prediction.homeTeam]}
+              src={teamLogos?.[prediction.homeTeam] || '/assets/clubs/default.png'}
               alt={prediction.homeTeam}
               className="w-4 h-4 object-contain"
             />
@@ -772,6 +792,11 @@ const DetailedBreakdown = ({
           </motion.div>
         )}
       </AnimatePresence>
+      
+      <RulesAndPointsModal
+        isOpen={showRulesModal}
+        onClose={() => setShowRulesModal(false)}
+      />
     </>
   );
 };
