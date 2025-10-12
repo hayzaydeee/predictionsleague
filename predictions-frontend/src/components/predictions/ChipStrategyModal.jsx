@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { InfoCircledIcon, StarIcon, LightningBoltIcon, TargetIcon, RocketIcon } from "@radix-ui/react-icons";
+import { InfoCircledIcon, StarIcon, LightningBoltIcon, TargetIcon, RocketIcon, Cross2Icon } from "@radix-ui/react-icons";
 import { useContext, useMemo, memo } from "react";
 import { ThemeContext } from "../../context/ThemeContext";
 import { backgrounds, text, getThemeStyles } from "../../utils/themeUtils";
@@ -10,25 +10,35 @@ const ChipStrategyModal = memo(({ isOpen, onClose }) => {
   // Memoize all theme-related styles to prevent recalculation
   const themeStyles = useMemo(() => ({
     modalBg: getThemeStyles(theme, {
-      dark: "bg-slate-900/95 border-slate-700/60",
-      light: "bg-white border-slate-200",
+      dark: "bg-slate-900/98 border-slate-700/40",
+      light: "bg-white/98 border-slate-200/60",
     }),
-    headerBg: getThemeStyles(theme, backgrounds.secondary),
-    cardBg: getThemeStyles(theme, backgrounds.card),
+    headerBg: getThemeStyles(theme, {
+      dark: "bg-gradient-to-r from-slate-800/90 to-slate-700/90 border-slate-700/50",
+      light: "bg-gradient-to-r from-slate-50/90 to-slate-100/90 border-slate-200/50"
+    }),
+    cardBg: getThemeStyles(theme, {
+      dark: "bg-slate-800/60 border-slate-700/40 backdrop-blur-sm",
+      light: "bg-white/80 border-slate-200/60 backdrop-blur-sm shadow-sm"
+    }),
+    sectionBg: getThemeStyles(theme, {
+      dark: "bg-gradient-to-br from-slate-800/50 to-slate-900/50 border-slate-700/30",
+      light: "bg-gradient-to-br from-slate-50/80 to-white/80 border-slate-200/50 shadow-sm"
+    }),
     iconBg: getThemeStyles(theme, {
-      dark: 'bg-emerald-500/20',
-      light: 'bg-emerald-100'
+      dark: 'bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border-emerald-500/30',
+      light: 'bg-gradient-to-br from-emerald-100 to-teal-100 border-emerald-200/50'
     }),
     closeBtn: getThemeStyles(theme, {
-      dark: 'bg-slate-800/50 hover:bg-slate-700/50 text-slate-400 hover:text-slate-300',
-      light: 'bg-slate-200/50 hover:bg-slate-300/50 text-slate-600 hover:text-slate-700'
+      dark: 'bg-slate-800/60 hover:bg-slate-700/70 text-slate-400 hover:text-slate-200 border-slate-700/40',
+      light: 'bg-slate-100/60 hover:bg-slate-200/70 text-slate-600 hover:text-slate-800 border-slate-200/40'
     }),
     titleText: getThemeStyles(theme, text.primary),
     mutedText: getThemeStyles(theme, text.muted),
     secondaryText: getThemeStyles(theme, text.secondary),
     divider: getThemeStyles(theme, {
-      dark: 'bg-slate-700/50',
-      light: 'bg-slate-300/50'
+      dark: 'bg-gradient-to-r from-transparent via-slate-700/60 to-transparent',
+      light: 'bg-gradient-to-r from-transparent via-slate-300/60 to-transparent'
     })
   }), [theme]);
 
@@ -40,66 +50,66 @@ const ChipStrategyModal = memo(({ isOpen, onClose }) => {
         icon: '2x',
         name: 'Double Down',
         cooldown: 'Available every gameweek',
-        description: 'Double all points earned from one selected match.',
+        description: 'Double all points earned from one selected match prediction.',
         bgColor: 'emerald',
         hoverColor: 'emerald-500/30',
-        tipTitle: 'Strategy Tip:',
-        tip: 'Best used on matches where you have high confidence in your prediction, especially if you\'ve predicted goalscorers correctly.'
+        tipTitle: 'Strategic Usage:',
+        tip: 'Ideal for high-confidence predictions, especially exact scorelines or when you\'ve predicted multiple correct goalscorers. Combine with derby matches for maximum impact (1.5x multiplier applies first).'
       },
       {
         id: 'wildcard',
         icon: '3x', 
         name: 'Wildcard',
         cooldown: 'Cooldown: 7 gameweeks between uses',
-        description: 'Triple all points earned from one selected match.',
+        description: 'Triple all points earned from one selected match prediction.',
         bgColor: 'purple',
         hoverColor: 'purple-500/30',
-        tipTitle: 'Strategy Tip:',
-        tip: 'Save this for matches where you\'re extremely confident, or for derby matches where the points multiplier is already in effect.'
+        tipTitle: 'Strategic Usage:',
+        tip: 'Reserve for your most confident predictions of the season. Derby matches with exact scoreline predictions can yield 45+ points when combined with this chip.'
       },
       {
         id: 'scorerFocus',
         icon: '⚽',
         name: 'Scorer Focus', 
         cooldown: 'Cooldown: 5 gameweeks between uses',
-        description: 'Doubles all points from goalscorer predictions in one match.',
+        description: 'Doubles all points from goalscorer predictions in one selected match.',
         bgColor: 'green',
         hoverColor: 'green-500/30',
-        tipTitle: 'Strategy Tip:',
-        tip: 'Best used in high-scoring matches where you\'re confident about multiple goalscorers.'
+        tipTitle: 'Strategic Usage:',
+        tip: 'Perfect for matches featuring prolific goalscorers or games expected to be high-scoring. Research team news and recent form to maximize effectiveness.'
       },
       {
         id: 'opportunist',
         icon: '⏱️',
         name: 'Opportunist',
         cooldown: 'Limited use: Available twice per season', 
-        description: 'Change all six predictions up to 30 minutes before the first kickoff.',
+        description: 'Change all six predictions up to 30 minutes before the first match kickoff.',
         bgColor: 'amber',
         hoverColor: 'amber-500/30',
-        tipTitle: 'Strategy Tip:',
-        tip: 'Use when late team news significantly impacts your predictions, such as key players being injured or rested.'
+        tipTitle: 'Strategic Usage:',
+        tip: 'Save for gameweeks with significant late team news - injured key players, surprise lineups, or weather conditions. Monitor social media and club announcements.'
       }
     ],
     gameweekChips: [
       {
         id: 'defenseBoost',
-        icon: '�️',
+        icon: '🛡️',
         name: 'Defense++',
         usage: 'Cooldown: 5 gameweeks between uses',
-        description: 'Earn 10 bonus points if you correctly predict clean sheets across all matches where you predicted them.',
+        description: 'Earn 10 bonus points if you correctly predict clean sheets across ALL matches where you predicted them in the gameweek.',
         bgColor: 'blue',
-        tipTitle: 'Strategy Tip:',
-        tip: 'Best used when several defensive teams are playing against weaker attacking sides.'
+        tipTitle: 'Strategic Usage:',
+        tip: 'Analyze defensive statistics and upcoming fixtures. Best used when strong defensive teams face weaker attacking sides. Remember: ALL clean sheet predictions must be correct.'
       },
       {
         id: 'allInWeek', 
-        icon: '�',
+        icon: '🎯',
         name: 'All-In Week',
         usage: 'Limited use: Available twice per season',
-        description: 'Doubles the entire gameweek score (including deductions).',
+        description: 'Doubles your entire gameweek score, including both positive points and any negative deductions.',
         bgColor: 'red',
-        tipTitle: 'Strategy Tip:',  
-        tip: 'Use when you\'re confident across all matches in a gameweek, but be careful as negative points are also doubled.'
+        tipTitle: 'Strategic Usage:',  
+        tip: 'Use when extremely confident across all six matches. Ideal for gameweeks with many predictable fixtures, but remember that incorrect predictions with 2+ goal differences will also be doubled (-2 points each).'
       }
     ]
   }), []);
@@ -107,52 +117,109 @@ const ChipStrategyModal = memo(({ isOpen, onClose }) => {
   // Memoized chip card component to prevent unnecessary re-renders
   const ChipCard = memo(({ chip, type = 'match' }) => {
     const colorMap = {
-      emerald: { bg: 'bg-emerald-900/40', border: 'border-emerald-700/30', text: 'text-emerald-400', tip: 'text-emerald-300' },
-      purple: { bg: 'bg-purple-900/40', border: 'border-purple-700/30', text: 'text-purple-400', tip: 'text-purple-300' },
-      sky: { bg: 'bg-sky-900/40', border: 'border-sky-700/30', text: 'text-sky-400', tip: 'text-sky-300' },
-      green: { bg: 'bg-green-900/40', border: 'border-green-700/30', text: 'text-green-400', tip: 'text-green-300' },
-      amber: { bg: 'bg-amber-900/40', border: 'border-amber-700/30', text: 'text-amber-400', tip: 'text-amber-300' },
-      blue: { bg: 'bg-blue-900/40', border: 'border-blue-700/30', text: 'text-blue-400', tip: 'text-blue-300' },
-      red: { bg: 'bg-red-900/40', border: 'border-red-700/30', text: 'text-red-400', tip: 'text-red-300' }
+      emerald: { 
+        bg: getThemeStyles(theme, { dark: 'bg-gradient-to-br from-emerald-900/60 to-emerald-800/40', light: 'bg-gradient-to-br from-emerald-50 to-emerald-100' }), 
+        border: getThemeStyles(theme, { dark: 'border-emerald-600/40', light: 'border-emerald-200/60' }), 
+        text: getThemeStyles(theme, { dark: 'text-emerald-300', light: 'text-emerald-700' }), 
+        tip: getThemeStyles(theme, { dark: 'text-emerald-200', light: 'text-emerald-600' }),
+        iconBg: getThemeStyles(theme, { dark: 'bg-emerald-500/25 border-emerald-400/30', light: 'bg-emerald-200/60 border-emerald-300/50' }),
+        shadow: 'shadow-emerald-500/10'
+      },
+      purple: { 
+        bg: getThemeStyles(theme, { dark: 'bg-gradient-to-br from-purple-900/60 to-purple-800/40', light: 'bg-gradient-to-br from-purple-50 to-purple-100' }), 
+        border: getThemeStyles(theme, { dark: 'border-purple-600/40', light: 'border-purple-200/60' }), 
+        text: getThemeStyles(theme, { dark: 'text-purple-300', light: 'text-purple-700' }), 
+        tip: getThemeStyles(theme, { dark: 'text-purple-200', light: 'text-purple-600' }),
+        iconBg: getThemeStyles(theme, { dark: 'bg-purple-500/25 border-purple-400/30', light: 'bg-purple-200/60 border-purple-300/50' }),
+        shadow: 'shadow-purple-500/10'
+      },
+      sky: { 
+        bg: getThemeStyles(theme, { dark: 'bg-gradient-to-br from-sky-900/60 to-sky-800/40', light: 'bg-gradient-to-br from-sky-50 to-sky-100' }), 
+        border: getThemeStyles(theme, { dark: 'border-sky-600/40', light: 'border-sky-200/60' }), 
+        text: getThemeStyles(theme, { dark: 'text-sky-300', light: 'text-sky-700' }), 
+        tip: getThemeStyles(theme, { dark: 'text-sky-200', light: 'text-sky-600' }),
+        iconBg: getThemeStyles(theme, { dark: 'bg-sky-500/25 border-sky-400/30', light: 'bg-sky-200/60 border-sky-300/50' }),
+        shadow: 'shadow-sky-500/10'
+      },
+      green: { 
+        bg: getThemeStyles(theme, { dark: 'bg-gradient-to-br from-green-900/60 to-green-800/40', light: 'bg-gradient-to-br from-green-50 to-green-100' }), 
+        border: getThemeStyles(theme, { dark: 'border-green-600/40', light: 'border-green-200/60' }), 
+        text: getThemeStyles(theme, { dark: 'text-green-300', light: 'text-green-700' }), 
+        tip: getThemeStyles(theme, { dark: 'text-green-200', light: 'text-green-600' }),
+        iconBg: getThemeStyles(theme, { dark: 'bg-green-500/25 border-green-400/30', light: 'bg-green-200/60 border-green-300/50' }),
+        shadow: 'shadow-green-500/10'
+      },
+      amber: { 
+        bg: getThemeStyles(theme, { dark: 'bg-gradient-to-br from-amber-900/60 to-amber-800/40', light: 'bg-gradient-to-br from-amber-50 to-amber-100' }), 
+        border: getThemeStyles(theme, { dark: 'border-amber-600/40', light: 'border-amber-200/60' }), 
+        text: getThemeStyles(theme, { dark: 'text-amber-300', light: 'text-amber-700' }), 
+        tip: getThemeStyles(theme, { dark: 'text-amber-200', light: 'text-amber-600' }),
+        iconBg: getThemeStyles(theme, { dark: 'bg-amber-500/25 border-amber-400/30', light: 'bg-amber-200/60 border-amber-300/50' }),
+        shadow: 'shadow-amber-500/10'
+      },
+      blue: { 
+        bg: getThemeStyles(theme, { dark: 'bg-gradient-to-br from-blue-900/60 to-blue-800/40', light: 'bg-gradient-to-br from-blue-50 to-blue-100' }), 
+        border: getThemeStyles(theme, { dark: 'border-blue-600/40', light: 'border-blue-200/60' }), 
+        text: getThemeStyles(theme, { dark: 'text-blue-300', light: 'text-blue-700' }), 
+        tip: getThemeStyles(theme, { dark: 'text-blue-200', light: 'text-blue-600' }),
+        iconBg: getThemeStyles(theme, { dark: 'bg-blue-500/25 border-blue-400/30', light: 'bg-blue-200/60 border-blue-300/50' }),
+        shadow: 'shadow-blue-500/10'
+      },
+      red: { 
+        bg: getThemeStyles(theme, { dark: 'bg-gradient-to-br from-red-900/60 to-red-800/40', light: 'bg-gradient-to-br from-red-50 to-red-100' }), 
+        border: getThemeStyles(theme, { dark: 'border-red-600/40', light: 'border-red-200/60' }), 
+        text: getThemeStyles(theme, { dark: 'text-red-300', light: 'text-red-700' }), 
+        tip: getThemeStyles(theme, { dark: 'text-red-200', light: 'text-red-600' }),
+        iconBg: getThemeStyles(theme, { dark: 'bg-red-500/25 border-red-400/30', light: 'bg-red-200/60 border-red-300/50' }),
+        shadow: 'shadow-red-500/10'
+      }
     };
     
     const colors = colorMap[chip.bgColor] || colorMap.emerald;
     
     return (
       <motion.div
-        whileHover={{ scale: 1.02 }}
-        className={`${themeStyles.cardBg} rounded-lg p-5 border transition-all duration-200 hover:border-${chip.hoverColor || 'emerald-500/30'}`}
+        whileHover={{ scale: 1.02, y: -2 }}
+        whileTap={{ scale: 0.98 }}
+        className={`${themeStyles.cardBg} rounded-xl p-6 border transition-all duration-300 hover:shadow-lg ${colors.shadow} group overflow-hidden relative`}
       >
-        <div className="flex items-center gap-3 mb-4">
-          <div className={`w-10 h-10 ${colors.bg} rounded-lg flex items-center justify-center border ${colors.border}`}>
-            <span className={`${colors.text} text-lg ${typeof chip.icon === 'string' && chip.icon.length > 2 ? '' : 'font-bold font-outfit'}`}>
-              {chip.icon}
-            </span>
-          </div>
-          <div>
-            <h5 className={`${themeStyles.titleText} text-lg font-semibold font-outfit`}>
-              {chip.name}
-            </h5>
-            <div className={`text-xs font-medium font-outfit ${colors.tip}/70`}>
-              {chip.cooldown || chip.usage}
+        {/* Subtle background pattern */}
+        <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${colors.bg}`} />
+        
+        <div className="relative">
+          <div className="flex items-start gap-4 mb-4">
+            <div className={`w-12 h-12 ${colors.iconBg} rounded-xl flex items-center justify-center border shadow-sm`}>
+              <span className={`${colors.text} text-xl ${typeof chip.icon === 'string' && chip.icon.length > 2 ? 'text-base' : 'font-bold'} font-outfit`}>
+                {chip.icon}
+              </span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <h5 className={`${themeStyles.titleText} text-lg font-bold font-outfit mb-1 group-hover:${colors.text} transition-colors`}>
+                {chip.name}
+              </h5>
+              <div className={`text-xs font-medium font-outfit px-2 py-1 rounded-md ${colors.iconBg} ${colors.tip} inline-block`}>
+                {chip.cooldown || chip.usage}
+              </div>
             </div>
           </div>
-        </div>
 
-        <p className={`${themeStyles.secondaryText} text-sm mb-4 leading-relaxed`}>
-          {chip.description}
-        </p>
+          <p className={`${themeStyles.secondaryText} text-sm mb-5 leading-relaxed font-outfit`}>
+            {chip.description}
+          </p>
 
-        <div className={`${colors.bg.replace('900/40', '900/20')} rounded-md p-3 border ${colors.border.replace('700/30', '700/20')}`}>
-          <div className="flex items-start gap-2">
-            <StarIcon className="w-4 h-4 text-yellow-400 mt-0.5 shrink-0" />
-            <div>
-              <h6 className={`text-xs font-medium mb-1 font-outfit ${colors.tip}`}>
-                {chip.tipTitle}
-              </h6>
-              <p className={`${themeStyles.secondaryText} text-xs leading-relaxed font-outfit`}>
-                {chip.tip}
-              </p>
+          <div className={`${colors.bg} rounded-xl p-4 border ${colors.border} backdrop-blur-sm`}>
+            <div className="flex items-start gap-3">
+              <div className={`w-6 h-6 rounded-lg ${colors.iconBg} flex items-center justify-center mt-0.5 shrink-0`}>
+                <StarIcon className={`w-3.5 h-3.5 ${colors.text}`} />
+              </div>
+              <div className="flex-1">
+                <h6 className={`text-xs font-bold mb-2 font-outfit ${colors.text} uppercase tracking-wider`}>
+                  {chip.tipTitle}
+                </h6>
+                <p className={`${colors.tip} text-xs leading-relaxed font-outfit`}>
+                  {chip.tip}
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -171,148 +238,243 @@ const ChipStrategyModal = memo(({ isOpen, onClose }) => {
       onClick={onClose}
     >
       <motion.div
-        initial={{ scale: 0.95, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.95, opacity: 0 }}
+        initial={{ scale: 0.96, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.96, opacity: 0, y: 20 }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
         onClick={(e) => e.stopPropagation()}
-        className={`${getThemeStyles(theme, {
-          dark: "bg-slate-900/95 border-slate-700/60",
-          light: "bg-white border-slate-200",
-        })} rounded-2xl max-w-5xl w-full max-h-[90vh] overflow-hidden shadow-2xl border backdrop-blur-lg`}
+        className={`${themeStyles.modalBg} rounded-3xl max-w-6xl w-full max-h-[92vh] overflow-hidden shadow-2xl border backdrop-blur-xl relative`}
       >
+        {/* Animated background gradients */}
+        <div className="absolute inset-0 opacity-30">
+          <div className={`absolute top-0 right-0 w-96 h-96 ${getThemeStyles(theme, { 
+            dark: 'bg-gradient-to-bl from-emerald-500/10 via-teal-500/5 to-transparent', 
+            light: 'bg-gradient-to-bl from-emerald-200/20 via-teal-200/10 to-transparent' 
+          })} rounded-full blur-3xl transform rotate-12`} />
+          <div className={`absolute bottom-0 left-0 w-80 h-80 ${getThemeStyles(theme, { 
+            dark: 'bg-gradient-to-tr from-blue-500/8 via-purple-500/5 to-transparent', 
+            light: 'bg-gradient-to-tr from-blue-200/15 via-purple-200/8 to-transparent' 
+          })} rounded-full blur-3xl transform -rotate-12`} />
+        </div>
+
         {/* Header */}
-        <div className={`${themeStyles.headerBg} p-6 border-b`}>
+        <div className={`${themeStyles.headerBg} p-8 border-b relative z-10`}>
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${themeStyles.iconBg}`}>
-                <InfoCircledIcon className="w-5 h-5 text-emerald-400" />
+            <div className="flex items-center gap-4">
+              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${themeStyles.iconBg} border shadow-lg`}>
+                <RocketIcon className={`w-7 h-7 ${getThemeStyles(theme, { dark: 'text-emerald-300', light: 'text-emerald-600' })}`} />
               </div>
               <div>
-                <h3 className={`${themeStyles.titleText} text-2xl font-bold font-outfit`}>
+                <h3 className={`${themeStyles.titleText} text-3xl font-bold font-outfit mb-1`}>
                   Chip Strategy Guide
                 </h3>
-                <p className={`${themeStyles.mutedText} text-sm font-outfit`}>
-                  Master the art of strategic chip usage
+                <p className={`${themeStyles.mutedText} text-sm font-outfit flex items-center gap-2`}>
+                  <InfoCircledIcon className="w-4 h-4" />
+                  Master the art of strategic chip usage to maximize your points
                 </p>
               </div>
             </div>
-            <button
+            <motion.button
               onClick={onClose}
-              className={`w-8 h-8 rounded-lg ${themeStyles.closeBtn} flex items-center justify-center transition-all duration-200`}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className={`w-10 h-10 rounded-xl ${themeStyles.closeBtn} flex items-center justify-center transition-all duration-200 border shadow-sm`}
             >
-              ✕
-            </button>
+              <Cross2Icon className="w-5 h-5" />
+            </motion.button>
           </div>
         </div>
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+        <div className="p-8 overflow-y-auto max-h-[calc(92vh-140px)] relative z-10">
           {/* Introduction */}
-          <div className={`${themeStyles.cardBg} rounded-xl p-5 mb-6 border`}>
-            <p className={`${themeStyles.secondaryText} text-sm leading-relaxed font-outfit`}>
-              Strategic chip usage can dramatically improve your position in the
-              league. Each chip has unique timing and application strategies that
-              can maximize your points when used effectively.
-            </p>
-          </div>
-
-          <div className="space-y-8">
-            {/* Match-Specific Chips Section */}
-            <div className={`${themeStyles.cardBg} rounded-xl p-6 border`}>
-              <div className="flex items-center gap-2 mb-6">
-                <RocketIcon className="w-5 h-5 text-emerald-400" />
-                <h4 className={`${themeStyles.titleText} text-xl font-bold font-outfit`}>
-                  Match Chips
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className={`${themeStyles.sectionBg} rounded-2xl p-6 mb-8 border relative overflow-hidden`}
+          >
+            <div className={`absolute top-0 right-0 w-24 h-24 ${getThemeStyles(theme, { 
+              dark: 'bg-gradient-to-bl from-emerald-500/10 to-transparent', 
+              light: 'bg-gradient-to-bl from-emerald-200/20 to-transparent' 
+            })} rounded-full blur-xl`} />
+            <div className="relative">
+              <div className="flex items-center gap-3 mb-3">
+                <div className={`w-8 h-8 rounded-lg ${themeStyles.iconBg} flex items-center justify-center border`}>
+                  <InfoCircledIcon className={`w-4 h-4 ${getThemeStyles(theme, { dark: 'text-emerald-300', light: 'text-emerald-600' })}`} />
+                </div>
+                <h4 className={`${themeStyles.titleText} text-lg font-bold font-outfit`}>
+                  Strategic Overview
                 </h4>
-                <div className={`flex-1 h-px ${themeStyles.divider}`}></div>
-                <span className={`${themeStyles.mutedText} text-sm font-outfit`}>
-                  Apply during predictions
-                </span>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {chipData.matchChips.map((chip) => (
-                  <ChipCard key={chip.id} chip={chip} type="match" />
-                ))}
-              </div>
+              <p className={`${themeStyles.secondaryText} text-sm leading-relaxed font-outfit`}>
+                Strategic chip usage can dramatically improve your position in the league. Each chip has unique timing and application strategies that can maximize your points when used effectively. Plan your chip usage carefully to gain the maximum advantage over your competition.
+              </p>
             </div>
+          </motion.div>
+
+          <div className="space-y-10">
+            {/* Match-Specific Chips Section */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className={`${themeStyles.sectionBg} rounded-2xl p-8 border relative overflow-hidden`}
+            >
+              <div className={`absolute top-0 right-0 w-32 h-32 ${getThemeStyles(theme, { 
+                dark: 'bg-gradient-to-bl from-emerald-500/8 to-transparent', 
+                light: 'bg-gradient-to-bl from-emerald-200/15 to-transparent' 
+              })} rounded-full blur-2xl`} />
+              
+              <div className="relative">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className={`w-10 h-10 rounded-xl ${getThemeStyles(theme, { dark: 'bg-emerald-500/20 border-emerald-400/30', light: 'bg-emerald-200/60 border-emerald-300/50' })} flex items-center justify-center border shadow-sm`}>
+                    <RocketIcon className={`w-5 h-5 ${getThemeStyles(theme, { dark: 'text-emerald-300', light: 'text-emerald-600' })}`} />
+                  </div>
+                  <h4 className={`${themeStyles.titleText} text-2xl font-bold font-outfit`}>
+                    Match Chips
+                  </h4>
+                </div>
+                <div className={`h-0.5 ${themeStyles.divider} mb-2`}></div>
+                <p className={`${themeStyles.mutedText} text-sm font-outfit mb-6 flex items-center gap-2`}>
+                  <TargetIcon className="w-4 h-4" />
+                  Apply during individual match predictions for targeted impact
+                </p>
+                
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {chipData.matchChips.map((chip, index) => (
+                    <motion.div
+                      key={chip.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4 + index * 0.1 }}
+                    >
+                      <ChipCard chip={chip} type="match" />
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
 
             {/* Gameweek Chips Section */}
-            <div className={`${themeStyles.cardBg} rounded-xl p-6 border`}>
-              <div className="flex items-center gap-2 mb-6">
-                <TargetIcon className="w-5 h-5 text-blue-400" />
-                <h4 className={`${themeStyles.titleText} text-xl font-bold font-outfit`}>
-                  Gameweek Chips
-                </h4>
-                <div className={`flex-1 h-px ${themeStyles.divider}`}></div>
-                <span className={`${themeStyles.mutedText} text-sm font-outfit`}>
-                  Affects all predictions
-                </span>
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className={`${themeStyles.sectionBg} rounded-2xl p-8 border relative overflow-hidden`}
+            >
+              <div className={`absolute top-0 right-0 w-32 h-32 ${getThemeStyles(theme, { 
+                dark: 'bg-gradient-to-bl from-blue-500/8 to-transparent', 
+                light: 'bg-gradient-to-bl from-blue-200/15 to-transparent' 
+              })} rounded-full blur-2xl`} />
+              
+              <div className="relative">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className={`w-10 h-10 rounded-xl ${getThemeStyles(theme, { dark: 'bg-blue-500/20 border-blue-400/30', light: 'bg-blue-200/60 border-blue-300/50' })} flex items-center justify-center border shadow-sm`}>
+                    <TargetIcon className={`w-5 h-5 ${getThemeStyles(theme, { dark: 'text-blue-300', light: 'text-blue-600' })}`} />
+                  </div>
+                  <h4 className={`${themeStyles.titleText} text-2xl font-bold font-outfit`}>
+                    Gameweek Chips
+                  </h4>
+                </div>
+                <div className={`h-0.5 ${themeStyles.divider} mb-2`}></div>
+                <p className={`${themeStyles.mutedText} text-sm font-outfit mb-6 flex items-center gap-2`}>
+                  <LightningBoltIcon className="w-4 h-4" />
+                  Affects all your predictions in the entire gameweek
+                </p>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {chipData.gameweekChips.map((chip, index) => (
+                    <motion.div
+                      key={chip.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.6 + index * 0.1 }}
+                    >
+                      <ChipCard chip={chip} type="gameweek" />
+                    </motion.div>
+                  ))}
+                </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {chipData.gameweekChips.map((chip) => (
-                  <ChipCard key={chip.id} chip={chip} type="gameweek" />
-                ))}
-              </div>
-            </div>
+            </motion.div>
 
             {/* Chip Management Guidelines */}
-            <div className={`${themeStyles.cardBg} rounded-xl p-6 border`}>
-              <div className="flex items-start gap-3 mb-6">
-                <div className={`w-8 h-8 rounded-lg ${themeStyles.iconBg} flex items-center justify-center mt-0.5`}>
-                  <LightningBoltIcon className="w-4 h-4 text-emerald-400" />
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7 }}
+              className={`${themeStyles.sectionBg} rounded-2xl p-8 border relative overflow-hidden`}
+            >
+              <div className={`absolute top-0 right-0 w-32 h-32 ${getThemeStyles(theme, { 
+                dark: 'bg-gradient-to-bl from-purple-500/8 to-transparent', 
+                light: 'bg-gradient-to-bl from-purple-200/15 to-transparent' 
+              })} rounded-full blur-2xl`} />
+              
+              <div className="relative">
+                <div className="flex items-start gap-4 mb-6">
+                  <div className={`w-10 h-10 rounded-xl ${getThemeStyles(theme, { dark: 'bg-purple-500/20 border-purple-400/30', light: 'bg-purple-200/60 border-purple-300/50' })} flex items-center justify-center border shadow-sm mt-1`}>
+                    <LightningBoltIcon className={`w-5 h-5 ${getThemeStyles(theme, { dark: 'text-purple-300', light: 'text-purple-600' })}`} />
+                  </div>
+                  <div>
+                    <h4 className={`${themeStyles.titleText} text-2xl font-bold font-outfit mb-2`}>
+                      Strategic Guidelines
+                    </h4>
+                    <div className={`h-0.5 ${themeStyles.divider} mb-3`}></div>
+                    <p className={`${themeStyles.mutedText} text-sm font-outfit`}>
+                      Essential principles for maximizing your chip effectiveness
+                    </p>
+                  </div>
                 </div>
-                <h4 className={`${themeStyles.titleText} text-lg font-semibold font-outfit`}>
-                  Chip Management Guidelines
-                </h4>
-              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <ul className={`space-y-3 text-sm font-outfit ${themeStyles.secondaryText}`}>
-                  <li className="flex items-start gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-2 shrink-0"></div>
-                    <span>
-                      You can use multiple chips every gameweek based on
-                      availability and cooldowns
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-2 shrink-0"></div>
-                    <span>
-                      Each chip has unique cooldown periods or season usage limits
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-2 shrink-0"></div>
-                    <span>
-                      Gameweek chips apply to all your predictions in that gameweek
-                    </span>
-                  </li>
-                </ul>
-                <ul className={`space-y-3 text-sm font-outfit ${themeStyles.secondaryText}`}>
-                  <li className="flex items-start gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-2 shrink-0"></div>
-                    <span>
-                      Match chips must be selected during individual match
-                      predictions
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-2 shrink-0"></div>
-                    <span>
-                      Strategic timing and fixture analysis are key to maximizing
-                      chip effectiveness
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-2 shrink-0"></div>
-                    <span>
-                      Monitor community trends but trust your own analysis for
-                      optimal results
-                    </span>
-                  </li>
-                </ul>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  <div className="space-y-4">
+                    {[
+                      "You can use multiple chips every gameweek based on availability and cooldowns",
+                      "Each chip has unique cooldown periods or season usage limits",
+                      "Gameweek chips apply to all your predictions in that gameweek"
+                    ].map((guideline, index) => (
+                      <motion.div 
+                        key={index}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.8 + index * 0.1 }}
+                        className="flex items-start gap-3 p-3 rounded-lg hover:bg-opacity-50 transition-colors"
+                      >
+                        <div className={`w-6 h-6 rounded-lg ${getThemeStyles(theme, { dark: 'bg-emerald-500/20', light: 'bg-emerald-200/50' })} flex items-center justify-center mt-0.5 shrink-0`}>
+                          <div className={`w-2 h-2 rounded-full ${getThemeStyles(theme, { dark: 'bg-emerald-400', light: 'bg-emerald-600' })}`}></div>
+                        </div>
+                        <span className={`${themeStyles.secondaryText} text-sm font-outfit leading-relaxed`}>
+                          {guideline}
+                        </span>
+                      </motion.div>
+                    ))}
+                  </div>
+                  
+                  <div className="space-y-4">
+                    {[
+                      "Match chips must be selected during individual match predictions",
+                      "Strategic timing and fixture analysis are key to maximizing chip effectiveness",
+                      "Monitor community trends but trust your own analysis for optimal results"
+                    ].map((guideline, index) => (
+                      <motion.div 
+                        key={index}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 1.1 + index * 0.1 }}
+                        className="flex items-start gap-3 p-3 rounded-lg hover:bg-opacity-50 transition-colors"
+                      >
+                        <div className={`w-6 h-6 rounded-lg ${getThemeStyles(theme, { dark: 'bg-emerald-500/20', light: 'bg-emerald-200/50' })} flex items-center justify-center mt-0.5 shrink-0`}>
+                          <div className={`w-2 h-2 rounded-full ${getThemeStyles(theme, { dark: 'bg-emerald-400', light: 'bg-emerald-600' })}`}></div>
+                        </div>
+                        <span className={`${themeStyles.secondaryText} text-sm font-outfit leading-relaxed`}>
+                          {guideline}
+                        </span>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </motion.div>
