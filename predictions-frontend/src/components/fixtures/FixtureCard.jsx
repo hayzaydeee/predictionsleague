@@ -4,6 +4,7 @@ import { format, parseISO } from "date-fns";
 import { ClockIcon } from "@radix-ui/react-icons";
 import { getTeamLogo } from "../../utils/teamUtils";
 import TeamLogo from "../ui/TeamLogo";
+import { LOGO_SIZES } from "../../utils/teamLogos";
 import { ThemeContext } from "../../context/ThemeContext";
 
 const FixtureCard = ({
@@ -54,7 +55,8 @@ const FixtureCard = ({
       <div className="flex items-center">
         <TeamLogo
           teamName={fixture.homeTeam}
-          size={40}
+          size={LOGO_SIZES.md}
+          theme={theme}
           className="flex-shrink-0"
         />
         <div className="mx-2 flex-grow">
@@ -84,7 +86,8 @@ const FixtureCard = ({
         </div>
         <TeamLogo
           teamName={fixture.awayTeam}
-          size={40}
+          size={LOGO_SIZES.md}
+          theme={theme}
           className="flex-shrink-0"
         />
       </div>

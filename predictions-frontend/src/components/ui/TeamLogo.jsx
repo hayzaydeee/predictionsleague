@@ -4,17 +4,24 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { getTeamLogoSync, getTeamLogo } from '../../utils/teamLogos';
+import { 
+  getTeamLogoSync, 
+  getTeamLogo, 
+  getLogoContainerClasses, 
+  getLogoImageClasses,
+  LOGO_SIZES
+} from '../../utils/teamLogos';
 
 const TeamLogo = ({
   teamName,
-  size = 48,
+  size = LOGO_SIZES.md,
   className = '',
   alt,
   showTeamName = false,
   style = {},
   onError,
   loading: loadingProp = false,
+  theme = 'light',
   ...props
 }) => {
   const [logoUrl, setLogoUrl] = useState(null);
@@ -98,21 +105,30 @@ const TeamLogo = ({
     );
   }
 
+  const containerClasses = getLogoContainerClasses(size);
+  const imageClasses = getLogoImageClasses(theme);
+
   return (
     <div 
       className={`inline-flex items-center ${className}`}
       style={style}
       {...props}
     >
-      <img
-        src={logoUrl}
-        alt={alt || `${teamName} logo`}
-        width={size}
-        height={size}
-        className={`rounded ${hasError ? 'opacity-75' : ''}`}
-        onError={handleImageError}
-        loading="lazy"
-      />
+      <div
+        className={containerClasses}
+        style={{
+          width: size,
+          height: size,
+        }}
+      >
+        <img
+          src={logoUrl}
+          alt={alt || `${teamName} logo`}
+          className={`${imageClasses} ${hasError ? 'opacity-75' : ''}`}
+          onError={handleImageError}
+          loading="lazy"
+        />
+      </div>
       {showTeamName && (
         <span className="ml-2 text-sm font-medium">
           {teamName}

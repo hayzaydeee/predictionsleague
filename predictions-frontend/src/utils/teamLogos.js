@@ -392,6 +392,39 @@ export const getTeamLogoSync = (teamName, options = {}) => {
 };
 
 /**
+ * Standard logo size configurations for consistent display
+ */
+export const LOGO_SIZES = {
+  xs: 24,      // Mini icons
+  sm: 32,      // Small contexts
+  md: 48,      // Default size
+  lg: 64,      // Large displays
+  xl: 96,      // Hero sections
+};
+
+/**
+ * Get standardized CSS classes for logo containers
+ * Ensures consistent aspect ratios and prevents layout shifts
+ */
+export const getLogoContainerClasses = (size = 48) => {
+  const baseClasses = "flex items-center justify-center flex-shrink-0 overflow-hidden";
+  const roundingClass = size <= 32 ? "rounded" : "rounded-lg";
+  
+  return `${baseClasses} ${roundingClass}`;
+};
+
+/**
+ * Get standardized CSS classes for logo images
+ * Maintains aspect ratio while fitting within container
+ */
+export const getLogoImageClasses = (theme = "light") => {
+  const baseClasses = "max-w-full max-h-full object-contain";
+  const themeClasses = theme === "dark" ? "filter brightness-110" : "";
+  
+  return `${baseClasses} ${themeClasses}`.trim();
+};
+
+/**
  * Preload all team logos for better performance
  */
 export const preloadAllLogos = async () => {
@@ -420,4 +453,7 @@ export default {
   LOCAL_LOGOS,
   EXTERNAL_LOGO_URLS,
   TEAM_COLORS,
+  LOGO_SIZES,
+  getLogoContainerClasses,
+  getLogoImageClasses,
 };
