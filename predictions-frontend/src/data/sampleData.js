@@ -1,8 +1,12 @@
 // Import the centralized team logo system
-import { getTeamLogo } from "../utils/teamLogos.js";
+import { getTeamLogo, LOCAL_LOGOS } from "../utils/teamLogos.js";
 
 // Re-export for backwards compatibility
 export { getTeamLogo };
+
+// Legacy teamLogos object for backwards compatibility
+// This uses the centralized logo system but maintains the old interface
+export const teamLogos = LOCAL_LOGOS;
 
 // Teams list for filtering
 export const teams = [

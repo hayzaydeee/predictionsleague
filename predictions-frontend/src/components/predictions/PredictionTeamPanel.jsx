@@ -5,7 +5,6 @@ import { format, parseISO } from "date-fns";
 import { getTeamPredictionStats } from "../../utils/predictionUtils";
 import { normalizeTeamName, getTeamLogo } from "../../utils/teamUtils";
 import { getLogoUrl } from "../../utils/logoCache";
-import { teamLogos } from "../../data/sampleData";
 import { ThemeContext } from "../../context/ThemeContext";
 
 // Rich Prediction Card Component

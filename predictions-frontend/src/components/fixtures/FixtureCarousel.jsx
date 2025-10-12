@@ -5,7 +5,7 @@ import UniversalDateGroup from "../common/UniversalDateGroup";
 import useCarouselScroll from "../../hooks/useCarouselScroll";
 import { groupFixturesByDate, filterFixturesByQuery } from "../../utils/fixtureUtils";
 import { normalizeTeamName } from "../../utils/teamUtils";
-import { teamLogos } from "../../data/sampleData";
+import { getTeamLogo } from "../../utils/teamLogos";
 import EmptyFixtureState from "./EmptyFixtureState";
 import { ThemeContext } from "../../context/ThemeContext";
 
@@ -163,7 +163,6 @@ export default function FixtureCarousel({
                     type="fixtures"
                     selectedItem={selectedFixture}
                     onItemClick={handleFixtureClick}
-                    teamLogos={teamLogos}
                   />
                 </motion.div>
               ))}
