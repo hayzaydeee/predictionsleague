@@ -26,7 +26,9 @@ export const useExternalFixtures = (options = {}) => {
     cacheTime = 60 * 60 * 1000 // 1 hour
   } = options;
 
-  return useQuery({
+  console.log('🚨 ABOUT TO CALL useQuery 🚨');
+  
+  const query = useQuery({
     queryKey: [QUERY_KEYS.EXTERNAL_FIXTURES],
     queryFn: async () => {
       try {
