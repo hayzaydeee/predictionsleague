@@ -19,6 +19,7 @@ const PotentialPointsSummary = ({ predictions, teamLogos }) => {
     useState(false);
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [showRulesModal, setShowRulesModal] = useState(false);
+  
   // Get theme context
   const { theme } = useContext(ThemeContext);
   // Use the already filtered pending predictions passed from parent component
@@ -576,6 +577,11 @@ const PotentialPointsSummary = ({ predictions, teamLogos }) => {
           </motion.div>
         )}
       </AnimatePresence>
+      
+      <RulesAndPointsModal
+        isOpen={showRulesModal}
+        onClose={() => setShowRulesModal(false)}
+      />
     </motion.div>
   );
 };
@@ -792,11 +798,6 @@ const DetailedBreakdown = ({
           </motion.div>
         )}
       </AnimatePresence>
-      
-      <RulesAndPointsModal
-        isOpen={showRulesModal}
-        onClose={() => setShowRulesModal(false)}
-      />
     </>
   );
 };
