@@ -17,7 +17,6 @@ const QUERY_KEYS = {
  * Hook for fetching fixtures from external API with caching
  */
 export const useExternalFixtures = (options = {}) => {
-  console.log('🚨🚨🚨 useExternalFixtures HOOK CALLED 🚨🚨🚨', options);
   const {
     enabled = true,
     fallbackToSample = true,
@@ -26,8 +25,6 @@ export const useExternalFixtures = (options = {}) => {
     cacheTime = 60 * 60 * 1000 // 1 hour
   } = options;
 
-  console.log('🚨 ABOUT TO CALL useQuery 🚨');
-  
   const query = useQuery({
     queryKey: [QUERY_KEYS.EXTERNAL_FIXTURES],
     queryFn: async () => {
@@ -77,22 +74,6 @@ export const useExternalFixtures = (options = {}) => {
       }
       return failureCount < 2;
     }
-  });
-
-  // Simple return - just return the query object directly for now
-  console.log('🔍 useExternalFixtures DEBUG:', {
-    queryData: query.data,
-    isLoading: query.isLoading,
-    isError: query.isError,
-    hasData: !!query.data,
-    dataType: typeof query.data,
-    fixturesInData: query.data?.fixtures?.length || 'none'
-  });
-
-  console.log('🚨🚨🚨 ABOUT TO RETURN FROM HOOK 🚨🚨🚨', {
-    queryData: query.data,
-    fixtures: query.data?.fixtures,
-    fixturesLength: query.data?.fixtures?.length
   });
 
   return {

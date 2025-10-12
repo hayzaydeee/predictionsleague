@@ -52,14 +52,11 @@ const DashboardView = ({
     cacheTime: 30 * 60 * 1000, // 30 minutes
   });
 
-  // Debug the hook data
-  console.log('📊 DashboardView - useExternalFixtures hook data:', {
-    fixtures: externalFixtures,
-    fixturesType: typeof externalFixtures,
-    fixturesLength: externalFixtures?.length,
+  // Debug: Log fixture data availability
+  console.log('📊 DashboardView - External fixtures loaded:', {
+    count: externalFixtures?.length || 0,
     isLoading: externalFixturesLoading,
-    isError: externalFixturesError,
-    error: externalFixturesErrorDetails
+    hasError: externalFixturesError
   });
 
   // State for processed upcoming fixtures
@@ -67,13 +64,6 @@ const DashboardView = ({
 
   // Process external fixtures to get upcoming matches for dashboard
   useEffect(() => {
-    console.log('📊 DashboardView - useEffect triggered:', {
-      externalFixtures,
-      externalFixturesType: typeof externalFixtures,
-      isArray: Array.isArray(externalFixtures),
-      externalFixturesLoading,
-      externalFixturesError
-    });
     
     const processFixtures = async () => {
       if (!externalFixtures || !Array.isArray(externalFixtures)) {
@@ -109,7 +99,7 @@ const DashboardView = ({
           return isUpcoming;
         })
         .sort((a, b) => new Date(a.date) - new Date(b.date))
-        .slice(0, 5); // Get next 5 matches for dashboard
+        .slice(0, 3); // Get next 3 matches for dashboard
       
       console.log('📊 Filtered upcoming fixtures:', {
         count: upcoming.length,
@@ -127,7 +117,7 @@ const DashboardView = ({
               return fixtureDate > now;
             })
             .sort((a, b) => new Date(a.date) - new Date(b.date))
-            .slice(0, 5)
+            .slice(0, 3)
             .map(fixture => ({
               id: fixture.id,
               gameweek: fixture.gameweek,
