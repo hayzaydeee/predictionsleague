@@ -8,7 +8,6 @@ import FixtureFilters from "../fixtures/FixtureFilters";
 import { ThemeContext } from "../../context/ThemeContext";
 import { useUserPreferences } from "../../context/UserPreferencesContext";
 import { backgrounds, text } from "../../utils/themeUtils";
-import { gameweeks, upcomingMatches } from "../../data/sampleData";
 import { useFixtures } from "../../hooks/useFixtures";
 import { fixtureFilters } from "../../services/api/externalFixturesAPI";
 
@@ -17,7 +16,7 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
   const { theme } = useContext(ThemeContext);
   const { preferences } = useUserPreferences();
 
-  // Fetch fixtures using the simplified fixtures hook
+  // Fetch fixtures using the external API only
   const {
     fixtures: liveFixtures,
     isLoading: fixturesLoading,
@@ -26,17 +25,32 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
     dataQuality,
     stats
   } = useFixtures({
-    fallbackToSample: true // Use sample data if external API fails
+    fallbackToSample: false // Use only external API data
   });
 
-  // API Status and Error Handling
-  const isDataStale = dataQuality?.usingFallback || false;
-  const hasApiError = fixturesError && !dataQuality?.externalAPIAvailable;
+  // API Status and Error Handling  
+  const hasApiError = fixturesError;
   const predictionsAvailable = dataQuality?.predictionsAPIAvailable ?? false;
 
-  const [currentGameweek, setCurrentGameweek] = useState(
-    gameweeks?.[0]?.id || 36
-  );
+  // Calculate current gameweek from fixtures data or use default
+  const currentGameweekFromData = useMemo(() => {
+    if (!liveFixtures || liveFixtures.length === 0) return 38;
+    
+    // Get the earliest upcoming gameweek from fixtures
+    const upcomingGameweeks = liveFixtures
+      .map(fixture => fixture.gameweek)
+      .filter(Boolean)
+      .sort((a, b) => a - b);
+    
+    return upcomingGameweeks[0] || 38;
+  }, [liveFixtures]);
+
+  const [currentGameweek, setCurrentGameweek] = useState(currentGameweekFromData);
+
+  // Update current gameweek when data changes
+  React.useEffect(() => {
+    setCurrentGameweek(currentGameweekFromData);
+  }, [currentGameweekFromData]);
   const [activeGameweekChips, setActiveGameweekChips] = useState([]);
   const [viewMode, setViewMode] = useState(preferences.defaultFixturesView);
   const [searchQuery, setSearchQuery] = useState("");
@@ -103,7 +117,7 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
           <div className="flex items-center justify-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-500"></div>
             <span className={`${text.secondary[theme]} ml-3`}>
-              Loading fixtures from {dataQuality?.usingFallback ? 'sample data' : 'live API'}...
+              Loading fixtures from external API...
             </span>
           </div>
         </div>
@@ -111,8 +125,8 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
     );
   }
 
-  // Error state (only show if not using fallback)
-  if (fixturesError && !dataQuality?.usingFallback) {
+  // Error state - now always show if there's an error since we're not using fallback
+  if (fixturesError) {
     return (
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -162,11 +176,7 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
             View and predict upcoming fixtures
             {dataQuality && (
               <span className="ml-2 text-xs">
-                {dataQuality.usingFallback ? (
-                  <span className="text-amber-500">• Using sample data</span>
-                ) : (
-                  <span className="text-green-500">• Live data</span>
-                )}
+                <span className="text-green-500">• Live API data</span>
                 {stats && (
                   <span className="ml-2">
                     ({stats.predicted}/{stats.total} predicted)
@@ -196,7 +206,7 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
       </motion.div>
 
       {/* API Status Banner */}
-      {(hasApiError || isDataStale || !predictionsAvailable) && (
+      {(hasApiError || !predictionsAvailable) && (
         <div
           className={`${
             theme === "dark"
@@ -206,17 +216,15 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
         >
           <div className="flex items-center gap-3">
             <div className="text-amber-500">
-              {hasApiError ? "⚠️" : isDataStale ? "📊" : "🔄"}
+              {hasApiError ? "⚠️" : ""}
             </div>
             <div className="flex-1">
               <div className={`${text.primary[theme]} font-medium text-sm`}>
-                {hasApiError && "External API Unavailable"}
-                {isDataStale && !hasApiError && "Using Sample Data"}
-                {!predictionsAvailable && !hasApiError && !isDataStale && "Predictions Service Unavailable"}
+                {hasApiError && "External Fixtures API Unavailable"}
+                {!predictionsAvailable && !hasApiError && "Predictions Service Unavailable"}
               </div>
               <div className={`${text.secondary[theme]} text-xs mt-1`}>
-                {hasApiError && "Live fixture data temporarily unavailable. Showing cached/sample data."}
-                {isDataStale && !hasApiError && "External fixture API not connected. Using sample data for demonstration."}
+                {hasApiError && "Unable to connect to external fixtures API. Please check your connection or try again later."}
                 {!predictionsAvailable && "User predictions will be available when backend is connected."}
               </div>
             </div>

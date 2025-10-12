@@ -18,14 +18,14 @@ export const teams = [
   "Spurs"
 ];
 
-// Sample fixtures data - Only future fixtures (after today: May 28, 2025)
+// Sample fixtures data - Updated for current date context (October 12, 2025)
 export const fixtures = [
   {
     id: 1,
     gameweek: 38,
     homeTeam: "Arsenal",
     awayTeam: "Man. City",
-    date: "2025-05-30T16:00:00",
+    date: "2025-10-19T16:00:00",
     venue: "Emirates Stadium",
     competition: "Premier League",
     predicted: false,
@@ -35,7 +35,7 @@ export const fixtures = [
     gameweek: 38,
     homeTeam: "Spurs",
     awayTeam: "Chelsea",
-    date: "2025-05-30T16:00:00",
+    date: "2025-10-19T16:00:00",
     venue: "Tottenham Hotspur Stadium",
     competition: "Premier League",
     predicted: true,
@@ -45,7 +45,7 @@ export const fixtures = [
     gameweek: 38,
     homeTeam: "Liverpool",
     awayTeam: "Man. United",
-    date: "2025-05-30T16:00:00",
+    date: "2025-10-19T16:00:00",
     venue: "Anfield",
     competition: "Premier League",
     predicted: false,
@@ -55,7 +55,7 @@ export const fixtures = [
     gameweek: 39,
     homeTeam: "Chelsea",
     awayTeam: "Arsenal",
-    date: "2025-06-05T20:00:00",
+    date: "2025-10-26T20:00:00",
     venue: "Stamford Bridge",
     competition: "Premier League",
     predicted: false,
@@ -65,7 +65,7 @@ export const fixtures = [
     gameweek: 39,
     homeTeam: "Man. United",
     awayTeam: "Liverpool",
-    date: "2025-06-07T15:00:00",
+    date: "2025-10-26T15:00:00",
     venue: "Old Trafford",
     competition: "Premier League",
     predicted: true,
@@ -75,7 +75,7 @@ export const fixtures = [
     gameweek: 39,
     homeTeam: "Man. City",
     awayTeam: "Spurs",
-    date: "2025-06-08T17:30:00",
+    date: "2025-11-02T17:30:00",
     venue: "Etihad Stadium",
     competition: "Premier League",
     predicted: false,
