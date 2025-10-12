@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { format, parseISO } from "date-fns";
 import { ClockIcon } from "@radix-ui/react-icons";
 import { getTeamLogo } from "../../utils/teamUtils";
+import TeamLogo from "../ui/TeamLogo";
 import { ThemeContext } from "../../context/ThemeContext";
 
 const FixtureCard = ({
@@ -51,13 +52,12 @@ const FixtureCard = ({
         </div>
       </div>
       <div className="flex items-center">
-        <img
-          src={getLogoSrc(fixture.homeTeam)}
-          alt={fixture.homeTeam}
-          className="w-10 h-10 object-contain"
-        />{" "}
+        <TeamLogo
+          teamName={fixture.homeTeam}
+          size={40}
+          className="flex-shrink-0"
+        />
         <div className="mx-2 flex-grow">
-          {" "}
           <div className="flex justify-between items-center">
             <span
               className={`${
@@ -82,10 +82,10 @@ const FixtureCard = ({
             </span>
           </div>
         </div>
-        <img
-          src={getLogoSrc(fixture.awayTeam)}
-          alt={fixture.awayTeam}
-          className="w-10 h-10 object-contain"
+        <TeamLogo
+          teamName={fixture.awayTeam}
+          size={40}
+          className="flex-shrink-0"
         />
       </div>
       <div className="mt-2 flex justify-between items-center">

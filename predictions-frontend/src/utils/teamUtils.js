@@ -100,6 +100,7 @@ export const normalizeTeamName = (teamName) => {
  * @returns {string} URL to the team logo
  */
 export const getTeamLogo = (teamName) => {
+  // Legacy function - use teamLogos.js for new code
   // Try with the original name first
   if (teamLogos[teamName]) {
     return teamLogos[teamName];
