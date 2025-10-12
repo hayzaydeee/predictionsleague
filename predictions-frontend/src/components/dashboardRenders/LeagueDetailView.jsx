@@ -811,7 +811,6 @@ const PredictionsContent = ({ leagueId }) => {
               predictions={sortedPredictions}
               currentGameweek={currentGameweek}
               onPredictionSelect={handlePredictionSelect}
-              teamLogos={teamLogos}
               searchQuery={searchQuery}
             />
           </div>

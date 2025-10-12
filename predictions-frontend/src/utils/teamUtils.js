@@ -19,16 +19,16 @@ export const teamNameMappings = {
   "LIVERPOOL": "Liverpool",
   
   // Manchester City variations
-  "Manchester City FC": "Man. City",
-  "Manchester City": "Man. City", 
-  "Man. City": "Man. City",
-  "MANCITY": "Man. City",
+  "Manchester City FC": "Man City",
+  "Manchester City": "Man City", 
+  "Man. City": "Man City",
+  "MANCITY": "Man City",
   
   // Manchester United variations
-  "Manchester United FC": "Man. United",
-  "Manchester United": "Man. United",
-  "Man. United": "Man. United", 
-  "MANUTD": "Man. United",
+  "Manchester United FC": "Man United",
+  "Manchester United": "Man United",
+  "Man. United": "Man United", 
+  "MANUTD": "Man United",
   
   // Spurs variations
   "Tottenham Hotspur FC": "Spurs",

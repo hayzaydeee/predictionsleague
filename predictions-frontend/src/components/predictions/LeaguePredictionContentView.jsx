@@ -10,7 +10,6 @@ const LeaguePredictionContentView = ({
   viewMode, 
   predictions, 
   onPredictionSelect, 
-  teamLogos,
   searchQuery,
   currentGameweek
 }) => {
@@ -35,7 +34,6 @@ const LeaguePredictionContentView = ({
           <PredictionsByMember
             predictions={filteredPredictions}
             onPredictionSelect={onPredictionSelect}
-            teamLogos={teamLogos}
             currentGameweek={currentGameweek}
             mode="league"
             searchQuery={searchQuery}
@@ -55,7 +53,6 @@ const LeaguePredictionContentView = ({
             mode="league"
             predictions={filteredPredictions}
             onPredictionSelect={onPredictionSelect}
-            teamLogos={teamLogos}
             searchQuery={searchQuery}
           />
         </motion.div>
@@ -74,7 +71,6 @@ const LeaguePredictionContentView = ({
             predictions={filteredPredictions}
             currentGameweek={currentGameweek}
             onPredictionSelect={onPredictionSelect}
-            teamLogos={teamLogos}
             isReadOnly={true}
             searchQuery={searchQuery}
           />
@@ -93,7 +89,6 @@ const LeaguePredictionContentView = ({
           <PredictionTable
             predictions={filteredPredictions}
             onPredictionSelect={onPredictionSelect}
-            teamLogos={teamLogos}
             searchQuery={searchQuery}
             mode="league"
           />
@@ -112,7 +107,6 @@ const LeaguePredictionContentView = ({
           <LeaguePredictionsStack
             predictions={filteredPredictions}
             onPredictionSelect={onPredictionSelect}
-            teamLogos={teamLogos}
             searchQuery={searchQuery}
           />
         </motion.div>
@@ -130,7 +124,6 @@ const LeaguePredictionContentView = ({
           <LeaguePredictionsCalendar
             predictions={filteredPredictions}
             onPredictionSelect={onPredictionSelect}
-            teamLogos={teamLogos}
             searchQuery={searchQuery}
           />
         </motion.div>

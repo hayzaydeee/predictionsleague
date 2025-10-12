@@ -20,9 +20,10 @@ function PredictionsByTeam({ predictions = [], onPredictionSelect, onPredictionE
     "Arsenal",
     "Chelsea",
     "Liverpool",
-    "Man. City",
-    "Man. United",
-    "Spurs",  ];
+    "Man City",
+    "Man United",
+    "Spurs",
+  ];
 
   // Filter predictions based on search query - using common utility function
   const filteredPredictions = filterPredictionsByQuery(predictionsToUse, searchQuery);
