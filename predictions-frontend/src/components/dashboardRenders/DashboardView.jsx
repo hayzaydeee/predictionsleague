@@ -18,6 +18,9 @@ import RecentPredictionsPanel from "../panels/RecentPredictionsPanel";
 import LeaguesTable from "../tables/LeaguesTable";
 import { ThemeContext } from "../../context/ThemeContext";
 import { text } from "../../utils/themeUtils";
+import { generatePerformanceInsights, getInsightColorClass } from "../../utils/performanceInsights";
+import { extendedPredictionHistory } from "../../data/sampleData";
+import InsightDetailModal from "../common/InsightDetailModal";
 import { normalizeTeamName } from "../../utils/teamUtils";
 import { useExternalFixtures } from "../../hooks/useExternalFixtures";
 
@@ -59,6 +62,7 @@ const DashboardView = ({
 
   // State for processed upcoming fixtures
   const [upcomingFixtures, setUpcomingFixtures] = useState([]);
+  const [selectedInsight, setSelectedInsight] = useState(null);
 
   // Memoize fixtures array to prevent useEffect from running on reference changes
   const memoizedExternalFixtures = useMemo(() => externalFixtures, [
@@ -199,6 +203,20 @@ const DashboardView = ({
     // Rough estimate: if they have 15+ total predictions and we're past gameweek 5
     // (assuming ~3 predictions per gameweek on average)
     return totalPredictions >= 15 && currentGameweek >= 5;
+  };
+
+  // Generate performance insights based on prediction history
+  const getPerformanceInsights = () => {
+    if (!hasEnoughPredictionsForInsights()) {
+      return [];
+    }
+    
+    // In production, this would come from the API
+    // For demo purposes, we'll use sample data if available
+    const predictionHistory = extendedPredictionHistory || [];
+    const stats = essentialData?.stats || {};
+    
+    return generatePerformanceInsights(predictionHistory, stats);
   };
 
   const formatGlobalRank = (globalRank) => {
@@ -578,77 +596,112 @@ const DashboardView = ({
                   </h3>
                 </div>
                 <div className="space-y-3">
-                  <div
-                    className={`flex items-center justify-between p-2.5 ${
-                      theme === "dark" ? "bg-slate-700/30" : "bg-slate-100"
-                    } rounded-lg`}
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-1.5 h-1.5 bg-green-400 rounded-full"></div>
-                      <span
-                        className={`${
-                          theme === "dark" ? "text-white/80" : "text-slate-700"
-                        } text-xs`}
+                  {getPerformanceInsights().length > 0 ? (
+                    getPerformanceInsights().map((insight, index) => {
+                      const colorClasses = getInsightColorClass(insight.color, theme);
+                      return (
+                        <div
+                          key={insight.id || index}
+                          className={`flex items-center justify-between p-2.5 ${
+                            theme === "dark" ? "bg-slate-700/30" : "bg-slate-100"
+                          } rounded-lg group cursor-pointer hover:bg-opacity-80 transition-colors`}
+                          title={insight.description}
+                          onClick={() => setSelectedInsight(insight)}
+                        >
+                          <div className="flex items-center gap-2.5">
+                            <div className={`w-1.5 h-1.5 ${colorClasses.dot} rounded-full`}></div>
+                            <span
+                              className={`${
+                                theme === "dark" ? "text-white/80" : "text-slate-700"
+                              } text-xs`}
+                            >
+                              {insight.title}
+                            </span>
+                          </div>
+                          <span
+                            className={`${colorClasses.text} text-xs font-medium`}
+                          >
+                            {insight.value}
+                          </span>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    // Fallback to static insights if generation fails
+                    <>
+                      <div
+                        className={`flex items-center justify-between p-2.5 ${
+                          theme === "dark" ? "bg-slate-700/30" : "bg-slate-100"
+                        } rounded-lg`}
                       >
-                        Strong home predictions
-                      </span>
-                    </div>
-                    <span
-                      className={`${
-                        theme === "dark" ? "text-green-400" : "text-green-600"
-                      } text-xs font-medium`}
-                    >
-                      +23%
-                    </span>
-                  </div>
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-1.5 h-1.5 bg-green-400 rounded-full"></div>
+                          <span
+                            className={`${
+                              theme === "dark" ? "text-white/80" : "text-slate-700"
+                            } text-xs`}
+                          >
+                            Strong home predictions
+                          </span>
+                        </div>
+                        <span
+                          className={`${
+                            theme === "dark" ? "text-green-400" : "text-green-600"
+                          } text-xs font-medium`}
+                        >
+                          +23%
+                        </span>
+                      </div>
 
-                  <div
-                    className={`flex items-center justify-between p-2.5 ${
-                      theme === "dark" ? "bg-slate-700/30" : "bg-slate-100"
-                    } rounded-lg`}
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-1.5 h-1.5 bg-blue-400 rounded-full"></div>
-                      <span
-                        className={`${
-                          theme === "dark" ? "text-white/80" : "text-slate-700"
-                        } text-xs`}
+                      <div
+                        className={`flex items-center justify-between p-2.5 ${
+                          theme === "dark" ? "bg-slate-700/30" : "bg-slate-100"
+                        } rounded-lg`}
                       >
-                        Top 6 match expert
-                      </span>
-                    </div>
-                    <span
-                      className={`${
-                        theme === "dark" ? "text-blue-400" : "text-blue-600"
-                      } text-xs font-medium`}
-                    >
-                      72%
-                    </span>
-                  </div>
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-1.5 h-1.5 bg-blue-400 rounded-full"></div>
+                          <span
+                            className={`${
+                              theme === "dark" ? "text-white/80" : "text-slate-700"
+                            } text-xs`}
+                          >
+                            Arsenal specialist
+                          </span>
+                        </div>
+                        <span
+                          className={`${
+                            theme === "dark" ? "text-blue-400" : "text-blue-600"
+                          } text-xs font-medium`}
+                        >
+                          87%
+                        </span>
+                      </div>
 
-                  <div
-                    className={`flex items-center justify-between p-2.5 ${
-                      theme === "dark" ? "bg-slate-700/30" : "bg-slate-100"
-                    } rounded-lg`}
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-1.5 h-1.5 bg-amber-400 rounded-full"></div>
-                      <span
-                        className={`${
-                          theme === "dark" ? "text-white/80" : "text-slate-700"
-                        } text-xs`}
+                      <div
+                        className={`flex items-center justify-between p-2.5 ${
+                          theme === "dark" ? "bg-slate-700/30" : "bg-slate-100"
+                        } rounded-lg`}
                       >
-                        Weekend warrior
-                      </span>
-                    </div>
-                    <span
-                      className={`${
-                        theme === "dark" ? "text-amber-400" : "text-amber-600"
-                      } text-xs font-medium`}
-                    >
-                      +18%
-                    </span>
-                  </div>
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-1.5 h-1.5 bg-amber-400 rounded-full"></div>
+                          <span
+                            className={`${
+                              theme === "dark" ? "text-white/80" : "text-slate-700"
+                            } text-xs`}
+                          >
+                            Weekend warrior
+                          </span>
+                        </div>
+                        <span
+                          className={`${
+                            theme === "dark" ? "text-amber-400" : "text-amber-600"
+                          } text-xs font-medium`}
+                        >
+                          +18%
+                        </span>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             ) : (
@@ -665,6 +718,13 @@ const DashboardView = ({
           </motion.div>
         </div>
       </div>
+
+      {/* Insight Detail Modal */}
+      <InsightDetailModal
+        insight={selectedInsight}
+        isOpen={!!selectedInsight}
+        onClose={() => setSelectedInsight(null)}
+      />
     </motion.div>
   );
 };

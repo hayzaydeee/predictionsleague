@@ -260,6 +260,43 @@ export const recentPredictions = [
   { id: 3, match: "Man City 1-1 Spurs", points: 0, correct: false },
 ];
 
+// Extended prediction history for insights analysis
+export const extendedPredictionHistory = [
+  // Gameweek 8 predictions
+  { id: 'p1', home_team: 'Arsenal', away_team: 'Liverpool', predicted_home_goals: 2, predicted_away_goals: 1, actual_home_goals: 2, actual_away_goals: 1, match_date: '2025-10-05T15:00:00Z', gameweek: 8 },
+  { id: 'p2', home_team: 'Manchester City', away_team: 'Chelsea', predicted_home_goals: 3, predicted_away_goals: 0, actual_home_goals: 4, actual_away_goals: 2, match_date: '2025-10-05T17:30:00Z', gameweek: 8 },
+  { id: 'p3', home_team: 'Manchester United', away_team: 'Tottenham', predicted_home_goals: 1, predicted_away_goals: 1, actual_home_goals: 0, actual_away_goals: 3, match_date: '2025-10-06T14:00:00Z', gameweek: 8 },
+  
+  // Gameweek 7 predictions  
+  { id: 'p4', home_team: 'Chelsea', away_team: 'Brighton', predicted_home_goals: 2, predicted_away_goals: 0, actual_home_goals: 2, actual_away_goals: 1, match_date: '2025-09-28T15:00:00Z', gameweek: 7 },
+  { id: 'p5', home_team: 'Liverpool', away_team: 'Wolves', predicted_home_goals: 3, predicted_away_goals: 1, actual_home_goals: 2, actual_away_goals: 1, match_date: '2025-09-28T17:30:00Z', gameweek: 7 },
+  { id: 'p6', home_team: 'Arsenal', away_team: 'Leicester', predicted_home_goals: 4, predicted_away_goals: 0, actual_home_goals: 4, actual_away_goals: 2, match_date: '2025-09-29T14:00:00Z', gameweek: 7 },
+  
+  // Gameweek 6 predictions
+  { id: 'p7', home_team: 'Tottenham', away_team: 'Brentford', predicted_home_goals: 2, predicted_away_goals: 1, actual_home_goals: 3, actual_away_goals: 1, match_date: '2025-09-21T15:00:00Z', gameweek: 6 },
+  { id: 'p8', home_team: 'Manchester City', away_team: 'Arsenal', predicted_home_goals: 1, predicted_away_goals: 2, actual_home_goals: 1, actual_away_goals: 2, match_date: '2025-09-21T17:30:00Z', gameweek: 6 },
+  { id: 'p9', home_team: 'Newcastle', away_team: 'Liverpool', predicted_home_goals: 0, predicted_away_goals: 2, actual_home_goals: 1, actual_away_goals: 0, match_date: '2025-09-22T14:00:00Z', gameweek: 6 },
+  
+  // Gameweek 5 predictions
+  { id: 'p10', home_team: 'Arsenal', away_team: 'Everton', predicted_home_goals: 3, predicted_away_goals: 0, actual_home_goals: 5, actual_away_goals: 1, match_date: '2025-09-14T15:00:00Z', gameweek: 5 },
+  { id: 'p11', home_team: 'Chelsea', away_team: 'West Ham', predicted_home_goals: 2, predicted_away_goals: 1, actual_home_goals: 3, actual_away_goals: 0, match_date: '2025-09-14T17:30:00Z', gameweek: 5 },
+  { id: 'p12', home_team: 'Manchester United', away_team: 'Crystal Palace', predicted_home_goals: 2, predicted_away_goals: 0, actual_home_goals: 0, actual_away_goals: 1, match_date: '2025-09-15T14:00:00Z', gameweek: 5 },
+  
+  // Gameweek 4 predictions 
+  { id: 'p13', home_team: 'Brighton', away_team: 'Manchester City', predicted_home_goals: 1, predicted_away_goals: 3, actual_home_goals: 1, actual_away_goals: 4, match_date: '2025-09-07T15:00:00Z', gameweek: 4 },
+  { id: 'p14', home_team: 'Liverpool', away_team: 'Bournemouth', predicted_home_goals: 3, predicted_away_goals: 0, actual_home_goals: 3, actual_away_goals: 0, match_date: '2025-09-07T17:30:00Z', gameweek: 4 },
+  { id: 'p15', home_team: 'Arsenal', away_team: 'Tottenham', predicted_home_goals: 2, predicted_away_goals: 1, actual_home_goals: 1, actual_away_goals: 0, match_date: '2025-09-08T14:00:00Z', gameweek: 4 },
+  
+  // Gameweek 3 predictions
+  { id: 'p16', home_team: 'Fulham', away_team: 'Arsenal', predicted_home_goals: 0, predicted_away_goals: 2, actual_home_goals: 0, actual_away_goals: 3, match_date: '2025-08-31T15:00:00Z', gameweek: 3 },
+  { id: 'p17', home_team: 'Manchester City', away_team: 'West Ham', predicted_home_goals: 3, predicted_away_goals: 1, actual_home_goals: 3, actual_away_goals: 1, match_date: '2025-08-31T17:30:00Z', gameweek: 3 },
+  { id: 'p18', home_team: 'Chelsea', away_team: 'Crystal Palace', predicted_home_goals: 1, predicted_away_goals: 1, actual_home_goals: 1, actual_away_goals: 1, match_date: '2025-09-01T14:00:00Z', gameweek: 3 },
+  
+  // Additional weekend vs weekday mix
+  { id: 'p19', home_team: 'Aston Villa', away_team: 'Everton', predicted_home_goals: 2, predicted_away_goals: 0, actual_home_goals: 2, actual_away_goals: 1, match_date: '2025-08-20T19:45:00Z', gameweek: 2 }, // Tuesday
+  { id: 'p20', home_team: 'Arsenal', away_team: 'Manchester United', predicted_home_goals: 2, predicted_away_goals: 0, actual_home_goals: 2, actual_away_goals: 0, match_date: '2025-08-17T16:30:00Z', gameweek: 2 }, // Sunday
+];
+
 // Sample league predictions data (for carousel testing)
 export const leaguePredictions = [
   // Gameweek 15 - Match 1: Arsenal vs Chelsea
