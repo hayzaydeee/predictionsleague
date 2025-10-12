@@ -76,9 +76,19 @@ export const useExternalFixtures = (options = {}) => {
     }
   });
 
+  // Debug logging to see what we're actually getting
+  console.log('🔍 useExternalFixtures - Raw query data:', {
+    data: query.data,
+    isLoading: query.isLoading,
+    isError: query.isError,
+    dataType: typeof query.data,
+    hasFixtures: query.data?.fixtures ? 'yes' : 'no',
+    fixturesCount: query.data?.fixtures?.length || 0
+  });
+
   // Return the query data with proper destructuring
   // The API returns result.data which should contain { fixtures: [...] }
-  return {
+  const result = {
     fixtures: query.data?.fixtures || [],
     isLoading: query.isLoading,
     isError: query.isError,
@@ -89,6 +99,15 @@ export const useExternalFixtures = (options = {}) => {
     // Include all other query properties
     ...query
   };
+
+  console.log('🔍 useExternalFixtures - Returning:', {
+    fixtures: result.fixtures,
+    fixturesLength: result.fixtures?.length,
+    isLoading: result.isLoading,
+    isError: result.isError
+  });
+
+  return result;
 };
 
 /**
