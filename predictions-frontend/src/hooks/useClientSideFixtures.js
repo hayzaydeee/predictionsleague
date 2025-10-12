@@ -154,7 +154,7 @@ export const useClientSideFixtures = (options = {}) => {
 
       return result;
     },
-    enabled: enabled && (!!externalData || fallbackToSample) && userPredictions !== undefined,
+    enabled: enabled && !externalLoading && userPredictions !== undefined,
     staleTime: 5 * 60 * 1000, // 5 minutes
     cacheTime: 30 * 60 * 1000, // 30 minutes
     refetchOnWindowFocus: false
