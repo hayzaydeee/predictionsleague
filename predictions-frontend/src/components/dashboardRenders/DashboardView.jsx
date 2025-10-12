@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useContext, useMemo } from "react";
+import { useContext, useMemo, useState, useEffect } from "react";
 import {
   InfoCircledIcon,
   LightningBoltIcon,
@@ -52,32 +52,76 @@ const DashboardView = ({
     cacheTime: 30 * 60 * 1000, // 30 minutes
   });
 
+  // State for processed upcoming fixtures
+  const [upcomingFixtures, setUpcomingFixtures] = useState([]);
+
   // Process external fixtures to get upcoming matches for dashboard
-  const upcomingFixtures = useMemo(() => {
-    if (!externalFixtures || !Array.isArray(externalFixtures)) return [];
-    
-    const now = new Date();
-    const upcoming = externalFixtures
-      .filter(fixture => {
-        const fixtureDate = new Date(fixture.date);
-        const isUpcoming = fixtureDate > now && 
-          (fixture.status === 'SCHEDULED' || fixture.status === 'TIMED');
-        return isUpcoming;
-      })
-      .sort((a, b) => new Date(a.date) - new Date(b.date))
-      .slice(0, 5); // Get next 5 matches for dashboard
-    
-    return upcoming.map(fixture => ({
-      id: fixture.id,
-      gameweek: fixture.gameweek,
-      homeTeam: normalizeTeamName(fixture.homeTeam),
-      awayTeam: normalizeTeamName(fixture.awayTeam),
-      date: fixture.date,
-      venue: fixture.venue || "Stadium",
-      competition: fixture.competition || "Premier League",
-      status: fixture.status,
-    }));
-  }, [externalFixtures]);
+  useEffect(() => {
+    const processFixtures = async () => {
+      if (!externalFixtures || !Array.isArray(externalFixtures)) {
+        setUpcomingFixtures([]);
+        return;
+      }
+      
+      const now = new Date();
+      const upcoming = externalFixtures
+        .filter(fixture => {
+          const fixtureDate = new Date(fixture.date);
+          const isUpcoming = fixtureDate > now && 
+            (fixture.status === 'SCHEDULED' || fixture.status === 'TIMED');
+          return isUpcoming;
+        })
+        .sort((a, b) => new Date(a.date) - new Date(b.date))
+        .slice(0, 5); // Get next 5 matches for dashboard
+      
+      // If external API returned empty results, fallback to sample data for development
+      if (upcoming.length === 0 && !externalFixturesError) {
+        console.log('📊 External API returned no fixtures, using sample data for dashboard');
+        try {
+          const { fixtures: sampleFixtures } = await import('../../data/sampleData');
+          const sampleUpcoming = sampleFixtures
+            .filter(fixture => {
+              const fixtureDate = new Date(fixture.date);
+              return fixtureDate > now;
+            })
+            .sort((a, b) => new Date(a.date) - new Date(b.date))
+            .slice(0, 5)
+            .map(fixture => ({
+              id: fixture.id,
+              gameweek: fixture.gameweek,
+              homeTeam: normalizeTeamName(fixture.homeTeam),
+              awayTeam: normalizeTeamName(fixture.awayTeam),
+              date: fixture.date,
+              venue: fixture.venue || "Stadium",
+              competition: fixture.competition || "Premier League",
+              status: 'SCHEDULED',
+              isSampleData: true,
+            }));
+          setUpcomingFixtures(sampleUpcoming);
+          return;
+        } catch (error) {
+          console.error('Failed to load sample data:', error);
+          setUpcomingFixtures([]);
+          return;
+        }
+      }
+      
+      const processedFixtures = upcoming.map(fixture => ({
+        id: fixture.id,
+        gameweek: fixture.gameweek,
+        homeTeam: normalizeTeamName(fixture.homeTeam),
+        awayTeam: normalizeTeamName(fixture.awayTeam),
+        date: fixture.date,
+        venue: fixture.venue || "Stadium",
+        competition: fixture.competition || "Premier League",
+        status: fixture.status,
+      }));
+      
+      setUpcomingFixtures(processedFixtures);
+    };
+
+    processFixtures();
+  }, [externalFixtures, externalFixturesError]);
 
   // Helper function to format match data for the predictions modal
   const formatMatchForPrediction = (match) => {
@@ -214,28 +258,21 @@ const DashboardView = ({
               </div>
             ) : (
               <>
-                <div className="flex items-center gap-2 mb-1">
-                  <CalendarIcon
-                    className={`w-3 h-3 ${
-                      theme === "dark" ? "text-teal-400" : "text-teal-500"
-                    }`}
-                  />
-                  <span
-                    className={`${text.primary[theme]} text-xs font-medium font-outfit`}
-                  >
-                    Gameweek {essentialData?.season?.currentGameweek || 1}
-                  </span>
-                </div>
-                {/* Live fixtures indicator */}
+
+                {/* Data source indicator */}
                 {!externalFixturesError && upcomingFixtures.length > 0 && (
                   <div className="flex items-center gap-1">
                     <div className={`w-1.5 h-1.5 rounded-full ${
-                      theme === "dark" ? "bg-emerald-400" : "bg-emerald-500"
+                      upcomingFixtures[0]?.isSampleData
+                        ? (theme === "dark" ? "bg-amber-400" : "bg-amber-500")
+                        : (theme === "dark" ? "bg-emerald-400" : "bg-emerald-500")
                     }`} />
                     <span className={`${
-                      theme === "dark" ? "text-emerald-400" : "text-emerald-600"
+                      upcomingFixtures[0]?.isSampleData
+                        ? (theme === "dark" ? "text-amber-400" : "text-amber-600")
+                        : (theme === "dark" ? "text-emerald-400" : "text-emerald-600")
                     } text-xs font-medium font-outfit`}>
-                      Live data
+                      {upcomingFixtures[0]?.isSampleData ? "Sample data" : "Live data"}
                     </span>
                   </div>
                 )}
