@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import React, { useState, useContext } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import GameweekChipsPanel from "../panels/GameweekChipsPanel";
 import ViewToggleBar from "../ui/ViewToggleBar";
@@ -43,9 +43,7 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
   const [viewMode, setViewMode] = useState(preferences.defaultFixturesView);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState("all");
-  const [gameweekFilter, setGameweekFilter] = useState("all");
-  const [filterTeam, setFilterTeam] = useState("all");
-  const [competitionFilter, setCompetitionFilter] = useState("all");
+  const [dateFilter, setDateFilter] = useState("all"); // New: all or today
   const [sortBy, setSortBy] = useState("date");
   const [showFilters, setShowFilters] = useState(false);
 
@@ -63,47 +61,18 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
       } gameweek chip ${chipId} for gameweek ${gameweek}`
     );
   };
-  // Filter fixtures based on selected filters
-  const filteredFixtures = (liveFixtures || []).filter((fixture) => {
-    // Filter by status
-    if (activeFilter === "unpredicted" && fixture.predicted) return false;
-    if (activeFilter === "predicted" && !fixture.predicted) return false;
-
-    // Filter by gameweek
-    if (
-      gameweekFilter !== "all" &&
-      fixture.gameweek !== parseInt(gameweekFilter)
-    )
-      return false;
-
-    // Filter by team
-    if (
-      filterTeam !== "all" &&
-      fixture.homeTeam !== filterTeam &&
-      fixture.awayTeam !== filterTeam
-    )
-      return false;
-
-    // Filter by competition
-    if (
-      competitionFilter !== "all" &&
-      fixture.competition !== competitionFilter
-    )
-      return false;
-
-    // Filter by search query
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      return (
-        fixture.homeTeam.toLowerCase().includes(query) ||
-        fixture.awayTeam.toLowerCase().includes(query) ||
-        fixture.venue?.toLowerCase().includes(query) ||
-        fixture.competition?.toLowerCase().includes(query)
-      );
-    }
-
-    return true;
-  });
+  // Filter fixtures based on selected filters using client-side filtering
+  const filteredFixtures = React.useMemo(() => {
+    if (!liveFixtures) return [];
+    
+    const { fixtureFilters } = require('../../services/api/externalFixturesAPI');
+    
+    return fixtureFilters.applyFilters(liveFixtures, {
+      date: dateFilter,
+      status: activeFilter,
+      search: searchQuery
+    });
+  }, [liveFixtures, dateFilter, activeFilter, searchQuery]);
 
   // Handle fixture selection
   const onFixtureSelect = (fixture) => {

@@ -159,7 +159,7 @@ const PredictionFilters = ({
               ease: [0.4, 0.0, 0.2, 1],
               opacity: { duration: 0.2 }
             }}
-            className={`border-t pt-4 overflow-hidden ${
+            className={`border-t pt-4 pb-4 overflow-hidden ${
               theme === "dark" ? "border-slate-700/50" : "border-slate-200"
             }`}
           >

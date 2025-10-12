@@ -9,28 +9,9 @@
 
 // Configuration
 const BACKEND_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
-const EXTERNAL_FIXTURES_ENDPOINT = '/api/external-fixtures';
+const FIXTURES_ENDPOINT = '/api/fixtures';
 
-// Competition codes for target leagues (kept for frontend reference)
-const COMPETITION_CODES = {
-  PREMIER_LEAGUE: 'PL',
-  CHAMPIONS_LEAGUE: 'CL'
-};
-
-// Target teams - handled by backend but kept for frontend validation
-const TARGET_TEAMS = {
-  'Chelsea': ['Chelsea', 'Chelsea FC'],
-  'Arsenal': ['Arsenal', 'Arsenal FC'], 
-  'Liverpool': ['Liverpool', 'Liverpool FC'],
-  'Tottenham': ['Tottenham', 'Tottenham Hotspur', 'Spurs'],
-  'Manchester City': ['Manchester City', 'Man City', 'Man. City'],
-  'Manchester United': ['Manchester United', 'Man United', 'Man Utd', 'Man. Utd']
-};
-
-// Flattened list of all team name variations for filtering
-const ALL_TARGET_TEAM_NAMES = Object.values(TARGET_TEAMS).flat();
-
-// Match status constants (kept for compatibility)
+// Match status constants
 const MATCH_STATUS = {
   SCHEDULED: 'SCHEDULED',
   LIVE: 'LIVE', 
@@ -43,14 +24,16 @@ const MATCH_STATUS = {
   AWARDED: 'AWARDED'
 };
 
+
+
 /**
- * Backend API client for external fixtures
- * Calls backend proxy instead of external API directly
+ * Backend API client for fixtures
+ * Simplified to use only /fixtures and /fixtures/live endpoints
  */
 class BackendFixturesAPIClient {
   constructor() {
     this.baseURL = BACKEND_BASE_URL;
-    this.endpoint = EXTERNAL_FIXTURES_ENDPOINT;
+    this.endpoint = FIXTURES_ENDPOINT;
   }
 
   /**
@@ -62,22 +45,10 @@ class BackendFixturesAPIClient {
   }
 
   /**
-   * Make authenticated request to backend proxy
+   * Make authenticated request to backend
    */
-  async request(path, params = {}) {
-    // Build query string
-    const queryParams = new URLSearchParams();
-    Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        if (Array.isArray(value)) {
-          queryParams.append(key, value.join(','));
-        } else {
-          queryParams.append(key, value);
-        }
-      }
-    });
-
-    const url = `${this.baseURL}${this.endpoint}${path}${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+  async request(path = '') {
+    const url = `${this.baseURL}${this.endpoint}${path}`;
 
     try {
       const headers = {
@@ -91,7 +62,7 @@ class BackendFixturesAPIClient {
         headers['Authorization'] = `Bearer ${token}`;
       }
 
-      console.log('Backend API Request:', { url, params });
+      console.log('Backend Fixtures API Request:', { url });
 
       const response = await fetch(url, {
         method: 'GET',
@@ -114,7 +85,6 @@ class BackendFixturesAPIClient {
     } catch (error) {
       console.error('Backend Fixtures API Request Failed:', {
         url,
-        params,
         error: error.message
       });
       throw error;
@@ -126,22 +96,9 @@ class BackendFixturesAPIClient {
 const apiClient = new BackendFixturesAPIClient();
 
 /**
- * Data transformation utilities (simplified since backend handles most filtering)
+ * Data transformation utilities
  */
 const transformers = {
-  /**
-   * Check if a fixture involves any of our target teams (frontend validation)
-   */
-  isTargetTeamFixture(fixture) {
-    const homeTeam = (fixture.homeTeam || '').toLowerCase();
-    const awayTeam = (fixture.awayTeam || '').toLowerCase();
-    
-    return ALL_TARGET_TEAM_NAMES.some(targetTeam => 
-      homeTeam.includes(targetTeam.toLowerCase()) || 
-      awayTeam.includes(targetTeam.toLowerCase())
-    );
-  },
-
   /**
    * Transform backend response to standard format
    */
@@ -151,52 +108,32 @@ const transformers = {
       homeTeam: fixture.homeTeam,
       awayTeam: fixture.awayTeam,
       date: fixture.date,
-      competition: fixture.competition,
-      competitionCode: fixture.competitionCode,
       status: fixture.status,
       venue: fixture.venue,
       gameweek: fixture.gameweek,
       homeScore: fixture.homeScore,
       awayScore: fixture.awayScore,
+      competition: 'Premier League', // All fixtures are Premier League
+      predicted: fixture.predicted || false // Will be merged with user predictions
     };
   }
 };
 
 /**
- * Main External Fixtures API
+ * Main Fixtures API - Simplified for current gameweek Premier League only
  */
 export const externalFixturesAPI = {
   // Expose configuration
-  TARGET_TEAMS,
-  TARGET_COMPETITIONS: [COMPETITION_CODES.PREMIER_LEAGUE, COMPETITION_CODES.CHAMPIONS_LEAGUE],
   MATCH_STATUS,
 
   /**
-   * Get all fixtures with filtering options
+   * Get current gameweek fixtures (Premier League only)
    */
-  async getFixtures(options = {}) {
-    const {
-      competitions = [COMPETITION_CODES.PREMIER_LEAGUE, COMPETITION_CODES.CHAMPIONS_LEAGUE],
-      dateFrom,
-      dateTo,
-      status,
-      teams,
-      limit = 100
-    } = options;
-
+  async getFixtures() {
     try {
-      const params = {
-        competitions,
-        dateFrom,
-        dateTo,
-        status,
-        teams,
-        limit
-      };
+      const response = await apiClient.request('');
 
-      const response = await apiClient.request('/fixtures', params);
-
-      // Transform fixtures if needed
+      // Transform fixtures
       const transformedFixtures = response.fixtures?.map(transformers.transformFixture) || [];
 
       return {
@@ -204,7 +141,8 @@ export const externalFixturesAPI = {
         data: {
           fixtures: transformedFixtures,
           totalCount: response.totalCount || transformedFixtures.length,
-          source: response.source || 'backend-proxy',
+          gameweek: response.gameweek,
+          source: 'backend-api',
           timestamp: response.timestamp || new Date().toISOString()
         }
       };
@@ -220,45 +158,11 @@ export const externalFixturesAPI = {
   },
 
   /**
-   * Get today's fixtures
-   */
-  async getTodaysFixtures(options = {}) {
-    const {
-      competitions = [COMPETITION_CODES.PREMIER_LEAGUE, COMPETITION_CODES.CHAMPIONS_LEAGUE]
-    } = options;
-
-    try {
-      const params = { competitions };
-      const response = await apiClient.request('/fixtures/today', params);
-
-      const transformedFixtures = response.fixtures?.map(transformers.transformFixture) || [];
-
-      return {
-        success: true,
-        data: {
-          fixtures: transformedFixtures,
-          totalCount: response.totalCount || transformedFixtures.length,
-          source: response.source || 'backend-proxy',
-          timestamp: response.timestamp || new Date().toISOString()
-        }
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: {
-          message: error.message,
-          type: 'BACKEND_API_ERROR'
-        }
-      };
-    }
-  },
-
-  /**
-   * Get live fixtures
+   * Get live fixtures (Premier League only)
    */
   async getLiveFixtures() {
     try {
-      const response = await apiClient.request('/fixtures/live');
+      const response = await apiClient.request('/live');
 
       const transformedFixtures = response.fixtures?.map(transformers.transformFixture) || [];
 
@@ -267,7 +171,8 @@ export const externalFixturesAPI = {
         data: {
           fixtures: transformedFixtures,
           totalCount: response.totalCount || transformedFixtures.length,
-          source: response.source || 'backend-proxy',
+          gameweek: response.gameweek,
+          source: 'backend-api',
           timestamp: response.timestamp || new Date().toISOString()
         }
       };
@@ -283,152 +188,83 @@ export const externalFixturesAPI = {
   },
 
   /**
-   * Get upcoming fixtures
+   * Get API status (for monitoring)
    */
-  async getUpcomingFixtures(options = {}) {
-    const {
-      days = 7,
-      competitions = [COMPETITION_CODES.PREMIER_LEAGUE, COMPETITION_CODES.CHAMPIONS_LEAGUE]
-    } = options;
+  getAPIStatus() {
+    return {
+      configured: true,
+      baseURL: BACKEND_BASE_URL,
+      endpoint: FIXTURES_ENDPOINT,
+      timestamp: new Date().toISOString()
+    };
+  }
+};
 
-    try {
-      const params = { days, competitions };
-      const response = await apiClient.request('/fixtures/upcoming', params);
+/**
+ * Client-side filtering utilities for fixtures
+ */
+export const fixtureFilters = {
+  /**
+   * Filter fixtures for today's matches
+   */
+  getTodaysFixtures(fixtures) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
 
-      const transformedFixtures = response.fixtures?.map(transformers.transformFixture) || [];
-
-      return {
-        success: true,
-        data: {
-          fixtures: transformedFixtures,
-          totalCount: response.totalCount || transformedFixtures.length,
-          source: response.source || 'backend-proxy',
-          timestamp: response.timestamp || new Date().toISOString()
-        }
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: {
-          message: error.message,
-          type: 'BACKEND_API_ERROR'
-        }
-      };
-    }
+    return fixtures.filter(fixture => {
+      const fixtureDate = new Date(fixture.date);
+      return fixtureDate >= today && fixtureDate < tomorrow;
+    });
   },
 
   /**
-   * Get fixtures for specific competition
+   * Filter fixtures by prediction status
    */
-  async getCompetitionFixtures(competition, options = {}) {
-    const {
-      dateFrom,
-      dateTo,
-      status,
-      limit = 100
-    } = options;
-
-    try {
-      const params = {
-        competitions: [competition],
-        dateFrom,
-        dateTo,
-        status,
-        limit
-      };
-
-      const response = await apiClient.request('/fixtures', params);
-
-      const transformedFixtures = response.fixtures?.map(transformers.transformFixture) || [];
-
-      return {
-        success: true,
-        data: {
-          fixtures: transformedFixtures,
-          totalCount: response.totalCount || transformedFixtures.length,
-          source: response.source || 'backend-proxy',
-          timestamp: response.timestamp || new Date().toISOString()
-        }
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: {
-          message: error.message,
-          type: 'BACKEND_API_ERROR'
-        }
-      };
-    }
+  filterByPredictionStatus(fixtures, status) {
+    if (status === 'all') return fixtures;
+    if (status === 'predicted') return fixtures.filter(f => f.predicted);
+    if (status === 'unpredicted') return fixtures.filter(f => !f.predicted);
+    return fixtures;
   },
 
   /**
-   * Get supported competitions
+   * Filter fixtures by search query (team names)
    */
-  async getCompetitions() {
-    try {
-      const response = await apiClient.request('/competitions');
-
-      return {
-        success: true,
-        data: response || []
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: {
-          message: error.message,
-          type: 'BACKEND_API_ERROR'
-        }
-      };
-    }
+  filterBySearch(fixtures, query) {
+    if (!query) return fixtures;
+    
+    const searchTerm = query.toLowerCase();
+    return fixtures.filter(fixture => 
+      fixture.homeTeam.toLowerCase().includes(searchTerm) ||
+      fixture.awayTeam.toLowerCase().includes(searchTerm)
+    );
   },
 
   /**
-   * Get target teams
+   * Combined filtering function
    */
-  async getTargetTeams() {
-    try {
-      const response = await apiClient.request('/teams');
+  applyFilters(fixtures, filters = {}) {
+    let result = fixtures;
 
-      return {
-        success: true,
-        data: response || []
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: {
-          message: error.message,
-          type: 'BACKEND_API_ERROR'
-        }
-      };
+    // Apply date filter
+    if (filters.date === 'today') {
+      result = this.getTodaysFixtures(result);
     }
-  },
 
-  /**
-   * Health check for backend API
-   */
-  async healthCheck() {
-    try {
-      const response = await apiClient.request('/health');
-
-      return {
-        success: true,
-        data: {
-          status: 'healthy',
-          message: response,
-          timestamp: new Date().toISOString()
-        }
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: {
-          message: error.message,
-          type: 'BACKEND_API_ERROR'
-        }
-      };
+    // Apply prediction status filter
+    if (filters.status && filters.status !== 'all') {
+      result = this.filterByPredictionStatus(result, filters.status);
     }
+
+    // Apply search filter
+    if (filters.search) {
+      result = this.filterBySearch(result, filters.search);
+    }
+
+    return result;
   }
 };
 

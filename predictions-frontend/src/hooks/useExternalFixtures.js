@@ -1,19 +1,16 @@
 /**
- * Custom hook for external fixtures data
- * Integrates external Football-Data.org API with React Query
+ * Custom hook for fixtures data - Simplified for current gameweek only
+ * Integrates backend fixtures API with React Query
  */
 
+import React from 'react';
 import { useQuery, useQueries, useQueryClient } from '@tanstack/react-query';
 import { externalFixturesAPI } from '../services/api/externalFixturesAPI';
 
 // Query keys for React Query
 const QUERY_KEYS = {
   EXTERNAL_FIXTURES: 'external-fixtures',
-  COMPETITION_FIXTURES: 'competition-fixtures',
-  LIVE_FIXTURES: 'live-fixtures',
-  TODAY_FIXTURES: 'today-fixtures',
-  UPCOMING_FIXTURES: 'upcoming-fixtures',
-  COMPETITION_INFO: 'competition-info'
+  LIVE_FIXTURES: 'live-fixtures'
 };
 
 /**
@@ -21,10 +18,6 @@ const QUERY_KEYS = {
  */
 export const useExternalFixtures = (options = {}) => {
   const {
-    competitions = ['PL', 'CL'], // Default to Premier League and Champions League
-    status = 'SCHEDULED',
-    dateFrom,
-    dateTo,
     enabled = true,
     fallbackToSample = true,
     refetchInterval = 30 * 60 * 1000, // 30 minutes
@@ -33,39 +26,36 @@ export const useExternalFixtures = (options = {}) => {
   } = options;
 
   return useQuery({
-    queryKey: [QUERY_KEYS.EXTERNAL_FIXTURES, { competitions, status, dateFrom, dateTo }],
+    queryKey: [QUERY_KEYS.EXTERNAL_FIXTURES],
     queryFn: async () => {
       try {
-        const result = await externalFixturesAPI.getAllFixtures({
-          competitions,
-          status,
-          dateFrom,
-          dateTo,
-          limit: 100
-        });
+        const result = await externalFixturesAPI.getFixtures();
 
         if (!result.success) {
           throw new Error(result.error?.message || 'Failed to fetch external fixtures');
         }
 
-        console.log('External fixtures fetched successfully', {
+        console.log('Fixtures fetched successfully', {
           count: result.data.fixtures.length,
-          competitions: result.data.competitions,
-          source: 'external-api'
+          gameweek: result.data.gameweek,
+          source: 'backend-api'
         });
 
         return result.data;
       } catch (error) {
-        console.error('External fixtures fetch failed', { error: error.message });
+        console.error('Fixtures fetch failed', { error: error.message });
         
-        // Return empty state on error instead of fallback
+        // Fallback to sample data if enabled and API fails
         if (fallbackToSample) {
-          console.warn('API failed, returning empty state');
+          const { upcomingMatches } = await import('../data/sampleData');
+          console.warn('API failed, using sample data');
           return {
-            fixtures: [],
-            source: 'empty-state',
-            error: error.message,
-            totalCount: 0
+            fixtures: upcomingMatches || [],
+            source: 'sample-data',
+            gameweek: 1,
+            totalCount: upcomingMatches?.length || 0,
+            timestamp: new Date().toISOString(),
+            fallback: true
           };
         }
         
@@ -88,42 +78,28 @@ export const useExternalFixtures = (options = {}) => {
 };
 
 /**
- * Hook for fetching Premier League and Champions League fixtures for target teams
- */
-export const usePremierLeagueAndChampionsLeagueFixtures = (options = {}) => {
-  return useExternalFixtures({
-    competitions: ['PL', 'CL'],
-    ...options
-  });
-};
-
-/**
- * Hook for fetching today's fixtures across multiple competitions
+ * Hook for fetching today's fixtures (client-side filtered from main fixtures)
  */
 export const useTodaysFixtures = (options = {}) => {
-  const {
-    enabled = true,
-    refetchInterval = 5 * 60 * 1000 // 5 minutes for live updates
-  } = options;
+  const { data: allFixtures, ...query } = useExternalFixtures(options);
+  
+  const todaysFixtures = React.useMemo(() => {
+    if (!allFixtures?.fixtures) return null;
+    
+    const { fixtureFilters } = require('../services/api/externalFixturesAPI');
+    return {
+      ...allFixtures,
+      fixtures: fixtureFilters.getTodaysFixtures(allFixtures.fixtures)
+    };
+  }, [allFixtures]);
 
-  return useQuery({
-    queryKey: [QUERY_KEYS.TODAY_FIXTURES],
-    queryFn: async () => {
-      const result = await externalFixturesAPI.getTodaysFixtures();
-      
-      if (!result.success) {
-        throw new Error(result.error?.message || 'Failed to fetch today\'s fixtures');
-      }
-
-      return result.data;
-    },
-    enabled,
-    staleTime: 2 * 60 * 1000, // 2 minutes
-    cacheTime: 30 * 60 * 1000, // 30 minutes
-    refetchInterval,
-    refetchOnWindowFocus: true
-  });
+  return {
+    data: todaysFixtures,
+    ...query
+  };
 };
+
+
 
 /**
  * Hook for fetching live fixtures with real-time updates
@@ -153,118 +129,9 @@ export const useLiveFixtures = (options = {}) => {
   });
 };
 
-/**
- * Hook for fetching upcoming fixtures for the next week
- */
-export const useUpcomingFixtures = (options = {}) => {
-  const {
-    enabled = true,
-    competitions = ['PL']
-  } = options;
 
-  return useQuery({
-    queryKey: [QUERY_KEYS.UPCOMING_FIXTURES, { competitions }],
-    queryFn: async () => {
-      const result = await externalFixturesAPI.getUpcomingFixtures();
-      
-      if (!result.success) {
-        throw new Error(result.error?.message || 'Failed to fetch upcoming fixtures');
-      }
 
-      return result.data;
-    },
-    enabled,
-    staleTime: 10 * 60 * 1000, // 10 minutes
-    cacheTime: 60 * 60 * 1000, // 1 hour
-    refetchInterval: 30 * 60 * 1000, // 30 minutes
-    refetchOnWindowFocus: false
-  });
-};
 
-/**
- * Hook for fetching multiple competitions in parallel (limited to PL and CL)
- */
-export const useMultipleCompetitions = (competitions = ['PL', 'CL'], options = {}) => {
-  const {
-    status = 'SCHEDULED',
-    enabled = true
-  } = options;
-
-  // Filter to only allow PL and CL
-  const validCompetitions = competitions.filter(comp => ['PL', 'CL'].includes(comp));
-
-  const queries = validCompetitions.map(competition => ({
-    queryKey: [QUERY_KEYS.COMPETITION_FIXTURES, competition, status],
-    queryFn: async () => {
-      const result = await externalFixturesAPI.getCompetitionFixtures({
-        competition,
-        status,
-        limit: 50,
-        filterTargetTeams: true
-      });
-      
-      if (!result.success) {
-        throw new Error(`Failed to fetch ${competition} fixtures`);
-      }
-
-      return {
-        competition,
-        ...result.data
-      };
-    },
-    enabled,
-    staleTime: 10 * 60 * 1000,
-    cacheTime: 60 * 60 * 1000
-  }));
-
-  return useQueries({ queries });
-};
-
-/**
- * Hook for fetching competition information
- */
-export const useCompetitionInfo = (competitionCode, options = {}) => {
-  const { enabled = true } = options;
-
-  return useQuery({
-    queryKey: [QUERY_KEYS.COMPETITION_INFO, competitionCode],
-    queryFn: async () => {
-      const result = await externalFixturesAPI.getCompetition(competitionCode);
-      
-      if (!result.success) {
-        throw new Error(result.error?.message || 'Failed to fetch competition info');
-      }
-
-      return result.data;
-    },
-    enabled: enabled && !!competitionCode,
-    staleTime: 60 * 60 * 1000, // 1 hour
-    cacheTime: 24 * 60 * 60 * 1000 // 24 hours
-  });
-};
-
-/**
- * Hook for searching fixtures by team
- */
-export const useFixturesByTeam = (teamName, options = {}) => {
-  const { enabled = true } = options;
-
-  return useQuery({
-    queryKey: [QUERY_KEYS.EXTERNAL_FIXTURES, 'team-search', teamName],
-    queryFn: async () => {
-      const result = await externalFixturesAPI.getFixturesByTeam(teamName);
-      
-      if (!result.success) {
-        throw new Error(result.error?.message || 'Failed to search fixtures');
-      }
-
-      return result.data;
-    },
-    enabled: enabled && !!teamName,
-    staleTime: 10 * 60 * 1000,
-    cacheTime: 30 * 60 * 1000
-  });
-};
 
 /**
  * Hook for external API status monitoring
@@ -276,10 +143,7 @@ export const useExternalAPIStatus = () => {
 
   const invalidateAllQueries = () => {
     queryClient.invalidateQueries([QUERY_KEYS.EXTERNAL_FIXTURES]);
-    queryClient.invalidateQueries([QUERY_KEYS.COMPETITION_FIXTURES]);
     queryClient.invalidateQueries([QUERY_KEYS.LIVE_FIXTURES]);
-    queryClient.invalidateQueries([QUERY_KEYS.TODAY_FIXTURES]);
-    queryClient.invalidateQueries([QUERY_KEYS.UPCOMING_FIXTURES]);
   };
 
   const clearCache = () => {
@@ -350,13 +214,8 @@ export { QUERY_KEYS };
 
 export default {
   useExternalFixtures,
-  usePremierLeagueAndChampionsLeagueFixtures,
   useTodaysFixtures,
   useLiveFixtures,
-  useUpcomingFixtures,
-  useMultipleCompetitions,
-  useCompetitionInfo,
-  useFixturesByTeam,
   useExternalAPIStatus,
   useFixtureCompatibility,
   QUERY_KEYS

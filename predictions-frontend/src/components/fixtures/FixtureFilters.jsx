@@ -10,12 +10,8 @@ const FixtureFilters = ({
   setActiveFilter,
   searchQuery,
   setSearchQuery,
-  gameweekFilter,
-  setGameweekFilter,
-  filterTeam,
-  setFilterTeam,
-  competitionFilter,
-  setCompetitionFilter,
+  dateFilter,
+  setDateFilter,
   sortBy,
   setSortBy,
   showFilters,
@@ -139,14 +135,14 @@ const FixtureFilters = ({
             }`}
           >
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-              {/* Gameweek filter */}
+              {/* Date filter */}
               <div>
                 <label className={`block text-sm mb-1 ${getThemeStyles(theme, text.secondary)}`}>
-                  Gameweek
+                  Date
                 </label>
                 <select
-                  value={gameweekFilter}
-                  onChange={(e) => setGameweekFilter(e.target.value)}
+                  value={dateFilter}
+                  onChange={(e) => setDateFilter(e.target.value)}
                   className={`border rounded-md px-3 py-2 text-sm w-full ${
                     getThemeStyles(theme, {
                       dark: "bg-slate-800/60 border-slate-600/50 text-white",
@@ -158,96 +154,13 @@ const FixtureFilters = ({
                     dark: "bg-slate-800",
                     light: "bg-white"
                   })}>
-                    All Gameweeks
+                    All Matches
                   </option>
-                  {Array.from({ length: 38 }, (_, i) => i + 1).map((gw) => (
-                    <option key={gw} value={gw} className={getThemeStyles(theme, {
-                      dark: "bg-slate-800",
-                      light: "bg-white"
-                    })}>
-                      Gameweek {gw}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Team filter */}
-              <div>
-                <label className={`block text-sm mb-1 ${getThemeStyles(theme, text.secondary)}`}>Team</label>
-                <select
-                  value={filterTeam}
-                  onChange={(e) => setFilterTeam(e.target.value)}
-                  className={`border rounded-md px-3 py-2 text-sm w-full ${
-                    getThemeStyles(theme, {
-                      dark: "bg-slate-800/60 border-slate-600/50 text-white",
-                      light: "bg-white border-slate-300 text-slate-800"
-                    })
-                  }`}
-                >
-                  <option value="all" className={getThemeStyles(theme, {
+                  <option value="today" className={getThemeStyles(theme, {
                     dark: "bg-slate-800",
                     light: "bg-white"
                   })}>
-                    All Teams
-                  </option>
-                  {teams.map((team) => (
-                    <option key={team} value={team} className={getThemeStyles(theme, {
-                      dark: "bg-slate-800",
-                      light: "bg-white"
-                    })}>
-                      {team}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Competition filter */}
-              <div>
-                <label className={`block text-sm mb-1 ${getThemeStyles(theme, text.secondary)}`}>
-                  Competition
-                </label>
-                <select
-                  value={competitionFilter}
-                  onChange={(e) => setCompetitionFilter(e.target.value)}
-                  className={`border rounded-md px-3 py-2 text-sm w-full ${
-                    getThemeStyles(theme, {
-                      dark: "bg-slate-800/60 border-slate-600/50 text-white",
-                      light: "bg-white border-slate-300 text-slate-800"
-                    })
-                  }`}
-                >
-                  <option value="all" className={getThemeStyles(theme, {
-                    dark: "bg-slate-800",
-                    light: "bg-white"
-                  })}>
-                    All Competitions
-                  </option>
-                  <option value="Premier League" className={getThemeStyles(theme, {
-                    dark: "bg-slate-800",
-                    light: "bg-white"
-                  })}>
-                    Premier League
-                  </option>
-                  <option value="Champions League" className={getThemeStyles(theme, {
-                    dark: "bg-slate-800",
-                    light: "bg-white"
-                  })}>
-                    Champions League
-                  </option>
-                  <option value="Europa League" className={getThemeStyles(theme, {
-                    dark: "bg-slate-800",
-                    light: "bg-white"
-                  })}>
-                    Europa League
-                  </option>
-                  <option
-                    value="Europa Conference League"
-                    className={getThemeStyles(theme, {
-                      dark: "bg-slate-800",
-                      light: "bg-white"
-                    })}
-                  >
-                    Conference League
+                    Today's Matches
                   </option>
                 </select>
               </div>
@@ -299,9 +212,7 @@ const FixtureFilters = ({
             <div className="flex justify-end">
               <button
                 onClick={() => {
-                  setGameweekFilter("all");
-                  setFilterTeam("all");
-                  setCompetitionFilter("all");
+                  setDateFilter("all");
                   setSortBy("date");
                   setSearchQuery("");
                   setActiveFilter("all");
