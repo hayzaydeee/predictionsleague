@@ -112,7 +112,8 @@ export const getTeamLogo = (teamName) => {
   }
   
   // Return placeholder as fallback
-  return `https://via.placeholder.com/40?text=${teamName.substring(0, 3)}`;
+  const safeName = teamName || 'TBD';
+  return `https://via.placeholder.com/40?text=${safeName.substring(0, 3)}`;
 };
 
 /**

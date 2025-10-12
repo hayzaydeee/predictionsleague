@@ -40,34 +40,48 @@ class BackendFixturesAPIClient {
    * Get user authentication token (if needed for backend)
    */
   getAuthToken() {
-    // Get from localStorage, context, or wherever your app stores auth tokens
-    return localStorage.getItem('authToken') || '';
+    // Try multiple token storage locations
+    return localStorage.getItem('token') || 
+           localStorage.getItem('authToken') || 
+           localStorage.getItem('accessToken') || 
+           '';
   }
 
   /**
-   * Make authenticated request to backend
+   * Make request to backend (with optional auth)
    */
   async request(path = '') {
     const url = `${this.baseURL}${this.endpoint}${path}`;
 
-    try {
+    const makeRequest = async (includeAuth = true) => {
       const headers = {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       };
 
-      // Add auth token if available
+      // Add auth token if available and requested (fixtures might be public)
       const token = this.getAuthToken();
-      if (token) {
+      if (includeAuth && token) {
         headers['Authorization'] = `Bearer ${token}`;
       }
 
-      console.log('Backend Fixtures API Request:', { url });
+      console.log('Backend Fixtures API Request:', { url, hasToken: !!token, includeAuth });
 
-      const response = await fetch(url, {
+      return fetch(url, {
         method: 'GET',
         headers
       });
+    };
+
+    try {
+      // First try with auth if we have a token
+      let response = await makeRequest(true);
+
+      // If 401 and we had auth, try without auth (fixtures might be public)
+      if (response.status === 401) {
+        console.log('Got 401 with auth, trying without auth token...');
+        response = await makeRequest(false);
+      }
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -76,12 +90,13 @@ class BackendFixturesAPIClient {
 
       const result = await response.json();
       
-      // Backend returns { success: true, data: {...} } format
-      if (!result.success) {
+      // Handle different response formats
+      if (result.success === false) {
         throw new Error(result.error || 'Backend API request failed');
       }
 
-      return result.data;
+      // Return data directly if success field exists, otherwise assume raw data
+      return result.success ? result.data : result;
     } catch (error) {
       console.error('Backend Fixtures API Request Failed:', {
         url,
@@ -103,16 +118,21 @@ const transformers = {
    * Transform backend response to standard format
    */
   transformFixture(fixture) {
+    if (!fixture) {
+      console.warn('Received undefined fixture in transformer');
+      return null;
+    }
+
     return {
-      id: fixture.id,
-      homeTeam: fixture.homeTeam,
-      awayTeam: fixture.awayTeam,
-      date: fixture.date,
-      status: fixture.status,
-      venue: fixture.venue,
-      gameweek: fixture.gameweek,
-      homeScore: fixture.homeScore,
-      awayScore: fixture.awayScore,
+      id: fixture.id || Date.now(),
+      homeTeam: fixture.homeTeam || 'TBD',
+      awayTeam: fixture.awayTeam || 'TBD',
+      date: fixture.date || new Date().toISOString(),
+      status: fixture.status || 'SCHEDULED',
+      venue: fixture.venue || '',
+      gameweek: fixture.gameweek || 1,
+      homeScore: fixture.homeScore || null,
+      awayScore: fixture.awayScore || null,
       competition: 'Premier League', // All fixtures are Premier League
       predicted: fixture.predicted || false // Will be merged with user predictions
     };
@@ -133,8 +153,14 @@ export const externalFixturesAPI = {
     try {
       const response = await apiClient.request('');
 
-      // Transform fixtures
-      const transformedFixtures = response.fixtures?.map(transformers.transformFixture) || [];
+      console.log('Raw backend response:', response);
+
+      // Transform fixtures (filter out nulls from failed transforms)
+      const transformedFixtures = (response.fixtures || [])
+        .map(transformers.transformFixture)
+        .filter(fixture => fixture !== null);
+
+      console.log('Transformed fixtures:', transformedFixtures);
 
       return {
         success: true,
@@ -164,7 +190,9 @@ export const externalFixturesAPI = {
     try {
       const response = await apiClient.request('/live');
 
-      const transformedFixtures = response.fixtures?.map(transformers.transformFixture) || [];
+      const transformedFixtures = (response.fixtures || [])
+        .map(transformers.transformFixture)
+        .filter(fixture => fixture !== null);
 
       return {
         success: true,
