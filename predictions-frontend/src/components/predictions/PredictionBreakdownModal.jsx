@@ -19,7 +19,6 @@ const PredictionBreakdownModal = ({
   isOpen, 
   onClose, 
   prediction, 
-  teamLogos = {},
   onEdit
 }) => {
   const { theme } = useContext(ThemeContext);
@@ -223,8 +222,15 @@ const PredictionBreakdownModal = ({
                       <div className={`text-2xl font-bold font-outfit ${getThemeStyles(theme, text.primary)}`}>
                         {prediction.homeScore}
                       </div>
-                      <div className={`text-xs font-outfit mt-1 mb-2 truncate ${getThemeStyles(theme, text.muted)}`}>
-                        {prediction.homeTeam}
+                      <div className="flex items-center justify-center gap-2 mt-1 mb-2">
+                        <TeamLogo 
+                          teamName={prediction.homeTeam} 
+                          size={LOGO_SIZES.xs}
+                          className="flex-shrink-0"
+                        />
+                        <div className={`text-xs font-outfit truncate ${getThemeStyles(theme, text.muted)}`}>
+                          {prediction.homeTeam}
+                        </div>
                       </div>
                       {/* Home Team Predicted Scorers as subtext */}
                       {prediction.homeScorers?.length > 0 && (
@@ -249,8 +255,15 @@ const PredictionBreakdownModal = ({
                       <div className={`text-2xl font-bold font-outfit ${getThemeStyles(theme, text.primary)}`}>
                         {prediction.awayScore}
                       </div>
-                      <div className={`text-xs font-outfit mt-1 mb-2 truncate ${getThemeStyles(theme, text.muted)}`}>
-                        {prediction.awayTeam}
+                      <div className="flex items-center justify-center gap-2 mt-1 mb-2">
+                        <TeamLogo 
+                          teamName={prediction.awayTeam} 
+                          size={LOGO_SIZES.xs}
+                          className="flex-shrink-0"
+                        />
+                        <div className={`text-xs font-outfit truncate ${getThemeStyles(theme, text.muted)}`}>
+                          {prediction.awayTeam}
+                        </div>
                       </div>
                       {/* Away Team Predicted Scorers as subtext */}
                       {prediction.awayScorers?.length > 0 && (
@@ -284,8 +297,15 @@ const PredictionBreakdownModal = ({
                         <div className="text-2xl font-bold text-emerald-300 font-outfit">
                           {prediction.actualHomeScore}
                         </div>
-                        <div className={`text-xs font-outfit mt-1 mb-2 truncate ${getThemeStyles(theme, text.muted)}`}>
-                          {prediction.homeTeam}
+                        <div className="flex items-center justify-center gap-2 mt-1 mb-2">
+                          <TeamLogo 
+                            teamName={prediction.homeTeam} 
+                            size={LOGO_SIZES.xs}
+                            className="flex-shrink-0"
+                          />
+                          <div className={`text-xs font-outfit truncate ${getThemeStyles(theme, text.muted)}`}>
+                            {prediction.homeTeam}
+                          </div>
                         </div>
                         {/* Home Team Actual Scorers as subtext */}
                         {prediction.actualHomeScorers?.length > 0 && (
@@ -310,8 +330,15 @@ const PredictionBreakdownModal = ({
                         <div className="text-2xl font-bold text-emerald-300 font-outfit">
                           {prediction.actualAwayScore}
                         </div>
-                        <div className={`text-xs font-outfit mt-1 mb-2 truncate ${getThemeStyles(theme, text.muted)}`}>
-                          {prediction.awayTeam}
+                        <div className="flex items-center justify-center gap-2 mt-1 mb-2">
+                          <TeamLogo 
+                            teamName={prediction.awayTeam} 
+                            size={LOGO_SIZES.xs}
+                            className="flex-shrink-0"
+                          />
+                          <div className={`text-xs font-outfit truncate ${getThemeStyles(theme, text.muted)}`}>
+                            {prediction.awayTeam}
+                          </div>
                         </div>
                         {/* Away Team Actual Scorers as subtext */}
                         {prediction.actualAwayScorers?.length > 0 && (
@@ -525,7 +552,14 @@ const PredictionBreakdownModal = ({
                         <div className="text-xs space-y-1 font-outfit">
                           {prediction.homeScorers?.map((scorer, index) => (
                             <div key={`home-${index}`} className="flex items-center justify-between">
-                              <span className={`${getThemeStyles(theme, text.muted)}`}>{prediction.homeTeam}: {scorer}</span>
+                              <div className="flex items-center gap-1.5">
+                                <TeamLogo 
+                                  teamName={prediction.homeTeam} 
+                                  size={LOGO_SIZES.xs}
+                                  className="flex-shrink-0"
+                                />
+                                <span className={`${getThemeStyles(theme, text.muted)}`}>{prediction.homeTeam}: {scorer}</span>
+                              </div>
                               <span className={`font-medium font-outfit ${
                                 prediction.actualHomeScorers?.includes(scorer) ? 'text-emerald-400' : 'text-red-400'
                               }`}>
@@ -535,7 +569,14 @@ const PredictionBreakdownModal = ({
                           ))}
                           {prediction.awayScorers?.map((scorer, index) => (
                             <div key={`away-${index}`} className="flex items-center justify-between">
-                              <span className={`${getThemeStyles(theme, text.muted)}`}>{prediction.awayTeam}: {scorer}</span>
+                              <div className="flex items-center gap-1.5">
+                                <TeamLogo 
+                                  teamName={prediction.awayTeam} 
+                                  size={LOGO_SIZES.xs}
+                                  className="flex-shrink-0"
+                                />
+                                <span className={`${getThemeStyles(theme, text.muted)}`}>{prediction.awayTeam}: {scorer}</span>
+                              </div>
                               <span className={`font-medium font-outfit ${
                                 prediction.actualAwayScorers?.includes(scorer) ? 'text-emerald-400' : 'text-red-400'
                               }`}>

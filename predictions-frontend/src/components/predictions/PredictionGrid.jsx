@@ -7,6 +7,8 @@ import {
 import { format, parseISO } from "date-fns";
 import { filterPredictionsByQuery } from "../../utils/predictionUtils";
 import { ThemeContext } from "../../context/ThemeContext";
+import TeamLogo from "../ui/TeamLogo";
+import { LOGO_SIZES } from "../../utils/teamLogos";
 
 // Rich Prediction Card Component (consistent with teams/carousel views)
 const RichPredictionCard = ({ prediction, onSelect, onEdit, teamLogos, theme }) => {
@@ -128,10 +130,17 @@ const RichPredictionCard = ({ prediction, onSelect, onEdit, teamLogos, theme }) 
             {/* Home Team Scorers */}
             {prediction.homeScorers?.length > 0 && (
               <div>
-                <div className={`text-xs font-medium mb-2 ${
-                  theme === "dark" ? "text-slate-500" : "text-slate-500"
-                } font-outfit`}>
-                  {prediction.homeTeam}
+                <div className="flex items-center gap-2 mb-2">
+                  <TeamLogo 
+                    teamName={prediction.homeTeam} 
+                    size={LOGO_SIZES.xs}
+                    className="flex-shrink-0"
+                  />
+                  <div className={`text-xs font-medium ${
+                    theme === "dark" ? "text-slate-500" : "text-slate-500"
+                  } font-outfit`}>
+                    {prediction.homeTeam}
+                  </div>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {Object.entries(getGoalCounts(prediction.homeScorers)).map(([scorer, count]) => (
@@ -162,10 +171,17 @@ const RichPredictionCard = ({ prediction, onSelect, onEdit, teamLogos, theme }) 
             {/* Away Team Scorers */}
             {prediction.awayScorers?.length > 0 && (
               <div>
-                <div className={`text-xs font-medium mb-2 ${
-                  theme === "dark" ? "text-slate-500" : "text-slate-500"
-                } font-outfit`}>
-                  {prediction.awayTeam}
+                <div className="flex items-center gap-2 mb-2">
+                  <TeamLogo 
+                    teamName={prediction.awayTeam} 
+                    size={LOGO_SIZES.xs}
+                    className="flex-shrink-0"
+                  />
+                  <div className={`text-xs font-medium ${
+                    theme === "dark" ? "text-slate-500" : "text-slate-500"
+                  } font-outfit`}>
+                    {prediction.awayTeam}
+                  </div>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {Object.entries(getGoalCounts(prediction.awayScorers)).map(([scorer, count]) => (
