@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useContext } from "react";
+import { useContext, useMemo } from "react";
 import {
   InfoCircledIcon,
   LightningBoltIcon,
@@ -19,6 +19,7 @@ import LeaguesTable from "../tables/LeaguesTable";
 import { ThemeContext } from "../../context/ThemeContext";
 import { text } from "../../utils/themeUtils";
 import { normalizeTeamName } from "../../utils/teamUtils";
+import { useExternalFixtures } from "../../hooks/useExternalFixtures";
 
 const DashboardView = ({
   upcomingMatches,
@@ -39,6 +40,45 @@ const DashboardView = ({
   // Error states
   errors = {},
 }) => {
+  // Fetch external fixtures for real upcoming matches data
+  const {
+    fixtures: externalFixtures,
+    isLoading: externalFixturesLoading,
+    isError: externalFixturesError,
+    error: externalFixturesErrorDetails,
+  } = useExternalFixtures({
+    fallbackToSample: true,
+    staleTime: 15 * 60 * 1000, // 15 minutes for dashboard
+    cacheTime: 30 * 60 * 1000, // 30 minutes
+  });
+
+  // Process external fixtures to get upcoming matches for dashboard
+  const upcomingFixtures = useMemo(() => {
+    if (!externalFixtures || !Array.isArray(externalFixtures)) return [];
+    
+    const now = new Date();
+    const upcoming = externalFixtures
+      .filter(fixture => {
+        const fixtureDate = new Date(fixture.date);
+        const isUpcoming = fixtureDate > now && 
+          (fixture.status === 'SCHEDULED' || fixture.status === 'TIMED');
+        return isUpcoming;
+      })
+      .sort((a, b) => new Date(a.date) - new Date(b.date))
+      .slice(0, 5); // Get next 5 matches for dashboard
+    
+    return upcoming.map(fixture => ({
+      id: fixture.id,
+      gameweek: fixture.gameweek,
+      homeTeam: normalizeTeamName(fixture.homeTeam),
+      awayTeam: normalizeTeamName(fixture.awayTeam),
+      date: fixture.date,
+      venue: fixture.venue || "Stadium",
+      competition: fixture.competition || "Premier League",
+      status: fixture.status,
+    }));
+  }, [externalFixtures]);
+
   // Helper function to format match data for the predictions modal
   const formatMatchForPrediction = (match) => {
     return {
@@ -186,9 +226,19 @@ const DashboardView = ({
                     Gameweek {essentialData?.season?.currentGameweek || 1}
                   </span>
                 </div>
-                <div className={`${text.muted[theme]} text-xs font-outfit`}>
-                  Deadline: {essentialData?.season?.deadlineFormatted || "TBD"}
-                </div>
+                {/* Live fixtures indicator */}
+                {!externalFixturesError && upcomingFixtures.length > 0 && (
+                  <div className="flex items-center gap-1">
+                    <div className={`w-1.5 h-1.5 rounded-full ${
+                      theme === "dark" ? "bg-emerald-400" : "bg-emerald-500"
+                    }`} />
+                    <span className={`${
+                      theme === "dark" ? "text-emerald-400" : "text-emerald-600"
+                    } text-xs font-medium font-outfit`}>
+                      Live data
+                    </span>
+                  </div>
+                )}
               </>
             )}
           </div>
@@ -303,17 +353,27 @@ const DashboardView = ({
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
         {/* Main Content - 2/3 width on xl screens */}
         <div className="xl:col-span-2 space-y-5">
-          {/* Upcoming Matches Panel */}
+          {/* Upcoming Matches Panel - Using Real External Fixtures Data */}
           <motion.div variants={itemVariants}>
-            {secondaryLoading.matches ? (
+            {(externalFixturesLoading || secondaryLoading.matches) ? (
               <PanelSkeleton title="Upcoming Matches" rows={3} />
-            ) : upcomingMatches && upcomingMatches.length > 0 ? (
+            ) : upcomingFixtures && upcomingFixtures.length > 0 ? (
               <UpcomingMatchesPanel
-                matches={upcomingMatches}
+                matches={upcomingFixtures}
                 onViewAll={() => navigateToSection("fixtures")}
                 onPredictMatch={(match) =>
                   goToPredictions(formatMatchForPrediction(match))
                 }
+              />
+            ) : externalFixturesError ? (
+              <DashboardEmptyState
+                type="matches"
+                title="Unable to load fixtures"
+                message="There was an issue loading upcoming matches. Please try again later."
+                action={{
+                  label: "View All Fixtures",
+                  onClick: () => navigateToSection("fixtures")
+                }}
               />
             ) : (
               <DashboardEmptyState

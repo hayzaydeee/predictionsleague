@@ -9,6 +9,8 @@ import {
 } from "@radix-ui/react-icons";
 import { ThemeContext } from "../../context/ThemeContext";
 import { normalizeTeamName } from "../../utils/teamUtils";
+import TeamLogo from "../ui/TeamLogo";
+import { LOGO_SIZES } from "../../utils/teamLogos";
 
 const UpcomingMatchesPanel = ({ matches, onViewAll, onPredictMatch }) => {
   const { theme } = useContext(ThemeContext);
@@ -104,12 +106,38 @@ const UpcomingMatchesPanel = ({ matches, onViewAll, onPredictMatch }) => {
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1.5">
-                    <div
-                      className={`${
-                        theme === "dark" ? "text-white" : "text-slate-800"
-                      } font-outfit font-medium text-sm`}
-                    >
-                      {homeTeam} vs {awayTeam}
+                    <div className="flex items-center gap-2">
+                      <TeamLogo 
+                        teamName={homeTeam} 
+                        size={LOGO_SIZES.xs}
+                        className="flex-shrink-0"
+                      />
+                      <span
+                        className={`${
+                          theme === "dark" ? "text-white" : "text-slate-800"
+                        } font-outfit font-medium text-sm`}
+                      >
+                        {homeTeam}
+                      </span>
+                      <span
+                        className={`${
+                          theme === "dark" ? "text-slate-400" : "text-slate-500"
+                        } text-sm font-outfit`}
+                      >
+                        vs
+                      </span>
+                      <TeamLogo 
+                        teamName={awayTeam} 
+                        size={LOGO_SIZES.xs}
+                        className="flex-shrink-0"
+                      />
+                      <span
+                        className={`${
+                          theme === "dark" ? "text-white" : "text-slate-800"
+                        } font-outfit font-medium text-sm`}
+                      >
+                        {awayTeam}
+                      </span>
                     </div>
                     {match.predicted && (
                       <div
