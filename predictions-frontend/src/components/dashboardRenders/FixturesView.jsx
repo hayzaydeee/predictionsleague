@@ -258,12 +258,8 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
           setActiveFilter={setActiveFilter}
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
-          gameweekFilter={gameweekFilter}
-          setGameweekFilter={setGameweekFilter}
-          filterTeam={filterTeam}
-          setFilterTeam={setFilterTeam}
-          competitionFilter={competitionFilter}
-          setCompetitionFilter={setCompetitionFilter}
+          dateFilter={dateFilter}
+          setDateFilter={setDateFilter}
           sortBy={sortBy}
           setSortBy={setSortBy}
           showFilters={showFilters}
