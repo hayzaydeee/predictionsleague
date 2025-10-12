@@ -49,24 +49,41 @@ class BackendFixturesAPIClient {
   }
 
   /**
-   * Make request to backend (no auth for now - testing)
+   * Make request to backend with auth fallback on 500 error
    */
   async request(path = '') {
     const url = `${this.baseURL}${this.endpoint}${path}`;
 
-    try {
+    const makeRequest = async (includeAuth = false) => {
       const headers = {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       };
 
-      // For now, don't use authentication to test if fixtures are public
-      console.log('Backend Fixtures API Request (no auth):', { url });
+      if (includeAuth) {
+        const token = this.getAuthToken();
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+      }
 
-      const response = await fetch(url, {
+      console.log('Backend Fixtures API Request:', { url, withAuth: includeAuth });
+
+      return fetch(url, {
         method: 'GET',
         headers
       });
+    };
+
+    try {
+      // First try without auth
+      let response = await makeRequest(false);
+
+      // If 500 error, try with auth (maybe endpoint requires auth)
+      if (response.status === 500) {
+        console.log('Got 500 error, trying with auth token...');
+        response = await makeRequest(true);
+      }
 
       console.log('Response status:', response.status);
       console.log('Response headers:', Object.fromEntries(response.headers.entries()));
@@ -74,12 +91,23 @@ class BackendFixturesAPIClient {
       if (!response.ok) {
         let errorData = {};
         const responseText = await response.text();
-        console.log('Error response body:', responseText);
+        console.error('❌ HTTP Error Response:', {
+          status: response.status,
+          statusText: response.statusText,
+          url,
+          responseBody: responseText
+        });
         
         try {
           errorData = JSON.parse(responseText);
         } catch (e) {
           errorData = { rawResponse: responseText };
+        }
+        
+        // More specific error handling for 500 errors
+        if (response.status === 500) {
+          console.error('🚨 Server Error (500) - Backend may have an issue processing fixtures request');
+          throw new Error(`Server Error: ${errorData.error || errorData.message || 'Internal server error processing fixtures'}`);
         }
         
         throw new Error(`Backend API Error ${response.status}: ${errorData.error || errorData.message || responseText || response.statusText}`);
