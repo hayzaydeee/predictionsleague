@@ -77,12 +77,15 @@ export const useExternalFixtures = (options = {}) => {
   });
 
   // Return the query data with proper destructuring
+  // The API returns result.data which should contain { fixtures: [...] }
   return {
-    fixtures: query.data?.fixtures,
+    fixtures: query.data?.fixtures || [],
     isLoading: query.isLoading,
     isError: query.isError,
     error: query.error,
     dataUpdatedAt: query.dataUpdatedAt,
+    // Debug info
+    rawData: query.data,
     // Include all other query properties
     ...query
   };
