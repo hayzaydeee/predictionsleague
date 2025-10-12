@@ -131,11 +131,17 @@ const transformers = {
       return null;
     }
 
+    // Ensure date has timezone info (assume UTC if missing)
+    let fixtureDate = fixture.date || new Date().toISOString();
+    if (fixtureDate && !fixtureDate.includes('Z') && !fixtureDate.includes('+') && !fixtureDate.includes('-', 10)) {
+      fixtureDate += 'Z'; // Add UTC timezone if missing
+    }
+
     return {
       id: fixture.id || Date.now(),
       homeTeam: fixture.homeTeam || 'TBD',
       awayTeam: fixture.awayTeam || 'TBD',
-      date: fixture.date || new Date().toISOString(),
+      date: fixtureDate,
       status: fixture.status || 'SCHEDULED',
       venue: fixture.venue || '',
       gameweek: fixture.gameweek || 1,
