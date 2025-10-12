@@ -11,16 +11,6 @@ import { backgrounds, text } from "../../utils/themeUtils";
 import { gameweeks, upcomingMatches } from "../../data/sampleData";
 import { useFixtures } from "../../hooks/useFixtures";
 import { fixtureFilters } from "../../services/api/externalFixturesAPI";
-import ViewToggleBar from "../ui/ViewToggleBar";
-import ActiveChipsBanner from "../ui/ActiveChipsBanner";
-import ContentView from "../fixtures/ContentView";
-import FixtureFilters from "../fixtures/FixtureFilters";
-import { ThemeContext } from "../../context/ThemeContext";
-import { useUserPreferences } from "../../context/UserPreferencesContext";
-import { backgrounds, text } from "../../utils/themeUtils";
-import { gameweeks, upcomingMatches } from "../../data/sampleData";
-import { useFixtures } from "../../hooks/useFixtures";
-import { fixtureFilters } from "../../services/api/externalFixturesAPI";
 
 const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
   // Get theme context and user preferences
