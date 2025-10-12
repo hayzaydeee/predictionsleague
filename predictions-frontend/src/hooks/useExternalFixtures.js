@@ -76,38 +76,20 @@ export const useExternalFixtures = (options = {}) => {
     }
   });
 
-  // Debug logging to see what we're actually getting
-  console.log('🔍 useExternalFixtures - Raw query data:', {
-    data: query.data,
+  // Simple return - just return the query object directly for now
+  console.log('🔍 useExternalFixtures DEBUG:', {
+    queryData: query.data,
     isLoading: query.isLoading,
     isError: query.isError,
+    hasData: !!query.data,
     dataType: typeof query.data,
-    hasFixtures: query.data?.fixtures ? 'yes' : 'no',
-    fixturesCount: query.data?.fixtures?.length || 0
+    fixturesInData: query.data?.fixtures?.length || 'none'
   });
 
-  // Return the query data with proper destructuring
-  // The API returns result.data which should contain { fixtures: [...] }
-  const result = {
-    fixtures: query.data?.fixtures || [],
-    isLoading: query.isLoading,
-    isError: query.isError,
-    error: query.error,
-    dataUpdatedAt: query.dataUpdatedAt,
-    // Debug info
-    rawData: query.data,
-    // Include all other query properties
-    ...query
+  return {
+    ...query,
+    fixtures: query.data?.fixtures || []
   };
-
-  console.log('🔍 useExternalFixtures - Returning:', {
-    fixtures: result.fixtures,
-    fixturesLength: result.fixtures?.length,
-    isLoading: result.isLoading,
-    isError: result.isError
-  });
-
-  return result;
 };
 
 /**
