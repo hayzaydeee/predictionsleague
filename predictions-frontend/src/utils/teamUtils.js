@@ -1,39 +1,5 @@
-import arsenalLogo from "../assets/clubs/arsenal.png";
-import chelseaLogo from "../assets/clubs/chelsea.png";
-import liverpoolLogo from "../assets/clubs/liverpool.png";
-import manCityLogo from "../assets/clubs/mancity.png";
-import manUtdLogo from "../assets/clubs/manutd.png";
-import tottenhamLogo from "../assets/clubs/spurs.png";
-
-// Map team names to their logo files
-export const teamLogos = {
-  // Arsenal variations
-  "Arsenal": arsenalLogo,
-  "Arsenal FC": arsenalLogo,
-  
-  // Chelsea variations
-  "Chelsea": chelseaLogo,
-  "Chelsea FC": chelseaLogo,
-  
-  // Liverpool variations
-  "Liverpool": liverpoolLogo,
-  "Liverpool FC": liverpoolLogo,
-  
-  // Manchester City variations
-  "Man. City": manCityLogo,
-  "Manchester City": manCityLogo,
-  "Manchester City FC": manCityLogo,
-  
-  // Manchester United variations
-  "Man. United": manUtdLogo,
-  "Manchester United": manUtdLogo,
-  "Manchester United FC": manUtdLogo,
-  
-  // Spurs variations
-  "Spurs": tottenhamLogo,
-  "Tottenham Hotspur": tottenhamLogo,
-  "Tottenham Hotspur FC": tottenhamLogo,
-};
+// Import centralized team logo system
+import { getTeamLogo as getTeamLogoFromCentral } from './teamLogos.js';
 
 // Comprehensive team name mapping
 export const teamNameMappings = {
@@ -100,21 +66,8 @@ export const normalizeTeamName = (teamName) => {
  * @returns {string} URL to the team logo
  */
 export const getTeamLogo = (teamName) => {
-  // Legacy function - use teamLogos.js for new code
-  // Try with the original name first
-  if (teamLogos[teamName]) {
-    return teamLogos[teamName];
-  }
-  
-  // Try with normalized name
-  const normalizedName = normalizeTeamName(teamName);
-  if (teamLogos[normalizedName]) {
-    return teamLogos[normalizedName];
-  }
-  
-  // Return placeholder as fallback
-  const safeName = teamName || 'TBD';
-  return `https://via.placeholder.com/40?text=${safeName.substring(0, 3)}`;
+  // Use the centralized team logo system
+  return getTeamLogoFromCentral(teamName);
 };
 
 /**

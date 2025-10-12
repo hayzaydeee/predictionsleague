@@ -1,25 +1,8 @@
-import arsenalLogo from "../assets/clubs/arsenal.png";
-import chelseaLogo from "../assets/clubs/chelsea.png";
-import liverpoolLogo from "../assets/clubs/liverpool.png";
-import manCityLogo from "../assets/clubs/mancity.png";
-import manUtdLogo from "../assets/clubs/manutd.png";
-import tottenhamLogo from "../assets/clubs/spurs.png";
+// Import the centralized team logo system
+import { getTeamLogo } from "../utils/teamLogos.js";
 
-// Team logos mapping
-export const teamLogos = {
-  Arsenal: arsenalLogo,
-  Chelsea: chelseaLogo,
-  Liverpool: liverpoolLogo,
-  "Man. City": manCityLogo,
-  "Man. United": manUtdLogo,
-  Spurs: tottenhamLogo,
-  "Manchester City": manCityLogo,
-  "Manchester United": manUtdLogo,
-};
-
-export function getTeamLogo(team) {
-  return teamLogos[team] || `https://via.placeholder.com/40?text=${team.substring(0, 3)}`;
-}
+// Re-export for backwards compatibility
+export { getTeamLogo };
 
 // Teams list for filtering
 export const teams = [

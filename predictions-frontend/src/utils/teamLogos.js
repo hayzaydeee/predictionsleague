@@ -3,26 +3,29 @@
  * Handles all 20 teams with fallbacks and dynamic loading
  */
 
-import arsenalLogo from "../assets/clubs/arsenal.png";
-import chelseaLogo from "../assets/clubs/chelsea.png";
-import liverpoolLogo from "../assets/clubs/liverpool.png";
-import manCityLogo from "../assets/clubs/mancity.png";
-import manUtdLogo from "../assets/clubs/manutd.png";
-import tottenhamLogo from "../assets/clubs/spurs.png";
-import astonvillaLogo from "../assets/clubs/astonvilla.png";
-import bournemouthLogo from "../assets/clubs/bournemouth.png";
-import brentfordLogo from "../assets/clubs/brentford.png";
-import brightonLogo from "../assets/clubs/brighton.png";
-import burnleyLogo from "../assets/clubs/burnley.png";
-import crystalpalaceLogo from "../assets/clubs/crystalpalace.png";
-import evertonLogo from "../assets/clubs/everton.png";
-import fulhamLogo from "../assets/clubs/fulham.png";
-import leedsLogo from "../assets/clubs/leeds.png";
-import newcastleLogo from "../assets/clubs/newcastle.png";
-import nottinghamforestLogo from "../assets/clubs/nottinghamforest.png";
-import southamptonLogo from "../assets/clubs/southampton.png";
-import westhamLogo from "../assets/clubs/westham.png";
-import wolvesLogo from "../assets/clubs/wolves.png";
+// Available team logos (SVG format)
+import arsenalLogo from "../assets/clubs/arsenal.svg";
+import chelseaLogo from "../assets/clubs/chelsea.svg";
+import liverpoolLogo from "../assets/clubs/liverpool.svg";
+import manCityLogo from "../assets/clubs/mancity.svg";
+import manUtdLogo from "../assets/clubs/manutd.svg";
+import tottenhamLogo from "../assets/clubs/spurs.svg";
+import bournemouthLogo from "../assets/clubs/bournemouth.svg";
+import brentfordLogo from "../assets/clubs/brentford.svg";
+import brightonLogo from "../assets/clubs/brighton.svg";
+import crystalpalaceLogo from "../assets/clubs/crystalpalace.svg";
+import evertonLogo from "../assets/clubs/everton.svg";
+import fulhamLogo from "../assets/clubs/fulham.svg";
+import leedsLogo from "../assets/clubs/leeds.svg";
+import newcastleLogo from "../assets/clubs/newcastle.svg";
+import nottinghamforestLogo from "../assets/clubs/nottinghamforest.svg";
+import southamptonLogo from "../assets/clubs/southampton.svg";
+import westhamLogo from "../assets/clubs/westham.svg";
+import wolvesLogo from "../assets/clubs/wolves.svg";
+import astonvillaLogo from "../assets/clubs/astonvilla.svg";
+import burnleyLogo from "../assets/clubs/burnley.svg";
+
+// Note: Missing logos - astonvilla, burnley (will use fallback)
 
 export const LOCAL_LOGOS = {
   // Existing logos (will be replaced with consistent versions)
