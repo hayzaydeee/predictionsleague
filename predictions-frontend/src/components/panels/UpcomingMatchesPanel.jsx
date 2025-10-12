@@ -15,10 +15,7 @@ import { LOGO_SIZES } from "../../utils/teamLogos";
 const UpcomingMatchesPanel = ({ matches, onViewAll, onPredictMatch }) => {
   const { theme } = useContext(ThemeContext);
 
-  // Only log on first render or significant changes
-  if (process.env.NODE_ENV === 'development' && matches?.length > 0) {
-    console.log('🎯 UpcomingMatchesPanel rendered:', matches?.length, 'matches');
-  }
+
 
   return (
     <div

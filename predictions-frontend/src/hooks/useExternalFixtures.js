@@ -35,20 +35,11 @@ export const useExternalFixtures = (options = {}) => {
           throw new Error(result.error?.message || 'Failed to fetch external fixtures');
         }
 
-        console.log('Fixtures fetched successfully', {
-          count: result.data.fixtures.length,
-          gameweek: result.data.gameweek,
-          source: 'backend-api'
-        });
-
         return result.data;
-      } catch (error) {
-        console.error('Fixtures fetch failed', { error: error.message });
-        
+      } catch (error) {        
         // Fallback to sample data if enabled and API fails
         if (fallbackToSample) {
           const { upcomingMatches } = await import('../data/sampleData');
-          console.warn('API failed, using sample data');
           return {
             fixtures: upcomingMatches || [],
             source: 'sample-data',

@@ -55,18 +55,7 @@ const DashboardView = ({
     error: externalFixturesErrorDetails,
   } = useExternalFixtures(externalFixturesOptions);
 
-  // Debug: Log fixture data availability (only when state changes)
-  const fixtureDataState = `${externalFixtures?.length || 0}-${externalFixturesLoading}-${externalFixturesError}`;
-  const [lastLoggedState, setLastLoggedState] = useState('');
-  
-  if (fixtureDataState !== lastLoggedState) {
-    console.log('📊 DashboardView - External fixtures loaded:', {
-      count: externalFixtures?.length || 0,
-      isLoading: externalFixturesLoading,
-      hasError: externalFixturesError
-    });
-    setLastLoggedState(fixtureDataState);
-  }
+
 
   // State for processed upcoming fixtures
   const [upcomingFixtures, setUpcomingFixtures] = useState([]);
@@ -93,28 +82,11 @@ const DashboardView = ({
       }
       
       const now = new Date();
-      console.log('📊 Processing external fixtures for dashboard:', {
-        totalFixtures: memoizedExternalFixtures.length,
-        currentTime: now.toISOString(),
-        sampleFixture: memoizedExternalFixtures[0]
-      });
-      
       const upcoming = memoizedExternalFixtures
         .filter(fixture => {
           const fixtureDate = new Date(fixture.date);
           const isUpcoming = fixtureDate > now && 
             (fixture.status === 'SCHEDULED' || fixture.status === 'TIMED');
-          
-          console.log('📊 Checking fixture:', {
-            homeTeam: fixture.homeTeam,
-            awayTeam: fixture.awayTeam,
-            date: fixture.date,
-            parsedDate: fixtureDate.toISOString(),
-            status: fixture.status,
-            isFuture: fixtureDate > now,
-            hasValidStatus: fixture.status === 'SCHEDULED' || fixture.status === 'TIMED',
-            isUpcoming
-          });
           
           return isUpcoming;
         })
@@ -126,20 +98,8 @@ const DashboardView = ({
         })
         .slice(0, 3); // Get next 3 matches for dashboard (earliest first)
       
-      console.log('📊 Filtered upcoming fixtures:', {
-        count: upcoming.length,
-        fixtures: upcoming.map((f, index) => ({ 
-          index, 
-          home: f.homeTeam, 
-          away: f.awayTeam, 
-          date: f.date,
-          timestamp: new Date(f.date).getTime()
-        }))
-      });
-      
       // If external API returned empty results, fallback to sample data for development
       if (upcoming.length === 0 && !externalFixturesError) {
-        console.log('📊 External API returned no fixtures, using sample data for dashboard');
         try {
           const { fixtures: sampleFixtures } = await import('../../data/sampleData');
           const sampleUpcoming = sampleFixtures
@@ -181,16 +141,6 @@ const DashboardView = ({
       }));
       
       setUpcomingFixtures(processedFixtures);
-      
-      console.log('📊 Setting upcomingFixtures:', {
-        count: processedFixtures.length,
-        fixtures: processedFixtures.map(f => ({ 
-          id: f.id, 
-          home: f.homeTeam, 
-          away: f.awayTeam 
-        })),
-        hasDuplicateIds: processedFixtures.length !== new Set(processedFixtures.map(f => f.id)).size
-      });
     };
 
     processFixtures();

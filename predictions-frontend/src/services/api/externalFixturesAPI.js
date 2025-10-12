@@ -193,10 +193,7 @@ export const externalFixturesAPI = {
    */
   async getFixtures() {
     try {
-      console.log('Attempting to fetch fixtures from backend...');
       const response = await apiClient.request('');
-
-      console.log('Raw backend response:', response);
 
       // Backend returns direct array of fixtures, not wrapped in {fixtures: []}
       const fixturesArray = Array.isArray(response) ? response : (response.fixtures || []);
@@ -211,13 +208,6 @@ export const externalFixturesAPI = {
         array.findIndex(f => f.id === fixture.id) === index
       );
 
-      console.log('Transformed fixtures:', transformedFixtures);
-      console.log('Deduplicated fixtures:', {
-        original: transformedFixtures.length,
-        unique: uniqueFixtures.length,
-        duplicatesRemoved: transformedFixtures.length - uniqueFixtures.length
-      });
-
       return {
         success: true,
         data: {
@@ -230,11 +220,6 @@ export const externalFixturesAPI = {
       };
     } catch (error) {
       console.error('Backend fixtures request failed:', error);
-      
-      // If it's a 404, the endpoint might not be implemented yet
-      if (error.message.includes('404')) {
-        console.warn('Fixtures endpoint not found (404) - backend might not have implemented /fixtures yet');
-      }
       
       return {
         success: false,
