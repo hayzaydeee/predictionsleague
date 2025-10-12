@@ -64,15 +64,38 @@ const DashboardView = ({
       }
       
       const now = new Date();
+      console.log('📊 Processing external fixtures for dashboard:', {
+        totalFixtures: externalFixtures.length,
+        currentTime: now.toISOString(),
+        sampleFixture: externalFixtures[0]
+      });
+      
       const upcoming = externalFixtures
         .filter(fixture => {
           const fixtureDate = new Date(fixture.date);
           const isUpcoming = fixtureDate > now && 
             (fixture.status === 'SCHEDULED' || fixture.status === 'TIMED');
+          
+          console.log('📊 Checking fixture:', {
+            homeTeam: fixture.homeTeam,
+            awayTeam: fixture.awayTeam,
+            date: fixture.date,
+            parsedDate: fixtureDate.toISOString(),
+            status: fixture.status,
+            isFuture: fixtureDate > now,
+            hasValidStatus: fixture.status === 'SCHEDULED' || fixture.status === 'TIMED',
+            isUpcoming
+          });
+          
           return isUpcoming;
         })
         .sort((a, b) => new Date(a.date) - new Date(b.date))
         .slice(0, 5); // Get next 5 matches for dashboard
+      
+      console.log('📊 Filtered upcoming fixtures:', {
+        count: upcoming.length,
+        fixtures: upcoming.map(f => ({ home: f.homeTeam, away: f.awayTeam, date: f.date }))
+      });
       
       // If external API returned empty results, fallback to sample data for development
       if (upcoming.length === 0 && !externalFixturesError) {
