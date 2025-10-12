@@ -25,7 +25,29 @@ import wolvesLogo from "../assets/clubs/wolves.svg";
 import astonvillaLogo from "../assets/clubs/astonvilla.svg";
 import burnleyLogo from "../assets/clubs/burnley.svg";
 
-// Note: Missing logos - astonvilla, burnley (will use fallback)
+// Complete list of Premier League teams
+export const PREMIER_LEAGUE_TEAMS = [
+  "Arsenal",
+  "Aston Villa", 
+  "Bournemouth",
+  "Brentford",
+  "Brighton",
+  "Burnley",
+  "Chelsea",
+  "Crystal Palace",
+  "Everton",
+  "Fulham",
+  "Leeds United",
+  "Liverpool",
+  "Manchester City",
+  "Manchester United",
+  "Newcastle",
+  "Nottingham Forest",
+  "Southampton",
+  "Tottenham",
+  "West Ham",
+  "Wolves"
+];
 
 export const LOCAL_LOGOS = {
   // Existing logos (will be replaced with consistent versions)
