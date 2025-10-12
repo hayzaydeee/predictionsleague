@@ -709,10 +709,6 @@ const DashboardView = ({
                 type="insights"
                 title="Insights Coming Soon"
                 message="Keep making predictions! Performance insights will unlock after you complete 5+ gameweeks of predictions."
-                action={{
-                  label: "Make Predictions",
-                  onClick: goToPredictions
-                }}
               />
             )}
           </motion.div>
