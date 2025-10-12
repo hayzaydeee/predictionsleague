@@ -55,12 +55,18 @@ const DashboardView = ({
     error: externalFixturesErrorDetails,
   } = useExternalFixtures(externalFixturesOptions);
 
-  // Debug: Log fixture data availability
-  console.log('📊 DashboardView - External fixtures loaded:', {
-    count: externalFixtures?.length || 0,
-    isLoading: externalFixturesLoading,
-    hasError: externalFixturesError
-  });
+  // Debug: Log fixture data availability (only when state changes)
+  const fixtureDataState = `${externalFixtures?.length || 0}-${externalFixturesLoading}-${externalFixturesError}`;
+  const [lastLoggedState, setLastLoggedState] = useState('');
+  
+  if (fixtureDataState !== lastLoggedState) {
+    console.log('📊 DashboardView - External fixtures loaded:', {
+      count: externalFixtures?.length || 0,
+      isLoading: externalFixturesLoading,
+      hasError: externalFixturesError
+    });
+    setLastLoggedState(fixtureDataState);
+  }
 
   // State for processed upcoming fixtures
   const [upcomingFixtures, setUpcomingFixtures] = useState([]);
@@ -68,13 +74,14 @@ const DashboardView = ({
   // Memoize fixtures array to prevent useEffect from running on reference changes
   const memoizedExternalFixtures = useMemo(() => externalFixtures, [
     externalFixtures?.length,
-    externalFixtures?.[0]?.id // Use first fixture ID as a stable reference
+    externalFixtures?.[0]?.id, // Use first fixture ID as a stable reference
+    externalFixturesLoading // Include loading state for more stability
   ]);
 
   // Process external fixtures to get upcoming matches for dashboard
   useEffect(() => {
-    // Don't process if still loading
-    if (externalFixturesLoading) {
+    // Don't process if still loading or if we already have processed fixtures
+    if (externalFixturesLoading || (upcomingFixtures.length > 0 && memoizedExternalFixtures?.length > 0)) {
       return;
     }
     

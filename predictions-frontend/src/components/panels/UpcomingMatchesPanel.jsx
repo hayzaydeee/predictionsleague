@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, memo } from "react";
 import { motion } from "framer-motion";
 import {
   CalendarIcon,
@@ -15,10 +15,10 @@ import { LOGO_SIZES } from "../../utils/teamLogos";
 const UpcomingMatchesPanel = ({ matches, onViewAll, onPredictMatch }) => {
   const { theme } = useContext(ThemeContext);
 
-  console.log('🎯 UpcomingMatchesPanel rendered with:', {
-    matchCount: matches?.length || 0,
-    matches: matches?.map(m => ({ id: m.id, home: m.homeTeam, away: m.awayTeam })) || []
-  });
+  // Only log on first render or significant changes
+  if (process.env.NODE_ENV === 'development' && matches?.length > 0) {
+    console.log('🎯 UpcomingMatchesPanel rendered:', matches?.length, 'matches');
+  }
 
   return (
     <div
@@ -240,4 +240,15 @@ const UpcomingMatchesPanel = ({ matches, onViewAll, onPredictMatch }) => {
   );
 };
 
-export default UpcomingMatchesPanel;
+// Memoize component to prevent unnecessary re-renders
+const MemoizedUpcomingMatchesPanel = memo(UpcomingMatchesPanel, (prevProps, nextProps) => {
+  // Custom comparison function for better performance
+  return (
+    prevProps.matches?.length === nextProps.matches?.length &&
+    prevProps.matches?.every((match, index) => 
+      match.id === nextProps.matches[index]?.id
+    )
+  );
+});
+
+export default MemoizedUpcomingMatchesPanel;
