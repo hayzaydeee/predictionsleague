@@ -15,8 +15,6 @@ import { LOGO_SIZES } from "../../utils/teamLogos";
 const UpcomingMatchesPanel = ({ matches, onViewAll, onPredictMatch }) => {
   const { theme } = useContext(ThemeContext);
 
-
-
   return (
     <div
       className={`${
@@ -109,8 +107,8 @@ const UpcomingMatchesPanel = ({ matches, onViewAll, onPredictMatch }) => {
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1.5">
                     <div className="flex items-center gap-2">
-                      <TeamLogo 
-                        teamName={homeTeam} 
+                      <TeamLogo
+                        teamName={homeTeam}
                         size={LOGO_SIZES.xs}
                         className="flex-shrink-0"
                       />
@@ -128,11 +126,6 @@ const UpcomingMatchesPanel = ({ matches, onViewAll, onPredictMatch }) => {
                       >
                         vs
                       </span>
-                      <TeamLogo 
-                        teamName={awayTeam} 
-                        size={LOGO_SIZES.xs}
-                        className="flex-shrink-0"
-                      />
                       <span
                         className={`${
                           theme === "dark" ? "text-white" : "text-slate-800"
@@ -140,6 +133,11 @@ const UpcomingMatchesPanel = ({ matches, onViewAll, onPredictMatch }) => {
                       >
                         {awayTeam}
                       </span>
+                      <TeamLogo
+                        teamName={awayTeam}
+                        size={LOGO_SIZES.xs}
+                        className="flex-shrink-0"
+                      />
                     </div>
                     {match.predicted && (
                       <div
@@ -238,14 +236,17 @@ const UpcomingMatchesPanel = ({ matches, onViewAll, onPredictMatch }) => {
 };
 
 // Memoize component to prevent unnecessary re-renders
-const MemoizedUpcomingMatchesPanel = memo(UpcomingMatchesPanel, (prevProps, nextProps) => {
-  // Custom comparison function for better performance
-  return (
-    prevProps.matches?.length === nextProps.matches?.length &&
-    prevProps.matches?.every((match, index) => 
-      match.id === nextProps.matches[index]?.id
-    )
-  );
-});
+const MemoizedUpcomingMatchesPanel = memo(
+  UpcomingMatchesPanel,
+  (prevProps, nextProps) => {
+    // Custom comparison function for better performance
+    return (
+      prevProps.matches?.length === nextProps.matches?.length &&
+      prevProps.matches?.every(
+        (match, index) => match.id === nextProps.matches[index]?.id
+      )
+    );
+  }
+);
 
 export default MemoizedUpcomingMatchesPanel;

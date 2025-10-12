@@ -19,6 +19,8 @@ const DashboardEmptyState = ({ type, title, message, action }) => {
         return <RocketIcon className="w-8 h-8" />;
       case "leagues":
         return <MagnifyingGlassIcon className="w-8 h-8" />;
+      case "insights":
+        return <RocketIcon className="w-8 h-8" />;
       default:
         return <ExclamationTriangleIcon className="w-8 h-8" />;
     }
@@ -40,6 +42,11 @@ const DashboardEmptyState = ({ type, title, message, action }) => {
         return {
           title: "No leagues joined",
           message: "Join a league to compete with other players and track your progress!"
+        };
+      case "insights":
+        return {
+          title: "Insights Coming Soon",
+          message: "Keep making predictions! Performance insights will unlock after you complete 5+ gameweeks of predictions."
         };
       default:
         return {

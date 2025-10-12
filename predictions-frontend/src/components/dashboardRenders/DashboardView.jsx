@@ -190,6 +190,17 @@ const DashboardView = ({
     };
   };
 
+  // Helper function to check if user has enough predictions for insights
+  const hasEnoughPredictionsForInsights = () => {
+    // Check if user has made predictions in 5+ gameweeks
+    const totalPredictions = essentialData?.stats?.accuracyRate?.total || 0;
+    const currentGameweek = essentialData?.season?.currentGameweek || 1;
+    
+    // Rough estimate: if they have 15+ total predictions and we're past gameweek 5
+    // (assuming ~3 predictions per gameweek on average)
+    return totalPredictions >= 15 && currentGameweek >= 5;
+  };
+
   const formatGlobalRank = (globalRank) => {
     if (!globalRank) return { value: "N/A", subtitle: "No ranking", badge: null };
     
@@ -491,7 +502,7 @@ const DashboardView = ({
               />
             )}
           </motion.div>
-          {/* Performance Insights */}{" "}
+          {/* Performance Insights */}
           <motion.div variants={itemVariants}>
             {secondaryLoading.insights ? (
               <div
@@ -544,7 +555,7 @@ const DashboardView = ({
                   </div>
                 </div>
               </div>
-            ) : (
+            ) : hasEnoughPredictionsForInsights() ? (
               <div
                 className={`${
                   theme === "dark"
@@ -553,7 +564,7 @@ const DashboardView = ({
                 } backdrop-blur-sm rounded-xl p-5 border font-outfit`}
               >
                 <div className="flex items-center gap-2 mb-3">
-                  <RocketIcon
+                  <LightningBoltIcon
                     className={`w-4 h-4 ${
                       theme === "dark" ? "text-amber-400" : "text-amber-500"
                     }`}
@@ -640,6 +651,16 @@ const DashboardView = ({
                   </div>
                 </div>
               </div>
+            ) : (
+              <DashboardEmptyState
+                type="insights"
+                title="Insights Coming Soon"
+                message="Keep making predictions! Performance insights will unlock after you complete 5+ gameweeks of predictions."
+                action={{
+                  label: "Make Predictions",
+                  onClick: goToPredictions
+                }}
+              />
             )}
           </motion.div>
         </div>
