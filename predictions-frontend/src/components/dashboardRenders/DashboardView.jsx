@@ -98,12 +98,23 @@ const DashboardView = ({
           
           return isUpcoming;
         })
-        .sort((a, b) => new Date(a.date) - new Date(b.date))
-        .slice(0, 3); // Get next 3 matches for dashboard
+        .sort((a, b) => {
+          // Ensure consistent date sorting - earliest first
+          const dateA = new Date(a.date);
+          const dateB = new Date(b.date);
+          return dateA.getTime() - dateB.getTime();
+        })
+        .slice(0, 3); // Get next 3 matches for dashboard (earliest first)
       
       console.log('📊 Filtered upcoming fixtures:', {
         count: upcoming.length,
-        fixtures: upcoming.map(f => ({ home: f.homeTeam, away: f.awayTeam, date: f.date }))
+        fixtures: upcoming.map((f, index) => ({ 
+          index, 
+          home: f.homeTeam, 
+          away: f.awayTeam, 
+          date: f.date,
+          timestamp: new Date(f.date).getTime()
+        }))
       });
       
       // If external API returned empty results, fallback to sample data for development
