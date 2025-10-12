@@ -48,47 +48,54 @@ class BackendFixturesAPIClient {
   }
 
   /**
-   * Make request to backend (with optional auth)
+   * Make request to backend (no auth for now - testing)
    */
   async request(path = '') {
     const url = `${this.baseURL}${this.endpoint}${path}`;
 
-    const makeRequest = async (includeAuth = true) => {
+    try {
       const headers = {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       };
 
-      // Add auth token if available and requested (fixtures might be public)
-      const token = this.getAuthToken();
-      if (includeAuth && token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
+      // For now, don't use authentication to test if fixtures are public
+      console.log('Backend Fixtures API Request (no auth):', { url });
 
-      console.log('Backend Fixtures API Request:', { url, hasToken: !!token, includeAuth });
-
-      return fetch(url, {
+      const response = await fetch(url, {
         method: 'GET',
         headers
       });
-    };
 
-    try {
-      // First try with auth if we have a token
-      let response = await makeRequest(true);
-
-      // If 401 and we had auth, try without auth (fixtures might be public)
-      if (response.status === 401) {
-        console.log('Got 401 with auth, trying without auth token...');
-        response = await makeRequest(false);
-      }
+      console.log('Response status:', response.status);
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(`Backend API Error ${response.status}: ${errorData.error || response.statusText}`);
+        let errorData = {};
+        const responseText = await response.text();
+        console.log('Error response body:', responseText);
+        
+        try {
+          errorData = JSON.parse(responseText);
+        } catch (e) {
+          errorData = { rawResponse: responseText };
+        }
+        
+        throw new Error(`Backend API Error ${response.status}: ${errorData.error || errorData.message || responseText || response.statusText}`);
       }
 
-      const result = await response.json();
+      const responseText = await response.text();
+      console.log('Success response body:', responseText);
+      
+      let result;
+      try {
+        result = JSON.parse(responseText);
+      } catch (e) {
+        console.error('Failed to parse JSON response:', e);
+        throw new Error('Invalid JSON response from backend');
+      }
+      
+      console.log('Parsed response:', result);
       
       // Handle different response formats
       if (result.success === false) {
@@ -151,6 +158,7 @@ export const externalFixturesAPI = {
    */
   async getFixtures() {
     try {
+      console.log('Attempting to fetch fixtures from backend...');
       const response = await apiClient.request('');
 
       console.log('Raw backend response:', response);
@@ -173,11 +181,19 @@ export const externalFixturesAPI = {
         }
       };
     } catch (error) {
+      console.error('Backend fixtures request failed:', error);
+      
+      // If it's a 404, the endpoint might not be implemented yet
+      if (error.message.includes('404')) {
+        console.warn('Fixtures endpoint not found (404) - backend might not have implemented /fixtures yet');
+      }
+      
       return {
         success: false,
         error: {
           message: error.message,
-          type: 'BACKEND_API_ERROR'
+          type: 'BACKEND_API_ERROR',
+          status: error.message.includes('404') ? 404 : null
         }
       };
     }
@@ -188,6 +204,7 @@ export const externalFixturesAPI = {
    */
   async getLiveFixtures() {
     try {
+      console.log('Attempting to fetch live fixtures from backend...');
       const response = await apiClient.request('/live');
 
       const transformedFixtures = (response.fixtures || [])
@@ -205,11 +222,14 @@ export const externalFixturesAPI = {
         }
       };
     } catch (error) {
+      console.error('Backend live fixtures request failed:', error);
+      
       return {
         success: false,
         error: {
           message: error.message,
-          type: 'BACKEND_API_ERROR'
+          type: 'BACKEND_API_ERROR',
+          status: error.message.includes('404') ? 404 : null
         }
       };
     }
