@@ -26,6 +26,7 @@ const PotentialPointsSummary = ({ predictions, teamLogos }) => {
   const pendingPredictions = predictions;
 
   return (
+    <>
     <motion.div
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
@@ -577,12 +578,13 @@ const PotentialPointsSummary = ({ predictions, teamLogos }) => {
           </motion.div>
         )}
       </AnimatePresence>
-      
-      <RulesAndPointsModal
-        isOpen={showRulesModal}
-        onClose={() => setShowRulesModal(false)}
-      />
     </motion.div>
+
+    <RulesAndPointsModal
+      isOpen={showRulesModal}
+      onClose={() => setShowRulesModal(false)}
+    />
+    </>
   );
 };
 

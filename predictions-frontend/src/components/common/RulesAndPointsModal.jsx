@@ -195,7 +195,7 @@ const RulesAndPointsModal = memo(({ isOpen, onClose }) => {
                           <h5 className={`${themeStyles.titleText} font-bold font-outfit mb-2 text-lg group-hover:${colorStyles[rule.color].split(' ')[2]} transition-colors`}>
                             {rule.rule}
                           </h5>
-                          <p className={`${themeStyles.secondaryText} text-sm leading-relaxed`}>
+                          <p className={`${themeStyles.secondaryText} text-sm leading-relaxed font-outfit`}>
                             {rule.description}
                           </p>
                         </div>
@@ -261,12 +261,12 @@ const RulesAndPointsModal = memo(({ isOpen, onClose }) => {
                               {item.name}
                             </h5>
                             <div className={`px-3 py-1 rounded-lg ${colorStyle.bg} ${colorStyle.border} border`}>
-                              <span className={`text-sm font-bold ${colorStyle.text}`}>
+                              <span className={`text-sm font-bold font-outfit ${colorStyle.text}`}>
                                 {item.points > 0 ? '+' : ''}{item.points}
                               </span>
                             </div>
                           </div>
-                          <p className={`${themeStyles.secondaryText} text-sm leading-relaxed`}>
+                          <p className={`${themeStyles.secondaryText} text-sm leading-relaxed font-outfit`}>
                             {item.description}
                           </p>
                         </div>
@@ -327,12 +327,12 @@ const RulesAndPointsModal = memo(({ isOpen, onClose }) => {
                               {item.name}
                             </h5>
                             <div className={`px-3 py-1 rounded-lg ${colorStyle.bg} ${colorStyle.border} border`}>
-                              <span className={`text-sm font-bold ${colorStyle.text}`}>
+                              <span className={`text-sm font-bold font-outfit ${colorStyle.text}`}>
                                 {item.points}
                               </span>
                             </div>
                           </div>
-                          <p className={`${themeStyles.secondaryText} text-sm leading-relaxed`}>
+                          <p className={`${themeStyles.secondaryText} text-sm leading-relaxed font-outfit`}>
                             {item.description}
                           </p>
                         </div>
@@ -370,48 +370,48 @@ const RulesAndPointsModal = memo(({ isOpen, onClose }) => {
                   <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                       <div>
-                        <h6 className={`${themeStyles.titleText} font-bold text-sm mb-1 uppercase tracking-wider`}>Scenario</h6>
-                        <p className={`${themeStyles.secondaryText} text-sm`}>Manchester United vs Liverpool (Derby Match)</p>
+                        <h6 className={`${themeStyles.titleText} font-bold font-outfit text-sm mb-1 uppercase tracking-wider`}>Scenario</h6>
+                        <p className={`${themeStyles.secondaryText} text-sm font-outfit`}>Manchester United vs Liverpool (Derby Match)</p>
                       </div>
                       <div>
-                        <h6 className={`${themeStyles.titleText} font-bold text-sm mb-1 uppercase tracking-wider`}>Your Prediction</h6>
-                        <p className={`${themeStyles.secondaryText} text-sm`}>Man United 2-1, Rashford scoring</p>
+                        <h6 className={`${themeStyles.titleText} font-bold font-outfit text-sm mb-1 uppercase tracking-wider`}>Your Prediction</h6>
+                        <p className={`${themeStyles.secondaryText} text-sm font-outfit`}>Man United 2-1, Rashford scoring</p>
                       </div>
                       <div>
-                        <h6 className={`${themeStyles.titleText} font-bold text-sm mb-1 uppercase tracking-wider`}>Actual Result</h6>
-                        <p className={`${themeStyles.secondaryText} text-sm`}>Man United 2-1, Rashford scores</p>
+                        <h6 className={`${themeStyles.titleText} font-bold font-outfit text-sm mb-1 uppercase tracking-wider`}>Actual Result</h6>
+                        <p className={`${themeStyles.secondaryText} text-sm font-outfit`}>Man United 2-1, Rashford scores</p>
                       </div>
                     </div>
                     
                     <div className={`border-t ${getThemeStyles(theme, { dark: 'border-green-700/30', light: 'border-green-200/60' })} pt-4`}>
                       <div className="space-y-3">
                         <div className="flex justify-between items-center text-sm">
-                          <span className={`${themeStyles.secondaryText} flex items-center gap-2`}>
+                          <span className={`${themeStyles.secondaryText} flex items-center gap-2 font-outfit`}>
                             <CheckIcon className="w-4 h-4" />
                             Exact scoreline prediction
                           </span>
-                          <span className={`${themeStyles.titleText} font-semibold`}>+10 points</span>
+                          <span className={`${themeStyles.titleText} font-semibold font-outfit`}>+10 points</span>
                         </div>
                         <div className="flex justify-between items-center text-sm">
-                          <span className={`${themeStyles.secondaryText} flex items-center gap-2`}>
+                          <span className={`${themeStyles.secondaryText} flex items-center gap-2 font-outfit`}>
                             <CheckIcon className="w-4 h-4" />
                             Correct goalscorer (Rashford)
                           </span>
-                          <span className={`${themeStyles.titleText} font-semibold`}>+2 points</span>
+                          <span className={`${themeStyles.titleText} font-semibold font-outfit`}>+2 points</span>
                         </div>
                         <div className="flex justify-between items-center text-sm">
-                          <span className={`${themeStyles.secondaryText} flex items-center gap-2`}>
+                          <span className={`${themeStyles.secondaryText} flex items-center gap-2 font-outfit`}>
                             <StarIcon className="w-4 h-4" />
                             Derby match multiplier
                           </span>
-                          <span className={`${themeStyles.titleText} font-semibold`}>12 × 1.5x</span>
+                          <span className={`${themeStyles.titleText} font-semibold font-outfit`}>12 × 1.5x</span>
                         </div>
                         <div className={`flex justify-between items-center pt-3 border-t ${getThemeStyles(theme, { dark: 'border-green-700/30', light: 'border-green-200/60' })}`}>
-                          <span className={`${themeStyles.titleText} font-bold text-base flex items-center gap-2`}>
+                          <span className={`${themeStyles.titleText} font-bold text-base flex items-center gap-2 font-outfit`}>
                             <StarIcon className="w-5 h-5" />
                             Final Total
                           </span>
-                          <span className={`font-bold text-lg ${getThemeStyles(theme, { dark: 'text-green-300', light: 'text-green-600' })}`}>18 points</span>
+                          <span className={`font-bold text-lg font-outfit ${getThemeStyles(theme, { dark: 'text-green-300', light: 'text-green-600' })}`}>18 points</span>
                         </div>
                       </div>
                     </div>
