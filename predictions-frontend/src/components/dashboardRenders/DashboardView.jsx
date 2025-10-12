@@ -52,13 +52,32 @@ const DashboardView = ({
     cacheTime: 30 * 60 * 1000, // 30 minutes
   });
 
+  // Debug the hook data
+  console.log('📊 DashboardView - useExternalFixtures hook data:', {
+    fixtures: externalFixtures,
+    fixturesType: typeof externalFixtures,
+    fixturesLength: externalFixtures?.length,
+    isLoading: externalFixturesLoading,
+    isError: externalFixturesError,
+    error: externalFixturesErrorDetails
+  });
+
   // State for processed upcoming fixtures
   const [upcomingFixtures, setUpcomingFixtures] = useState([]);
 
   // Process external fixtures to get upcoming matches for dashboard
   useEffect(() => {
+    console.log('📊 DashboardView - useEffect triggered:', {
+      externalFixtures,
+      externalFixturesType: typeof externalFixtures,
+      isArray: Array.isArray(externalFixtures),
+      externalFixturesLoading,
+      externalFixturesError
+    });
+    
     const processFixtures = async () => {
       if (!externalFixtures || !Array.isArray(externalFixtures)) {
+        console.log('📊 DashboardView - No valid fixtures data, setting empty array');
         setUpcomingFixtures([]);
         return;
       }
