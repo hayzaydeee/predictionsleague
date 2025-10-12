@@ -17,6 +17,7 @@ const QUERY_KEYS = {
  * Hook for fetching fixtures from external API with caching
  */
 export const useExternalFixtures = (options = {}) => {
+  console.log('🚨🚨🚨 useExternalFixtures HOOK CALLED 🚨🚨🚨', options);
   const {
     enabled = true,
     fallbackToSample = true,
@@ -84,6 +85,12 @@ export const useExternalFixtures = (options = {}) => {
     hasData: !!query.data,
     dataType: typeof query.data,
     fixturesInData: query.data?.fixtures?.length || 'none'
+  });
+
+  console.log('🚨🚨🚨 ABOUT TO RETURN FROM HOOK 🚨🚨🚨', {
+    queryData: query.data,
+    fixtures: query.data?.fixtures,
+    fixturesLength: query.data?.fixtures?.length
   });
 
   return {
