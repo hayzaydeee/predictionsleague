@@ -21,8 +21,10 @@ import {
   CheckIcon,
   AccessibilityIcon,
   ChevronDownIcon,
+  InfoCircledIcon,
 } from "@radix-ui/react-icons";
 import LogoManager from "../common/LogoManager";
+import RulesAndPointsModal from "../common/RulesAndPointsModal";
 
 const SettingsView = () => {
   const { theme, toggleTheme } = useContext(ThemeContext);
@@ -32,6 +34,7 @@ const SettingsView = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState("");
   const [errors, setErrors] = useState({});
+  const [showRulesModal, setShowRulesModal] = useState(false);
 
   // Handlers for different settings
   const handleExportData = async () => {
@@ -534,6 +537,14 @@ const SettingsView = () => {
                 <SecondaryButton
                   variant="outline"
                   className="w-full justify-center"
+                  onClick={() => setShowRulesModal(true)}
+                >
+                  <InfoCircledIcon className="mr-2 h-4 w-4" />
+                  Rules & Points
+                </SecondaryButton>
+                <SecondaryButton
+                  variant="outline"
+                  className="w-full justify-center"
                   onClick={() => window.open("/help", "_blank")}
                 >
                   View Documentation
@@ -552,6 +563,11 @@ const SettingsView = () => {
           </div>
         </section>
       </div>
+      
+      <RulesAndPointsModal
+        isOpen={showRulesModal}
+        onClose={() => setShowRulesModal(false)}
+      />
     </div>
   );
 };
