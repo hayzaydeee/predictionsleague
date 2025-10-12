@@ -1,11 +1,15 @@
 import { useState, useEffect } from 'react';
 import { dashboardAPI } from '../services/api/dashboardApi';
 import leagueAPI from '../services/api/leagueAPI';
+import { useNextMatch } from './useNextMatch';
 
 // This hook implements progressive loading with real API calls
 // It uses the hybrid API approach with dashboard/ endpoints for secondary data
 
 const useDashboardData = () => {
+  // Use next match hook for frontend calculation
+  const { nextMatch, timeDisplay, isLive, clearCache: clearNextMatchCache } = useNextMatch();
+  
   // Essential data state (loads first)
   const [essentialData, setEssentialData] = useState(null);
   const [essentialLoading, setEssentialLoading] = useState(true);
@@ -42,15 +46,27 @@ const useDashboardData = () => {
         setStatusBarLoading(true);
         
         console.log('🚀 Fetching essential dashboard data...');
-        // Call real API for essential data
-        const essentialResponse = await dashboardAPI.getEssentialData();
-        console.log('✅ Essential data received:', essentialResponse);
         
-        setEssentialData(essentialResponse);
-        setStatusBarData({
-          user: essentialResponse.user,
-          nextMatchData: essentialResponse.nextMatch,
-        });
+        let userData = null;
+        
+        try {
+          // Try to call real API for essential data (user info only)
+          const essentialResponse = await dashboardAPI.getEssentialData();
+          console.log('✅ Essential data received:', essentialResponse);
+          
+          setEssentialData(essentialResponse);
+          userData = essentialResponse.user;
+        } catch (apiError) {
+          console.warn('⚠️ Dashboard API failed, using guest user:', apiError);
+          
+          userData = { username: 'Guest', points: 0, rank: 0 };
+          
+          // Set minimal essential data
+          setEssentialData({
+            user: userData
+          });
+        }
+        
       } catch (error) {
         console.error('❌ Failed to fetch essential data:', error);
         setErrors(prev => ({ ...prev, essential: error }));
@@ -62,6 +78,28 @@ const useDashboardData = () => {
 
     fetchEssentialData();
   }, []);
+
+  // Update status bar data when next match or user data changes
+  useEffect(() => {
+    setStatusBarData(prev => ({
+      ...prev,
+      nextMatchData: nextMatch ? {
+        ...nextMatch,
+        timeDisplay, // Add the calculated time display
+        isLive
+      } : null
+    }));
+  }, [nextMatch, timeDisplay, isLive]);
+
+  // Update status bar data when user data is loaded
+  useEffect(() => {
+    if (essentialData?.user) {
+      setStatusBarData(prev => ({
+        ...prev,
+        user: essentialData.user
+      }));
+    }
+  }, [essentialData]);
 
   // Fetch secondary data after essential data is loaded
   useEffect(() => {
@@ -172,6 +210,7 @@ const useDashboardData = () => {
     
     // Refresh functions
     refreshLeagues,
+    clearNextMatchCache,
     
     // Helper to check if any secondary data is still loading
     isSecondaryLoading: Object.values(secondaryLoading).some(loading => loading),
