@@ -93,8 +93,17 @@ export const useClientSideFixtures = (options = {}) => {
       { filters }
     ],
     queryFn: async () => {
+      console.log('🔍 useClientSideFixtures - externalData:', externalData);
+      console.log('🔍 useClientSideFixtures - externalData?.fixtures:', externalData?.fixtures);
+      console.log('🔍 useClientSideFixtures - externalData?.fixtures?.length:', externalData?.fixtures?.length);
+      
       const externalFixtures = externalData?.fixtures || [];
       const predictions = userPredictions || [];
+      
+      console.log('📊 Processing:', { 
+        externalFixturesCount: externalFixtures.length, 
+        predictionsCount: predictions.length 
+      });
 
       // Handle empty external fixtures case
       if (externalFixtures.length === 0) {
