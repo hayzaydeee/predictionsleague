@@ -272,6 +272,7 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
           setSortBy={setSortBy}
           showFilters={showFilters}
           setShowFilters={setShowFilters}
+          fixtures={liveFixtures || []}
         />
 
         {/* Content view with filtered fixtures */}
