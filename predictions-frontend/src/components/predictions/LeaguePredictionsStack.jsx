@@ -1,12 +1,8 @@
 import React, { useContext, useState, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { format, parseISO } from "date-fns";
 import { 
   TargetIcon,
-  CalendarIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  DotIcon
+  CalendarIcon
 } from "@radix-ui/react-icons";
 // Import Swiper React components
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -27,6 +23,7 @@ const LeaguePredictionsStack = ({
   searchQuery = ""
 }) => {
   const { theme } = useContext(ThemeContext);
+  const [activeIndex, setActiveIndex] = useState(0);
   const [swiperInitialized, setSwiperInitialized] = useState(false);
   const [visibleSlideIndex, setVisibleSlideIndex] = useState(0);
   const swiperRef = useRef(null);
@@ -47,24 +44,22 @@ const LeaguePredictionsStack = ({
   }, [predictions, searchQuery]);
 
   // Group predictions by date
-  const groupedPredictions = React.useMemo(() => {
-    const groups = filteredPredictions.reduce((acc, prediction) => {
+  const predictionsByDate = React.useMemo(() => {
+    return filteredPredictions.reduce((groups, prediction) => {
       const date = format(parseISO(prediction.date), "yyyy-MM-dd");
-      if (!acc[date]) {
-        acc[date] = [];
+      if (!groups[date]) {
+        groups[date] = [];
       }
-      acc[date].push(prediction);
-      return acc;
+      groups[date].push(prediction);
+      return groups;
     }, {});
-
-    // Convert to array format sorted by date
-    return Object.keys(groups)
-      .sort()
-      .map(date => ({
-        date,
-        predictions: groups[date]
-      }));
   }, [filteredPredictions]);
+
+  // Get sorted dates
+  const dates = React.useMemo(
+    () => Object.keys(predictionsByDate).sort(),
+    [predictionsByDate]
+  );
 
 
   // Handle swiper initialization
@@ -78,7 +73,14 @@ const LeaguePredictionsStack = ({
   // Handle slide change
   const handleSlideChange = (swiper) => {
     if (!swiper || typeof swiper.activeIndex !== "number") return;
-    setVisibleSlideIndex(swiper.activeIndex);
+
+    if (
+      swiper.activeIndex !== activeIndex &&
+      swiper.activeIndex < dates.length
+    ) {
+      setActiveIndex(swiper.activeIndex);
+      setVisibleSlideIndex(swiper.activeIndex);
+    }
   };
 
   // Handle prediction selection
@@ -92,152 +94,152 @@ const LeaguePredictionsStack = ({
     onPredictionSelect?.(prediction);
   };
 
-  if (groupedPredictions.length === 0) {
-    return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="text-center py-12"
-      >
-        <div className="text-4xl mb-4">🎴</div>
-        <h3 className={`text-lg font-semibold mb-2 ${
-          theme === 'dark' ? 'text-slate-300' : 'text-slate-700'
-        }`}>
-          No predictions found
-        </h3>
-        <p className={`text-sm ${
-          theme === 'dark' ? 'text-slate-500' : 'text-slate-500'
-        }`}>
-          {searchQuery ? 'Try adjusting your search criteria' : 'No predictions available'}
-        </p>
-      </motion.div>
-    );
+  if (filteredPredictions.length === 0) {
+    return <EmptyState />;
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-      className="space-y-6"
+    <div
+      className={`relative backdrop-blur-md rounded-lg p-4 ${
+        theme === "dark"
+          ? "bg-slate-900/60 border border-slate-700/50"
+          : "bg-white/80 border border-slate-200 shadow-sm"
+      }`}
     >
-      {/* Header */}
-      <div className={`${
-        theme === 'dark'
-          ? 'text-slate-300'
-          : 'text-slate-600'
-      } text-sm font-medium text-center`}>
-        {filteredPredictions.length} prediction{filteredPredictions.length !== 1 ? 's' : ''} • {visibleSlideIndex + 1} of {groupedPredictions.length} date{groupedPredictions.length !== 1 ? 's' : ''}
-      </div>
-
-      {/* Swiper Stack Container */}
-      <div className="relative h-[400px] flex items-center justify-center">
-        <Swiper
-          effect="cards"
-          grabCursor={true}
-          centeredSlides={true}
-          slidesPerView={1}
-          loop={groupedPredictions.length > 1}
-          cardsEffect={{
-            perSlideOffset: 8,
-            perSlideRotate: 2,
-            rotate: true,
-            slideShadows: true,
-          }}
-          onSwiper={handleSwiperInit}
-          onSlideChange={handleSlideChange}
-          className="w-full max-w-sm h-full"
-          modules={[EffectCards]}
-        >
-          {groupedPredictions.map((group, groupIndex) => (
-            <SwiperSlide key={group.date} className="flex flex-col">
-              {/* Date Header */}
-              <div className={`text-center mb-4 p-3 rounded-lg ${
-                theme === 'dark'
-                  ? 'bg-slate-800/50 text-slate-300'
-                  : 'bg-slate-100 text-slate-700'
-              }`}>
-                <div className="text-sm font-medium">
-                  {format(parseISO(group.date), 'EEEE, MMMM d, yyyy')}
-                </div>
-                <div className="text-xs opacity-75 mt-1">
-                  {group.predictions.length} prediction{group.predictions.length !== 1 ? 's' : ''}
-                </div>
-              </div>
-
-              {/* Predictions for this date */}
-              <div className="flex-1 space-y-3 overflow-y-auto max-h-80">
-                {group.predictions.map((prediction) => (
-                  <PredictionCard
-                    key={`${prediction.userId}-${prediction.fixtureId}`}
-                    prediction={prediction}
-                    mode="league"
-                    showMemberInfo={true}
-                    onSelect={handlePredictionClick}
-                    isReadonly={true}
-                    size="compact"
-                  />
+      <div className="mb-6">
+        {dates.length === 0 ? (
+          <EmptyState />
+        ) : (
+          <div className="relative">
+            {/* Stack of date cards using Swiper */}
+            <div className="fixture-swiper-container">
+              <Swiper
+                effect={"cards"}
+                grabCursor={true}
+                modules={[EffectCards]}
+                className="prediction-stack-swiper"
+                onSlideChange={handleSlideChange}
+                onSwiper={handleSwiperInit}
+                cardsEffect={{
+                  slideShadows: true,
+                  perSlideRotate: 5,
+                  perSlideOffset: 12,
+                  rotate: true,
+                }}
+                speed={600}
+                initialSlide={activeIndex}
+                preventInteractionOnTransition={true}
+                allowTouchMove={true}
+                watchSlidesProgress={true}
+                observer={true}
+                observeParents={true}
+                resistanceRatio={0.85}
+                watchOverflow={true}
+                touchStartPreventDefault={false}
+              >
+                {dates.map((date) => (
+                  <SwiperSlide key={date} className="prediction-stack-slide">
+                    <div
+                      className={`backdrop-blur-md rounded-xl border p-4 h-full flex flex-col ${
+                        theme === "dark"
+                          ? "bg-slate-900 border-slate-600/50"
+                          : "bg-white border-slate-300 shadow-sm"
+                      }`}
+                    >
+                      {/* Date header */}
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center">
+                          <div
+                            className={`text-sm px-3 py-1 rounded-md flex items-center ${
+                              theme === "dark"
+                                ? "bg-teal-900/40 text-teal-300"
+                                : "bg-teal-100 text-teal-700 border border-teal-200"
+                            }`}
+                          >
+                            <CalendarIcon className="mr-1.5 w-4 h-4" />
+                            {format(parseISO(date), "EEEE, d")}
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          {predictionsByDate[date]?.length > 0 && (
+                            <div
+                              className={`text-xs px-2 py-0.5 rounded-full ${
+                                theme === "dark"
+                                  ? "text-white/50 bg-primary-700/40"
+                                  : "text-slate-600 bg-slate-100"
+                              }`}
+                            >
+                              GW {predictionsByDate[date][0].gameweek}
+                            </div>
+                          )}
+                          {predictionsByDate[date]?.length > 1 && (
+                            <div
+                              className={`text-xs px-2 py-0.5 rounded-full ${
+                                theme === "dark"
+                                  ? "text-white/70 bg-teal-700/40"
+                                  : "text-teal-700 bg-teal-100"
+                              }`}
+                            >
+                              {predictionsByDate[date].length} predictions
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      {/* Predictions container - scrollable */}
+                      <div
+                        className="space-y-3 mt-2 overflow-y-auto flex-grow pr-1 predictions-container"
+                        style={{ maxHeight: "300px" }}
+                      >
+                        {predictionsByDate[date].map((prediction) => (
+                          <PredictionCard
+                            key={`${prediction.userId}-${prediction.fixtureId}`}
+                            prediction={prediction}
+                            mode="league"
+                            showMemberInfo={true}
+                            onSelect={handlePredictionClick}
+                            isReadonly={true}
+                            size="compact"
+                          />
+                        ))}
+                      </div>
+                      <div
+                        className={`text-center mt-2 text-xs ${
+                          theme === "dark" ? "text-white/50" : "text-slate-400"
+                        }`}
+                      >
+                        Swipe for more dates
+                      </div>
+                    </div>
+                  </SwiperSlide>
                 ))}
-              </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
+              </Swiper>
+            </div>
+          </div>
+        )}
       </div>
-
-      {/* Navigation Controls */}
-      <div className="flex justify-center items-center gap-4 mt-6">
-        <button
-          onClick={() => swiperRef.current?.slidePrev()}
-          disabled={groupedPredictions.length <= 1}
-          className={`p-2 rounded-full transition-all ${
-            groupedPredictions.length <= 1
-              ? 'opacity-30 cursor-not-allowed'
-              : theme === 'dark'
-              ? 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-          }`}
-        >
-          <ChevronLeftIcon className="w-5 h-5" />
-        </button>
-        
-        {/* Pagination Dots */}
-        <div className="flex gap-2">
-          {groupedPredictions.slice(0, Math.min(5, groupedPredictions.length)).map((_, index) => (
-            <button
-              key={index}
-              onClick={() => swiperRef.current?.slideTo(index)}
-              className={`w-2 h-2 rounded-full transition-colors ${
-                visibleSlideIndex === index
-                  ? 'bg-teal-500'
-                  : theme === 'dark'
-                  ? 'bg-slate-600 hover:bg-slate-500'
-                  : 'bg-slate-300 hover:bg-slate-400'
-              }`}
-            />
-          ))}
-          {groupedPredictions.length > 5 && (
-            <DotIcon className={`w-4 h-4 ${
-              theme === 'dark' ? 'text-slate-600' : 'text-slate-400'
-            }`} />
-          )}
+      {/* Navigation hint and indicators */}
+      {dates.length > 0 && (
+        <div className="flex flex-col items-center mt-4">
+          {/* Page indicators */}
+          <div className="flex space-x-1">
+            {dates.map((_, index) => (
+              <div
+                key={index}
+                className={`w-1.5 h-1.5 rounded-full transition-all ${
+                  index === visibleSlideIndex
+                    ? theme === "dark"
+                      ? "bg-teal-400 scale-125"
+                      : "bg-teal-500 scale-125"
+                    : theme === "dark"
+                    ? "bg-white/30"
+                    : "bg-slate-300"
+                }`}
+              />
+            ))}
+          </div>
         </div>
-        
-        <button
-          onClick={() => swiperRef.current?.slideNext()}
-          disabled={groupedPredictions.length <= 1}
-          className={`p-2 rounded-full transition-all ${
-            groupedPredictions.length <= 1
-              ? 'opacity-30 cursor-not-allowed'
-              : theme === 'dark'
-              ? 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-          }`}
-        >
-          <ChevronRightIcon className="w-5 h-5" />
-        </button>
-      </div>
-    </motion.div>
+      )}
+    </div>
   );
 };
 
