@@ -221,38 +221,38 @@ const PredictionTable = ({
               
               {/* Prediction column */}
               {isLeagueMode ? (
-                <SortableHeader columnKey="prediction" className="text-center">Prediction</SortableHeader>
+                <SortableHeader columnKey="prediction">Prediction</SortableHeader>
               ) : (
-                <RegularHeader className="text-center">Prediction</RegularHeader>
+                <RegularHeader>Prediction</RegularHeader>
               )}
 
               {/* Gameweek - only in league mode */}
               {isLeagueMode && (
-                <SortableHeader columnKey="gameweek" className="text-center">Gameweek</SortableHeader>
+                <SortableHeader columnKey="gameweek">Gameweek</SortableHeader>
               )}
 
               {/* Date column */}
               {isLeagueMode ? (
-                <SortableHeader columnKey="date" className="text-center">Date</SortableHeader>
+                <SortableHeader columnKey="date">Date</SortableHeader>
               ) : (
                 <RegularHeader>Date</RegularHeader>
               )}
 
               {/* Actual Result - only in personal mode */}
               {!isLeagueMode && (
-                <RegularHeader className="text-center">Actual Result</RegularHeader>
+                <RegularHeader>Actual Result</RegularHeader>
               )}
 
               {/* Status/Points column */}
               {isLeagueMode ? (
-                <SortableHeader columnKey="points" className="text-center">Points</SortableHeader>
+                <SortableHeader columnKey="points">Points</SortableHeader>
               ) : (
-                <RegularHeader className="text-center">Status</RegularHeader>
+                <RegularHeader>Status</RegularHeader>
               )}
 
               {/* Actions - only in personal mode */}
               {allowEdit && (
-                <RegularHeader className="text-center">Actions</RegularHeader>
+                <RegularHeader>Actions</RegularHeader>
               )}
             </tr>
           </thead>
@@ -323,7 +323,7 @@ const PredictionTable = ({
                   </td>
 
                   {/* Prediction column */}
-                  <td className="px-4 py-3 text-center">
+                  <td className="px-4 py-3">
                     <span className={`text-lg font-bold ${
                       theme === 'dark' ? 'text-teal-400' : 'text-teal-600'
                     }`}>
@@ -333,7 +333,7 @@ const PredictionTable = ({
 
                   {/* Gameweek - only in league mode */}
                   {isLeagueMode && (
-                    <td className="px-4 py-3 text-center">
+                    <td className="px-4 py-3">
                       <span className={`text-sm font-medium ${
                         theme === 'dark' ? 'text-slate-400' : 'text-slate-600'
                       }`}>
@@ -343,7 +343,7 @@ const PredictionTable = ({
                   )}
 
                   {/* Date column */}
-                  <td className={`px-4 py-3 ${isLeagueMode ? 'text-center' : ''}`}>
+                  <td className="px-4 py-3">
                     <div className="text-sm">
                       <div className={theme === "dark" ? "text-slate-300" : "text-slate-700"}>
                         {format(parseISO(prediction.date), "MMM d")}
@@ -356,7 +356,7 @@ const PredictionTable = ({
 
                   {/* Actual Result - only in personal mode */}
                   {!isLeagueMode && (
-                    <td className="px-4 py-3 text-center">
+                    <td className="px-4 py-3">
                       {prediction.actualHomeScore !== null && prediction.actualAwayScore !== null ? (
                         <span className={`text-lg font-bold ${
                           theme === "dark" ? "text-slate-300" : "text-slate-700"
@@ -374,7 +374,7 @@ const PredictionTable = ({
                   )}
 
                   {/* Status/Points column */}
-                  <td className="px-4 py-3 text-center">
+                  <td className="px-4 py-3">
                     {isLeagueMode ? (
                       <span className={`px-2 py-1 rounded-md text-xs font-medium border ${getStatusColor(prediction)}`}>
                         {getPointsDisplay(prediction)}
@@ -389,8 +389,8 @@ const PredictionTable = ({
 
                   {/* Actions - only in personal mode */}
                   {allowEdit && (
-                    <td className="px-4 py-3 text-center">
-                      <div className="flex items-center justify-center gap-2">
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
                         <button
                           onClick={() => onPredictionSelect?.(prediction)}
                           className={`p-1.5 rounded-lg transition-colors ${
