@@ -752,7 +752,7 @@ const PredictionsContent = ({ leagueId }) => {
       </div>
 
       {/* Filters and Content Container */}
-      <div className="p-5">
+      <div className="p-5 font-outfit">
         {/* Prediction Filters */}
         <LeaguePredictionFilters
           activeFilter={activeFilter}
