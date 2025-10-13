@@ -1,18 +1,13 @@
 import React, { useContext, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { calculatePoints } from "../../utils/pointsCalculation";
 import { 
-  PersonIcon,
-  CalendarIcon,
   TargetIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   DotIcon
 } from "@radix-ui/react-icons";
-import { format, parseISO } from "date-fns";
 import { ThemeContext } from "../../context/ThemeContext";
-import TeamLogo from "../ui/TeamLogo";
-import { LOGO_SIZES } from "../../utils/teamLogos";
+import PredictionCard from "./PredictionCard";
 
 const LeaguePredictionsStack = ({
   predictions,
@@ -175,147 +170,95 @@ const LeaguePredictionsStack = ({
               }}
               onClick={() => position === 0 && handleCardClick(prediction)}
             >
-              <div className={`${
-                theme === 'dark'
-                  ? 'bg-slate-800/80 border-slate-700 shadow-2xl'
-                  : 'bg-white border-slate-200 shadow-lg'
-              } rounded-2xl border p-6 backdrop-blur-sm transition-all duration-300 ${
-                position === 0 ? 'hover:scale-105' : ''
-              }`}>
-                {/* Member Info */}
-                <div className="flex items-center gap-3 mb-4">
-                  <div className={`w-10 h-10 rounded-full ${
-                    theme === 'dark' ? 'bg-teal-500/20 text-teal-400' : 'bg-teal-100 text-teal-700'
-                  } flex items-center justify-center text-sm font-medium`}>
-                    {prediction.userDisplayName?.charAt(0)?.toUpperCase() || '?'}
-                  </div>
-                  <div>
-                    <h3 className={`font-semibold ${
-                      theme === 'dark' ? 'text-slate-200' : 'text-slate-800'
-                    }`}>
-                      {prediction.userDisplayName}
-                    </h3>
-                    <p className={`text-sm ${
-                      theme === 'dark' ? 'text-slate-400' : 'text-slate-600'
-                    }`}>
-                      {prediction.date ? format(parseISO(prediction.date), "MMM d, yyyy") : 'N/A'}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Match Info */}
-                <div className="space-y-3 mb-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <TeamLogo
-                        teamName={prediction.homeTeam}
-                        size={LOGO_SIZES.sm}
-                        theme={theme}
-                      />
-                      <span className={`font-medium ${
-                        theme === 'dark' ? 'text-slate-300' : 'text-slate-700'
-                      }`}>
-                        {prediction.homeTeam}
-                      </span>
-                    </div>
-                    <span className={`text-2xl font-bold ${
-                      theme === 'dark' ? 'text-teal-400' : 'text-teal-600'
-                    }`}>
-                      {prediction.homeScore !== null ? prediction.homeScore : '-'}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-center">
-                    <span className={`text-sm font-medium ${
-                      theme === 'dark' ? 'text-slate-500' : 'text-slate-400'
-                    }`}>
-                      VS
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <TeamLogo
-                        teamName={prediction.awayTeam}
-                        size={LOGO_SIZES.sm}
-                        theme={theme}
-                      />
-                      <span className={`font-medium ${
-                        theme === 'dark' ? 'text-slate-300' : 'text-slate-700'
-                      }`}>
-                        {prediction.awayTeam}
-                      </span>
-                    </div>
-                    <span className={`text-2xl font-bold ${
-                      theme === 'dark' ? 'text-teal-400' : 'text-teal-600'
-                    }`}>
-                      {prediction.awayScore !== null ? prediction.awayScore : '-'}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Prediction Details */}
-                <div className="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
-                  <div className="flex items-center gap-2">
-                    <CalendarIcon className="w-4 h-4 text-slate-400" />
-                    <span className={`text-sm ${
-                      theme === 'dark' ? 'text-slate-400' : 'text-slate-600'
-                    }`}>
-                      GW {prediction.gameweek || '-'}
-                    </span>
-                  </div>
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(prediction)}`}>
-                    {getPointsDisplay(prediction)}
-                  </span>
-                </div>
-              </div>
+              <PredictionCard
+                prediction={prediction}
+                mode="league"
+                showMemberInfo={true}
+                onSelect={handleCardClick}
+                isReadonly={true}
+                size="normal"
+              />
             </motion.div>
           ))}
         </AnimatePresence>
-
-        {/* Navigation Buttons */}
-        {sortedPredictions.length > 1 && (
-          <>
-            <button
-              onClick={handlePrevious}
-              className={`absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full ${
-                theme === 'dark'
-                  ? 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-600'
-                  : 'bg-white hover:bg-slate-50 text-slate-600 border-slate-200'
-              } border shadow-lg transition-all duration-200 hover:scale-110 z-20`}
-            >
-              <ChevronLeftIcon className="w-5 h-5" />
-            </button>
-            <button
-              onClick={handleNext}
-              className={`absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full ${
-                theme === 'dark'
-                  ? 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-600'
-                  : 'bg-white hover:bg-slate-50 text-slate-600 border-slate-200'
-              } border shadow-lg transition-all duration-200 hover:scale-110 z-20`}
-            >
-              <ChevronRightIcon className="w-5 h-5" />
-            </button>
-          </>
-        )}
       </div>
 
-      {/* Pagination Dots */}
-      {sortedPredictions.length > 1 && (
-        <div className="flex justify-center gap-1">
-          {sortedPredictions.map((_, index) => (
+      {/* Navigation Controls */}
+      <div className="flex justify-center items-center gap-4 mt-6">
+        <button
+          onClick={goToPrevious}
+          disabled={sortedPredictions.length <= 1}
+          className={`p-2 rounded-full transition-all ${
+            sortedPredictions.length <= 1
+              ? 'opacity-30 cursor-not-allowed'
+              : theme === 'dark'
+              ? 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+          }`}
+        >
+          <ChevronLeftIcon className="w-5 h-5" />
+        </button>
+        
+        {/* Pagination Dots */}
+        <div className="flex gap-2">
+          {sortedPredictions.slice(0, Math.min(5, sortedPredictions.length)).map((_, index) => (
             <button
               key={index}
               onClick={() => setCurrentIndex(index)}
-              className={`w-2 h-2 rounded-full transition-all duration-200 ${
-                index === currentIndex
-                  ? theme === 'dark' ? 'bg-teal-400' : 'bg-teal-600'
-                  : theme === 'dark' ? 'bg-slate-600' : 'bg-slate-300'
+              className={`w-2 h-2 rounded-full transition-colors ${
+                currentIndex === index
+                  ? 'bg-teal-500'
+                  : theme === 'dark'
+                  ? 'bg-slate-600 hover:bg-slate-500'
+                  : 'bg-slate-300 hover:bg-slate-400'
               }`}
             />
           ))}
+          {sortedPredictions.length > 5 && (
+            <DotIcon className={`w-4 h-4 ${
+              theme === 'dark' ? 'text-slate-600' : 'text-slate-400'
+            }`} />
+          )}
         </div>
-      )}
+        
+        <button
+          onClick={goToNext}
+          disabled={sortedPredictions.length <= 1}
+          className={`p-2 rounded-full transition-all ${
+            sortedPredictions.length <= 1
+              ? 'opacity-30 cursor-not-allowed'
+              : theme === 'dark'
+              ? 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+          }`}
+        >
+          <ChevronRightIcon className="w-5 h-5" />
+        </button>
+      </div>
+    </motion.div>
+  );
+
+  // No predictions found
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="text-center py-12"
+    >
+      <TargetIcon className={`w-12 h-12 mx-auto mb-4 opacity-50 ${
+        theme === 'dark' ? 'text-slate-500' : 'text-slate-400'
+      }`} />
+      <p className={`text-lg font-medium font-outfit ${
+        theme === 'dark' ? 'text-slate-300' : 'text-slate-700'
+      }`}>
+        No predictions found
+      </p>
+      <p className={`text-sm mt-2 ${
+        theme === 'dark' ? 'text-slate-500' : 'text-slate-500'
+      }`}>
+        {searchQuery ? "Try adjusting your search terms." : "League predictions will appear here."}
+      </p>
     </motion.div>
   );
 };

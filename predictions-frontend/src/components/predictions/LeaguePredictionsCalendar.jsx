@@ -11,6 +11,7 @@ import { format, parseISO, startOfMonth, endOfMonth, eachDayOfInterval, isSameDa
 import { ThemeContext } from "../../context/ThemeContext";
 import TeamLogo from "../ui/TeamLogo";
 import { LOGO_SIZES } from "../../utils/teamLogos";
+import PredictionCard from "./PredictionCard";
 
 const LeaguePredictionsCalendar = ({
   predictions,
@@ -258,47 +259,15 @@ const LeaguePredictionsCalendar = ({
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className={`${
-                  theme === 'dark'
-                    ? 'bg-slate-900/50 border-slate-700 hover:bg-slate-900/70'
-                    : 'bg-slate-50 border-slate-200 hover:bg-slate-100'
-                } rounded-lg border p-4 cursor-pointer transition-colors`}
-                onClick={() => onPredictionSelect?.(prediction)}
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-full ${
-                      theme === 'dark' ? 'bg-teal-500/20 text-teal-400' : 'bg-teal-100 text-teal-700'
-                    } flex items-center justify-center text-sm font-medium`}>
-                      {prediction.userDisplayName?.charAt(0)?.toUpperCase() || '?'}
-                    </div>
-                    <div>
-                      <p className={`font-medium ${
-                        theme === 'dark' ? 'text-slate-200' : 'text-slate-800'
-                      }`}>
-                        {prediction.userDisplayName}
-                      </p>
-                      <p className={`text-sm ${
-                        theme === 'dark' ? 'text-slate-400' : 'text-slate-600'
-                      }`}>
-                        {prediction.homeTeam} vs {prediction.awayTeam}
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div className="text-right">
-                    <p className={`text-lg font-bold ${
-                      theme === 'dark' ? 'text-teal-400' : 'text-teal-600'
-                    }`}>
-                      {formatPrediction(prediction)}
-                    </p>
-                    <p className={`text-sm ${
-                      theme === 'dark' ? 'text-slate-400' : 'text-slate-600'
-                    }`}>
-                      GW {prediction.gameweek || '-'}
-                    </p>
-                  </div>
-                </div>
+                <PredictionCard
+                  prediction={prediction}
+                  mode="league"
+                  showMemberInfo={true}
+                  onSelect={onPredictionSelect}
+                  isReadonly={true}
+                  size="compact"
+                />
               </motion.div>
             ))}
           </div>

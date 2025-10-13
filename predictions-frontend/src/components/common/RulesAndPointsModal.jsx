@@ -66,7 +66,7 @@ const RulesAndPointsModal = memo(({ isOpen, onClose }) => {
       },
       { 
         rule: 'Submission Deadline', 
-        description: 'All predictions must be submitted at least 30 minutes before the kickoff time of each individual match.', 
+        description: 'All predictions must be submitted at least 45 minutes before the kickoff time of each individual match.', 
         icon: ClockIcon,
         color: 'amber'
       },
