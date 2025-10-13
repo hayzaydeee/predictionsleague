@@ -1,13 +1,24 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { format, parseISO } from "date-fns";
 import { 
   TargetIcon,
+  CalendarIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   DotIcon
 } from "@radix-ui/react-icons";
+// Import Swiper React components
+import { Swiper, SwiperSlide } from "swiper/react";
+// Import Swiper styles
+import "swiper/css";
+import "swiper/css/effect-cards";
+// Import required modules
+import { EffectCards } from "swiper/modules";
+
 import { ThemeContext } from "../../context/ThemeContext";
 import PredictionCard from "./PredictionCard";
+import EmptyState from "../common/EmptyState";
 
 const LeaguePredictionsStack = ({
   predictions,
@@ -16,70 +27,79 @@ const LeaguePredictionsStack = ({
   searchQuery = ""
 }) => {
   const { theme } = useContext(ThemeContext);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [swiperInitialized, setSwiperInitialized] = useState(false);
+  const [visibleSlideIndex, setVisibleSlideIndex] = useState(0);
+  const swiperRef = useRef(null);
 
   // Filter predictions based on search query
-  const filteredPredictions = predictions.filter(prediction => {
-    if (!searchQuery) return true;
-    
-    const searchLower = searchQuery.toLowerCase();
-    return (
-      prediction.userDisplayName?.toLowerCase().includes(searchLower) ||
-      prediction.homeTeam.toLowerCase().includes(searchLower) ||
-      prediction.awayTeam.toLowerCase().includes(searchLower) ||
-      `${prediction.homeTeam} vs ${prediction.awayTeam}`.toLowerCase().includes(searchLower)
-    );
-  });
+  const filteredPredictions = React.useMemo(() => {
+    return predictions.filter(prediction => {
+      if (!searchQuery) return true;
+      
+      const searchLower = searchQuery.toLowerCase();
+      return (
+        prediction.userDisplayName?.toLowerCase().includes(searchLower) ||
+        prediction.homeTeam.toLowerCase().includes(searchLower) ||
+        prediction.awayTeam.toLowerCase().includes(searchLower) ||
+        `${prediction.homeTeam} vs ${prediction.awayTeam}`.toLowerCase().includes(searchLower)
+      );
+    });
+  }, [predictions, searchQuery]);
 
-  // Sort by most recent prediction first
-  const sortedPredictions = [...filteredPredictions].sort((a, b) => {
-    return new Date(b.predictedAt || b.date) - new Date(a.predictedAt || a.date);
-  });
+  // Group predictions by date
+  const groupedPredictions = React.useMemo(() => {
+    const groups = filteredPredictions.reduce((acc, prediction) => {
+      const date = format(parseISO(prediction.date), "yyyy-MM-dd");
+      if (!acc[date]) {
+        acc[date] = [];
+      }
+      acc[date].push(prediction);
+      return acc;
+    }, {});
+
+    // Convert to array format sorted by date
+    return Object.keys(groups)
+      .sort()
+      .map(date => ({
+        date,
+        predictions: groups[date]
+      }));
+  }, [filteredPredictions]);
 
 
+  // Handle swiper initialization
+  const handleSwiperInit = (swiper) => {
+    if (!swiper) return;
+    swiperRef.current = swiper;
+    setSwiperInitialized(true);
+    setVisibleSlideIndex(swiper.activeIndex);
+  };
 
-  const formatPrediction = (prediction) => {
-    if (prediction.homeScore !== null && prediction.awayScore !== null) {
-      return `${prediction.homeScore}-${prediction.awayScore}`;
+  // Handle slide change
+  const handleSlideChange = (swiper) => {
+    if (!swiper || typeof swiper.activeIndex !== "number") return;
+    setVisibleSlideIndex(swiper.activeIndex);
+  };
+
+  // Handle prediction selection
+  const handlePredictionClick = (prediction) => {
+    if (onPredictionSelect && typeof onPredictionSelect === 'function') {
+      onPredictionSelect(prediction);
     }
-    return "No prediction";
-  };
-
-  const getStatusColor = (prediction) => {
-    const points = calculatePoints(prediction);
-    if (points !== null && points !== undefined) {
-      return theme === 'dark' 
-        ? 'text-green-400 bg-green-500/10 border-green-500/20'
-        : 'text-green-700 bg-green-50 border-green-200';
-    }
-    return theme === 'dark'
-      ? 'text-amber-400 bg-amber-500/10 border-amber-500/20'
-      : 'text-amber-700 bg-amber-50 border-amber-200';
-  };
-
-  const getPointsDisplay = (prediction) => {
-    const points = calculatePoints(prediction);
-    if (points !== null && points !== undefined) {
-      return `${points} pts`;
-    }
-    return "Pending";
-  };
-
-  const handlePrevious = () => {
-    setCurrentIndex(prev => prev > 0 ? prev - 1 : sortedPredictions.length - 1);
-  };
-
-  const handleNext = () => {
-    setCurrentIndex(prev => prev < sortedPredictions.length - 1 ? prev + 1 : 0);
   };
 
   const handleCardClick = (prediction) => {
     onPredictionSelect?.(prediction);
   };
 
-  if (sortedPredictions.length === 0) {
+  if (groupedPredictions.length === 0) {
     return (
-      <div className="text-center py-12">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="text-center py-12"
+      >
         <div className="text-4xl mb-4">🎴</div>
         <h3 className={`text-lg font-semibold mb-2 ${
           theme === 'dark' ? 'text-slate-300' : 'text-slate-700'
@@ -91,32 +111,9 @@ const LeaguePredictionsStack = ({
         }`}>
           {searchQuery ? 'Try adjusting your search criteria' : 'No predictions available'}
         </p>
-      </div>
+      </motion.div>
     );
   }
-
-  // Get the visible predictions (current and adjacent)
-  const getVisiblePredictions = () => {
-    const total = sortedPredictions.length;
-    if (total === 1) return [{ prediction: sortedPredictions[0], position: 0 }];
-    
-    const visible = [];
-    
-    // Previous prediction
-    const prevIndex = currentIndex > 0 ? currentIndex - 1 : total - 1;
-    visible.push({ prediction: sortedPredictions[prevIndex], position: -1 });
-    
-    // Current prediction
-    visible.push({ prediction: sortedPredictions[currentIndex], position: 0 });
-    
-    // Next prediction
-    const nextIndex = currentIndex < total - 1 ? currentIndex + 1 : 0;
-    visible.push({ prediction: sortedPredictions[nextIndex], position: 1 });
-    
-    return visible;
-  };
-
-  const visiblePredictions = getVisiblePredictions();
 
   return (
     <motion.div
@@ -131,65 +128,70 @@ const LeaguePredictionsStack = ({
           ? 'text-slate-300'
           : 'text-slate-600'
       } text-sm font-medium text-center`}>
-        {filteredPredictions.length} prediction{filteredPredictions.length !== 1 ? 's' : ''} • {currentIndex + 1} of {sortedPredictions.length}
+        {filteredPredictions.length} prediction{filteredPredictions.length !== 1 ? 's' : ''} • {visibleSlideIndex + 1} of {groupedPredictions.length} date{groupedPredictions.length !== 1 ? 's' : ''}
       </div>
 
-      {/* Stack Container */}
-      <div className="relative h-96 flex items-center justify-center">
-        <AnimatePresence mode="wait">
-          {visiblePredictions.map(({ prediction, position }) => (
-            <motion.div
-              key={`${prediction.userId}-${prediction.fixtureId}-${position}`}
-              initial={{ 
-                opacity: position === 0 ? 0 : 0.3,
-                scale: position === 0 ? 0.8 : 0.7,
-                x: position * 100,
-                z: -Math.abs(position) * 10
-              }}
-              animate={{ 
-                opacity: position === 0 ? 1 : 0.3,
-                scale: position === 0 ? 1 : 0.85,
-                x: position * 30,
-                z: -Math.abs(position) * 10
-              }}
-              exit={{ 
-                opacity: 0,
-                scale: 0.7,
-                x: position * 100
-              }}
-              transition={{ 
-                duration: 0.3,
-                ease: "easeInOut"
-              }}
-              className={`absolute w-80 cursor-pointer ${
-                position === 0 ? 'pointer-events-auto' : 'pointer-events-none'
-              }`}
-              style={{ 
-                zIndex: 10 - Math.abs(position),
-                transform: `translateX(${position * 30}px) scale(${position === 0 ? 1 : 0.85})`
-              }}
-              onClick={() => position === 0 && typeof onPredictionSelect === 'function' && handleCardClick(prediction)}
-            >
-              <PredictionCard
-                prediction={prediction}
-                mode="league"
-                showMemberInfo={true}
-                onSelect={handleCardClick}
-                isReadonly={true}
-                size="compact"
-              />
-            </motion.div>
+      {/* Swiper Stack Container */}
+      <div className="relative h-[400px] flex items-center justify-center">
+        <Swiper
+          effect="cards"
+          grabCursor={true}
+          centeredSlides={true}
+          slidesPerView={1}
+          loop={groupedPredictions.length > 1}
+          cardsEffect={{
+            perSlideOffset: 8,
+            perSlideRotate: 2,
+            rotate: true,
+            slideShadows: true,
+          }}
+          onSwiper={handleSwiperInit}
+          onSlideChange={handleSlideChange}
+          className="w-full max-w-sm h-full"
+          modules={[EffectCards]}
+        >
+          {groupedPredictions.map((group, groupIndex) => (
+            <SwiperSlide key={group.date} className="flex flex-col">
+              {/* Date Header */}
+              <div className={`text-center mb-4 p-3 rounded-lg ${
+                theme === 'dark'
+                  ? 'bg-slate-800/50 text-slate-300'
+                  : 'bg-slate-100 text-slate-700'
+              }`}>
+                <div className="text-sm font-medium">
+                  {format(parseISO(group.date), 'EEEE, MMMM d, yyyy')}
+                </div>
+                <div className="text-xs opacity-75 mt-1">
+                  {group.predictions.length} prediction{group.predictions.length !== 1 ? 's' : ''}
+                </div>
+              </div>
+
+              {/* Predictions for this date */}
+              <div className="flex-1 space-y-3 overflow-y-auto max-h-80">
+                {group.predictions.map((prediction) => (
+                  <PredictionCard
+                    key={`${prediction.userId}-${prediction.fixtureId}`}
+                    prediction={prediction}
+                    mode="league"
+                    showMemberInfo={true}
+                    onSelect={handlePredictionClick}
+                    isReadonly={true}
+                    size="compact"
+                  />
+                ))}
+              </div>
+            </SwiperSlide>
           ))}
-        </AnimatePresence>
+        </Swiper>
       </div>
 
       {/* Navigation Controls */}
       <div className="flex justify-center items-center gap-4 mt-6">
         <button
-          onClick={goToPrevious}
-          disabled={sortedPredictions.length <= 1}
+          onClick={() => swiperRef.current?.slidePrev()}
+          disabled={groupedPredictions.length <= 1}
           className={`p-2 rounded-full transition-all ${
-            sortedPredictions.length <= 1
+            groupedPredictions.length <= 1
               ? 'opacity-30 cursor-not-allowed'
               : theme === 'dark'
               ? 'bg-slate-800 text-slate-300 hover:bg-slate-700'
@@ -201,12 +203,12 @@ const LeaguePredictionsStack = ({
         
         {/* Pagination Dots */}
         <div className="flex gap-2">
-          {sortedPredictions.slice(0, Math.min(5, sortedPredictions.length)).map((_, index) => (
+          {groupedPredictions.slice(0, Math.min(5, groupedPredictions.length)).map((_, index) => (
             <button
               key={index}
-              onClick={() => setCurrentIndex(index)}
+              onClick={() => swiperRef.current?.slideTo(index)}
               className={`w-2 h-2 rounded-full transition-colors ${
-                currentIndex === index
+                visibleSlideIndex === index
                   ? 'bg-teal-500'
                   : theme === 'dark'
                   ? 'bg-slate-600 hover:bg-slate-500'
@@ -214,7 +216,7 @@ const LeaguePredictionsStack = ({
               }`}
             />
           ))}
-          {sortedPredictions.length > 5 && (
+          {groupedPredictions.length > 5 && (
             <DotIcon className={`w-4 h-4 ${
               theme === 'dark' ? 'text-slate-600' : 'text-slate-400'
             }`} />
@@ -222,10 +224,10 @@ const LeaguePredictionsStack = ({
         </div>
         
         <button
-          onClick={goToNext}
-          disabled={sortedPredictions.length <= 1}
+          onClick={() => swiperRef.current?.slideNext()}
+          disabled={groupedPredictions.length <= 1}
           className={`p-2 rounded-full transition-all ${
-            sortedPredictions.length <= 1
+            groupedPredictions.length <= 1
               ? 'opacity-30 cursor-not-allowed'
               : theme === 'dark'
               ? 'bg-slate-800 text-slate-300 hover:bg-slate-700'
@@ -235,30 +237,6 @@ const LeaguePredictionsStack = ({
           <ChevronRightIcon className="w-5 h-5" />
         </button>
       </div>
-    </motion.div>
-  );
-
-  // No predictions found
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-      className="text-center py-12"
-    >
-      <TargetIcon className={`w-12 h-12 mx-auto mb-4 opacity-50 ${
-        theme === 'dark' ? 'text-slate-500' : 'text-slate-400'
-      }`} />
-      <p className={`text-lg font-medium font-outfit ${
-        theme === 'dark' ? 'text-slate-300' : 'text-slate-700'
-      }`}>
-        No predictions found
-      </p>
-      <p className={`text-sm mt-2 ${
-        theme === 'dark' ? 'text-slate-500' : 'text-slate-500'
-      }`}>
-        {searchQuery ? "Try adjusting your search terms." : "League predictions will appear here."}
-      </p>
     </motion.div>
   );
 };
