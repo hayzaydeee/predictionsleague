@@ -717,36 +717,42 @@ const PredictionsContent = ({ leagueId }) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="space-y-6"
+      className={`${
+        theme === "dark"
+          ? "bg-slate-800/30 border-slate-700/50"
+          : "bg-white border-slate-200"
+      } backdrop-blur-sm border rounded-2xl overflow-hidden shadow-sm`}
     >
       {/* Header with View Toggle Bar */}
-      <div className="flex items-center justify-between gap-4 flex-wrap">
-        <div>
-          <h3 className={`text-lg font-semibold ${text.primary[theme]} font-outfit`}>
-            League Predictions
-          </h3>
-          <p className={`${text.secondary[theme]} text-sm font-outfit`}>
-            View and compare member predictions for this league
-          </p>
-        </div>
+      <div
+        className={`p-6 border-b ${
+          theme === "dark" ? "border-slate-700/50" : "border-slate-200"
+        }`}
+      >
+        <div className="flex items-center justify-between gap-4 flex-wrap">
+          <div>
+            <h2
+              className={`text-xl font-semibold ${text.primary[theme]} mb-1 font-outfit`}
+            >
+              League Predictions
+            </h2>
+            <p className={`${text.muted[theme]} text-sm font-outfit`}>
+              View and compare member predictions for this league
+            </p>
+          </div>
 
-        {/* View Toggle Bar */}
-        <div className="flex-shrink-0">
-          <LeaguePredictionViewToggleBar
-            viewMode={selectedViewMode}
-            setViewMode={handleViewModeChange}
-          />
+          {/* View Toggle Bar */}
+          <div className="flex-shrink-0">
+            <LeaguePredictionViewToggleBar
+              viewMode={selectedViewMode}
+              setViewMode={handleViewModeChange}
+            />
+          </div>
         </div>
       </div>
 
       {/* Filters and Content Container */}
-      <div
-        className={`${
-          theme === "dark"
-            ? "backdrop-blur-xl border-slate-700/50 bg-slate-900/60"
-            : "border-slate-200 bg-white/80 backdrop-blur-sm shadow-sm"
-        } rounded-xl border overflow-hidden font-outfit p-5`}
-      >
+      <div className="p-5">
         {/* Prediction Filters */}
         <LeaguePredictionFilters
           activeFilter={activeFilter}
