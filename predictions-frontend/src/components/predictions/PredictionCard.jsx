@@ -25,7 +25,7 @@ const PredictionCard = ({
 
   // Determine if card should be interactive
   const isPersonalMode = mode === "personal";
-  const canEdit = isPersonalMode && onEdit && !isReadonly;
+  const canEdit = isPersonalMode && typeof onEdit === 'function' && !isReadonly;
   const isCompact = size === "compact";
 
   // Helper function to count goals per scorer
@@ -46,8 +46,12 @@ const PredictionCard = ({
   };
 
   const handleCardClick = () => {
-    if (onSelect && !isReadonly) {
-      onSelect(prediction);
+    try {
+      if (onSelect && typeof onSelect === 'function' && !isReadonly) {
+        onSelect(prediction);
+      }
+    } catch (error) {
+      console.error('Error in handleCardClick:', error);
     }
   };
 
@@ -56,14 +60,14 @@ const PredictionCard = ({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       className={`rounded-lg border transition-all ${
-        !isReadonly && onSelect ? "cursor-pointer" : ""
+        !isReadonly && typeof onSelect === 'function' ? "cursor-pointer" : ""
       } ${
         theme === "dark"
           ? `bg-slate-700/30 border-slate-600/30 ${
-              !isReadonly && onSelect ? "hover:bg-slate-700/50" : ""
+              !isReadonly && typeof onSelect === 'function' ? "hover:bg-slate-700/50" : ""
             }`
           : `bg-slate-50 border-slate-200 ${
-              !isReadonly && onSelect ? "hover:bg-slate-100" : ""
+              !isReadonly && typeof onSelect === 'function' ? "hover:bg-slate-100" : ""
             }`
       } ${isCompact ? "p-4" : "p-6"}`}
       onClick={handleCardClick}

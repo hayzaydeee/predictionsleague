@@ -3,7 +3,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   ChevronLeftIcon, 
   ChevronRightIcon, 
-  TargetIcon
+  TargetIcon,
+  ClockIcon,
+  CalendarIcon
 } from "@radix-ui/react-icons";
 import { format, parseISO } from "date-fns";
 import { ThemeContext } from "../../context/ThemeContext";
@@ -146,7 +148,7 @@ const PredictionCarousel = ({
 
   const handlePredictionClick = (prediction) => {
     setSelectedPrediction(prediction);
-    if (onPredictionSelect) {
+    if (onPredictionSelect && typeof onPredictionSelect === 'function') {
       onPredictionSelect(prediction);
     }
   };

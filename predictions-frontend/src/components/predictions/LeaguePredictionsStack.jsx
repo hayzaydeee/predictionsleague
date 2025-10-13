@@ -168,7 +168,7 @@ const LeaguePredictionsStack = ({
                 zIndex: 10 - Math.abs(position),
                 transform: `translateX(${position * 30}px) scale(${position === 0 ? 1 : 0.85})`
               }}
-              onClick={() => position === 0 && handleCardClick(prediction)}
+              onClick={() => position === 0 && typeof onPredictionSelect === 'function' && handleCardClick(prediction)}
             >
               <PredictionCard
                 prediction={prediction}
