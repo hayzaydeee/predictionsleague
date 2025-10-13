@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { format, parseISO } from "date-fns";
-import { ClockIcon, CalendarIcon } from "@radix-ui/react-icons";
+import { ClockIcon, CalendarIcon, ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 // Import Swiper React components
 import { Swiper, SwiperSlide } from "swiper/react";
 // Import Swiper styles
@@ -218,23 +218,63 @@ const PredictionStack = ({
           </div>
         )}
       </div>
-      {/* Navigation hint and indicators */}
+      {/* Navigation controls and indicators */}
       {dates.length > 0 && (
-        <div className="flex flex-col items-center mt-4">
+        <div className="flex flex-col items-center mt-4 space-y-3">
+          {/* Arrow navigation buttons */}
+          <div className="flex justify-center items-center gap-4">
+            <button
+              onClick={() => swiperRef.current?.slidePrev()}
+              disabled={dates.length <= 1}
+              className={`p-2 rounded-full transition-all ${
+                dates.length <= 1
+                  ? 'opacity-30 cursor-not-allowed'
+                  : theme === 'dark'
+                  ? 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-indigo-300'
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-indigo-600'
+              }`}
+            >
+              <ChevronLeftIcon className="w-5 h-5" />
+            </button>
+            
+            <div className={`text-xs px-3 py-1 rounded-full ${
+              theme === 'dark'
+                ? 'bg-slate-800/50 text-slate-400'
+                : 'bg-slate-100 text-slate-600'
+            }`}>
+              {visibleSlideIndex + 1} of {dates.length}
+            </div>
+            
+            <button
+              onClick={() => swiperRef.current?.slideNext()}
+              disabled={dates.length <= 1}
+              className={`p-2 rounded-full transition-all ${
+                dates.length <= 1
+                  ? 'opacity-30 cursor-not-allowed'
+                  : theme === 'dark'
+                  ? 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-indigo-300'
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-indigo-600'
+              }`}
+            >
+              <ChevronRightIcon className="w-5 h-5" />
+            </button>
+          </div>
+
           {/* Page indicators */}
           <div className="flex space-x-1">
             {dates.map((_, index) => (
               <div
                 key={index}
-                className={`w-1.5 h-1.5 rounded-full transition-all ${
+                className={`w-1.5 h-1.5 rounded-full transition-all cursor-pointer ${
                   index === visibleSlideIndex
                     ? theme === "dark"
                       ? "bg-indigo-400 scale-125"
                       : "bg-indigo-500 scale-125"
                     : theme === "dark"
-                    ? "bg-white/30"
-                    : "bg-slate-300"
+                    ? "bg-white/30 hover:bg-white/50"
+                    : "bg-slate-300 hover:bg-slate-400"
                 }`}
+                onClick={() => swiperRef.current?.slideTo(index)}
               />
             ))}
           </div>
