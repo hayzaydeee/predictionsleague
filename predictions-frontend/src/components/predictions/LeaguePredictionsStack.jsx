@@ -176,7 +176,7 @@ const LeaguePredictionsStack = ({
                 showMemberInfo={true}
                 onSelect={handleCardClick}
                 isReadonly={true}
-                size="normal"
+                size="compact"
               />
             </motion.div>
           ))}

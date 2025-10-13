@@ -9,7 +9,7 @@ import "swiper/css/effect-cards";
 // Import required modules
 import { EffectCards } from "swiper/modules";
 
-import SimplePredictionCard from "./SimplePredictionCard";
+import PredictionCard from "./PredictionCard";
 import EmptyState from "../common/EmptyState";
 import { ThemeContext } from "../../context/ThemeContext";
 
@@ -192,16 +192,14 @@ const PredictionStack = ({
                         style={{ maxHeight: "300px" }}
                       >
                         {predictionsByDate[date].map((prediction) => (
-                          <SimplePredictionCard
+                          <PredictionCard
                             key={prediction.id}
                             prediction={prediction}
-                            teamLogos={teamLogos}
-                            onClick={handlePredictionClick}
-                            onEditClick={onEditClick}
-                            selected={
-                              selectedPrediction &&
-                              selectedPrediction.id === prediction.id
-                            }
+                            mode="personal"
+                            onSelect={handlePredictionClick}
+                            onEdit={onEditClick}
+                            isReadonly={false}
+                            size="compact"
                           />
                         ))}
                       </div>
