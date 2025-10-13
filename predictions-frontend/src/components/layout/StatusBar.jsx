@@ -33,18 +33,25 @@ export default function StatusBar({
 
   // Calculate time until next match
   let timeDisplay = "Loading...";
-  let hoursUntilMatch = 0;
-  let minutesUntilMatch = 0;
   
   if (nextMatchData && nextMatchData.nextMatchTime) {
     const nextMatch = new Date(nextMatchData.nextMatchTime);
     const now = new Date();
     const timeUntilMatch = nextMatch - now;
-    hoursUntilMatch = Math.max(0, Math.floor(timeUntilMatch / (1000 * 60 * 60)));
-    minutesUntilMatch = Math.max(0, Math.floor((timeUntilMatch % (1000 * 60 * 60)) / (1000 * 60)));
     
     if (timeUntilMatch > 0) {
-      timeDisplay = `${hoursUntilMatch}h ${minutesUntilMatch}m`;
+      const totalHours = Math.floor(timeUntilMatch / (1000 * 60 * 60));
+      const minutes = Math.floor((timeUntilMatch % (1000 * 60 * 60)) / (1000 * 60));
+      
+      if (totalHours >= 24) {
+        // More than 24 hours: show days & hours
+        const days = Math.floor(totalHours / 24);
+        const remainingHours = totalHours % 24;
+        timeDisplay = `${days}d ${remainingHours}h`;
+      } else {
+        // Less than 24 hours: show hours & minutes
+        timeDisplay = `${totalHours}h ${minutes}m`;
+      }
     } else {
       timeDisplay = "Live now";
     }

@@ -8,8 +8,6 @@ import {
   TargetIcon,
   GearIcon,
   StarIcon,
-  ClockIcon,
-  Pencil2Icon,
   BarChartIcon,
   StackIcon,
   ExclamationTriangleIcon,
@@ -21,7 +19,6 @@ import { ThemeContext } from "../../context/ThemeContext";
 import { useUserPreferences } from "../../context/UserPreferencesContext";
 import { backgrounds, text, buttons } from "../../utils/themeUtils";
 import leagueAPI from "../../services/api/leagueAPI";
-import PredictionCarousel from "../predictions/PredictionCarousel";
 import LeaguePredictionViewToggleBar from "../predictions/LeaguePredictionViewToggleBar";
 import LeaguePredictionContentView from "../predictions/LeaguePredictionContentView";
 import LeaguePredictionFilters from "../predictions/LeaguePredictionFilters";
@@ -767,29 +764,6 @@ const PredictionsContent = ({ leagueId }) => {
           predictions={predictions}
         />
 
-        {/* Gameweek Selector - Moved below filters */}
-        {availableGameweeks.length > 1 && (
-          <div className="flex items-center space-x-4 mt-4 pt-4 border-t border-slate-700/20">
-            <label className={`text-sm font-medium ${text.primary[theme]}`}>
-              Focus Gameweek:
-            </label>
-            <select
-              value={currentGameweek}
-              onChange={(e) => setCurrentGameweek(Number(e.target.value))}
-              className={`px-3 py-2 rounded-lg border text-sm ${
-                theme === 'dark'
-                  ? 'bg-slate-800 border-slate-600 text-white'
-                  : 'bg-white border-slate-300 text-slate-900'
-              }`}
-            >
-              {availableGameweeks.map(gw => (
-                <option key={gw} value={gw}>
-                  Gameweek {gw}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
 
         {/* League Prediction Content with View System */}
         {sortedPredictions.length === 0 ? (
