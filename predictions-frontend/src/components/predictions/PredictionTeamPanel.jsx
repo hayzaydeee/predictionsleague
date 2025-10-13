@@ -32,32 +32,42 @@ const PredictionTeamPanel = ({
     >
       {/* Team Header */}
       <div
-        className={`flex items-center justify-between p-4 cursor-pointer transition-colors ${
-          theme === "dark" ? "bg-slate-900/60 hover:bg-slate-800/60" : "hover:bg-gray-50"
+        className={`flex items-center justify-between p-3 cursor-pointer transition-colors ${
+          theme === "dark" ? "bg-slate-900/60 hover:bg-slate-700/30" : "hover:bg-gray-50"
         }`}
-        onClick={onToggle}
+        onClick={() => onToggle && onToggle(team)}
       >
         <div className="flex items-center">
           <TeamLogo 
             teamName={team} 
-            size={LOGO_SIZES.md}
+            size={LOGO_SIZES.sm}
             className="mr-3"
           />
           <div>
-            <h3 className={`font-semibold ${
+            <h3 className={`font-medium ${
               theme === "dark" ? "text-white" : "text-gray-900"
             }`}>
               {team}
             </h3>
-            <div className={`text-sm ${
-              theme === "dark" ? "text-white/60" : "text-gray-500"
+            <div className={`text-xs ${
+              theme === "dark" ? "text-white/70" : "text-gray-600"
             }`}>
               {stats.total} prediction{stats.total !== 1 ? 's' : ''}
             </div>
           </div>
         </div>
 
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-3">
+          {/* Progress Bar */}
+          <div className={`w-20 rounded-full h-1.5 overflow-hidden ${
+            theme === "dark" ? "bg-slate-700/60" : "bg-gray-200"
+          }`}>
+            <div
+              className="bg-teal-500 h-full transition-all duration-300"
+              style={{ width: `${stats.total > 0 ? (stats.completed / stats.total) * 100 : 0}%` }}
+            ></div>
+          </div>
+          
           {/* Stats Display */}
           <div className="text-right">
             <div className="flex items-baseline gap-1">
@@ -81,9 +91,9 @@ const PredictionTeamPanel = ({
           
           {/* Expand/Collapse Icon */}
           {isExpanded ? (
-            <MinusIcon className={`w-5 h-5 ${theme === "dark" ? "text-white/60" : "text-gray-400"}`} />
+            <MinusIcon className={`w-4 h-4 ${theme === "dark" ? "text-white/60" : "text-gray-400"}`} />
           ) : (
-            <PlusIcon className={`w-5 h-5 ${theme === "dark" ? "text-white/60" : "text-gray-400"}`} />
+            <PlusIcon className={`w-4 h-4 ${theme === "dark" ? "text-white/60" : "text-gray-400"}`} />
           )}
         </div>
       </div>
@@ -95,7 +105,7 @@ const PredictionTeamPanel = ({
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.2 }}
             className={`border-t overflow-hidden ${
               theme === "dark" ? "border-slate-600/50 bg-slate-900/60" : "border-gray-200"
             }`}
