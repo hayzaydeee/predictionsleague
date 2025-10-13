@@ -9,7 +9,8 @@ import {
   EyeOpenIcon,
   PersonIcon,
   ChevronUpIcon,
-  ChevronDownIcon
+  ChevronDownIcon,
+  CaretSortIcon
 } from "@radix-ui/react-icons";
 import { ThemeContext } from "../../context/ThemeContext";
 import EmptyState from "../common/EmptyState";
@@ -107,11 +108,13 @@ const PredictionTable = ({
 
   const SortIcon = ({ columnKey }) => {
     if (sortConfig.key !== columnKey) {
-      return <ChevronUpIcon className="w-4 h-4 opacity-30" />;
+      return <CaretSortIcon className={`w-4 h-4 ${
+        theme === "dark" ? "text-slate-500" : "text-slate-400"
+      }`} />;
     }
-    return sortConfig.direction === 'asc' 
-      ? <ChevronUpIcon className="w-4 h-4" />
-      : <ChevronDownIcon className="w-4 h-4" />;
+    return <CaretSortIcon className={`w-4 h-4 ${
+      theme === "dark" ? "text-teal-300" : "text-teal-600"
+    }`} />;
   };
 
 
@@ -135,15 +138,15 @@ const PredictionTable = ({
     }
     if (prediction.correct === "exact" || prediction.correct === "partial") {
       return {
-        bgColor: theme === "dark" ? "bg-emerald-800/30" : "bg-emerald-50",
-        textColor: theme === "dark" ? "text-emerald-300" : "text-emerald-700",
+        bgColor: theme === "dark" ? "bg-indigo-800/30" : "bg-indigo-50",
+        textColor: theme === "dark" ? "text-indigo-300" : "text-indigo-700",
         icon: CheckIcon,
         label: prediction.correct === "exact" ? "Correct" : "Partial",
       };
     }
     return {
-      bgColor: theme === "dark" ? "bg-red-800/30" : "bg-red-50",
-      textColor: theme === "dark" ? "text-red-300" : "text-red-700",
+      bgColor: theme === "dark" ? "bg-slate-800/30" : "bg-slate-50",
+      textColor: theme === "dark" ? "text-slate-300" : "text-slate-700",
       icon: Cross2Icon,
       label: "Incorrect",
     };
@@ -169,8 +172,10 @@ const PredictionTable = ({
 
   const SortableHeader = ({ columnKey, children, className = "text-left" }) => (
     <th 
-      className={`py-3 px-4 font-medium text-sm cursor-pointer hover:bg-opacity-50 transition-colors ${
-        theme === "dark" ? "text-slate-300 hover:bg-slate-700" : "text-slate-600 hover:bg-slate-100"
+      className={`py-3 px-4 font-medium text-sm cursor-pointer transition-colors ${
+        theme === "dark"
+          ? "text-slate-300 hover:text-teal-300"
+          : "text-slate-600 hover:text-teal-600"
       } ${className}`}
       onClick={() => handleSort(columnKey)}
     >
@@ -334,11 +339,21 @@ const PredictionTable = ({
                   {/* Gameweek - only in league mode */}
                   {isLeagueMode && (
                     <td className="px-4 py-3">
-                      <span className={`text-sm font-medium ${
-                        theme === 'dark' ? 'text-slate-400' : 'text-slate-600'
-                      }`}>
-                        {prediction.gameweek || '-'}
-                      </span>
+                      {prediction.gameweek ? (
+                        <div className={`inline-flex items-center px-2 py-1 rounded-lg text-xs font-medium ${
+                          theme === "dark" 
+                            ? "bg-slate-700/50 border border-slate-600/50 text-slate-300" 
+                            : "bg-slate-100 border border-slate-300 text-slate-700"
+                        }`}>
+                          {prediction.gameweek}
+                        </div>
+                      ) : (
+                        <span className={`text-sm ${
+                          theme === 'dark' ? 'text-slate-500' : 'text-slate-400'
+                        }`}>
+                          -
+                        </span>
+                      )}
                     </td>
                   )}
 
@@ -390,13 +405,17 @@ const PredictionTable = ({
                           </span>
                         </div>
                       ) : (
-                        <span className={`px-2 py-1 rounded-md text-xs font-medium border ${getStatusColor(prediction)}`}>
+                        <div className={`inline-flex items-center px-2 py-1 rounded-lg text-xs font-medium ${
+                          theme === "dark" 
+                            ? "bg-amber-800/30 text-amber-300" 
+                            : "bg-amber-50 text-amber-700"
+                        }`}>
                           {getPointsDisplay(prediction)}
-                        </span>
+                        </div>
                       )
                     ) : (
-                      <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium ${statusConfig.bgColor} ${statusConfig.textColor}`}>
-                        <StatusIcon className="w-3 h-3" />
+                      <div className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs font-medium ${statusConfig.bgColor} ${statusConfig.textColor}`}>
+                        <StatusIcon className="w-3.5 h-3.5" />
                         {statusConfig.label}
                       </div>
                     )}
