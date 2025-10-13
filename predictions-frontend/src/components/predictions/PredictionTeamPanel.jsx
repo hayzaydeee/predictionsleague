@@ -110,7 +110,8 @@ const PredictionTeamPanel = ({
                     mode="personal"
                     onSelect={onPredictionSelect}
                     onEdit={onPredictionEdit}
-                    size="normal"
+                    isReadonly={false}
+                    size="compact"
                   />
                 ))}
               </div>

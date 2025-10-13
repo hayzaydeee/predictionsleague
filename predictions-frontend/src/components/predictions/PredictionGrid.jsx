@@ -79,9 +79,11 @@ const PredictionGrid = ({
               <PredictionCard
                 prediction={prediction}
                 mode={mode}
+                showMemberInfo={mode === "league"}
                 onSelect={handlePredictionClick}
                 onEdit={onEditClick}
                 isReadonly={mode === "league"}
+                size="compact"
               />
             </motion.div>
           ))}

@@ -440,7 +440,7 @@ const PredictionCarousel = ({
                       onSelect={handlePredictionClick}
                       onEdit={onEditClick}
                       isReadonly={isReadOnly}
-                      size="compact"
+                      size="normal"
                     />
                   </motion.div>
                 ))}

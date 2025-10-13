@@ -187,11 +187,11 @@ const PredictionsByMember = ({
                           key={prediction.id}
                           prediction={prediction}
                           mode={mode}
-                          showMemberInfo={false} // We already show member info in the header
+                          showMemberInfo={mode === "league"} // Show member info for league mode
                           onSelect={onPredictionSelect}
                           onEdit={onEditClick}
                           isReadonly={isLeagueMode}
-                          size="normal"
+                          size="compact"
                         />
                       ))}
                     </div>
