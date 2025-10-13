@@ -22,7 +22,14 @@ export default function StatusBar({
   const { theme, toggleTheme } = useContext(ThemeContext);
 
   // Use provided user data or show loading
-  const userData = user || {
+  const userData = user ? {
+    username: user.username || "Anonymous User",
+    points: user.points || 0,
+    rank: user.rank || 0,
+    rankChange: user.rankChange || 0,
+    predictions: user.predictions || 0,
+    pendingPredictions: user.pendingPredictions || 0,
+  } : {
     username: "Loading...",
     points: 0,
     rank: 0,
