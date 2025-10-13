@@ -7,6 +7,7 @@ import {
   ChevronDownIcon,
 } from "@radix-ui/react-icons";
 import { ThemeContext } from "../../context/ThemeContext";
+import { useUserPreferences } from "../../context/UserPreferencesContext";
 import { text, backgrounds } from "../../utils/themeUtils";
 
 const LeaguePredictionFilters = ({
@@ -22,9 +23,12 @@ const LeaguePredictionFilters = ({
   setSortBy,
   showFilters,
   setShowFilters,
+  cardStyle,
+  setCardStyle,
   predictions = []
 }) => {
   const { theme } = useContext(ThemeContext);
+  const { preferences, updatePreference } = useUserPreferences();
 
   // Extract unique values for filter options
   const availableGameweeks = [...new Set(predictions.map(p => p.gameweek))].sort((a, b) => b - a);
@@ -113,6 +117,51 @@ const LeaguePredictionFilters = ({
                 )}
               </button>
             ))}
+          </div>
+
+          {/* Card Style Toggle */}
+          <div className="flex items-center gap-2">
+            <span className={`text-xs font-medium ${
+              theme === 'dark' ? 'text-slate-400' : 'text-slate-500'
+            }`}>
+              View:
+            </span>
+            <div className="flex rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700">
+              <button
+                onClick={() => {
+                  setCardStyle('normal');
+                  updatePreference('cardStyle', 'normal');
+                }}
+                className={`px-3 py-1.5 text-xs font-medium transition-colors ${
+                  cardStyle === 'normal'
+                    ? theme === 'dark'
+                      ? 'bg-teal-600 text-white'
+                      : 'bg-teal-600 text-white'
+                    : theme === 'dark'
+                    ? 'bg-slate-800/50 text-slate-300 hover:bg-slate-700'
+                    : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
+                }`}
+              >
+                Normal
+              </button>
+              <button
+                onClick={() => {
+                  setCardStyle('compact');
+                  updatePreference('cardStyle', 'compact');
+                }}
+                className={`px-3 py-1.5 text-xs font-medium transition-colors ${
+                  cardStyle === 'compact'
+                    ? theme === 'dark'
+                      ? 'bg-teal-600 text-white'
+                      : 'bg-teal-600 text-white'
+                    : theme === 'dark'
+                    ? 'bg-slate-800/50 text-slate-300 hover:bg-slate-700'
+                    : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
+                }`}
+              >
+                Compact
+              </button>
+            </div>
           </div>
         </div>
 

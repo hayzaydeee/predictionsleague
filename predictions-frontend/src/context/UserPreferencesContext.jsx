@@ -16,6 +16,7 @@ export const UserPreferencesProvider = ({ children }) => {  // Default preferenc
     defaultDashboardView: 'fixtures',
     defaultFixturesView: 'list',
     defaultPredictionsView: 'stack',
+    cardStyle: 'normal', // 'normal' or 'compact'
     language: 'english',
     timezone: 'UTC',
     textSize: 'medium',

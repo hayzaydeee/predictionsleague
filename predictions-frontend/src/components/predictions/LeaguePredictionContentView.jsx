@@ -11,7 +11,8 @@ const LeaguePredictionContentView = ({
   predictions, 
   onPredictionSelect, 
   searchQuery,
-  currentGameweek
+  currentGameweek,
+  cardStyle = 'normal'
 }) => {
   // Filter predictions based on search query if provided
   const filteredPredictions = searchQuery 
@@ -37,6 +38,7 @@ const LeaguePredictionContentView = ({
             currentGameweek={currentGameweek}
             mode="league"
             searchQuery={searchQuery}
+            cardStyle={cardStyle}
           />
         </motion.div>
       )}
@@ -54,6 +56,7 @@ const LeaguePredictionContentView = ({
             predictions={filteredPredictions}
             onPredictionSelect={onPredictionSelect}
             searchQuery={searchQuery}
+            cardStyle={cardStyle}
           />
         </motion.div>
       )}
@@ -73,6 +76,7 @@ const LeaguePredictionContentView = ({
             onPredictionSelect={onPredictionSelect}
             isReadOnly={true}
             searchQuery={searchQuery}
+            cardStyle={cardStyle}
           />
         </motion.div>
       )}
@@ -91,6 +95,7 @@ const LeaguePredictionContentView = ({
             onPredictionSelect={onPredictionSelect}
             searchQuery={searchQuery}
             mode="league"
+            cardStyle={cardStyle}
           />
         </motion.div>
       )}
@@ -108,6 +113,7 @@ const LeaguePredictionContentView = ({
             predictions={filteredPredictions}
             onPredictionSelect={onPredictionSelect}
             searchQuery={searchQuery}
+            cardStyle={cardStyle}
           />
         </motion.div>
       )}
@@ -125,6 +131,7 @@ const LeaguePredictionContentView = ({
             predictions={filteredPredictions}
             onPredictionSelect={onPredictionSelect}
             searchQuery={searchQuery}
+            cardStyle={cardStyle}
           />
         </motion.div>
       )}

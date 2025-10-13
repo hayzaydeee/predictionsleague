@@ -23,6 +23,7 @@ const PredictionsView = ({ handleEditPrediction }) => {  // Get theme context an
   const [filterTeam, setFilterTeam] = useState("all");
   const [showFilters, setShowFilters] = useState(true);
   const [viewMode, setViewMode] = useState(preferences.defaultPredictionsView);
+  const [cardStyle, setCardStyle] = useState(preferences.cardStyle);
   const [selectedPrediction, setSelectedPrediction] = useState(null);
   const [showBreakdownModal, setShowBreakdownModal] = useState(false);
   // Filter predictions based on active filter
@@ -145,6 +146,8 @@ const PredictionsView = ({ handleEditPrediction }) => {  // Get theme context an
           setSortBy={setSortBy}
           showFilters={showFilters}
           setShowFilters={setShowFilters}
+          cardStyle={cardStyle}
+          setCardStyle={setCardStyle}
         />
 
         {/* Prediction Content */}
@@ -157,6 +160,7 @@ const PredictionsView = ({ handleEditPrediction }) => {  // Get theme context an
             onPredictionSelect={handlePredictionSelect}
             onEditClick={onEditClick}
             searchQuery={searchQuery}
+            cardStyle={cardStyle}
           />
         )}
       </div>

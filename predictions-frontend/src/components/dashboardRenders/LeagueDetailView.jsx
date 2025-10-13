@@ -577,6 +577,7 @@ const PredictionsContent = ({ leagueId }) => {
     // Migrate old 'members' preference to 'teams'
     preferences?.leaguePredictionViewMode === 'members' ? 'teams' : (preferences?.leaguePredictionViewMode || 'teams')
   );
+  const [cardStyle, setCardStyle] = useState(preferences?.cardStyle || 'normal');
 
   // Filter states - following standard pattern
   const [activeFilter, setActiveFilter] = useState("all");
@@ -767,6 +768,8 @@ const PredictionsContent = ({ leagueId }) => {
           setSortBy={setSortBy}
           showFilters={showFilters}
           setShowFilters={setShowFilters}
+          cardStyle={cardStyle}
+          setCardStyle={setCardStyle}
           predictions={predictions}
         />
 
@@ -792,6 +795,7 @@ const PredictionsContent = ({ leagueId }) => {
               currentGameweek={currentGameweek}
               onPredictionSelect={handlePredictionSelect}
               searchQuery={searchQuery}
+              cardStyle={cardStyle}
             />
           </div>
         )}

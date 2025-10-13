@@ -12,7 +12,8 @@ const PredictionContentView = ({
   onPredictionSelect, 
   onEditClick,
   teamLogos,
-  searchQuery 
+  searchQuery,
+  cardStyle = 'normal'
 }) => {
   return (
     <AnimatePresence mode="wait">
@@ -30,6 +31,7 @@ const PredictionContentView = ({
             onEditClick={onEditClick}
             teamLogos={teamLogos}
             searchQuery={searchQuery}
+            cardStyle={cardStyle}
           />
         </motion.div>
       )}
@@ -48,6 +50,7 @@ const PredictionContentView = ({
             onEditClick={onEditClick}
             teamLogos={teamLogos}
             searchQuery={searchQuery}
+            cardStyle={cardStyle}
           />
         </motion.div>
       )}
@@ -66,6 +69,7 @@ const PredictionContentView = ({
             onEditClick={onEditClick}
             teamLogos={teamLogos}
             searchQuery={searchQuery}
+            cardStyle={cardStyle}
           />
         </motion.div>
       )}
@@ -84,6 +88,7 @@ const PredictionContentView = ({
             onEditClick={onEditClick}
             teamLogos={teamLogos}
             searchQuery={searchQuery}
+            cardStyle={cardStyle}
           />
         </motion.div>
       )}      {viewMode === "carousel" && (
@@ -102,6 +107,7 @@ const PredictionContentView = ({
             teamLogos={teamLogos}
             searchQuery={searchQuery}
             isReadOnly={false}
+            cardStyle={cardStyle}
           />
         </motion.div>
       )}
@@ -119,6 +125,7 @@ const PredictionContentView = ({
             onPredictionSelect={onPredictionSelect}
             onPredictionEdit={onEditClick}
             searchQuery={searchQuery}
+            cardStyle={cardStyle}
           />
         </motion.div>
       )}
