@@ -1,20 +1,13 @@
 import React, { useState, useContext } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { format, parseISO } from "date-fns";
 import { 
-  ChevronDownIcon, 
-  ChevronRightIcon,
   PersonIcon,
-  CalendarIcon,
-  TargetIcon,
-  ClockIcon,
   PlusIcon,
   MinusIcon
 } from "@radix-ui/react-icons";
 import { ThemeContext } from "../../context/ThemeContext";
 import EmptyState from "../common/EmptyState";
-import TeamLogo from "../ui/TeamLogo";
-import { LOGO_SIZES } from "../../utils/teamLogos";
+import PredictionCard from "./PredictionCard";
 
 const PredictionsByMember = ({
   predictions = [],
@@ -80,13 +73,7 @@ const PredictionsByMember = ({
     return { total, completed, pending, totalPoints };
   };
 
-  const getGoalCounts = (scorers) => {
-    if (!scorers || scorers.length === 0) return {};
-    return scorers.reduce((counts, scorer) => {
-      counts[scorer] = (counts[scorer] || 0) + 1;
-      return counts;
-    }, {});
-  };
+
 
   if (members.length === 0) {
     return (
@@ -196,251 +183,16 @@ const PredictionsByMember = ({
                   <div className="p-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       {member.predictions.map((prediction) => (
-                        <motion.div
+                        <PredictionCard
                           key={prediction.id}
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          className={`rounded-lg border p-6 transition-all cursor-pointer ${
-                            theme === "dark"
-                              ? "bg-slate-700/30 border-slate-600/30 hover:bg-slate-700/50"
-                              : "bg-slate-50 border-slate-200 hover:bg-slate-100"
-                          }`}
-                          onClick={() => onPredictionSelect?.(prediction)}
-                        >
-                        {/* Prediction Header */}
-                        <div className="flex items-center justify-between mb-4">
-                          <div className="flex items-center space-x-3">
-                            {!isLeagueMode ? (
-                              <>
-                                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                                  theme === "dark" ? "bg-blue-900/30 text-blue-300" : "bg-blue-100 text-blue-700"
-                                }`}>
-                                  <CalendarIcon className="w-4 h-4" />
-                                </div>
-                                <div>
-                                  <p className={`font-semibold ${
-                                    theme === "dark" ? "text-white" : "text-slate-900"
-                                  } font-outfit`}>
-                                    {prediction.homeTeam} vs {prediction.awayTeam}
-                                  </p>
-                                  <p className={`text-xs ${
-                                    theme === "dark" ? "text-slate-500" : "text-slate-500"
-                                  } font-outfit`}>
-                                    {format(parseISO(prediction.date), 'MMM dd, HH:mm')}
-                                  </p>
-                                </div>
-                              </>
-                            ) : (
-                              <>
-                                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
-                                  theme === "dark" ? "bg-purple-900/30 text-purple-300" : "bg-purple-100 text-purple-700"
-                                }`}>
-                                  {prediction.userDisplayName?.charAt(0).toUpperCase() || '?'}
-                                </div>
-                                <div>
-                                  <p className={`font-semibold ${
-                                    theme === "dark" ? "text-white" : "text-slate-900"
-                                  } font-outfit`}>
-                                    {prediction.homeTeam} vs {prediction.awayTeam}
-                                  </p>
-                                  <p className={`text-xs ${
-                                    theme === "dark" ? "text-slate-500" : "text-slate-500"
-                                  } font-outfit`}>
-                                    {format(parseISO(prediction.date), 'MMM dd, HH:mm')}
-                                  </p>
-                                </div>
-                              </>
-                            )}
-                          </div>
-                          
-                          <div className="text-right">
-                            <div className={`text-lg font-bold font-outfit ${
-                              theme === "dark" ? "text-white" : "text-slate-900"
-                            }`}>
-                              {prediction.points !== null && prediction.points !== undefined ? prediction.points : '—'}
-                              {prediction.points !== null && prediction.points !== undefined && (
-                                <span className="text-xs font-medium ml-0.5">pts</span>
-                              )}
-                            </div>
-                            <div className={`text-xs font-medium font-outfit ${
-                              prediction.status === 'pending'
-                                ? theme === "dark" ? "text-amber-400" : "text-amber-600"
-                                : theme === "dark" ? "text-green-400" : "text-green-600"
-                            }`}>
-                              {prediction.status === 'pending' ? 'Pending' : 'Complete'}
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Score Prediction */}
-                        <div className={`p-4 rounded-lg mb-4 ${
-                          theme === "dark"
-                            ? "bg-slate-800/50 border-slate-600/30"
-                            : "bg-white border-slate-200"
-                        } border`}>
-                          <div className="flex items-center justify-center space-x-6">
-                            <div className="text-center flex-1">
-                              <div className={`text-2xl font-bold ${
-                                theme === "dark" ? "text-white" : "text-slate-900"
-                              } font-outfit`}>
-                                {prediction.homeScore}
-                              </div>
-                              <div className={`text-xs ${
-                                theme === "dark" ? "text-slate-500" : "text-slate-500"
-                              } font-outfit mt-1 truncate`}>
-                                {prediction.homeTeam}
-                              </div>
-                            </div>
-                            
-                            <div className={`text-lg font-bold ${
-                              theme === "dark" ? "text-slate-400" : "text-slate-600"
-                            } font-outfit`}>
-                              —
-                            </div>
-                            
-                            <div className="text-center flex-1">
-                              <div className={`text-2xl font-bold ${
-                                theme === "dark" ? "text-white" : "text-slate-900"
-                              } font-outfit`}>
-                                {prediction.awayScore}
-                              </div>
-                              <div className={`text-xs ${
-                                theme === "dark" ? "text-slate-500" : "text-slate-500"
-                              } font-outfit mt-1 truncate`}>
-                                {prediction.awayTeam}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Predicted Scorers */}
-                        {(prediction.homeScorers?.length > 0 || prediction.awayScorers?.length > 0) && (
-                          <div className={`p-4 rounded-lg ${
-                            theme === "dark"
-                              ? "bg-slate-800/50 border-slate-600/30"
-                              : "bg-white border-slate-200"
-                          } border`}>
-                            <div className={`text-xs font-medium mb-3 ${
-                              theme === "dark" ? "text-slate-400" : "text-slate-600"
-                            } font-outfit`}>
-                              Predicted Scorers
-                            </div>
-                            
-                            <div className="space-y-3">
-                              {/* Home Team Scorers */}
-                              {prediction.homeScorers?.length > 0 && (
-                                <div>
-                                  <div className="flex items-center gap-2 mb-2">
-                                    <TeamLogo 
-                                      teamName={prediction.homeTeam} 
-                                      size={LOGO_SIZES.xs}
-                                      className="flex-shrink-0"
-                                    />
-                                    <div className={`text-xs font-medium ${
-                                      theme === "dark" ? "text-slate-500" : "text-slate-500"
-                                    } font-outfit`}>
-                                      {prediction.homeTeam}
-                                    </div>
-                                  </div>
-                                  <div className="flex flex-wrap gap-2">
-                                    {Object.entries(getGoalCounts(prediction.homeScorers)).map(([scorer, count]) => (
-                                      <div
-                                        key={scorer}
-                                        className={`relative px-3 py-1.5 rounded-full text-xs font-medium font-outfit ${
-                                          theme === "dark"
-                                            ? "bg-blue-900/30 text-blue-400 border border-blue-800/50"
-                                            : "bg-blue-100 text-blue-700 border border-blue-200"
-                                        }`}
-                                      >
-                                        {scorer}
-                                        {count > 1 && (
-                                          <span className={`absolute -top-1 -right-1 w-4 h-4 text-xs rounded-full flex items-center justify-center font-bold ${
-                                            theme === "dark"
-                                              ? "bg-blue-600 text-white"
-                                              : "bg-blue-600 text-white"
-                                          }`}>
-                                            {count}
-                                          </span>
-                                        )}
-                                      </div>
-                                    ))}
-                                  </div>
-                                </div>
-                              )}
-                              
-                              {/* Away Team Scorers */}
-                              {prediction.awayScorers?.length > 0 && (
-                                <div>
-                                  <div className="flex items-center gap-2 mb-2">
-                                    <TeamLogo 
-                                      teamName={prediction.awayTeam} 
-                                      size={LOGO_SIZES.xs}
-                                      className="flex-shrink-0"
-                                    />
-                                    <div className={`text-xs font-medium ${
-                                      theme === "dark" ? "text-slate-500" : "text-slate-500"
-                                    } font-outfit`}>
-                                      {prediction.awayTeam}
-                                    </div>
-                                  </div>
-                                  <div className="flex flex-wrap gap-2">
-                                    {Object.entries(getGoalCounts(prediction.awayScorers)).map(([scorer, count]) => (
-                                      <div
-                                        key={scorer}
-                                        className={`relative px-3 py-1.5 rounded-full text-xs font-medium font-outfit ${
-                                          theme === "dark"
-                                            ? "bg-red-900/30 text-red-400 border border-red-800/50"
-                                            : "bg-red-100 text-red-700 border border-red-200"
-                                        }`}
-                                      >
-                                        {scorer}
-                                        {count > 1 && (
-                                          <span className={`absolute -top-1 -right-1 w-4 h-4 text-xs rounded-full flex items-center justify-center font-bold ${
-                                            theme === "dark"
-                                              ? "bg-red-600 text-white"
-                                              : "bg-red-600 text-white"
-                                          }`}>
-                                            {count}
-                                          </span>
-                                        )}
-                                      </div>
-                                    ))}
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Chips Used */}
-                        {prediction.chips?.length > 0 && (
-                          <div className={`border-t pt-3 ${
-                            theme === "dark" ? "border-slate-700/50" : "border-slate-200"
-                          }`}>
-                            <p className={`text-xs ${
-                              theme === "dark" ? "text-slate-500" : "text-slate-500"
-                            } mb-2 font-outfit`}>
-                              Chips Used:
-                            </p>
-                            <div className="flex flex-wrap gap-1">
-                              {prediction.chips.map((chip, chipIndex) => (
-                                <span
-                                  key={chipIndex}
-                                  className={`px-2 py-1 text-xs rounded-full font-medium font-outfit ${
-                                    theme === "dark"
-                                      ? "bg-teal-900/30 text-teal-400"
-                                      : "bg-teal-100 text-teal-700"
-                                  }`}
-                                >
-                                  {chip.replace('_', ' ')}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-
-
-                        </motion.div>
+                          prediction={prediction}
+                          mode={mode}
+                          showMemberInfo={false} // We already show member info in the header
+                          onSelect={onPredictionSelect}
+                          onEdit={onEditClick}
+                          isReadonly={isLeagueMode}
+                          size="normal"
+                        />
                       ))}
                     </div>
                   </div>
