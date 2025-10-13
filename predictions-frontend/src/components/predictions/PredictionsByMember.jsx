@@ -153,10 +153,17 @@ const PredictionsByMember = ({
               <div className="flex items-center space-x-3">
                 {/* Stats Display */}
                 <div className="flex flex-col items-end">
-                  <div className={`text-xs font-medium ${
-                    theme === "dark" ? "text-white/90" : "text-gray-800"
-                  }`}>
-                    {stats.totalPoints} pts
+                  <div className="flex items-baseline gap-1">
+                    <span className={`text-sm font-bold ${
+                      theme === "dark" ? "text-teal-400" : "text-teal-600"
+                    }`}>
+                      {stats.totalPoints}
+                    </span>
+                    <span className={`text-xs font-medium ${
+                      theme === "dark" ? "text-teal-500" : "text-teal-500"
+                    }`}>
+                      pts
+                    </span>
                   </div>
                   <div className={`text-xs ${
                     theme === "dark" ? "text-white/60" : "text-gray-500"

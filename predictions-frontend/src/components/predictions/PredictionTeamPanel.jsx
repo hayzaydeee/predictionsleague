@@ -52,14 +52,26 @@ const PredictionCard = ({ prediction, onSelect, onEdit, theme }) => {
         </div>
         
         <div className="text-right">
-          <div className={`text-lg font-bold font-outfit ${
-            theme === "dark" ? "text-white" : "text-slate-900"
-          }`}>
-            {prediction.points !== null && prediction.points !== undefined ? prediction.points : '—'}
-            {prediction.points !== null && prediction.points !== undefined && (
-              <span className="text-xs font-medium ml-0.5">pts</span>
-            )}
-          </div>
+          {prediction.points !== null && prediction.points !== undefined ? (
+            <div className="flex items-baseline justify-end gap-1">
+              <span className={`text-lg font-bold ${
+                theme === "dark" ? "text-teal-400" : "text-teal-600"
+              }`}>
+                {prediction.points}
+              </span>
+              <span className={`text-xs font-medium ${
+                theme === "dark" ? "text-teal-500" : "text-teal-500"
+              }`}>
+                pts
+              </span>
+            </div>
+          ) : (
+            <div className={`text-lg font-bold font-outfit ${
+              theme === "dark" ? "text-white" : "text-slate-900"
+            }`}>
+              —
+            </div>
+          )}
           <div className={`text-xs font-medium font-outfit ${
             prediction.status === 'pending'
               ? theme === "dark" ? "text-amber-400" : "text-amber-600"
@@ -297,33 +309,26 @@ const PredictionTeamPanel = ({
         </div>
 
         <div className="flex items-center space-x-3">
-          {/* Accuracy Progress Bar */}
-          <div
-            className={`w-20 rounded-full h-1.5 overflow-hidden ${
-              theme === "dark" ? "bg-slate-800/60" : "bg-gray-200"
-            }`}
-          >
-            <div
-              className="bg-emerald-500 h-full transition-all duration-300"
-              style={{ width: `${stats.accuracy}%` }}
-            ></div>
-          </div>
-          
           {/* Stats Display */}
           <div className="flex flex-col items-end">
-            <div
-              className={`text-xs font-medium ${
-                theme === "dark" ? "text-white/90" : "text-gray-800"
-              }`}
-            >
-              {stats.accuracy}% accuracy
+            <div className="flex items-baseline gap-1">
+              <span className={`text-sm font-bold ${
+                theme === "dark" ? "text-teal-400" : "text-teal-600"
+              }`}>
+                {stats.totalPoints}
+              </span>
+              <span className={`text-xs font-medium ${
+                theme === "dark" ? "text-teal-500" : "text-teal-500"
+              }`}>
+                pts
+              </span>
             </div>
             <div
               className={`text-xs ${
                 theme === "dark" ? "text-white/60" : "text-gray-500"
               }`}
             >
-              {stats.correct}/{stats.correct + stats.incorrect} correct
+              {stats.completed}/{stats.total} complete
             </div>
           </div>
           

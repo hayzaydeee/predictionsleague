@@ -73,12 +73,18 @@ export function getTeamPredictionStats(teamPredictions) {
   const correct = teamPredictions.filter(p => p.status === 'correct').length;
   const incorrect = teamPredictions.filter(p => p.status === 'incorrect').length;
   const pending = teamPredictions.filter(p => p.status === 'pending').length;
+  const completed = teamPredictions.filter(p => p.status !== 'pending').length;
+  const totalPoints = teamPredictions
+    .filter(p => p.points !== null && p.points !== undefined)
+    .reduce((sum, p) => sum + p.points, 0);
   
   return { 
     total,
     correct, 
     incorrect,
     pending,
+    completed,
+    totalPoints,
     accuracy: total > 0 ? Math.round((correct / (correct + incorrect)) * 100) : 0,
     completionRate: total > 0 ? Math.round(((correct + incorrect) / total) * 100) : 0
   };

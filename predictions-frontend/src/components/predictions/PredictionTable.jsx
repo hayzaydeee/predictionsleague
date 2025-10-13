@@ -162,7 +162,7 @@ const PredictionTable = ({
 
   const getPointsDisplay = (prediction) => {
     if (prediction.points !== null && prediction.points !== undefined) {
-      return `${prediction.points} pts`;
+      return prediction.points;
     }
     return "Pending";
   };
@@ -376,9 +376,24 @@ const PredictionTable = ({
                   {/* Status/Points column */}
                   <td className="px-4 py-3">
                     {isLeagueMode ? (
-                      <span className={`px-2 py-1 rounded-md text-xs font-medium border ${getStatusColor(prediction)}`}>
-                        {getPointsDisplay(prediction)}
-                      </span>
+                      prediction.points !== null && prediction.points !== undefined ? (
+                        <div className="flex items-center gap-1">
+                          <span className={`text-xl font-bold ${
+                            theme === 'dark' ? 'text-teal-400' : 'text-teal-600'
+                          }`}>
+                            {getPointsDisplay(prediction)}
+                          </span>
+                          <span className={`text-xs font-medium ${
+                            theme === 'dark' ? 'text-teal-500' : 'text-teal-500'
+                          }`}>
+                            pts
+                          </span>
+                        </div>
+                      ) : (
+                        <span className={`px-2 py-1 rounded-md text-xs font-medium border ${getStatusColor(prediction)}`}>
+                          {getPointsDisplay(prediction)}
+                        </span>
+                      )
                     ) : (
                       <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium ${statusConfig.bgColor} ${statusConfig.textColor}`}>
                         <StatusIcon className="w-3 h-3" />

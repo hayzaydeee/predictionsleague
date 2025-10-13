@@ -105,32 +105,43 @@ const PredictionsView = ({ handleEditPrediction }) => {  // Get theme context an
   };
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className={`${theme === 'dark' ? 'text-teal-100' : 'text-teal-700'} text-3xl font-bold font-dmSerif`}>
-            My Predictions
-          </h1>
-          <p className={`${text.secondary[theme]} font-outfit`}>
-            View and manage your predictions for past and upcoming matches
-          </p>
-        </div>
-
-        {/* View toggle controls */}
-        <PredictionViewToggleBar viewMode={viewMode} setViewMode={setViewMode} />
-      </div>      {/* Potential Points Summary - Always visible but only shows pending predictions */}
-      <PotentialPointsSummary
-        predictions={pendingPredictions}
-        teamLogos={teamLogos}
-      />
-
-      {/* Content container with filters and predictions */}
+      {/* Content container with integrated header, filters and predictions */}
       <div
         className={`${
           theme === "dark"
-            ? "backdrop-blur-xl border-slate-700/50 bg-slate-900/60"
-            : "border-slate-200 bg-white/80 backdrop-blur-sm shadow-sm"
-        } rounded-xl border mb-5 overflow-hidden font-outfit p-5`}
+            ? "bg-slate-800/30 border-slate-700/50"
+            : "bg-white border-slate-200"
+        } backdrop-blur-sm border rounded-2xl overflow-hidden shadow-sm`}
       >
+        {/* Header with View Toggle Bar */}
+        <div
+          className={`p-6 border-b ${
+            theme === "dark" ? "border-slate-700/50" : "border-slate-200"
+          }`}
+        >
+          <div className="flex items-center justify-between gap-4 flex-wrap">
+            <div>
+              <h2
+                className={`text-xl font-semibold ${text.primary[theme]} mb-1 font-outfit`}
+              >
+                My Predictions
+              </h2>
+              <p className={`${text.muted[theme]} text-sm font-outfit`}>
+                {sortedPredictions && sortedPredictions.length > 0
+                  ? `${sortedPredictions.length} predictions • ${pendingPredictions.length} pending`
+                  : "No predictions yet"}
+              </p>
+            </div>
+
+            {/* View Toggle Bar */}
+            <div className="flex-shrink-0">
+              <PredictionViewToggleBar viewMode={viewMode} setViewMode={setViewMode} />
+            </div>
+          </div>
+        </div>
+
+        {/* Filters and Content Container */}
+        <div className="p-5 font-outfit">
         {/* Prediction filters component */}
         <PredictionFilters
           activeFilter={activeFilter}
@@ -159,6 +170,7 @@ const PredictionsView = ({ handleEditPrediction }) => {  // Get theme context an
             searchQuery={searchQuery}
           />
         )}
+        </div>
       </div>
 
       {/* Prediction Breakdown Modal */}
