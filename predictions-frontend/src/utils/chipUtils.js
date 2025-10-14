@@ -21,9 +21,11 @@ export const predictionChips = {
   opportunist: {
     id: "opportunist",
     name: "Opportunist",
-    type: "match",
-    description: "Change predictions up to 30 min before kickoff",
+    type: "gameweek",
+    description: "Change all predictions up to 30 min before each match kickoff",
     icon: "⏱️",
+    seasonLimit: 2,
+    behavior: "rolling_deadline"
   },
   scorerFocus: {
     id: "scorerFocus",

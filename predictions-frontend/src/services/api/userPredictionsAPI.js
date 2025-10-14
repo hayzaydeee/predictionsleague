@@ -7,6 +7,12 @@
  */
 
 import { apiCall } from './baseAPI';
+import { 
+  transformPredictionToBackend, 
+  validateBackendPayload,
+  transformChipsFromBackend,
+  transformTeamNameFromBackend 
+} from '../../utils/backendMappings';
 
 /**
  * User Predictions API Service
@@ -120,11 +126,73 @@ export const userPredictionsAPI = {
   },
 
   /**
-   * Create or update a prediction
-   * @param {Object} prediction - Prediction data
+   * Create or update a prediction (NEW BACKEND ENDPOINT)
+   * @param {Object} frontendPrediction - Frontend prediction object
+   * @param {Object} fixture - Frontend fixture object
    * @returns {Promise<Object>} Prediction creation response
    */
+  async makePrediction(frontendPrediction, fixture) {
+    try {
+      // Transform frontend data to backend format
+      const backendPayload = transformPredictionToBackend(frontendPrediction, fixture);
+      
+      // Validate the payload before sending
+      const validation = validateBackendPayload(backendPayload);
+      if (!validation.isValid) {
+        throw new Error(`Invalid prediction data: ${validation.errors.join(', ')}`);
+      }
+
+      console.log('🚀 Making prediction with backend payload:', {
+        matchId: backendPayload.matchId,
+        teams: `${backendPayload.homeTeam} vs ${backendPayload.awayTeam}`,
+        score: `${backendPayload.homeScore}-${backendPayload.awayScore}`,
+        chips: backendPayload.chips,
+        gameweek: backendPayload.gameweek
+      });
+
+      const response = await apiCall('/prediction/make-prediction', {
+        method: 'POST',
+        data: backendPayload
+      });
+
+      console.log('✅ Prediction created successfully', {
+        predictionId: response.data?.id,
+        matchId: backendPayload.matchId
+      });
+
+      return {
+        success: true,
+        data: response.data,
+        error: null
+      };
+    } catch (error) {
+      console.error('❌ Failed to make prediction', {
+        error: error.message,
+        frontendPrediction,
+        fixture
+      });
+
+      return {
+        success: false,
+        data: null,
+        error: {
+          message: error.message,
+          type: 'PREDICTION_CREATE_ERROR',
+          timestamp: new Date().toISOString()
+        }
+      };
+    }
+  },
+
+  /**
+   * LEGACY: Create or update a prediction (for backwards compatibility)
+   * @param {Object} prediction - Prediction data
+   * @returns {Promise<Object>} Prediction creation response
+   * @deprecated Use makePrediction instead
+   */
   async createPrediction(prediction) {
+    console.warn('⚠️ createPrediction is deprecated. Use makePrediction instead.');
+    
     try {
       const response = await apiCall('/predictions', {
         method: 'POST',

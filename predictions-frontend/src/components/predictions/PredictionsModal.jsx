@@ -4,6 +4,8 @@ import { format, parseISO, addMinutes } from "date-fns";
 import { ThemeContext } from "../../context/ThemeContext";
 import { backgrounds, text, getThemeStyles } from "../../utils/themeUtils";
 import { InfoCircledIcon, ClockIcon, ExclamationTriangleIcon, CheckIcon } from "@radix-ui/react-icons";
+import { userPredictionsAPI } from "../../services/api/userPredictionsAPI";
+import { showToast } from "../../services/notificationService";
 
 // Import modular components
 import ModalHeader from "./modal/ModalHeader";
@@ -94,11 +96,11 @@ export default function PredictionsModal({
   };
 
   // Form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
 
-    const updatedPrediction = {
+    const frontendPrediction = {
       homeScore,
       awayScore,
       homeScorers,
@@ -106,25 +108,46 @@ export default function PredictionsModal({
       chips: selectedChips,
     };
 
-    // Simulate API call
-    setTimeout(() => {
-      if (isEditing && onSave) {
-        onSave(updatedPrediction);
+    try {
+      console.log('🎯 Submitting prediction:', {
+        fixture: fixture.id,
+        prediction: frontendPrediction,
+        teams: `${fixture.homeTeam} vs ${fixture.awayTeam}`
+      });
+
+      // Call new backend API
+      const result = await userPredictionsAPI.makePrediction(frontendPrediction, fixture);
+      
+      if (result.success) {
+        console.log('✅ Prediction submitted successfully');
+        showToast(
+          isEditing ? 'Prediction updated successfully!' : 'Prediction submitted successfully!', 
+          'success'
+        );
+        
+        // Call onSave if provided (for parent component updates)
+        if (onSave) {
+          onSave(frontendPrediction);
+        }
+        
+        setShowConfirmation(true);
+
+        // Close modal after showing confirmation
+        setTimeout(() => {
+          if (onClose) onClose();
+        }, 2000);
       } else {
-        console.log({
-          fixture: fixture.id,
-          prediction: updatedPrediction,
-        });
+        throw new Error(result.error?.message || 'Failed to submit prediction');
       }
-
+    } catch (error) {
+      console.error('❌ Prediction submission failed:', error.message);
+      showToast(
+        `Failed to ${isEditing ? 'update' : 'submit'} prediction: ${error.message}`, 
+        'error'
+      );
+    } finally {
       setSubmitting(false);
-      setShowConfirmation(true);
-
-      // Close modal after showing confirmation
-      setTimeout(() => {
-        if (onClose) onClose();
-      }, 2000);
-    }, 1000);
+    }
   };
 
   // Handle no fixture case
