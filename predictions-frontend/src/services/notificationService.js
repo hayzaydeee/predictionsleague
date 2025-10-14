@@ -316,84 +316,123 @@ class NotificationManager {
     });
   }
 
-  // Enhanced toast with beautiful card styling
+  // Simple, reliable toast notifications
   displayToast(notification) {
-    // Create container if it doesn't exist
-    let container = document.getElementById('toast-container');
-    if (!container) {
-      container = document.createElement('div');
-      container.id = 'toast-container';
-      container.className = 'fixed bottom-6 right-6 z-[9999] flex flex-col-reverse gap-3 w-80 pointer-events-none';
-      container.style.cssText = 'position: fixed !important; bottom: 24px !important; right: 24px !important; z-index: 9999 !important; width: 320px !important;';
-      document.body.appendChild(container);
-    }
-
-    // Clear existing toasts if we have too many
-    if (this.activeToasts.size >= 4) {
-      const oldestToast = Array.from(this.activeToasts)[0];
-      this.removeToast(oldestToast);
+    console.log('🔔 Displaying notification:', notification);
+    
+    // Remove any existing toast first to avoid conflicts
+    const existingToast = document.getElementById('simple-toast');
+    if (existingToast) {
+      existingToast.remove();
     }
 
     const toast = document.createElement('div');
-    const iconSymbol = ICON_MAP[notification.icon] || ICON_MAP['info'];
-    const isDarkTheme = document.documentElement.classList.contains('dark') || 
-                       localStorage.getItem('theme') === 'dark';
+    toast.id = 'simple-toast';
     
-    // Beautiful card-style notification with inline styles for reliability
-    toast.className = `backdrop-blur-sm border shadow-xl rounded-xl p-4 pointer-events-auto transition-all duration-500 ease-out ${this.getToastStyles(notification.type, isDarkTheme)}`;
+    const iconSymbol = ICON_MAP[notification.icon] || '📢';
+    const isDark = localStorage.getItem('theme') === 'dark';
     
-    // Set initial position with inline styles to ensure they work
+    // Simple inline styles that definitely work
     toast.style.cssText = `
-      transform: translateX(100%) !important;
-      opacity: 0 !important;
-      width: 100% !important;
-      box-sizing: border-box !important;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 10000;
+      width: 350px;
+      padding: 16px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      backdrop-filter: blur(10px);
+      border: 1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'};
+      background: ${isDark ? 'rgba(30,41,59,0.95)' : 'rgba(255,255,255,0.95)'};
+      color: ${isDark ? '#f8fafc' : '#0f172a'};
+      font-family: 'Inter', system-ui, sans-serif;
+      transform: translateX(100%);
+      opacity: 0;
+      transition: all 0.3s ease-out;
+      pointer-events: auto;
     `;
     
+    // Get colors for notification type
+    const colors = this.getSimpleColors(notification.type, isDark);
+    
     toast.innerHTML = `
-      <div class="flex items-start gap-3">
-        <div class="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center ${this.getIconBg(notification.type, isDarkTheme)}">
-          <span class="text-lg">${iconSymbol}</span>
+      <div style="display: flex; align-items: flex-start; gap: 12px;">
+        <div style="
+          width: 40px;
+          height: 40px;
+          border-radius: 8px;
+          background: ${colors.iconBg};
+          color: ${colors.iconColor};
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 18px;
+          flex-shrink: 0;
+        ">
+          ${iconSymbol}
         </div>
-        <div class="flex-1 min-w-0">
-          <div class="font-semibold font-outfit text-sm mb-1 ${this.getTextColor(notification.type, isDarkTheme)}">
+        <div style="flex: 1; min-width: 0;">
+          <div style="
+            font-weight: 600;
+            font-size: 14px;
+            color: ${colors.titleColor};
+            margin-bottom: 4px;
+            line-height: 1.2;
+          ">
             ${this.getNotificationTitle(notification.type)}
           </div>
-          <div class="font-outfit text-sm leading-relaxed ${this.getSecondaryTextColor(notification.type, isDarkTheme)}">
+          <div style="
+            font-size: 13px;
+            color: ${colors.textColor};
+            line-height: 1.4;
+            word-wrap: break-word;
+          ">
             ${notification.message}
           </div>
         </div>
-        <button class="close-btn flex-shrink-0 w-6 h-6 rounded-md flex items-center justify-center ${this.getCloseButtonStyle(notification.type, isDarkTheme)} transition-colors">
-          <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-          </svg>
+        <button onclick="document.getElementById('simple-toast').remove()" style="
+          width: 24px;
+          height: 24px;
+          border: none;
+          background: ${colors.closeBg};
+          color: ${colors.closeColor};
+          border-radius: 6px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          font-size: 16px;
+          transition: background-color 0.2s;
+        " onmouseover="this.style.background='${colors.closeHover}'" onmouseout="this.style.background='${colors.closeBg}'">
+          ×
         </button>
       </div>
     `;
     
-    container.appendChild(toast);
-    this.activeToasts.add(toast);
+    document.body.appendChild(toast);
     
-    // Add close button event listener
-    const closeBtn = toast.querySelector('.close-btn');
-    if (closeBtn) {
-      closeBtn.addEventListener('click', () => {
-        this.removeToast(toast);
-      });
-    }
-    
-    // Animate in with staggered effect
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        toast.style.transform = 'translateX(0) !important';
-        toast.style.opacity = '1 !important';
-      });
-    });
-    
-    // Auto remove
+    // Animate in
     setTimeout(() => {
-      this.removeToast(toast);
+      toast.style.transform = 'translateX(0)';
+      toast.style.opacity = '1';
+    }, 50);
+    
+    // Auto remove after duration
+    setTimeout(() => {
+      if (toast && toast.parentNode) {
+        toast.style.transform = 'translateX(100%)';
+        toast.style.opacity = '0';
+        setTimeout(() => {
+          if (toast && toast.parentNode) {
+            toast.remove();
+          }
+        }, 300);
+      }
     }, notification.duration || 4000);
+    
+    console.log('✅ Toast displayed successfully');
   }
 
   removeToast(toast) {
@@ -491,6 +530,48 @@ class NotificationManager {
       info: 'Info'
     };
     return titles[type] || titles.info;
+  }
+
+  getSimpleColors(type, isDark) {
+    const colors = {
+      success: {
+        iconBg: isDark ? 'rgba(16, 185, 129, 0.2)' : 'rgba(16, 185, 129, 0.1)',
+        iconColor: isDark ? '#34d399' : '#059669',
+        titleColor: isDark ? '#34d399' : '#065f46',
+        textColor: isDark ? '#a7f3d0' : '#047857',
+        closeBg: isDark ? 'rgba(16, 185, 129, 0.1)' : 'rgba(16, 185, 129, 0.05)',
+        closeColor: isDark ? '#34d399' : '#059669',
+        closeHover: isDark ? 'rgba(16, 185, 129, 0.2)' : 'rgba(16, 185, 129, 0.1)'
+      },
+      error: {
+        iconBg: isDark ? 'rgba(239, 68, 68, 0.2)' : 'rgba(239, 68, 68, 0.1)',
+        iconColor: isDark ? '#f87171' : '#dc2626',
+        titleColor: isDark ? '#f87171' : '#991b1b',
+        textColor: isDark ? '#fecaca' : '#b91c1c',
+        closeBg: isDark ? 'rgba(239, 68, 68, 0.1)' : 'rgba(239, 68, 68, 0.05)',
+        closeColor: isDark ? '#f87171' : '#dc2626',
+        closeHover: isDark ? 'rgba(239, 68, 68, 0.2)' : 'rgba(239, 68, 68, 0.1)'
+      },
+      warning: {
+        iconBg: isDark ? 'rgba(245, 158, 11, 0.2)' : 'rgba(245, 158, 11, 0.1)',
+        iconColor: isDark ? '#fbbf24' : '#d97706',
+        titleColor: isDark ? '#fbbf24' : '#92400e',
+        textColor: isDark ? '#fed7aa' : '#a16207',
+        closeBg: isDark ? 'rgba(245, 158, 11, 0.1)' : 'rgba(245, 158, 11, 0.05)',
+        closeColor: isDark ? '#fbbf24' : '#d97706',
+        closeHover: isDark ? 'rgba(245, 158, 11, 0.2)' : 'rgba(245, 158, 11, 0.1)'
+      },
+      info: {
+        iconBg: isDark ? 'rgba(148, 163, 184, 0.2)' : 'rgba(148, 163, 184, 0.1)',
+        iconColor: isDark ? '#94a3b8' : '#64748b',
+        titleColor: isDark ? '#cbd5e1' : '#475569',
+        textColor: isDark ? '#e2e8f0' : '#64748b',
+        closeBg: isDark ? 'rgba(148, 163, 184, 0.1)' : 'rgba(148, 163, 184, 0.05)',
+        closeColor: isDark ? '#94a3b8' : '#64748b',
+        closeHover: isDark ? 'rgba(148, 163, 184, 0.2)' : 'rgba(148, 163, 184, 0.1)'
+      }
+    };
+    return colors[type] || colors.info;
   }
 
   // Subscription methods for React components
