@@ -10,6 +10,8 @@ import {
 import { format, parseISO } from "date-fns";
 import { ThemeContext } from "../../context/ThemeContext";
 import PredictionCard from "./PredictionCard";
+import TeamLogo from "../ui/TeamLogo";
+import { LOGO_SIZES } from "../../utils/teamLogos";
 
 const PredictionCarousel = ({
   predictions,
@@ -130,7 +132,30 @@ const PredictionCarousel = ({
     );
   }
 
-  const currentMatch = matches[activeMatchIndex];
+  // Ensure activeMatchIndex is within bounds
+  const safeActiveMatchIndex = Math.max(0, Math.min(activeMatchIndex, matches.length - 1));
+  const currentMatch = matches[safeActiveMatchIndex];
+  
+  if (!currentMatch || !currentMatch.predictions) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="text-center py-12"
+      >
+        <TargetIcon className={`w-12 h-12 mx-auto mb-4 opacity-50 ${
+          theme === 'dark' ? 'text-slate-500' : 'text-slate-400'
+        }`} />
+        <p className={`text-lg font-medium ${
+          theme === 'dark' ? 'text-slate-300' : 'text-slate-700'
+        }`}>
+          No match data available
+        </p>
+      </motion.div>
+    );
+  }
+
   const itemsPerView = 3;
   const totalItems = currentMatch.predictions.length;
   // Calculate how many "pages" we need (each page shows itemsPerView cards)
@@ -155,9 +180,11 @@ const PredictionCarousel = ({
   };
 
   const handleMatchChange = (matchIndex) => {
-    setActiveMatchIndex(matchIndex);
-    setSelectedPrediction(null);
-    setCarouselIndex(0); // Reset carousel when changing matches
+    if (matchIndex >= 0 && matchIndex < matches.length) {
+      setActiveMatchIndex(matchIndex);
+      setSelectedPrediction(null);
+      setCarouselIndex(0); // Reset carousel when changing matches
+    }
   };
 
   const scrollLeft = () => {
@@ -457,7 +484,7 @@ const PredictionCarousel = ({
           {matches.map((_, index) => (
             <button
               key={index}
-              onClick={() => setActiveMatchIndex(index)}
+              onClick={() => handleMatchChange(index)}
               className={`w-2 h-2 rounded-full transition-colors ${
                 activeMatchIndex === index
                   ? "bg-teal-500"
