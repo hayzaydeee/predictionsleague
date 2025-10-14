@@ -20,7 +20,6 @@ import {
   ActivityLogIcon,
   RocketIcon,
   LightningBoltIcon,
-  TrophyIcon,
   InfoCircledIcon,
 } from "@radix-ui/react-icons";
 
@@ -119,7 +118,7 @@ const ProfileView = () => {
   const achievements = [
     { id: 1, title: "First Prediction", description: "Made your first prediction", earned: true, icon: TargetIcon },
     { id: 2, title: "Hat Trick", description: "3 correct predictions in a row", earned: true, icon: StarIcon },
-    { id: 3, title: "Century Club", description: "Made 100 predictions", earned: true, icon: TrophyIcon },
+    { id: 3, title: "Century Club", description: "Made 100 predictions", earned: true, icon: BadgeIcon },
     { id: 4, title: "Perfect Week", description: "Got all predictions correct in one gameweek", earned: false, icon: RocketIcon },
   ];
 
@@ -442,7 +441,7 @@ const ProfileView = () => {
           <SettingCard
             title="Achievements"
             description="Your prediction milestones and badges"
-            icon={TrophyIcon}
+            icon={BadgeIcon}
           >
             <div className="grid grid-cols-2 gap-3">
               {achievements.map((achievement) => (
