@@ -180,16 +180,6 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
           </h1>
           <p className={`${text.secondary[theme]} font-outfit`}>
             View and predict upcoming fixtures
-            {dataQuality && (
-              <span className="ml-2 text-xs">
-                <span className="text-green-500">• Live API data</span>
-                {stats && (
-                  <span className="ml-2">
-                    ({stats.predicted}/{stats.total} predicted)
-                  </span>
-                )}
-              </span>
-            )}
           </p>
         </div>
 
