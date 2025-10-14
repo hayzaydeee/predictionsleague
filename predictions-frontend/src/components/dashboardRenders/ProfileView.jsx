@@ -223,7 +223,7 @@ const ProfileView = () => {
   const displayUser = userProfile || user || {};
 
   return (
-    <div className={`min-h-screen ${backgrounds.primary[theme]} transition-colors duration-200`}>
+    <div className="min-h-screen transition-colors duration-200">
       <div className="space-y-8">
         
         {/* Header */}
