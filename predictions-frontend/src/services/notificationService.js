@@ -96,7 +96,7 @@ class NotificationManager {
     };
 
     // Show toast
-    this.showToast(notification);
+    this.displayToast(notification);
     
     // Track as activity if it's an action type
     if (config.trackAsActivity !== false) {
@@ -317,7 +317,7 @@ class NotificationManager {
   }
 
   // Enhanced toast with better styling and icons
-  showToast(notification) {
+  displayToast(notification) {
     // Clear existing toasts if we have too many
     if (this.activeToasts.size >= 3) {
       const oldestToast = Array.from(this.activeToasts)[0];
@@ -413,7 +413,7 @@ class NotificationManager {
     } else {
       // New format - message is the notification object
       const notification = message;
-      this.showToast(notification);
+      this.displayToast(notification);
     }
   }
 }
