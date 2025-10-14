@@ -507,12 +507,6 @@ const ProfileOverview = () => {
                   options={teamOptions}
                 />
                 
-                <InputField
-                  label="Bio"
-                  value={editFormData.bio || ''}
-                  onChange={(e) => handleInputChange('bio', e.target.value)}
-                  placeholder="Tell us about yourself"
-                />
               </>
             ) : (
               <div className="space-y-4">
@@ -538,12 +532,6 @@ const ProfileOverview = () => {
                   <span className={`${text.secondary[theme]} font-medium font-outfit`}>Favorite Team</span>
                   <span className={`${text.primary[theme]} font-outfit`}>
                     {mappedDisplayUser.favoriteTeam || 'Not set'}
-                  </span>
-                </div>
-                <div className="flex justify-between items-start py-3">
-                  <span className={`${text.secondary[theme]} font-medium font-outfit`}>Bio</span>
-                  <span className={`${text.primary[theme]} font-outfit text-right max-w-xs`}>
-                    {editFormData.bio || 'Not set'}
                   </span>
                 </div>
               </div>
