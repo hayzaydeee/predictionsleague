@@ -369,6 +369,7 @@ class NotificationManager {
           justify-content: center;
           font-size: 18px;
           flex-shrink: 0;
+          font-family: 'Outfit', sans-serif;
         ">
           ${iconSymbol}
         </div>
