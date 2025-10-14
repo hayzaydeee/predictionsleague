@@ -414,7 +414,7 @@ const ProfileOverview = () => {
 
       {/* Profile Header */}
       <SettingCard
-      >
+      >okay 
         <div className="flex items-center gap-6">
           <div className="relative">
             <div className="h-20 w-20 bg-gradient-to-br from-teal-600 to-indigo-600 rounded-full flex items-center justify-center text-white text-2xl font-bold font-dmSerif shadow-lg">
