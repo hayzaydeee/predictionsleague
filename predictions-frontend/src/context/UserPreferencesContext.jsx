@@ -18,6 +18,7 @@ export const UserPreferencesProvider = ({ children }) => {
     defaultDashboardView: 'fixtures',
     defaultFixturesView: 'list',
     defaultPredictionsView: 'list',
+    defaultLeaguePredictionsView: 'teams',
     showButtonTitles: true,
     
     // Notification preferences

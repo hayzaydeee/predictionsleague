@@ -567,15 +567,14 @@ const LeaderboardContent = ({ leagueId, formatSafeDate }) => {
 // Predictions Content Component
 const PredictionsContent = ({ leagueId }) => {
   const { theme } = useContext(ThemeContext);
-  const { preferences, updatePreferences } = useUserPreferences();
+  const { preferences, updatePreference } = useUserPreferences();
   const [predictions, setPredictions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentGameweek, setCurrentGameweek] = useState(15); // Default to current gameweek
   const [selectedPrediction, setSelectedPrediction] = useState(null);
   const [selectedViewMode, setSelectedViewMode] = useState(
-    // Migrate old 'members' preference to 'teams'
-    preferences?.leaguePredictionViewMode === 'members' ? 'teams' : (preferences?.leaguePredictionViewMode || 'teams')
+    preferences?.defaultLeaguePredictionsView || 'teams'
   );
   const [cardStyle, setCardStyle] = useState(preferences?.cardStyle || 'normal');
 
@@ -609,7 +608,7 @@ const PredictionsContent = ({ leagueId }) => {
   // Handle view mode changes with preferences persistence
   const handleViewModeChange = (viewMode) => {
     setSelectedViewMode(viewMode);
-    updatePreferences({ leaguePredictionViewMode: viewMode });
+    updatePreference("defaultLeaguePredictionsView", viewMode);
   };
 
   // Filter predictions based on active filters
