@@ -13,8 +13,10 @@ import {
   ExclamationTriangleIcon,
   InfoCircledIcon,
   ResetIcon,
+  LightningBoltIcon,
 } from "@radix-ui/react-icons";
 import RulesAndPointsModal from "../common/RulesAndPointsModal";
+import ChipStrategyModal from "../predictions/ChipStrategyModal";
 
 const SettingsView = () => {
   const { theme, toggleTheme } = useContext(ThemeContext);
@@ -24,6 +26,7 @@ const SettingsView = () => {
   const [showSuccess, setShowSuccess] = useState("");
   const [errors, setErrors] = useState({});
   const [showRulesModal, setShowRulesModal] = useState(false);
+  const [showChipStrategyModal, setShowChipStrategyModal] = useState(false);
 
   // Show success message
   const showSuccessMessage = (message) => {
@@ -296,6 +299,14 @@ const SettingsView = () => {
             <SecondaryButton
               variant="outline"
               className="w-full justify-center"
+              onClick={() => setShowChipStrategyModal(true)}
+            >
+              <LightningBoltIcon className="mr-2 h-4 w-4" />
+              Chip Strategy Guide
+            </SecondaryButton>
+            <SecondaryButton
+              variant="outline"
+              className="w-full justify-center"
               onClick={() => window.open("mailto:support@predictionsleague.com")}
             >
               Contact Support
@@ -308,6 +319,12 @@ const SettingsView = () => {
       <RulesAndPointsModal
         isOpen={showRulesModal}
         onClose={() => setShowRulesModal(false)}
+      />
+      
+      {/* Chip Strategy Modal */}
+      <ChipStrategyModal
+        isOpen={showChipStrategyModal}
+        onClose={() => setShowChipStrategyModal(false)}
       />
     </div>
   );
