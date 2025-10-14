@@ -16,7 +16,8 @@ const PredictionsByMember = ({
   teamLogos = {},
   searchQuery = "",
   mode = "league", // "personal" | "league"
-  currentGameweek
+  currentGameweek,
+  cardStyle = "normal"
 }) => {
   const { theme } = useContext(ThemeContext);
   const [expandedMembers, setExpandedMembers] = useState(new Set());
@@ -191,7 +192,7 @@ const PredictionsByMember = ({
                           onSelect={onPredictionSelect}
                           onEdit={onEditClick}
                           isReadonly={isLeagueMode}
-                          size="compact"
+                          size={cardStyle}
                         />
                       ))}
                     </div>

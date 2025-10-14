@@ -17,7 +17,8 @@ const LeaguePredictionsCalendar = ({
   predictions,
   onPredictionSelect,
   teamLogos = {},
-  searchQuery = ""
+  searchQuery = "",
+  cardStyle = "normal"
 }) => {
   const { theme } = useContext(ThemeContext);
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -266,7 +267,7 @@ const LeaguePredictionsCalendar = ({
                   showMemberInfo={true}
                   onSelect={onPredictionSelect}
                   isReadonly={true}
-                  size="compact"
+                  size={cardStyle}
                 />
               </motion.div>
             ))}

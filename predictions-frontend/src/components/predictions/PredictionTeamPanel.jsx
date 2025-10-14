@@ -15,6 +15,7 @@ const PredictionTeamPanel = ({
   onToggle,
   onPredictionSelect,
   onPredictionEdit,
+  cardStyle = "normal"
 }) => {
   const { theme } = useContext(ThemeContext);
   const stats = getTeamPredictionStats(predictions);
@@ -121,7 +122,7 @@ const PredictionTeamPanel = ({
                     onSelect={onPredictionSelect}
                     onEdit={onPredictionEdit}
                     isReadonly={false}
-                    size="compact"
+                    size={cardStyle}
                   />
                 ))}
               </div>

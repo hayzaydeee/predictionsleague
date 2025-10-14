@@ -18,7 +18,8 @@ const PredictionCarousel = ({
   onEditClick, // For personal mode
   isReadOnly = true,
   mode = "league", // "personal" or "league"
-  searchQuery = ""
+  searchQuery = "",
+  cardStyle = "normal"
 }) => {
   const { theme } = useContext(ThemeContext);
   const [activeMatchIndex, setActiveMatchIndex] = useState(0);
@@ -440,7 +441,7 @@ const PredictionCarousel = ({
                       onSelect={handlePredictionClick}
                       onEdit={onEditClick}
                       isReadonly={isReadOnly}
-                      size="normal"
+                      size={cardStyle}
                     />
                   </motion.div>
                 ))}

@@ -24,6 +24,7 @@ const PredictionCalendar = ({
   onEditClick,
   teamLogos,
   searchQuery,
+  cardStyle = "normal"
 }) => {
   const { theme } = useContext(ThemeContext);
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -198,7 +199,7 @@ const PredictionCalendar = ({
                       onSelect={onPredictionSelect}
                       onEdit={onEditClick}
                       isReadonly={false}
-                      size="compact"
+                      size={cardStyle}
                     />
                   </motion.div>
                 ))}

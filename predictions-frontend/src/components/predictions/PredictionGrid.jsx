@@ -14,7 +14,8 @@ const PredictionGrid = ({
   onEditClick,
   teamLogos = {},
   searchQuery = "",
-  mode = "personal" // "personal" or "league"
+  mode = "personal", // "personal" or "league"
+  cardStyle = "normal" // "normal" or "compact"
 }) => {
   const { theme } = useContext(ThemeContext);
   const [selectedPrediction, setSelectedPrediction] = useState(null);
@@ -83,7 +84,7 @@ const PredictionGrid = ({
                 onSelect={handlePredictionClick}
                 onEdit={onEditClick}
                 isReadonly={mode === "league"}
-                size="compact"
+                size={cardStyle}
               />
             </motion.div>
           ))}

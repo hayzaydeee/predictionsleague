@@ -19,6 +19,7 @@ const PredictionStack = ({
   onEditClick,
   teamLogos,
   searchQuery,
+  cardStyle = "normal"
 }) => {
   const [selectedPrediction, setSelectedPrediction] = useState(null);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -199,7 +200,7 @@ const PredictionStack = ({
                             onSelect={handlePredictionClick}
                             onEdit={onEditClick}
                             isReadonly={false}
-                            size="compact"
+                            size={cardStyle}
                           />
                         ))}
                       </div>

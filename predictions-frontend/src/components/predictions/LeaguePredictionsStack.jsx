@@ -22,7 +22,8 @@ const LeaguePredictionsStack = ({
   predictions,
   onPredictionSelect,
   teamLogos = {},
-  searchQuery = ""
+  searchQuery = "",
+  cardStyle = "normal"
 }) => {
   const { theme } = useContext(ThemeContext);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -200,7 +201,7 @@ const LeaguePredictionsStack = ({
                             showMemberInfo={true}
                             onSelect={handlePredictionClick}
                             isReadonly={true}
-                            size="compact"
+                            size={cardStyle}
                           />
                         ))}
                       </div>
