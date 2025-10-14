@@ -323,7 +323,8 @@ class NotificationManager {
     if (!container) {
       container = document.createElement('div');
       container.id = 'toast-container';
-      container.className = 'fixed bottom-4 right-4 z-[9999] flex flex-col gap-3 max-w-sm pointer-events-none';
+      container.className = 'fixed bottom-6 right-6 z-[9999] flex flex-col-reverse gap-3 w-80 pointer-events-none';
+      container.style.cssText = 'position: fixed !important; bottom: 24px !important; right: 24px !important; z-index: 9999 !important; width: 320px !important;';
       document.body.appendChild(container);
     }
 
@@ -338,13 +339,16 @@ class NotificationManager {
     const isDarkTheme = document.documentElement.classList.contains('dark') || 
                        localStorage.getItem('theme') === 'dark';
     
-    // Beautiful card-style notification
-    toast.className = `
-      backdrop-blur-sm border shadow-xl rounded-xl p-4 
-      transform translate-x-full opacity-0 pointer-events-auto
-      transition-all duration-500 ease-out
-      ${this.getToastStyles(notification.type, isDarkTheme)}
-    `.replace(/\s+/g, ' ').trim();
+    // Beautiful card-style notification with inline styles for reliability
+    toast.className = `backdrop-blur-sm border shadow-xl rounded-xl p-4 pointer-events-auto transition-all duration-500 ease-out ${this.getToastStyles(notification.type, isDarkTheme)}`;
+    
+    // Set initial position with inline styles to ensure they work
+    toast.style.cssText = `
+      transform: translateX(100%) !important;
+      opacity: 0 !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
+    `;
     
     toast.innerHTML = `
       <div class="flex items-start gap-3">
@@ -359,7 +363,7 @@ class NotificationManager {
             ${notification.message}
           </div>
         </div>
-        <button class="flex-shrink-0 w-6 h-6 rounded-md flex items-center justify-center ${this.getCloseButtonStyle(notification.type, isDarkTheme)} transition-colors" onclick="this.parentElement.parentElement.style.transform='translateX(100%)'; this.parentElement.parentElement.style.opacity='0'; setTimeout(() => this.parentElement.parentElement.remove(), 300);">
+        <button class="close-btn flex-shrink-0 w-6 h-6 rounded-md flex items-center justify-center ${this.getCloseButtonStyle(notification.type, isDarkTheme)} transition-colors">
           <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
           </svg>
@@ -370,10 +374,20 @@ class NotificationManager {
     container.appendChild(toast);
     this.activeToasts.add(toast);
     
+    // Add close button event listener
+    const closeBtn = toast.querySelector('.close-btn');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', () => {
+        this.removeToast(toast);
+      });
+    }
+    
     // Animate in with staggered effect
     requestAnimationFrame(() => {
-      toast.style.transform = 'translateX(0)';
-      toast.style.opacity = '1';
+      requestAnimationFrame(() => {
+        toast.style.transform = 'translateX(0) !important';
+        toast.style.opacity = '1 !important';
+      });
     });
     
     // Auto remove
@@ -384,8 +398,8 @@ class NotificationManager {
 
   removeToast(toast) {
     if (toast && toast.parentNode) {
-      toast.style.opacity = '0';
-      toast.style.transform = 'translateX(100%)';
+      toast.style.transform = 'translateX(100%) !important';
+      toast.style.opacity = '0 !important';
       setTimeout(() => {
         if (toast.parentNode) {
           toast.parentNode.removeChild(toast);
