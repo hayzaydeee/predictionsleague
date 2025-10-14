@@ -316,43 +316,76 @@ class NotificationManager {
     });
   }
 
-  // Enhanced toast with better styling and icons
+  // Enhanced toast with beautiful card styling
   displayToast(notification) {
+    // Create container if it doesn't exist
+    let container = document.getElementById('toast-container');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'toast-container';
+      container.className = 'fixed bottom-4 right-4 z-[9999] flex flex-col gap-3 max-w-sm pointer-events-none';
+      document.body.appendChild(container);
+    }
+
     // Clear existing toasts if we have too many
-    if (this.activeToasts.size >= 3) {
+    if (this.activeToasts.size >= 4) {
       const oldestToast = Array.from(this.activeToasts)[0];
       this.removeToast(oldestToast);
     }
 
     const toast = document.createElement('div');
     const iconSymbol = ICON_MAP[notification.icon] || ICON_MAP['info'];
+    const isDarkTheme = document.documentElement.classList.contains('dark') || 
+                       localStorage.getItem('theme') === 'dark';
     
-    toast.className = `fixed bottom-4 left-1/2 transform -translate-x-1/2 py-3 px-5 rounded-lg shadow-lg z-50 flex items-center gap-3 transition-all duration-300 opacity-0 translate-y-2 ${this.getToastStyles(notification.type)}`;
+    // Beautiful card-style notification
+    toast.className = `
+      backdrop-blur-sm border shadow-xl rounded-xl p-4 
+      transform translate-x-full opacity-0 pointer-events-auto
+      transition-all duration-500 ease-out
+      ${this.getToastStyles(notification.type, isDarkTheme)}
+    `.replace(/\s+/g, ' ').trim();
     
     toast.innerHTML = `
-      <span class="text-lg">${iconSymbol}</span>
-      <span class="font-medium font-outfit">${notification.message}</span>
+      <div class="flex items-start gap-3">
+        <div class="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center ${this.getIconBg(notification.type, isDarkTheme)}">
+          <span class="text-lg">${iconSymbol}</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="font-semibold font-outfit text-sm mb-1 ${this.getTextColor(notification.type, isDarkTheme)}">
+            ${this.getNotificationTitle(notification.type)}
+          </div>
+          <div class="font-outfit text-sm leading-relaxed ${this.getSecondaryTextColor(notification.type, isDarkTheme)}">
+            ${notification.message}
+          </div>
+        </div>
+        <button class="flex-shrink-0 w-6 h-6 rounded-md flex items-center justify-center ${this.getCloseButtonStyle(notification.type, isDarkTheme)} transition-colors" onclick="this.parentElement.parentElement.style.transform='translateX(100%)'; this.parentElement.parentElement.style.opacity='0'; setTimeout(() => this.parentElement.parentElement.remove(), 300);">
+          <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+          </svg>
+        </button>
+      </div>
     `;
     
-    document.body.appendChild(toast);
+    container.appendChild(toast);
     this.activeToasts.add(toast);
     
-    // Animate in
+    // Animate in with staggered effect
     requestAnimationFrame(() => {
+      toast.style.transform = 'translateX(0)';
       toast.style.opacity = '1';
-      toast.style.transform = 'translate(-50%, 0)';
     });
     
     // Auto remove
     setTimeout(() => {
       this.removeToast(toast);
-    }, notification.duration || 3000);
+    }, notification.duration || 4000);
   }
 
   removeToast(toast) {
     if (toast && toast.parentNode) {
       toast.style.opacity = '0';
-      toast.style.transform = 'translate(-50%, 20px)';
+      toast.style.transform = 'translateX(100%)';
       setTimeout(() => {
         if (toast.parentNode) {
           toast.parentNode.removeChild(toast);
@@ -362,14 +395,88 @@ class NotificationManager {
     }
   }
 
-  getToastStyles(type) {
+  getToastStyles(type, isDark) {
     const styles = {
-      success: 'bg-emerald-600 text-white',
-      error: 'bg-red-600 text-white', 
-      warning: 'bg-amber-600 text-white',
-      info: 'bg-slate-700 text-white'
+      success: isDark 
+        ? 'bg-slate-800/90 border-emerald-500/30' 
+        : 'bg-white/90 border-emerald-200/50',
+      error: isDark 
+        ? 'bg-slate-800/90 border-red-500/30' 
+        : 'bg-white/90 border-red-200/50',
+      warning: isDark 
+        ? 'bg-slate-800/90 border-amber-500/30' 
+        : 'bg-white/90 border-amber-200/50',
+      info: isDark 
+        ? 'bg-slate-800/90 border-slate-600/30' 
+        : 'bg-white/90 border-slate-200/50'
     };
     return styles[type] || styles.info;
+  }
+
+  getIconBg(type, isDark) {
+    const styles = {
+      success: isDark 
+        ? 'bg-emerald-500/20 text-emerald-400' 
+        : 'bg-emerald-50 text-emerald-600',
+      error: isDark 
+        ? 'bg-red-500/20 text-red-400' 
+        : 'bg-red-50 text-red-600',
+      warning: isDark 
+        ? 'bg-amber-500/20 text-amber-400' 
+        : 'bg-amber-50 text-amber-600',
+      info: isDark 
+        ? 'bg-slate-600/20 text-slate-400' 
+        : 'bg-slate-100 text-slate-600'
+    };
+    return styles[type] || styles.info;
+  }
+
+  getTextColor(type, isDark) {
+    const styles = {
+      success: isDark ? 'text-emerald-300' : 'text-emerald-800',
+      error: isDark ? 'text-red-300' : 'text-red-800',
+      warning: isDark ? 'text-amber-300' : 'text-amber-800',
+      info: isDark ? 'text-slate-200' : 'text-slate-800'
+    };
+    return styles[type] || styles.info;
+  }
+
+  getSecondaryTextColor(type, isDark) {
+    const styles = {
+      success: isDark ? 'text-emerald-200/80' : 'text-emerald-700/80',
+      error: isDark ? 'text-red-200/80' : 'text-red-700/80',
+      warning: isDark ? 'text-amber-200/80' : 'text-amber-700/80',
+      info: isDark ? 'text-slate-300/80' : 'text-slate-600/80'
+    };
+    return styles[type] || styles.info;
+  }
+
+  getCloseButtonStyle(type, isDark) {
+    const styles = {
+      success: isDark 
+        ? 'text-emerald-400/60 hover:text-emerald-300 hover:bg-emerald-500/10' 
+        : 'text-emerald-600/60 hover:text-emerald-800 hover:bg-emerald-100',
+      error: isDark 
+        ? 'text-red-400/60 hover:text-red-300 hover:bg-red-500/10' 
+        : 'text-red-600/60 hover:text-red-800 hover:bg-red-100',
+      warning: isDark 
+        ? 'text-amber-400/60 hover:text-amber-300 hover:bg-amber-500/10' 
+        : 'text-amber-600/60 hover:text-amber-800 hover:bg-amber-100',
+      info: isDark 
+        ? 'text-slate-400/60 hover:text-slate-300 hover:bg-slate-600/10' 
+        : 'text-slate-600/60 hover:text-slate-800 hover:bg-slate-100'
+    };
+    return styles[type] || styles.info;
+  }
+
+  getNotificationTitle(type) {
+    const titles = {
+      success: 'Success',
+      error: 'Error',
+      warning: 'Warning',
+      info: 'Info'
+    };
+    return titles[type] || titles.info;
   }
 
   // Subscription methods for React components
