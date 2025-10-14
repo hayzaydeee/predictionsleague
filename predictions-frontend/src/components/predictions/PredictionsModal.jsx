@@ -5,7 +5,7 @@ import { ThemeContext } from "../../context/ThemeContext";
 import { backgrounds, text, getThemeStyles } from "../../utils/themeUtils";
 import { InfoCircledIcon, ClockIcon, ExclamationTriangleIcon, CheckIcon } from "@radix-ui/react-icons";
 import { userPredictionsAPI } from "../../services/api/userPredictionsAPI";
-import { showToast } from "../../services/notificationService";
+import { useNotifications } from "../../hooks/useNotifications";
 
 // Import modular components
 import ModalHeader from "./modal/ModalHeader";
@@ -25,6 +25,7 @@ export default function PredictionsModal({
   toggleChipInfoModal,
 }) {
   const { theme } = useContext(ThemeContext);
+  const { predictions, notify } = useNotifications();
   
   // Step management
   const [currentStep, setCurrentStep] = useState(1);
@@ -120,10 +121,11 @@ export default function PredictionsModal({
       
       if (result.success) {
         console.log('✅ Prediction submitted successfully');
-        showToast(
-          isEditing ? 'Prediction updated successfully!' : 'Prediction submitted successfully!', 
-          'success'
-        );
+        if (isEditing) {
+          predictions.updateSuccess(fixture.homeTeam, fixture.awayTeam);
+        } else {
+          predictions.submitSuccess(fixture.homeTeam, fixture.awayTeam);
+        }
         
         // Call onSave if provided (for parent component updates)
         if (onSave) {
@@ -141,10 +143,12 @@ export default function PredictionsModal({
       }
     } catch (error) {
       console.error('❌ Prediction submission failed:', error.message);
-      showToast(
-        `Failed to ${isEditing ? 'update' : 'submit'} prediction: ${error.message}`, 
-        'error'
-      );
+      notify({
+        type: 'error',
+        message: `Failed to ${isEditing ? 'update' : 'submit'} prediction: ${error.message}`,
+        icon: 'target',
+        trackAsActivity: false
+      });
     } finally {
       setSubmitting(false);
     }

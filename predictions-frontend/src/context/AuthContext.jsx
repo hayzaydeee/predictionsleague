@@ -4,6 +4,7 @@ import baseAPI from '../services/api/baseAPI.js';
 import authAPI from '../services/api/authAPI.js';
 import authService from '../services/auth/AuthService.js';
 import { AUTH_STATES as ENHANCED_AUTH_STATES } from '../constants/authStates.js';
+import { notificationManager } from '../services/notificationService.js';
 
 // Legacy auth states (keep for backward compatibility)
 const AUTH_STATES = {
@@ -317,6 +318,9 @@ export const AuthProvider = ({ children }) => {
           payload: { user: response.user },
         });
         
+        // Show login notification
+        notificationManager.auth.loginSuccess(response.user);
+        
         return { success: true };
       } else {
         throw new Error(response.error || 'Login failed');
@@ -336,10 +340,18 @@ export const AuthProvider = ({ children }) => {
     try {
       await authAPI.logout();
       dispatch({ type: AUTH_ACTIONS.LOGOUT });
+      
+      // Show logout notification
+      notificationManager.auth.logoutSuccess();
+      
       return { success: true };
     } catch (error) {
       // Even if API call fails, clear local state
       dispatch({ type: AUTH_ACTIONS.LOGOUT });
+      
+      // Still show logout notification since user is logged out locally
+      notificationManager.auth.logoutSuccess();
+      
       return { success: false, error: error.message };
     }
   };
@@ -358,6 +370,9 @@ export const AuthProvider = ({ children }) => {
         dispatch({ 
           type: AUTH_ACTIONS.LOGOUT // This sets status to UNAUTHENTICATED and clears loading
         });
+        
+        // Show register notification
+        notificationManager.auth.registerSuccess(userData);
         
         // Add a small delay to ensure state update is processed
         await new Promise(resolve => setTimeout(resolve, 50));

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import leagueAPI from '../services/api/leagueAPI.js';
-import { showToast } from '../services/notificationService.js';
+import { notificationManager } from '../services/notificationService.js';
 
 const useLeagues = () => {
   const [myLeagues, setMyLeagues] = useState([]);
@@ -30,12 +30,17 @@ const useLeagues = () => {
       console.log('Attempting to join league:', joinCode);
       const league = await leagueAPI.joinLeague(joinCode);
       console.log('League joined successfully:', league?.name);
-      showToast('Successfully joined league!', 'success');
+      notificationManager.leagues.joinSuccess(league?.name || 'League');
       await fetchMyLeagues(); // This should update the state
       return league; // Return the league directly
     } catch (err) {
       console.error('Error joining league:', err.message);
-      showToast(err.message || 'Failed to join league', 'error');
+      notificationManager.notify({
+        type: 'error',
+        message: err.message || 'Failed to join league',
+        icon: 'users',
+        trackAsActivity: false
+      });
       throw err; // Let component handle the error
     }
   };
@@ -46,12 +51,17 @@ const useLeagues = () => {
       console.log('Creating league:', leagueData.name);
       const league = await leagueAPI.createLeague(leagueData);
       console.log('League created successfully:', league?.name);
-      showToast('League created successfully!', 'success');
+      notificationManager.leagues.createSuccess(league?.name || leagueData.name);
       await fetchMyLeagues(); // This should update the state
       return league; // Return the league directly
     } catch (err) {
       console.error('Error creating league:', err.message);
-      showToast(err.message || 'Failed to create league', 'error');
+      notificationManager.notify({
+        type: 'error',
+        message: err.message || 'Failed to create league',
+        icon: 'users',
+        trackAsActivity: false
+      });
       throw err; // Let component handle the error
     }
   };

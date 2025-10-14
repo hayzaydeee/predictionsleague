@@ -16,6 +16,7 @@ import {
 import { ThemeContext } from "../../context/ThemeContext";
 import { useAuth } from "../../context/AuthContext";
 import { useUserPreferences } from "../../context/UserPreferencesContext";
+import { useNotifications, useRecentActivity } from "../../hooks/useNotifications";
 import userAPI from "../../services/api/userAPI";
 import { text } from "../../utils/themeUtils";
 import { SecondaryButton } from "../ui/buttons";
@@ -136,6 +137,8 @@ const ProfileOverview = () => {
   const { theme } = useContext(ThemeContext);
   const { user, updateUser, isLoading: authLoading } = useAuth();
   const { preferences, updateNestedPreference } = useUserPreferences();
+  const { profile: notifications } = useNotifications();
+  const recentActivities = useRecentActivity();
   
   // State for user profile data and editing
   const [userProfile, setUserProfile] = useState(null);
@@ -165,8 +168,7 @@ const ProfileOverview = () => {
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
   const [deleteErrors, setDeleteErrors] = useState({});
 
-  // Success/error messages
-  const [showSuccess, setShowSuccess] = useState("");
+  // Error messages
   const [generalErrors, setGeneralErrors] = useState({});
 
   // Fetch user profile data
@@ -237,8 +239,7 @@ const ProfileOverview = () => {
       const response = await updateUser(editFormData);
       if (response.success) {
         setIsEditing(false);
-        setShowSuccess("Profile updated successfully!");
-        setTimeout(() => setShowSuccess(""), 3000);
+        notifications.updateSuccess();
       }
     } catch (error) {
       setGeneralErrors({ profile: "Failed to update profile. Please try again." });
@@ -272,10 +273,9 @@ const ProfileOverview = () => {
 
       const response = await userAPI.changePassword(passwordData);
       if (response.success) {
-        setShowSuccess("Password changed successfully!");
+        notifications.passwordChanged();
         setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
         setShowPasswordSection(false);
-        setTimeout(() => setShowSuccess(""), 3000);
       }
     } catch (error) {
       setGeneralErrors({ password: "Failed to change password. Please try again." });
@@ -366,13 +366,20 @@ const ProfileOverview = () => {
     memberSince: formatMemberSince(displayUser),
   };
 
-  // Sample activity (would come from API in real app)
-  const recentActivity = [
-    { action: "Predicted Arsenal 2-1 Man City", time: "2 hours ago", points: 12 },
-    { action: "Joined Office Rivalry league", time: "1 day ago", points: null },
-    { action: "Used Double Down chip", time: "3 days ago", points: 24 },
-    { action: "Achieved 3-week streak", time: "1 week ago", points: null }
-  ];
+  // Format recent activities for display
+  const formatTimeAgo = (timestamp) => {
+    const now = Date.now();
+    const diff = now - timestamp;
+    
+    const minutes = Math.floor(diff / (1000 * 60));
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    
+    if (minutes < 1) return 'Just now';
+    if (minutes < 60) return `${minutes}m ago`;
+    if (hours < 24) return `${hours}h ago`;
+    return `${days}d ago`;
+  };
 
   // Team options for dropdown
   const teamOptions = [
@@ -391,27 +398,6 @@ const ProfileOverview = () => {
 
   return (
     <div className="space-y-8">
-      {/* Success Message */}
-      <AnimatePresence>
-        {showSuccess && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className={`p-4 rounded-lg border flex items-center gap-3 ${
-              theme === "dark"
-                ? "bg-emerald-500/10 border-emerald-500/20"
-                : "bg-emerald-50 border-emerald-200"
-            }`}
-          >
-            <CheckIcon className={`w-5 h-5 ${theme === "dark" ? "text-emerald-400" : "text-emerald-600"}`} />
-            <p className={`${theme === "dark" ? "text-emerald-400" : "text-emerald-600"} font-outfit font-medium`}>
-              {showSuccess}
-            </p>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* Profile Header */}
       <SettingCard
       >okay 
@@ -571,39 +557,64 @@ const ProfileOverview = () => {
           description="Your latest predictions and achievements"
           icon={ActivityLogIcon}
         >
-          <div className="space-y-3">
-            {recentActivity.map((activity, index) => (
-              <div
-                key={index}
-                className={`p-4 rounded-lg border transition-colors ${
-                  theme === "dark"
-                    ? "bg-slate-700/30 border-slate-600/50 hover:bg-slate-700/50"
-                    : "bg-slate-50/50 border-slate-200/50 hover:bg-slate-100/70"
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <p className={`${text.primary[theme]} font-outfit font-medium text-sm mb-1`}>
-                      {activity.action}
-                    </p>
-                    <p className={`${text.muted[theme]} font-outfit text-xs`}>
-                      {activity.time}
-                    </p>
-                  </div>
-                  {activity.points && (
-                    <div className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium ${
-                      theme === "dark"
-                        ? "bg-emerald-500/10 text-emerald-400"
-                        : "bg-emerald-50 text-emerald-600"
-                    }`}>
-                      <DoubleArrowUpIcon className="w-3 h-3" />
-                      +{activity.points}
+          {recentActivities.length > 0 ? (
+            <div className="space-y-3">
+              {recentActivities.map((activity, index) => (
+                <div
+                  key={activity.id}
+                  className={`p-4 rounded-lg border transition-colors ${
+                    theme === "dark"
+                      ? "bg-slate-700/30 border-slate-600/50 hover:bg-slate-700/50"
+                      : "bg-slate-50/50 border-slate-200/50 hover:bg-slate-100/70"
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <p className={`${text.primary[theme]} font-outfit font-medium text-sm mb-1`}>
+                        {activity.message}
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <p className={`${text.muted[theme]} font-outfit text-xs`}>
+                          {formatTimeAgo(activity.timestamp)}
+                        </p>
+                        {activity.metadata && (
+                          <>
+                            {activity.metadata.homeTeam && activity.metadata.awayTeam && (
+                              <span className={`${text.muted[theme]} text-xs`}>
+                                • {activity.metadata.homeTeam} vs {activity.metadata.awayTeam}
+                              </span>
+                            )}
+                            {activity.metadata.leagueName && (
+                              <span className={`${text.muted[theme]} text-xs`}>
+                                • {activity.metadata.leagueName}
+                              </span>
+                            )}
+                          </>
+                        )}
+                      </div>
                     </div>
-                  )}
+                    <div className={`px-2 py-1 rounded text-xs ${
+                      theme === "dark"
+                        ? "bg-slate-600/50 text-slate-300"
+                        : "bg-slate-100 text-slate-600"
+                    }`}>
+                      {activity.type}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className={`text-center py-8 ${
+              theme === "dark" ? "text-slate-400" : "text-slate-500"
+            }`}>
+              <ActivityLogIcon className="w-8 h-8 mx-auto mb-2 opacity-50" />
+              <p className="font-outfit">No recent activity</p>
+              <p className="text-sm mt-1">
+                Start making predictions or updating your profile to see activity here
+              </p>
+            </div>
+          )}
         </SettingCard>
       </div>
 
