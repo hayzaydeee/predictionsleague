@@ -14,7 +14,7 @@ import { predictions, teamLogos } from "../../data/sampleData";
 
 const PredictionsView = ({ handleEditPrediction }) => {  // Get theme context and user preferences
   const { theme } = useContext(ThemeContext);
-  const { preferences } = useUserPreferences();
+  const { preferences, updatePreference } = useUserPreferences();
   
   const [activeFilter, setActiveFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -25,6 +25,12 @@ const PredictionsView = ({ handleEditPrediction }) => {  // Get theme context an
   const [viewMode, setViewMode] = useState(preferences.defaultPredictionsView);
   const [cardStyle, setCardStyle] = useState(preferences.cardStyle);
   const [selectedPrediction, setSelectedPrediction] = useState(null);
+
+  // Wrapper function to update both state and preferences
+  const handleViewModeChange = (newViewMode) => {
+    setViewMode(newViewMode);
+    updatePreference("defaultPredictionsView", newViewMode);
+  };
   const [showBreakdownModal, setShowBreakdownModal] = useState(false);
   // Filter predictions based on active filter
   const filteredPredictions = predictions.filter((prediction) => {
@@ -117,7 +123,7 @@ const PredictionsView = ({ handleEditPrediction }) => {  // Get theme context an
         </div>
 
         {/* View toggle controls */}
-        <PredictionViewToggleBar viewMode={viewMode} setViewMode={setViewMode} />
+        <PredictionViewToggleBar viewMode={viewMode} setViewMode={handleViewModeChange} />
       </div>      {/* Potential Points Summary - Always visible but only shows pending predictions */}
       <PotentialPointsSummary
         predictions={pendingPredictions}

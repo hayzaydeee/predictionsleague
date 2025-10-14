@@ -17,7 +17,7 @@ export const UserPreferencesProvider = ({ children }) => {
     // Interface preferences
     defaultDashboardView: 'fixtures',
     defaultFixturesView: 'list',
-    defaultPredictionsView: 'stack',
+    defaultPredictionsView: 'list',
     showButtonTitles: true,
     
     // Notification preferences

@@ -14,7 +14,7 @@ import { fixtureFilters } from "../../services/api/externalFixturesAPI";
 const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
   // Get theme context and user preferences
   const { theme } = useContext(ThemeContext);
-  const { preferences } = useUserPreferences();
+  const { preferences, updatePreference } = useUserPreferences();
 
   // Fetch fixtures using the external API only
   const {
@@ -54,6 +54,12 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
   const [activeGameweekChips, setActiveGameweekChips] = useState([]);
   const [viewMode, setViewMode] = useState(preferences.defaultFixturesView);
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Wrapper function to update both state and preferences
+  const handleViewModeChange = (newViewMode) => {
+    setViewMode(newViewMode);
+    updatePreference("defaultFixturesView", newViewMode);
+  };
   const [activeFilter, setActiveFilter] = useState("all");
   const [dateFilter, setDateFilter] = useState("all"); // New: all or today
   const [sortBy, setSortBy] = useState("date");
@@ -188,7 +194,7 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
         </div>
 
         {/* View toggle controls */}
-        <ViewToggleBar viewMode={viewMode} setViewMode={setViewMode} />
+        <ViewToggleBar viewMode={viewMode} setViewMode={handleViewModeChange} />
       </div>
       {/* Collapsible Gameweek Chips Panel */}
       <motion.div

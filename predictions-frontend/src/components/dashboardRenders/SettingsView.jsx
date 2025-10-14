@@ -220,9 +220,12 @@ const SettingsView = () => {
               value={preferences.defaultFixturesView}
               onChange={(e) => updatePreference("defaultFixturesView", e.target.value)}
               options={[
-                { value: "list", label: "List View" },
+                { value: "carousel", label: "Carousel View" },
+                { value: "teams", label: "By Teams" },
                 { value: "stack", label: "Stack View" },
                 { value: "calendar", label: "Calendar View" },
+                { value: "table", label: "Table View" },
+                { value: "list", label: "Grid View" },
               ]}
             />
             <SelectField
@@ -230,11 +233,12 @@ const SettingsView = () => {
               value={preferences.defaultPredictionsView}
               onChange={(e) => updatePreference("defaultPredictionsView", e.target.value)}
               options={[
-                { value: "teams", label: "By Teams" },
                 { value: "list", label: "Grid View" },
                 { value: "table", label: "Table View" },
-                { value: "stack", label: "Stack View" },
                 { value: "calendar", label: "Calendar View" },
+                { value: "stack", label: "Stack View" },
+                { value: "carousel", label: "Carousel View" },
+                { value: "teams", label: "By Teams" },
               ]}
             />
             <ToggleRow
