@@ -10,6 +10,7 @@ import { useUserPreferences } from "../../context/UserPreferencesContext";
 import { backgrounds, text } from "../../utils/themeUtils";
 import { useFixtures } from "../../hooks/useFixtures";
 import { fixtureFilters } from "../../services/api/externalFixturesAPI";
+import { usePredictionTracker } from "../../utils/predictionTracker";
 
 const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
   // Get theme context and user preferences
@@ -27,6 +28,9 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
   } = useFixtures({
     fallbackToSample: false // Use only external API data
   });
+
+  // Use prediction tracker
+  const predictionStatus = usePredictionTracker(liveFixtures);
 
   // API Status and Error Handling  
   const hasApiError = fixturesError;
@@ -79,16 +83,31 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
       } gameweek chip ${chipId} for gameweek ${gameweek}`
     );
   };
-  // Filter fixtures based on selected filters using client-side filtering
+  // Filter fixtures and enhance with prediction status
   const filteredFixtures = useMemo(() => {
     if (!liveFixtures) return [];
     
-    return fixtureFilters.applyFilters(liveFixtures, {
+    const filtered = fixtureFilters.applyFilters(liveFixtures, {
       date: dateFilter,
       status: activeFilter,
       search: searchQuery
     });
-  }, [liveFixtures, dateFilter, activeFilter, searchQuery]);
+
+    // Enhance with prediction status from localStorage
+    return filtered.map(fixture => ({
+      ...fixture,
+      userPrediction: predictionStatus.getPrediction(
+        fixture.id, 
+        fixture.homeTeam?.name || fixture.homeTeam, 
+        fixture.awayTeam?.name || fixture.awayTeam
+      ),
+      hasPrediction: predictionStatus.hasPrediction(
+        fixture.id, 
+        fixture.homeTeam?.name || fixture.homeTeam, 
+        fixture.awayTeam?.name || fixture.awayTeam
+      )
+    }));
+  }, [liveFixtures, dateFilter, activeFilter, searchQuery, predictionStatus]);
 
   // Handle fixture selection
   const onFixtureSelect = (fixture) => {

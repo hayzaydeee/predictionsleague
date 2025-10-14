@@ -10,6 +10,8 @@ import {
 } from "@radix-ui/react-icons";
 import { useContext } from "react";
 import { ThemeContext } from "../../context/ThemeContext";
+import { usePredictionTracker } from "../../utils/predictionTracker";
+import { useFixtures } from "../../hooks/useFixtures";
 
 export default function StatusBar({ 
   user, 
@@ -21,21 +23,27 @@ export default function StatusBar({
   // Get theme context
   const { theme, toggleTheme } = useContext(ThemeContext);
 
-  // Use provided user data or show loading
+  // Get fixtures data for prediction tracking
+  const { fixtures } = useFixtures({ fallbackToSample: false });
+
+  // Use prediction tracker to get real-time status
+  const predictionStatus = usePredictionTracker(fixtures);
+
+  // Use provided user data with real prediction status
   const userData = user ? {
     username: user.username || "Anonymous User",
     points: user.points || 0,
     rank: user.rank || 0,
     rankChange: user.rankChange || 0,
-    predictions: user.predictions || 0,
-    pendingPredictions: user.pendingPredictions || 0,
+    predictions: predictionStatus.predictedCount || 0,
+    pendingPredictions: predictionStatus.pendingCount || 0,
   } : {
     username: "Loading...",
     points: 0,
     rank: 0,
     rankChange: 0,
     predictions: 0,
-    pendingPredictions: 0,
+    pendingPredictions: predictionStatus.pendingCount || 0,
   };
 
   // Calculate time until next match

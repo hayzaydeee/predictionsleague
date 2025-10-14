@@ -6,6 +6,7 @@ import { backgrounds, text, getThemeStyles } from "../../utils/themeUtils";
 import { InfoCircledIcon, ClockIcon, ExclamationTriangleIcon, CheckIcon } from "@radix-ui/react-icons";
 import { userPredictionsAPI } from "../../services/api/userPredictionsAPI";
 import { useNotifications } from "../../hooks/useNotifications";
+import { predictionTracker } from "../../utils/predictionTracker";
 
 // Import modular components
 import ModalHeader from "./modal/ModalHeader";
@@ -121,6 +122,23 @@ export default function PredictionsModal({
       
       if (result.success) {
         console.log('✅ Prediction submitted successfully');
+        
+        // Save to localStorage prediction tracker
+        predictionTracker.savePrediction({
+          fixtureId: fixture.id,
+          homeTeam: fixture.homeTeam,
+          awayTeam: fixture.awayTeam,
+          homeScore: homeScore,
+          awayScore: awayScore,
+          homeScorers: homeScorers,
+          awayScorers: awayScorers,
+          selectedChip: selectedChip,
+          utcDate: fixture.utcDate,
+          matchDate: fixture.utcDate,
+          gameweek: fixture.gameweek || fixture.matchday
+        });
+        
+        // Show notification
         if (isEditing) {
           predictions.updateSuccess(fixture.homeTeam, fixture.awayTeam);
         } else {
