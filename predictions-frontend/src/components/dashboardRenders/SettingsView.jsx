@@ -225,6 +225,18 @@ const SettingsView = () => {
                 { value: "calendar", label: "Calendar View" },
               ]}
             />
+            <SelectField
+              label="Default Predictions View"
+              value={preferences.defaultPredictionsView}
+              onChange={(e) => updatePreference("defaultPredictionsView", e.target.value)}
+              options={[
+                { value: "teams", label: "By Teams" },
+                { value: "list", label: "Grid View" },
+                { value: "table", label: "Table View" },
+                { value: "stack", label: "Stack View" },
+                { value: "calendar", label: "Calendar View" },
+              ]}
+            />
             <ToggleRow
               label="Show Button Labels"
               description="Display text on navigation buttons"
