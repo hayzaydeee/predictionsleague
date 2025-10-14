@@ -170,12 +170,6 @@ const ProfileStatistics = () => {
         setIsLoadingHighlights(true);
         const response = await userAPI.getStatisticsHighlights();
         
-        console.log('=== HIGHLIGHTS API RESPONSE ===');
-        console.log('Full response:', JSON.stringify(response, null, 2));
-        console.log('Response success:', response.success);
-        console.log('Response data:', JSON.stringify(response.data, null, 2));
-        console.log('==================================');
-        
         if (response.success && response.data) {
           setHighlights(response.data);
         }
@@ -196,30 +190,19 @@ const ProfileStatistics = () => {
         setIsLoadingTeamStats(true);
         const response = await userAPI.getTeamPerformance();
         
-        console.log('=== TEAM PERFORMANCE API RESPONSE ===');
-        console.log('Full response:', JSON.stringify(response, null, 2));
-        console.log('Response success:', response.success);
-        console.log('Response data:', JSON.stringify(response.data, null, 2));
-        console.log('Is response.data an array?', Array.isArray(response.data));
-        if (response.data && typeof response.data === 'object' && !Array.isArray(response.data)) {
-          console.log('response.data.data:', JSON.stringify(response.data.data, null, 2));
-          console.log('Is response.data.data an array?', Array.isArray(response.data.data));
-        }
-        console.log('======================================');
-        
         if (response.success && response.data) {
-          const teamData = Array.isArray(response.data) ? response.data : response.data.data;
+          // The API returns { data: { data: [...] } }
+          const teamData = response.data.data;
           if (Array.isArray(teamData)) {
-            // Filter out invalid team data
-            const validTeamStats = teamData.filter(team => 
-              team && 
-              team.teamName && 
-              team.teamName.trim() !== '' &&
-              (team.predictions > 0 || team.points > 0)
-            );
+            // Process team data - show all teams, even with 0 predictions for now
+            const processedTeamStats = teamData.map(team => ({
+              ...team,
+              // Use 'team' field as teamName for consistency with formatTeamName function
+              teamName: team.team,
+              displayName: formatTeamName(team.team)
+            }));
             
-            console.log('Filtered valid team stats:', validTeamStats);
-            setTeamStats(validTeamStats);
+            setTeamStats(processedTeamStats);
           } else {
             setTeamStats([]);
           }
@@ -243,19 +226,9 @@ const ProfileStatistics = () => {
         setIsLoadingMonthlyStats(true);
         const response = await userAPI.getMonthlyPerformance();
         
-        console.log('=== MONTHLY PERFORMANCE API RESPONSE ===');
-        console.log('Full response:', JSON.stringify(response, null, 2));
-        console.log('Response success:', response.success);
-        console.log('Response data:', JSON.stringify(response.data, null, 2));
-        console.log('Is response.data an array?', Array.isArray(response.data));
-        if (response.data && typeof response.data === 'object' && !Array.isArray(response.data)) {
-          console.log('response.data.data:', JSON.stringify(response.data.data, null, 2));
-          console.log('Is response.data.data an array?', Array.isArray(response.data.data));
-        }
-        console.log('=========================================');
-        
         if (response.success && response.data) {
-          const monthlyData = Array.isArray(response.data) ? response.data : response.data.data;
+          // The API returns { data: { data: [...] } }
+          const monthlyData = response.data.data;
           if (Array.isArray(monthlyData)) {
             setMonthlyStats(monthlyData);
           } else {
@@ -347,10 +320,13 @@ const ProfileStatistics = () => {
                     <p className={`${text.primary[theme]} font-outfit font-bold text-lg`}>
                       {month.accuracy}%
                     </p>
-                    <p className={`${text.muted[theme]} font-outfit text-xs`}>
+                    <p className={`${text.muted[theme]} font-outfit text-xs mb-1`}>
                       {month.month}
                     </p>
-                    <div className="mt-2 w-full bg-slate-200 rounded-full h-2 dark:bg-slate-700">
+                    <p className={`${text.muted[theme]} font-outfit text-xs mb-2`}>
+                      {month.predictions} predictions • {month.points} pts
+                    </p>
+                    <div className="w-full bg-slate-200 rounded-full h-2 dark:bg-slate-700">
                       <div 
                         className={`h-2 rounded-full bg-gradient-to-r ${
                           theme === "dark" 
@@ -402,12 +378,15 @@ const ProfileStatistics = () => {
                         {formatTeamName(team.teamName)}
                       </p>
                       <p className={`${text.muted[theme]} font-outfit text-xs`}>
-                        {team.predictions} predictions
+                        {team.predictions} predictions • {team.accuracy}% accuracy
                       </p>
                     </div>
                     <div className="text-right">
                       <p className={`${text.primary[theme]} font-dmSerif font-bold`}>
-                        {team.points}
+                        {team.points} pts
+                      </p>
+                      <p className={`${text.muted[theme]} font-outfit text-xs`}>
+                        {team.correct}/{team.predictions}
                       </p>
                       <div className="w-16 bg-slate-200 rounded-full h-1 dark:bg-slate-700 mt-1">
                         <div 
