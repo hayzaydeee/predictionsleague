@@ -414,9 +414,6 @@ const ProfileOverview = () => {
 
       {/* Profile Header */}
       <SettingCard
-        title={mappedDisplayUser.username || 'User'}
-        description={`Member since ${mappedDisplayUser.memberSince || 'Recently'}`}
-        icon={PersonIcon}
       >
         <div className="flex items-center gap-6">
           <div className="relative">

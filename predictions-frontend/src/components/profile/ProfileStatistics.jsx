@@ -170,35 +170,14 @@ const ProfileStatistics = () => {
         setIsLoadingHighlights(true);
         const response = await userAPI.getStatisticsHighlights();
         
+        console.log('=== HIGHLIGHTS API RESPONSE ===');
+        console.log('Full response:', JSON.stringify(response, null, 2));
+        console.log('Response success:', response.success);
+        console.log('Response data:', JSON.stringify(response.data, null, 2));
+        console.log('==================================');
+        
         if (response.success && response.data) {
-          const highlights = response.data;
-          const highlightsWithDescriptions = {};
-
-          // Process bestGameweek
-          if (highlights.bestGameweek && highlights.bestGameweek.points !== undefined) {
-            highlightsWithDescriptions.bestGameweek = {
-              ...highlights.bestGameweek,
-              description: generateDescription('bestGameweek', highlights.bestGameweek)
-            };
-          }
-
-          // Process favoriteFixture
-          if (highlights.favoriteFixture && highlights.favoriteFixture.accuracy !== undefined) {
-            highlightsWithDescriptions.favoriteFixture = {
-              ...highlights.favoriteFixture,
-              description: generateDescription('favoriteFixture', highlights.favoriteFixture)
-            };
-          }
-
-          // Process mostActiveDay
-          if (highlights.mostActiveDay && highlights.mostActiveDay.percentage !== undefined) {
-            highlightsWithDescriptions.mostActiveDay = {
-              ...highlights.mostActiveDay,
-              description: generateDescription('mostActiveDay', highlights.mostActiveDay)
-            };
-          }
-          
-          setHighlights(highlightsWithDescriptions);
+          setHighlights(response.data);
         }
       } catch (error) {
         console.error('Failed to load highlights:', error);
@@ -217,10 +196,30 @@ const ProfileStatistics = () => {
         setIsLoadingTeamStats(true);
         const response = await userAPI.getTeamPerformance();
         
+        console.log('=== TEAM PERFORMANCE API RESPONSE ===');
+        console.log('Full response:', JSON.stringify(response, null, 2));
+        console.log('Response success:', response.success);
+        console.log('Response data:', JSON.stringify(response.data, null, 2));
+        console.log('Is response.data an array?', Array.isArray(response.data));
+        if (response.data && typeof response.data === 'object' && !Array.isArray(response.data)) {
+          console.log('response.data.data:', JSON.stringify(response.data.data, null, 2));
+          console.log('Is response.data.data an array?', Array.isArray(response.data.data));
+        }
+        console.log('======================================');
+        
         if (response.success && response.data) {
           const teamData = Array.isArray(response.data) ? response.data : response.data.data;
           if (Array.isArray(teamData)) {
-            setTeamStats(teamData);
+            // Filter out invalid team data
+            const validTeamStats = teamData.filter(team => 
+              team && 
+              team.teamName && 
+              team.teamName.trim() !== '' &&
+              (team.predictions > 0 || team.points > 0)
+            );
+            
+            console.log('Filtered valid team stats:', validTeamStats);
+            setTeamStats(validTeamStats);
           } else {
             setTeamStats([]);
           }
@@ -243,6 +242,17 @@ const ProfileStatistics = () => {
       try {
         setIsLoadingMonthlyStats(true);
         const response = await userAPI.getMonthlyPerformance();
+        
+        console.log('=== MONTHLY PERFORMANCE API RESPONSE ===');
+        console.log('Full response:', JSON.stringify(response, null, 2));
+        console.log('Response success:', response.success);
+        console.log('Response data:', JSON.stringify(response.data, null, 2));
+        console.log('Is response.data an array?', Array.isArray(response.data));
+        if (response.data && typeof response.data === 'object' && !Array.isArray(response.data)) {
+          console.log('response.data.data:', JSON.stringify(response.data.data, null, 2));
+          console.log('Is response.data.data an array?', Array.isArray(response.data.data));
+        }
+        console.log('=========================================');
         
         if (response.success && response.data) {
           const monthlyData = Array.isArray(response.data) ? response.data : response.data.data;
@@ -284,7 +294,7 @@ const ProfileStatistics = () => {
           <StatCard
             title="Best Gameweek"
             value={isLoadingHighlights ? "..." : highlights?.bestGameweek?.gameweek || 'N/A'}
-            subtitle={isLoadingHighlights ? "Loading..." : highlights?.bestGameweek?.description || 'No data available'}
+            subtitle={isLoadingHighlights ? "Loading..." : `${highlights?.bestGameweek?.points || 0} points scored`}
             icon={BadgeIcon}
             color="amber"
           />
@@ -293,7 +303,7 @@ const ProfileStatistics = () => {
           <StatCard
             title="Favorite Fixture"
             value={isLoadingHighlights ? "..." : highlights?.favoriteFixture?.fixture || 'N/A'}
-            subtitle={isLoadingHighlights ? "Loading..." : highlights?.favoriteFixture?.description || 'No data available'}
+            subtitle={isLoadingHighlights ? "Loading..." : `${highlights?.favoriteFixture?.accuracy || 0}% accuracy`}
             icon={StarIcon}
             color="purple"
           />
@@ -302,7 +312,7 @@ const ProfileStatistics = () => {
           <StatCard
             title="Most Active Day"
             value={isLoadingHighlights ? "..." : highlights?.mostActiveDay?.day || 'N/A'}
-            subtitle={isLoadingHighlights ? "Loading..." : highlights?.mostActiveDay?.description || 'No data available'}
+            subtitle={isLoadingHighlights ? "Loading..." : `${highlights?.mostActiveDay?.percentage || 0}% of predictions`}
             icon={CalendarIcon}
             color="blue"
           />
