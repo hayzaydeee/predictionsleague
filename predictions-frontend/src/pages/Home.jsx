@@ -187,7 +187,7 @@ export default function Home() {
             globalRank={essentialData?.stats?.globalRank}
             nextMatchData={statusBarData.nextMatchData}
             loading={statusBarLoading}
-            onMakePredictions={() => navigateToSection("predictions")}
+            onMakePredictions={() => navigateToSection("fixtures")}
           />
           {/* Breadcrumb & Search Bar */}
           <div
