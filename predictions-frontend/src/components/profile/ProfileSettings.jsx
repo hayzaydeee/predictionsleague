@@ -3,31 +3,22 @@ import { motion } from "framer-motion";
 import { 
   PersonIcon,
   EnvelopeClosedIcon,
-  GearIcon,
   EyeOpenIcon,
   EyeNoneIcon,
-  MoonIcon,
-  SunIcon,
-  BellIcon,
-  CheckIcon
+  CheckIcon,
+  Pencil1Icon
 } from "@radix-ui/react-icons";
 import { ThemeContext } from "../../context/ThemeContext";
 import { text } from "../../utils/themeUtils";
 
 const ProfileSettings = () => {
-  const { theme, toggleTheme } = useContext(ThemeContext);
+  const { theme } = useContext(ThemeContext);
   const [isEditing, setIsEditing] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [settings, setSettings] = useState({
     username: "alexplayer23",
     email: "alex@example.com",
     favoriteTeam: "Arsenal",
-    notifications: {
-      email: true,
-      push: true,
-      sms: false
-    },
-
   });
 
   const teams = [
@@ -37,18 +28,8 @@ const ProfileSettings = () => {
 
   const handleSave = () => {
     setIsEditing(false);
-    // In real app, this would save to backend
-    console.log("Settings saved:", settings);
-  };
-
-  const handleSettingChange = (category, setting, value) => {
-    setSettings(prev => ({
-      ...prev,
-      [category]: {
-        ...prev[category],
-        [setting]: value
-      }
-    }));
+    // TODO: Save to backend API
+    console.log("Profile settings saved:", settings);
   };
 
   return (
@@ -66,7 +47,7 @@ const ProfileSettings = () => {
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          onClick={() => setIsEditing(!isEditing)}
+          onClick={isEditing ? handleSave : () => setIsEditing(true)}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
             isEditing
               ? theme === 'dark'
@@ -84,7 +65,7 @@ const ProfileSettings = () => {
             </>
           ) : (
             <>
-              <GearIcon className="w-4 h-4" />
+              <Pencil1Icon className="w-4 h-4" />
               Edit Profile
             </>
           )}
@@ -196,108 +177,16 @@ const ProfileSettings = () => {
         </div>
       </div>
 
-      {/* Preferences */}
+      {/* Note */}
       <div className={`${
         theme === "dark"
           ? "bg-slate-800/40 border-slate-700/50"
           : "bg-white border-slate-200 shadow-sm"
       } backdrop-blur-sm rounded-xl p-5 border`}>
-        <div className="flex items-center gap-2 mb-4">
-          <div className={`p-1.5 rounded-lg border ${
-            theme === "dark"
-              ? "bg-teal-500/10 border-teal-500/20"
-              : "bg-teal-50 border-teal-200"
-          }`}>
-            <GearIcon className={`w-4 h-4 ${
-              theme === "dark" ? "text-teal-400" : "text-teal-600"
-            }`} />
-          </div>
-          <h3 className={`${theme === 'dark' ? 'text-teal-200' : 'text-teal-700'} font-outfit font-semibold text-base`}>
-            Preferences
-          </h3>
-        </div>
-
-        <div className="space-y-4">
-          {/* Theme Toggle */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              {theme === 'dark' ? (
-                <MoonIcon className={`w-5 h-5 ${text.primary[theme]}`} />
-              ) : (
-                <SunIcon className={`w-5 h-5 ${text.primary[theme]}`} />
-              )}
-              <div>
-                <span className={`${text.primary[theme]} font-outfit font-medium`}>
-                  Dark Mode
-                </span>
-                <p className={`${text.muted[theme]} text-sm font-outfit`}>
-                  Switch between light and dark themes
-                </p>
-              </div>
-            </div>
-            <button
-              onClick={toggleTheme}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                theme === 'dark' ? 'bg-teal-600' : 'bg-slate-200'
-              }`}
-            >
-              <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                  theme === 'dark' ? 'translate-x-6' : 'translate-x-1'
-                }`}
-              />
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Notifications */}
-      <div className={`${
-        theme === "dark"
-          ? "bg-slate-800/40 border-slate-700/50"
-          : "bg-white border-slate-200 shadow-sm"
-      } backdrop-blur-sm rounded-xl p-5 border`}>
-        <div className="flex items-center gap-2 mb-4">
-          <div className={`p-1.5 rounded-lg border ${
-            theme === "dark"
-              ? "bg-teal-500/10 border-teal-500/20"
-              : "bg-teal-50 border-teal-200"
-          }`}>
-            <BellIcon className={`w-4 h-4 ${
-              theme === "dark" ? "text-teal-400" : "text-teal-600"
-            }`} />
-          </div>
-          <h3 className={`${theme === 'dark' ? 'text-teal-200' : 'text-teal-700'} font-outfit font-semibold text-base`}>
-            Notifications
-          </h3>
-        </div>
-
-        <div className="space-y-4">
-          {Object.entries(settings.notifications).map(([key, value]) => (
-            <div key={key} className="flex items-center justify-between">
-              <div>
-                <span className={`${text.primary[theme]} font-outfit font-medium capitalize`}>
-                  {key} Notifications
-                </span>
-                <p className={`${text.muted[theme]} text-sm font-outfit`}>
-                  Receive notifications via {key}
-                </p>
-              </div>
-              <button
-                onClick={() => handleSettingChange('notifications', key, !value)}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  value ? 'bg-teal-600' : 'bg-slate-200'
-                }`}
-              >
-                <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    value ? 'translate-x-6' : 'translate-x-1'
-                  }`}
-                />
-              </button>
-            </div>
-          ))}
-        </div>
+        <p className={`${text.secondary[theme]} text-sm font-outfit text-center`}>
+          For theme, notification, and interface preferences, visit the{' '}
+          <span className={`${text.accent[theme]} font-medium`}>Settings</span> page.
+        </p>
       </div>
 
 

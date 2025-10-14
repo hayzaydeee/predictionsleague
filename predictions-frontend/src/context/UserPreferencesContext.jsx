@@ -11,27 +11,20 @@ export const useUserPreferences = () => {
   return context;
 };
 
-export const UserPreferencesProvider = ({ children }) => {  // Default preferences
+export const UserPreferencesProvider = ({ children }) => {
+  // Simplified default preferences - only what's actually used
   const defaultPreferences = {
+    // Interface preferences
     defaultDashboardView: 'fixtures',
     defaultFixturesView: 'list',
     defaultPredictionsView: 'stack',
-    cardStyle: 'normal', // 'normal' or 'compact'
-    language: 'english',
-    timezone: 'UTC',
-    textSize: 'medium',
-    highContrast: false,
-    reduceMotion: false,
     showButtonTitles: true,
+    
+    // Notification preferences
     notifications: {
       emailAlerts: true,
-      fixtureUpdates: true,
       predictionReminders: true,
-      weeklyDigest: false,
-      marketingEmails: false,
-      pushNotifications: true,
-      liveScoreUpdates: true,
-      leagueInvitations: true
+      leagueInvitations: true,
     }
   };
 
