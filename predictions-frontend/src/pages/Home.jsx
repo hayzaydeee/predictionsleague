@@ -264,7 +264,7 @@ export default function Home() {
                 </div>
               </div>
             ) : null}{" "}
-            <div className="flex-1 pb-16 md:pb-0 overflow-hidden">
+            <div className="flex-1 pb-16 md:pb-0 md:min-h-0">
               <ContentPane
                 activeItem={activeItem}
                 navigateToSection={navigateToSection}
