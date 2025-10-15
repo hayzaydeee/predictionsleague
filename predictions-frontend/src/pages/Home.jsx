@@ -145,11 +145,11 @@ export default function Home() {
       </div>
 
       {/* Main Dashboard Content */}
-      <div className="relative z-10 flex min-h-screen md:h-screen">
+      <div className="relative z-10 flex min-h-screen">
         {/* Left Menu - Full Height */}
         <AnimatePresence>
           <motion.div
-            className={`h-full hidden md:block ${
+            className={`min-h-screen hidden md:block ${
               isMenuCollapsed ? "w-16" : "w-64"
             }`}
             animate={{ width: isMenuCollapsed ? "4rem" : "16rem" }}
@@ -165,7 +165,7 @@ export default function Home() {
         </AnimatePresence>
 
         {/* Content Area*/}
-        <div className="flex-1 flex flex-col h-full overflow-hidden">
+        <div className="flex-1 flex flex-col min-h-screen">
           {" "}
           {/* Status Bar - now full width on mobile */}
           {/* Status Bar moved inside content area */}
@@ -264,7 +264,7 @@ export default function Home() {
                 </div>
               </div>
             ) : null}{" "}
-            <div className="flex-1 pb-16 md:pb-0 overflow-hidden">
+            <div className="flex-1 pb-16 md:pb-0">
               <ContentPane
                 activeItem={activeItem}
                 navigateToSection={navigateToSection}
