@@ -287,50 +287,6 @@ const DashboardView = ({
               Let's check your performance and make some predictions
             </p>
           </div>
-          <div className="text-right">
-            {essentialLoading ? (
-              <div className="animate-pulse">
-                <div className="flex items-center gap-2 mb-1 justify-end">
-                  <div
-                    className={`w-3 h-3 ${
-                      theme === "dark" ? "bg-slate-700/50" : "bg-slate-200"
-                    } rounded`}
-                  />
-                  <div
-                    className={`w-20 h-4 ${
-                      theme === "dark" ? "bg-slate-700/50" : "bg-slate-200"
-                    } rounded`}
-                  />
-                </div>
-                <div
-                  className={`w-24 h-3 ml-auto ${
-                    theme === "dark" ? "bg-slate-700/50" : "bg-slate-200"
-                  } rounded`}
-                />
-              </div>
-            ) : (
-              <>
-
-                {/* Data source indicator */}
-                {!externalFixturesError && upcomingFixtures.length > 0 && (
-                  <div className="flex items-center gap-1">
-                    <div className={`w-1.5 h-1.5 rounded-full ${
-                      upcomingFixtures[0]?.isSampleData
-                        ? (theme === "dark" ? "bg-amber-400" : "bg-amber-500")
-                        : (theme === "dark" ? "bg-emerald-400" : "bg-emerald-500")
-                    }`} />
-                    <span className={`${
-                      upcomingFixtures[0]?.isSampleData
-                        ? (theme === "dark" ? "text-amber-400" : "text-amber-600")
-                        : (theme === "dark" ? "text-emerald-400" : "text-emerald-600")
-                    } text-xs font-medium font-outfit`}>
-                      {upcomingFixtures[0]?.isSampleData ? "Sample data" : "Live data"}
-                    </span>
-                  </div>
-                )}
-              </>
-            )}
-          </div>
         </div>
         {/* Progress indicator */}
         <div
@@ -373,7 +329,7 @@ const DashboardView = ({
                 <span
                   className={`${
                     theme === "dark" ? "text-teal-400" : "text-teal-600"
-                  } text-xs font-semibold`}
+                  } text-xs font-semibold font-outfit`}
                 >
                   GW {essentialData?.season?.currentGameweek || 1} of {essentialData?.season?.totalGameweeks || 38}
                 </span>

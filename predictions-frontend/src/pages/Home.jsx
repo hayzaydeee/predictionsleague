@@ -165,7 +165,7 @@ export default function Home() {
         </AnimatePresence>
 
         {/* Content Area*/}
-        <div className="flex-1 flex flex-col h-full md:overflow-hidden">
+        <div className="flex-1 flex flex-col h-full overflow-hidden">
           {" "}
           {/* Status Bar - now full width on mobile */}
           {/* Status Bar moved inside content area */}
@@ -264,7 +264,7 @@ export default function Home() {
                 </div>
               </div>
             ) : null}{" "}
-            <div className="flex-1 pb-16 md:pb-0 md:overflow-hidden">
+            <div className="flex-1 pb-16 md:pb-0 overflow-hidden">
               <ContentPane
                 activeItem={activeItem}
                 navigateToSection={navigateToSection}
