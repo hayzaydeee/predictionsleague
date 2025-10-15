@@ -5,6 +5,7 @@ import ViewToggleBar from "../ui/ViewToggleBar";
 import ViewToggleBarOption1 from "../ui/ViewToggleBarOption1";
 import ViewToggleBarOption2 from "../ui/ViewToggleBarOption2";
 import ViewToggleBarOption3 from "../ui/ViewToggleBarOption3";
+import ViewToggleBarHybrid from "../ui/ViewToggleBarHybrid";
 import ActiveChipsBanner from "../ui/ActiveChipsBanner";
 import ContentView from "../fixtures/ContentView";
 import FixtureFilters from "../fixtures/FixtureFilters";
@@ -206,15 +207,13 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
           </p>
         </div>
 
-        {/* View toggle controls - TEST DIFFERENT OPTIONS */}
-        {/* Option 1: Compact & Integrated (3 main views + dropdown) */}
+        {/* View toggle controls - HYBRID: Bottom Sheet (mobile) + Dropdown (desktop) */}
+        <ViewToggleBarHybrid viewMode={viewMode} setViewMode={handleViewModeChange} />
+        
+        {/* TESTING OTHER OPTIONS (uncomment to test individually): */}
         {/* <ViewToggleBarOption1 viewMode={viewMode} setViewMode={handleViewModeChange} /> */}
-        
-        {/* Option 2: Bottom Sheet (uncomment to test) */}
         {/* <ViewToggleBarOption2 viewMode={viewMode} setViewMode={handleViewModeChange} /> */}
-        
-        {/* Option 3: Minimalist Dropdown (uncomment to test) */}
-        <ViewToggleBarOption3 viewMode={viewMode} setViewMode={handleViewModeChange} />
+        {/* <ViewToggleBarOption3 viewMode={viewMode} setViewMode={handleViewModeChange} /> */}
       </div>
       {/* Collapsible Gameweek Chips Panel */}
       <motion.div
