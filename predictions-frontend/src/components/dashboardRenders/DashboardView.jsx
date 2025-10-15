@@ -10,6 +10,9 @@ import {
   RocketIcon,
 } from "@radix-ui/react-icons";
 import StatCard from "../common/StatCard";
+import StatCardOption1 from "../common/StatCardOption1";
+import StatCardOption2 from "../common/StatCardOption2";
+import StatCardOption3 from "../common/StatCardOption3";
 import StatCardSkeleton from "../common/StatCardSkeleton";
 import PanelSkeleton from "../common/PanelSkeleton";
 import DashboardEmptyState from "../common/DashboardEmptyState";
@@ -371,19 +374,24 @@ const DashboardView = ({
           </>
         ) : (
           <>
-            <StatCard
+            {/* Option 1: Minimal & Modern - Weekly Points */}
+            <StatCardOption1
               title="Weekly Points"
               {...formatWeeklyPoints(essentialData?.stats?.weeklyPoints)}
-              icon={<MagicWandIcon className="w-4 h-4" />}
+              icon={<MagicWandIcon />}
+              accentColor="purple"
             />
 
-            <StatCard
+            {/* Option 2: Accent Bar - Accuracy Rate */}
+            <StatCardOption2
               title="Accuracy Rate"
               {...formatAccuracyRate(essentialData?.stats?.accuracyRate)}
-              icon={<TargetIcon className="w-4 h-4" />}
+              icon={<TargetIcon />}
+              accentColor="teal"
             />
 
-            <StatCard
+            {/* Option 3: Glassmorphic - Available Chips */}
+            <StatCardOption3
               title="Available Chips"
               value={essentialData?.stats?.availableChips?.value?.toString() || "0"}
               subtitle={essentialData?.stats?.availableChips?.subtitle || "No chips available"}
@@ -391,9 +399,11 @@ const DashboardView = ({
                 icon: <InfoCircledIcon />,
                 type: "neutral",
               }}
-              icon={<LightningBoltIcon className="w-4 h-4" />}
+              icon={<LightningBoltIcon />}
+              accentColor="amber"
             />
 
+            {/* Original StatCard - Global Rank (for comparison) */}
             <StatCard
               title="Global Rank"
               {...formatGlobalRank(essentialData?.stats?.globalRank)}
