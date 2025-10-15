@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import StatusBar from "../components/layout/StatusBar";
 import VerticalMenu from "../components/layout/VerticalMenu";
 import ContentPane from "../components/layout/ContentPane";
+import BottomTabBar from "../components/layout/BottomTabBar";
 import { Box } from "@radix-ui/themes";
 import { ThemeContext } from "../context/ThemeContext";
 import useDashboardData from "../hooks/useDashboardData";
@@ -166,21 +167,7 @@ export default function Home() {
         {/* Content Area*/}
         <div className="flex-1 flex flex-col h-full overflow-hidden">
           {" "}
-          {/* Mobile Menu (only shown on small screens) */}
-          <div className="md:hidden w-full bg-primary-500/90 backdrop-blur-md border-b border-primary-400/20 px-3 py-2">
-            <select
-              value={activeItem}
-              onChange={(e) => navigateToSection(e.target.value)}
-              className="bg-primary-600/60 text-white font-outfit border border-primary-400/30 rounded-md px-2 py-1.5 w-full text-sm"
-            >
-              <option value="dashboard">Dashboard</option>
-              <option value="profile">My Profile</option>
-              <option value="predictions">My Predictions</option>
-              <option value="fixtures">Fixtures</option>
-              <option value="leagues">My Leagues</option>
-              <option value="settings">Settings</option>
-            </select>
-          </div>
+          {/* Status Bar - now full width on mobile */}
           {/* Status Bar moved inside content area */}
           <StatusBar
             user={statusBarData.user}
@@ -277,23 +264,33 @@ export default function Home() {
                 </div>
               </div>
             ) : null}{" "}
-            <ContentPane
-              activeItem={activeItem}
-              navigateToSection={navigateToSection}
-              navigationParams={navigationParams}
-              // Pass dashboard data to ContentPane
-              dashboardData={{
-                essentialData,
-                essentialLoading,
-                upcomingMatches: apiUpcomingMatches,
-                recentPredictions: apiRecentPredictions,
-                leagues: apiLeagues,
-                secondaryLoading,
-                errors,
-                refreshLeagues,
-              }}
-            />
+            <div className="pb-16 md:pb-0">
+              <ContentPane
+                activeItem={activeItem}
+                navigateToSection={navigateToSection}
+                navigationParams={navigationParams}
+                // Pass dashboard data to ContentPane
+                dashboardData={{
+                  essentialData,
+                  essentialLoading,
+                  upcomingMatches: apiUpcomingMatches,
+                  recentPredictions: apiRecentPredictions,
+                  leagues: apiLeagues,
+                  secondaryLoading,
+                  errors,
+                  refreshLeagues,
+                }}
+              />
+            </div>
           </div>
+        </div>
+        
+        {/* Bottom Tab Bar - Mobile Only */}
+        <div className="md:hidden">
+          <BottomTabBar 
+            activeItem={activeItem} 
+            setActiveItem={navigateToSection}
+          />
         </div>
       </div>
     </Box>
