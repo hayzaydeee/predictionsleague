@@ -6,6 +6,7 @@ import { getTeamLogo } from "../../utils/teamUtils";
 import TeamLogo from "../ui/TeamLogo";
 import { LOGO_SIZES } from "../../utils/teamLogos";
 import { ThemeContext } from "../../context/ThemeContext";
+import { padding, textScale } from "../../utils/mobileScaleUtils";
 
 const FixtureCard = ({
   fixture,
@@ -25,7 +26,7 @@ const FixtureCard = ({
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       onClick={() => onClick(fixture)}
-      className={`border rounded-lg p-3 ${
+      className={`border rounded-lg ${padding.cardCompact} ${
         theme === "dark"
           ? "bg-slate-800/50 border-slate-600/50 shadow-sm"
           : "border-slate-300 bg-white shadow-sm"
@@ -39,46 +40,52 @@ const FixtureCard = ({
     >
       {" "}
       <div
-        className={`flex justify-between items-center text-xs ${
+        className={`flex justify-between items-center text-2xs sm:text-xs ${
           theme === "dark" ? "text-white/60" : "text-slate-500"
-        } mb-2`}
+        } mb-1.5 sm:mb-2`}
       >
-        <span>{fixture.competition}</span>
-        <div className="text-right">
+        <span className="truncate mr-2">{fixture.competition}</span>
+        <div className="text-right flex-shrink-0">
           <div className="flex items-center justify-end">
-            <ClockIcon className="mr-1 w-3 h-3" />
-            {format(parseISO(fixture.date), "MMM d, yyyy")} |{" "}
-            {format(parseISO(fixture.date), "h:mm a")}
+            <ClockIcon className="mr-0.5 sm:mr-1 w-2.5 h-2.5 sm:w-3 sm:h-3" />
+            <span className="hidden sm:inline">
+              {format(parseISO(fixture.date), "MMM d, yyyy")} |{" "}
+              {format(parseISO(fixture.date), "h:mm a")}
+            </span>
+            <span className="sm:hidden">
+              {format(parseISO(fixture.date), "MMM d")} |{" "}
+              {format(parseISO(fixture.date), "h:mm a")}
+            </span>
           </div>
         </div>
       </div>
-      <div className="flex items-center">
+      <div className="flex items-center gap-1.5 sm:gap-2">
         <TeamLogo
           teamName={fixture.homeTeam}
-          size={LOGO_SIZES.md}
+          size={LOGO_SIZES.sm}
           theme={theme}
-          className="flex-shrink-0"
+          className="flex-shrink-0 w-6 h-6 sm:w-8 sm:h-8"
         />
-        <div className="mx-2 flex-grow">
-          <div className="flex justify-between items-center">
+        <div className="flex-grow min-w-0">
+          <div className="flex justify-between items-center gap-1.5 sm:gap-2">
             <span
               className={`${
                 theme === "dark" ? "text-white" : "text-slate-800"
-              } font-medium`}
+              } font-medium text-xs sm:text-sm truncate flex-1`}
             >
               {fixture.homeTeam}
             </span>
             <span
               className={`${
                 theme === "dark" ? "text-slate-400" : "text-slate-500"
-              } font-outfit`}
+              } font-outfit text-2xs sm:text-xs flex-shrink-0`}
             >
               vs
             </span>
             <span
               className={`${
                 theme === "dark" ? "text-white" : "text-slate-800"
-              } font-medium`}
+              } font-medium text-xs sm:text-sm truncate flex-1 text-right`}
             >
               {fixture.awayTeam}
             </span>
@@ -86,21 +93,21 @@ const FixtureCard = ({
         </div>
         <TeamLogo
           teamName={fixture.awayTeam}
-          size={LOGO_SIZES.md}
+          size={LOGO_SIZES.sm}
           theme={theme}
-          className="flex-shrink-0"
+          className="flex-shrink-0 w-6 h-6 sm:w-8 sm:h-8"
         />
       </div>
-      <div className="mt-2 flex justify-between items-center">
+      <div className="mt-1.5 sm:mt-2 flex justify-between items-center gap-2">
         <div
-          className={`text-xs ${
+          className={`text-2xs sm:text-xs ${
             theme === "dark" ? "text-white/60" : "text-slate-500"
-          }`}
+          } truncate flex-1`}
         >
           {fixture.venue}
         </div>
         <div
-          className={`text-xs py-1 px-2 rounded ${
+          className={`text-2xs sm:text-xs py-0.5 px-1.5 sm:py-1 sm:px-2 rounded whitespace-nowrap flex-shrink-0 ${
             fixture.predicted
               ? theme === "dark"
                 ? "bg-indigo-900/30 text-indigo-300"
@@ -110,7 +117,12 @@ const FixtureCard = ({
               : "bg-teal-100 text-teal-700 border border-teal-200"
           }`}
         >
-          {fixture.predicted ? "Prediction Made" : "Prediction Required"}
+          <span className="hidden sm:inline">
+            {fixture.predicted ? "Prediction Made" : "Prediction Required"}
+          </span>
+          <span className="sm:hidden">
+            {fixture.predicted ? "Done" : "TODO"}
+          </span>
         </div>
       </div>
     </motion.div>

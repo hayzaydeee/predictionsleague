@@ -12,6 +12,7 @@ import { EffectCards } from "swiper/modules";
 import EmptyFixtureState from "./EmptyFixtureState";
 import FixtureCard from "./FixtureCard";
 import { ThemeContext } from "../../context/ThemeContext";
+import { padding, textScale, spacing } from "../../utils/mobileScaleUtils";
 
 export default function FixtureStack({
   fixtures,
@@ -239,13 +240,13 @@ export default function FixtureStack({
   }, [dates]);
   return (
     <div
-      className={`relative backdrop-blur-md rounded-lg p-4 ${
+      className={`relative backdrop-blur-md rounded-lg ${padding.cardCompact} ${
         theme === "dark"
           ? "bg-slate-900/60 border border-slate-700/50"
           : "bg-white/80 border border-slate-200 shadow-sm"
       }`}
     >
-      <div className="mb-6">
+      <div className="mb-4 sm:mb-6">
         {dates.length === 0 ? (
           <EmptyFixtureState searchQuery={searchQuery} />
         ) : (
@@ -316,7 +317,7 @@ export default function FixtureStack({
                 {dates.map((date) => (
                   <SwiperSlide key={date} className="fixture-stack-slide">
                     <div
-                      className={`backdrop-blur-md rounded-xl border p-4 h-full flex flex-col ${
+                      className={`backdrop-blur-md rounded-xl border ${padding.cardCompact} h-full flex flex-col ${
                         theme === "dark"
                           ? "bg-slate-900 border-slate-600/50"
                           : "bg-white border-slate-300 shadow-sm"
@@ -324,23 +325,24 @@ export default function FixtureStack({
                     >
                       {" "}
                       {/* Date header - now fixed position within the card */}
-                      <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center justify-between mb-2 sm:mb-4">
                         <div className="flex items-center">
                           <div
-                            className={`text-sm px-3 py-1 rounded-md flex items-center ${
+                            className={`text-xs sm:text-sm px-2 sm:px-3 py-0.5 sm:py-1 rounded-md flex items-center ${
                               theme === "dark"
                                 ? "bg-teal-900/40 text-teal-300"
                                 : "bg-teal-100 text-teal-700 border border-teal-200"
                             }`}
                           >
-                            <CalendarIcon className="mr-1.5 w-4 h-4" />
-                            {format(parseISO(date), "EEEE, d")}
+                            <CalendarIcon className="mr-1 sm:mr-1.5 w-3 h-3 sm:w-4 sm:h-4" />
+                            <span className="hidden sm:inline">{format(parseISO(date), "EEEE, d")}</span>
+                            <span className="sm:hidden">{format(parseISO(date), "EEE, d")}</span>
                           </div>
                         </div>
-                        <div className="flex items-center space-x-1">
+                        <div className="flex items-center gap-1 sm:gap-1.5">
                           {fixturesByDate[date]?.length > 0 && (
                             <div
-                              className={`text-xs px-2 py-0.5 rounded-full ${
+                              className={`text-2xs sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full ${
                                 theme === "dark"
                                   ? "text-white/50 bg-primary-700/40"
                                   : "text-slate-600 bg-slate-100"
@@ -351,20 +353,21 @@ export default function FixtureStack({
                           )}
                           {fixturesByDate[date]?.length > 2 && (
                             <div
-                              className={`text-xs px-2 py-0.5 rounded-full ${
+                              className={`text-2xs sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full ${
                                 theme === "dark"
                                   ? "text-white/70 bg-indigo-700/40"
                                   : "text-indigo-700 bg-indigo-100"
                               }`}
                             >
-                              {fixturesByDate[date].length} fixtures
+                              <span className="hidden sm:inline">{fixturesByDate[date].length} fixtures</span>
+                              <span className="sm:hidden">{fixturesByDate[date].length}</span>
                             </div>
                           )}
                         </div>
                       </div>
                       {/* Fixtures container - now scrollable */}
                       <div
-                        className="space-y-3 mt-2 overflow-y-auto flex-grow pr-1 fixtures-container"
+                        className="space-y-2 sm:space-y-3 mt-1 sm:mt-2 overflow-y-auto flex-grow pr-1 fixtures-container"
                         style={{ maxHeight: "300px" }} // Fixed height for scrolling
                         ref={(ref) => ref && checkOverflow(date, ref)}
                       >

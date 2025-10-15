@@ -11,6 +11,7 @@ import { backgrounds, text } from "../../utils/themeUtils";
 import { useFixtures } from "../../hooks/useFixtures";
 import { fixtureFilters } from "../../services/api/externalFixturesAPI";
 import { usePredictionTracker } from "../../utils/predictionTracker";
+import { spacing, padding, textScale } from "../../utils/mobileScaleUtils";
 
 const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
   // Get theme context and user preferences
@@ -187,17 +188,17 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div className={spacing.normal}>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4">
         <div>
           <h1
             className={`${
               theme === "dark" ? "text-teal-100" : "text-teal-700"
-            } text-3xl font-bold font-dmSerif`}
+            } ${textScale.h1} font-bold font-dmSerif`}
           >
             Fixtures
           </h1>
-          <p className={`${text.secondary[theme]} font-outfit`}>
+          <p className={`${text.secondary[theme]} font-outfit text-xs sm:text-sm`}>
             View and predict upcoming fixtures
           </p>
         </div>
@@ -263,7 +264,7 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
           theme === "dark"
             ? "backdrop-blur-xl border-slate-700/50 bg-slate-900/60"
             : "border-slate-200 bg-white/80 backdrop-blur-sm shadow-sm"
-        } rounded-xl border mb-5 overflow-hidden font-outfit p-5`}
+        } rounded-xl border mb-5 overflow-hidden font-outfit ${padding.cardCompact}`}
       >
         {/* Active gameweek chips banner */}
         <AnimatePresence>
