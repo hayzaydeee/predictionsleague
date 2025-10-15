@@ -400,7 +400,7 @@ const DashboardView = ({
                 type: "neutral",
               }}
               icon={<LightningBoltIcon />}
-              accentColor="amber"
+              accentColor="teal"
             />
 
             {/* Original StatCard - Global Rank (for comparison) */}
