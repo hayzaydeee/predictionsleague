@@ -162,7 +162,10 @@ const UpcomingMatchesPanel = ({ matches, onViewAll, onPredictMatch }) => {
                     <div className="flex items-center gap-0.5 sm:gap-1">
                       <CalendarIcon className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                       <span className="hidden sm:inline">{formattedDate}</span>
-                      <span className="sm:hidden">{formattedDate.split(' ')[1]}</span>
+                      <span className="sm:hidden">{matchDate.toLocaleDateString("en-GB", {
+                        day: "2-digit",
+                        month: "2-digit",
+                      })}</span>
                     </div>
                     <div className="flex items-center gap-0.5 sm:gap-1">
                       <ClockIcon className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
@@ -177,37 +180,34 @@ const UpcomingMatchesPanel = ({ matches, onViewAll, onPredictMatch }) => {
                     </div>
                   </div>
                 </div>
-                {!match.predicted ? (
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => onPredictMatch(match)}
-                    className={`flex items-center gap-1 sm:gap-1.5 border rounded px-2 sm:px-3 py-1 sm:py-1.5 text-2xs sm:text-xs font-medium transition-all duration-200 opacity-70 hover:opacity-100 ${
-                      theme === "dark"
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => onPredictMatch(match)}
+                  className={`flex items-center gap-1 sm:gap-1.5 border rounded px-2 sm:px-3 py-1 sm:py-1.5 text-2xs sm:text-xs font-medium transition-all duration-200 opacity-70 hover:opacity-100 ${
+                    !match.predicted
+                      ? theme === "dark"
                         ? "bg-teal-600/20 hover:bg-teal-600/30 text-emerald-200 hover:text-emerald-200 border-emerald-500/30"
                         : "bg-teal-50 hover:bg-teal-100 text-teal-600 hover:text-teal-700 border-teal-200"
-                    }`}
-                  >
-                    <PlusIcon className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
-                    <span className="hidden sm:inline">Predict</span>
-                    <span className="sm:hidden">+</span>
-                  </motion.button>
-                ) : (
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => onPredictMatch(match)}
-                    className={`flex items-center gap-1 sm:gap-1.5 border rounded px-2 sm:px-3 py-1 sm:py-1.5 text-2xs sm:text-xs font-medium transition-all duration-200 opacity-70 hover:opacity-100 ${
-                      theme === "dark"
-                        ? "bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-200 hover:text-indigo-200 border-indigo-500/30"
-                        : "bg-indigo-50 hover:bg-indigo-100 text-indigo-600 hover:text-indigo-700 border-indigo-200"
-                    }`}
-                  >
-                    <LightningBoltIcon className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
-                    <span className="hidden sm:inline">Edit</span>
-                    <span className="sm:hidden">✎</span>
-                  </motion.button>
-                )}
+                      : theme === "dark"
+                      ? "bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-200 hover:text-indigo-200 border-indigo-500/30"
+                      : "bg-indigo-50 hover:bg-indigo-100 text-indigo-600 hover:text-indigo-700 border-indigo-200"
+                  }`}
+                >
+                  {!match.predicted ? (
+                    <>
+                      <PlusIcon className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                      <span className="hidden sm:inline">Predict</span>
+                      <span className="sm:hidden">+</span>
+                    </>
+                  ) : (
+                    <>
+                      <LightningBoltIcon className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                      <span className="hidden sm:inline">Edit</span>
+                      <span className="sm:hidden">✎</span>
+                    </>
+                  )}
+                </motion.button>
               </div>
             </motion.div>
           );
