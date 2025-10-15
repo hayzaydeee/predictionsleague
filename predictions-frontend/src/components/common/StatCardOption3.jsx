@@ -65,20 +65,7 @@ const StatCardOption3 = ({ title, value, subtitle, badge, icon, trend, accentCol
 
       <div className="relative">
         {/* Header */}
-        <div className="flex items-start justify-between gap-3 mb-3">
-          {/* Icon in rounded container - like reference image */}
-          {icon && (
-            <div className={`p-3 sm:p-4 ${
-              theme === "dark" 
-                ? "bg-slate-700/50 border-slate-600/50" 
-                : "bg-slate-100 border-slate-200"
-            } rounded-xl sm:rounded-2xl border backdrop-blur-sm group-hover:scale-105 transition-transform duration-300`}>
-              <div className={`${iconSize.normal} sm:${iconSize.large} ${accent.iconGlow} opacity-90 group-hover:opacity-100 transition-all duration-300`}>
-                {icon}
-              </div>
-            </div>
-          )}
-
+        <div className="flex items-start justify-between gap-2 mb-3">
           <div className="flex-1">
             <h3
               className={`${
@@ -97,6 +84,13 @@ const StatCardOption3 = ({ title, value, subtitle, badge, icon, trend, accentCol
               {subtitle}
             </p>
           </div>
+
+          {/* Icon - simple, on the right */}
+          {icon && (
+            <div className={`${iconSize.large} ${accent.iconGlow} opacity-80 group-hover:opacity-100 transition-all duration-300 group-hover:scale-110`}>
+              {icon}
+            </div>
+          )}
         </div>
 
         {/* Value - Takes center stage */}
