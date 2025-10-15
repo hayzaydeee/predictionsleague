@@ -115,7 +115,7 @@ export default function Home() {
   };
 
   return (
-    <Box className="relative overflow-hidden bg-primary-500 min-h-screen">
+    <Box className="relative overflow-hidden bg-primary-500 h-screen">
       {/* Background elements */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         <motion.div
@@ -145,7 +145,7 @@ export default function Home() {
       </div>
 
       {/* Main Dashboard Content */}
-      <div className="relative z-10 flex min-h-screen md:h-screen">
+      <div className="relative z-10 flex h-screen">
         {/* Left Menu - Full Height */}
         <AnimatePresence>
           <motion.div
@@ -264,7 +264,7 @@ export default function Home() {
                 </div>
               </div>
             ) : null}{" "}
-            <div className="flex-1 pb-16 md:pb-0 md:min-h-0">
+            <div className="flex-1 pb-16 md:pb-0 overflow-hidden">
               <ContentPane
                 activeItem={activeItem}
                 navigateToSection={navigateToSection}
