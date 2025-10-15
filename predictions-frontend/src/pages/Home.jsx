@@ -173,7 +173,7 @@ export default function Home() {
           {/* Status Bar - now full width on mobile */}
           {/* Status Bar moved inside content area */}
           {/* Testing StatusBar Options - Change component to test different designs */}
-          <StatusBarOption1
+          <StatusBarOption2
             user={statusBarData.user}
             globalRank={essentialData?.stats?.globalRank}
             nextMatchData={statusBarData.nextMatchData}
