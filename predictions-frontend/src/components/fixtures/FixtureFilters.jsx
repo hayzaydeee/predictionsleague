@@ -161,13 +161,13 @@ const FixtureFilters = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               {/* Date Filter */}
               <div>
-                <label className={`block text-2xs sm:text-xs font-medium mb-1.5 sm:mb-2 ${text.secondary[theme]}`}>
+                <label className={`block text-2xs sm:text-xs font-medium mb-1 sm:mb-2 ${text.secondary[theme]}`}>
                   Date
                 </label>
                 <select
                   value={dateFilter}
                   onChange={(e) => setDateFilter(e.target.value)}
-                  className={`w-full px-2.5 sm:px-3 py-2 text-xs sm:text-sm rounded-lg border min-h-[44px] sm:min-h-0 ${
+                  className={`w-full px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm rounded-lg border ${
                     theme === "dark"
                       ? "bg-slate-800/50 border-slate-700 text-white"
                       : "bg-white border-slate-300 text-slate-900"
@@ -180,13 +180,13 @@ const FixtureFilters = ({
 
               {/* Sort By Filter */}
               <div>
-                <label className={`block text-2xs sm:text-xs font-medium mb-1.5 sm:mb-2 ${text.secondary[theme]}`}>
+                <label className={`block text-2xs sm:text-xs font-medium mb-1 sm:mb-2 ${text.secondary[theme]}`}>
                   Sort by
                 </label>
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className={`w-full px-2.5 sm:px-3 py-2 text-xs sm:text-sm rounded-lg border min-h-[44px] sm:min-h-0 ${
+                  className={`w-full px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm rounded-lg border ${
                     theme === "dark"
                       ? "bg-slate-800/50 border-slate-700 text-white"
                       : "bg-white border-slate-300 text-slate-900"

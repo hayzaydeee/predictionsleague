@@ -197,20 +197,20 @@ const GameweekChipsPanel = ({
       <div className="h-0.5 bg-gradient-to-r from-teal-500 via-blue-500 to-purple-500"></div>
       {/* Header - OPTIMIZED FOR MOBILE */}
       <div
-        className={`px-3 sm:px-5 py-2 sm:py-3 border-b ${getThemeStyles(theme, {
+        className={`px-3 sm:px-5 py-1.5 sm:py-3 border-b ${getThemeStyles(theme, {
           dark: "border-slate-700/50",
           light: "border-slate-200",
         })}`}
       >
         <div className="flex items-center justify-between gap-2">
           {/* Left: Icon + Title (no subtitle on mobile) */}
-          <div className="flex items-center gap-2 min-w-0">
-            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-teal-500/20 flex items-center justify-center flex-shrink-0">
-              <LightningBoltIcon className="w-3 h-3 sm:w-4 sm:h-4 text-teal-400" />
+          <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+            <div className="w-5 h-5 sm:w-8 sm:h-8 rounded-md sm:rounded-lg bg-teal-500/20 flex items-center justify-center flex-shrink-0">
+              <LightningBoltIcon className="w-2.5 h-2.5 sm:w-4 sm:h-4 text-teal-400" />
             </div>
             <div className="min-w-0">
               <h3
-                className={`text-sm sm:text-base font-semibold ${getThemeStyles(
+                className={`text-xs sm:text-base font-semibold ${getThemeStyles(
                   theme,
                   text.primary
                 )}`}
@@ -226,10 +226,10 @@ const GameweekChipsPanel = ({
           </div>
           
           {/* Right: Badges + Collapse button */}
-          <div className="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
+          <div className="flex items-center gap-1 sm:gap-3 flex-shrink-0">
             {/* Active chips count - simplified on mobile */}
             {activeChipsCount > 0 && (
-              <div className={`rounded-full px-2 sm:px-3 py-0.5 sm:py-1 flex items-center font-outfit border ${getThemeStyles(
+              <div className={`rounded-full px-1.5 sm:px-3 py-0.5 sm:py-1 flex items-center font-outfit border ${getThemeStyles(
                 theme,
                 {
                   dark: "bg-teal-900/40 border-teal-700/30 text-teal-300",
@@ -242,18 +242,18 @@ const GameweekChipsPanel = ({
             )}
             
             {/* Gameweek badge - simplified on mobile */}
-            <div className={`rounded-full px-2 sm:px-3 py-0.5 sm:py-1 flex items-center font-outfit border ${getThemeStyles(
+            <div className={`rounded-full px-1.5 sm:px-3 py-0.5 sm:py-1 flex items-center font-outfit border ${getThemeStyles(
               theme,
               {
                 dark: "bg-blue-900/40 border-blue-700/30 text-blue-300",
                 light: "bg-blue-100 border-blue-200 text-blue-700",
               }
             )}`}>
-              <span className={`text-2xs sm:text-sm mr-0.5 sm:mr-1 ${getThemeStyles(theme, {
+              <span className={`text-2xs sm:text-sm ${getThemeStyles(theme, {
                 dark: "text-blue-200/70",
                 light: "text-blue-600/70",
               })}`}>GW</span>
-              <span className="font-medium text-2xs sm:text-sm">{currentGameweek}</span>
+              <span className="font-medium text-2xs sm:text-sm ml-0.5 sm:ml-1">{currentGameweek}</span>
             </div>
             
             {/* Collapse button */}
@@ -261,7 +261,7 @@ const GameweekChipsPanel = ({
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setIsPanelCollapsed(!isPanelCollapsed)}
-              className={`p-1.5 sm:p-2 rounded-lg transition-all duration-200 border ${getThemeStyles(
+              className={`p-1 sm:p-2 rounded-md sm:rounded-lg transition-all duration-200 border ${getThemeStyles(
                 theme,
                 {
                   dark: "bg-slate-700/50 hover:bg-slate-700/70 text-slate-300 hover:text-slate-200 border-slate-600/50 hover:border-slate-500/50",
@@ -271,7 +271,7 @@ const GameweekChipsPanel = ({
               )}`}
             >
               <ChevronDownIcon
-                className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform duration-200 ${
+                className={`w-3 h-3 sm:w-4 sm:h-4 transition-transform duration-200 ${
                   isPanelCollapsed ? "rotate-180" : ""
                 }`}
               />
