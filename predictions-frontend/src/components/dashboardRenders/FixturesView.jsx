@@ -208,10 +208,10 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
 
         {/* View toggle controls - TEST DIFFERENT OPTIONS */}
         {/* Option 1: Compact & Integrated (3 main views + dropdown) */}
-        <ViewToggleBarOption1 viewMode={viewMode} setViewMode={handleViewModeChange} />
+        {/* <ViewToggleBarOption1 viewMode={viewMode} setViewMode={handleViewModeChange} /> */}
         
         {/* Option 2: Bottom Sheet (uncomment to test) */}
-        {/* <ViewToggleBarOption2 viewMode={viewMode} setViewMode={handleViewModeChange} /> */}
+        <ViewToggleBarOption2 viewMode={viewMode} setViewMode={handleViewModeChange} />
         
         {/* Option 3: Minimalist Dropdown (uncomment to test) */}
         {/* <ViewToggleBarOption3 viewMode={viewMode} setViewMode={handleViewModeChange} /> */}
