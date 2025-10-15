@@ -374,23 +374,23 @@ const DashboardView = ({
           </>
         ) : (
           <>
-            {/* Option 1: Minimal & Modern - Weekly Points */}
-            <StatCardOption1
+            {/* Weekly Points - Purple accent */}
+            <StatCardOption3
               title="Weekly Points"
               {...formatWeeklyPoints(essentialData?.stats?.weeklyPoints)}
               icon={<MagicWandIcon />}
               accentColor="purple"
             />
 
-            {/* Option 2: Accent Bar - Accuracy Rate */}
-            <StatCardOption2
+            {/* Accuracy Rate - Teal accent */}
+            <StatCardOption3
               title="Accuracy Rate"
               {...formatAccuracyRate(essentialData?.stats?.accuracyRate)}
               icon={<TargetIcon />}
               accentColor="teal"
             />
 
-            {/* Option 3: Glassmorphic - Available Chips */}
+            {/* Available Chips - Amber accent */}
             <StatCardOption3
               title="Available Chips"
               value={essentialData?.stats?.availableChips?.value?.toString() || "0"}
@@ -400,14 +400,15 @@ const DashboardView = ({
                 type: "neutral",
               }}
               icon={<LightningBoltIcon />}
-              accentColor="teal"
+              accentColor="amber"
             />
 
-            {/* Original StatCard - Global Rank (for comparison) */}
-            <StatCard
+            {/* Global Rank - Blue accent */}
+            <StatCardOption3
               title="Global Rank"
               {...formatGlobalRank(essentialData?.stats?.globalRank)}
-              icon={<PersonIcon className="w-4 h-4" />}
+              icon={<PersonIcon />}
+              accentColor="blue"
             />
           </>
         )}
