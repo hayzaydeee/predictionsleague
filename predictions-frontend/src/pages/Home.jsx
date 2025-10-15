@@ -2,6 +2,9 @@ import { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import StatusBar from "../components/layout/StatusBar";
+import StatusBarOption1 from "../components/layout/StatusBarOption1";
+import StatusBarOption2 from "../components/layout/StatusBarOption2";
+import StatusBarOption3 from "../components/layout/StatusBarOption3";
 import VerticalMenu from "../components/layout/VerticalMenu";
 import ContentPane from "../components/layout/ContentPane";
 import BottomTabBar from "../components/layout/BottomTabBar";
@@ -169,7 +172,8 @@ export default function Home() {
           {" "}
           {/* Status Bar - now full width on mobile */}
           {/* Status Bar moved inside content area */}
-          <StatusBar
+          {/* Testing StatusBar Options - Change component to test different designs */}
+          <StatusBarOption1
             user={statusBarData.user}
             globalRank={essentialData?.stats?.globalRank}
             nextMatchData={statusBarData.nextMatchData}

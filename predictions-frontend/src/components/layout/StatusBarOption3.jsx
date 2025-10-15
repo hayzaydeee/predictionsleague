@@ -1,0 +1,244 @@
+import { Box } from "@radix-ui/themes";
+import { motion } from "framer-motion";
+import {
+  CaretUpIcon,
+  CaretDownIcon,
+  SunIcon,
+  MoonIcon,
+} from "@radix-ui/react-icons";
+import { useContext } from "react";
+import { ThemeContext } from "../../context/ThemeContext";
+import { usePredictionTracker } from "../../utils/predictionTracker";
+import { useFixtures } from "../../hooks/useFixtures";
+
+/**
+ * StatusBarOption3 - Profile Chip + Action Bar
+ * User info as compact pill/chip
+ * Stats separated visually with clear hierarchy
+ * Mobile-optimized layout
+ */
+export default function StatusBarOption3({ 
+  user, 
+  globalRank,
+  onMakePredictions, 
+  loading = false,
+  nextMatchData = null 
+}) {
+  const { theme, toggleTheme } = useContext(ThemeContext);
+  const { fixtures } = useFixtures({ fallbackToSample: false });
+  const predictionStatus = usePredictionTracker(fixtures);
+
+  const userData = user ? {
+    username: user.username || "Anonymous User",
+    points: user.points || 0,
+    rank: user.rank || 0,
+    rankChange: user.rankChange || 0,
+    predictions: predictionStatus.predictedCount || 0,
+    pendingPredictions: predictionStatus.pendingCount || 0,
+  } : {
+    username: "Loading...",
+    points: 0,
+    rank: 0,
+    rankChange: 0,
+    predictions: 0,
+    pendingPredictions: predictionStatus.pendingCount || 0,
+  };
+
+  const Skeleton = ({ width, height = "h-4" }) => (
+    <div
+      className={`${height} ${width} ${
+        theme === "dark" ? "bg-slate-700/50" : "bg-slate-200"
+      } rounded animate-pulse`}
+    />
+  );
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className={`${
+        theme === "dark"
+          ? "bg-primary-500/90 border-slate-800"
+          : "bg-slate-50 border-slate-200"
+      } backdrop-blur-md border`}
+    >
+      <Box className="container mx-auto px-3 py-2">
+        <div className="flex items-center justify-between gap-3">
+          {/* Left: Profile Chip */}
+          <div
+            className={`flex items-center gap-2 px-2.5 py-1 rounded-full flex-shrink-0 ${
+              theme === "dark"
+                ? "bg-slate-800/50 border border-slate-700/50"
+                : "bg-white border border-slate-200"
+            }`}
+          >
+            {loading ? (
+              <>
+                <div className="h-6 w-6 bg-slate-700/50 rounded-full animate-pulse" />
+                <Skeleton width="w-16" height="h-4" />
+              </>
+            ) : (
+              <>
+                <div className="h-6 w-6 bg-indigo-600 rounded-full flex items-center justify-center text-white font-medium text-xs">
+                  {userData.username.substring(0, 1).toUpperCase()}
+                </div>
+                <span
+                  className={`${
+                    theme === "dark" ? "text-teal-100" : "text-teal-700"
+                  } font-medium font-outfit text-xs`}
+                >
+                  {userData.username}
+                </span>
+              </>
+            )}
+          </div>
+
+          {/* Center: Stats Bar */}
+          <div className="flex items-center gap-3 flex-1 justify-center">
+            {/* Rank */}
+            <div className="flex flex-col items-center">
+              <span
+                className={`text-2xs ${
+                  theme === "dark" ? "text-white/50" : "text-slate-400"
+                } font-outfit leading-tight`}
+              >
+                RANK
+              </span>
+              {loading ? (
+                <Skeleton width="w-8" height="h-5" />
+              ) : (
+                <div className="flex items-center gap-1">
+                  <span
+                    className={`${
+                      theme === "dark" ? "text-teal-200" : "text-teal-600"
+                    } font-bold font-dmSerif text-sm`}
+                  >
+                    {globalRank?.value?.toString() || "N/A"}
+                  </span>
+                  {userData.rankChange !== 0 && (
+                    <span
+                      className={`text-2xs ${
+                        userData.rankChange > 0
+                          ? theme === "dark"
+                            ? "text-green-400"
+                            : "text-green-600"
+                          : theme === "dark"
+                          ? "text-red-400"
+                          : "text-red-600"
+                      }`}
+                    >
+                      {userData.rankChange > 0 ? (
+                        <CaretUpIcon className="inline w-3 h-3" />
+                      ) : (
+                        <CaretDownIcon className="inline w-3 h-3" />
+                      )}
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Divider */}
+            <div
+              className={`h-6 w-px ${
+                theme === "dark" ? "bg-slate-700" : "bg-slate-200"
+              }`}
+            />
+
+            {/* Points */}
+            <div className="flex flex-col items-center">
+              <span
+                className={`text-2xs ${
+                  theme === "dark" ? "text-white/50" : "text-slate-400"
+                } font-outfit leading-tight`}
+              >
+                PTS
+              </span>
+              {loading ? (
+                <Skeleton width="w-8" height="h-5" />
+              ) : (
+                <span
+                  className={`${
+                    theme === "dark" ? "text-teal-200" : "text-teal-600"
+                  } font-bold font-dmSerif text-sm`}
+                >
+                  {userData.points}
+                </span>
+              )}
+            </div>
+
+            {/* Divider */}
+            <div
+              className={`h-6 w-px ${
+                theme === "dark" ? "bg-slate-700" : "bg-slate-200"
+              }`}
+            />
+
+            {/* Predictions */}
+            <div className="flex flex-col items-center">
+              <span
+                className={`text-2xs ${
+                  theme === "dark" ? "text-white/50" : "text-slate-400"
+                } font-outfit leading-tight`}
+              >
+                PRED
+              </span>
+              {loading ? (
+                <Skeleton width="w-6" height="h-5" />
+              ) : (
+                <span
+                  className={`${
+                    theme === "dark" ? "text-teal-200" : "text-teal-600"
+                  } font-bold font-dmSerif text-sm`}
+                >
+                  {userData.predictions}
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Right: Actions */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {loading ? (
+              <Skeleton width="w-8" height="h-8" />
+            ) : userData.pendingPredictions > 0 ? (
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={onMakePredictions}
+                className={`${
+                  theme === "dark"
+                    ? "bg-indigo-600 hover:bg-indigo-700"
+                    : "bg-indigo-600 hover:bg-indigo-700"
+                } text-white rounded-full h-8 w-8 flex items-center justify-center font-bold text-xs transition-colors relative shadow-lg`}
+              >
+                {userData.pendingPredictions}
+                <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
+              </motion.button>
+            ) : null}
+
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={toggleTheme}
+              className={`p-1.5 rounded-md transition-colors ${
+                theme === "dark"
+                  ? "text-white/70 hover:bg-primary-600/40 hover:text-teal-300"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-teal-700"
+              }`}
+            >
+              <motion.span
+                initial={{ rotate: 0 }}
+                animate={{ rotate: theme === "dark" ? 0 : 360 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+              >
+                {theme === "dark" ? <SunIcon /> : <MoonIcon />}
+              </motion.span>
+            </motion.button>
+          </div>
+        </div>
+      </Box>
+    </motion.div>
+  );
+}
