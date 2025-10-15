@@ -340,11 +340,7 @@ export default function ContentPane({
     }
   };
   return (
-    <div className={`h-full overflow-y-auto p-3 sm:p-4 md:p-6 ${
-      theme === 'dark' 
-        ? 'bg-primary-500 text-white' 
-        : 'bg-slate-50 text-light-text'
-    }`}>
+    <div className={`h-full overflow-y-auto p-6 ${backgrounds.main[theme]}`}>
       {/* Render content based on activeItem */}
       {renderContent()}
 
