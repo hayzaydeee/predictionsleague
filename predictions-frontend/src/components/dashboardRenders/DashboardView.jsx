@@ -23,6 +23,9 @@ import { extendedPredictionHistory } from "../../data/sampleData";
 import InsightDetailModal from "../common/InsightDetailModal";
 import { normalizeTeamName } from "../../utils/teamUtils";
 import { useExternalFixtures } from "../../hooks/useExternalFixtures";
+// Responsive utilities
+import { ResponsiveGrid, ResponsiveText, ResponsiveStack } from "../common";
+import { textScale, margins, patterns } from "../../utils/mobileScaleUtils";
 
 const DashboardView = ({
   upcomingMatches,
@@ -266,26 +269,32 @@ const DashboardView = ({
     },
   };
   return (
-    <motion.div
+    <ResponsiveStack
+      space="normal"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="space-y-3 sm:space-y-4 md:space-y-6"
+      as={motion.div}
     >
       {/*Header */}
       <motion.div variants={itemVariants} className="relative">
-        <div className="flex items-center justify-between mb-2 sm:mb-3">
+        <div className={`flex items-center justify-between ${margins.bottom.normal}`}>
           <div>
-            <h1
+            <ResponsiveText
+              variant="h1"
+              as="h1"
               className={`${
                 theme === "dark" ? "text-teal-100" : "text-teal-700"
-              } text-xl sm:text-2xl md:text-3xl font-bold font-dmSerif mb-1 sm:mb-1.5`}
+              } font-bold font-dmSerif ${margins.bottom.tight}`}
             >
               Welcome back
-            </h1>
-            <p className={`${text.secondary[theme]} font-outfit text-sm sm:text-base`}>
+            </ResponsiveText>
+            <ResponsiveText 
+              variant="body" 
+              className={`${text.secondary[theme]} font-outfit`}
+            >
               Let's check your performance and make some predictions
-            </p>
+            </ResponsiveText>
           </div>
         </div>
         {/* Progress indicator */}
@@ -349,9 +358,11 @@ const DashboardView = ({
         </div>
       </motion.div>{" "}
       {/* Enhanced Stats Cards */}
-      <motion.div
+      <ResponsiveGrid
+        variant="stats"
+        gap="normal"
+        as={motion.div}
         variants={itemVariants}
-        className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-5"
       >
         {essentialLoading ? (
           // Show skeleton cards while loading essential data
@@ -393,7 +404,7 @@ const DashboardView = ({
             />
           </>
         )}
-      </motion.div>{" "}
+      </ResponsiveGrid>{" "}
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
         {/* Main Content - 2/3 width on xl screens */}
@@ -677,7 +688,7 @@ const DashboardView = ({
         isOpen={!!selectedInsight}
         onClose={() => setSelectedInsight(null)}
       />
-    </motion.div>
+    </ResponsiveStack>
   );
 };
 
