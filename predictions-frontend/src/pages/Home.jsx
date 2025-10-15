@@ -165,7 +165,7 @@ export default function Home() {
         </AnimatePresence>
 
         {/* Content Area*/}
-        <div className="flex-1 flex flex-col min-h-screen">
+        <div className="flex-1 flex flex-col min-h-screen bg-inherit">
           {" "}
           {/* Status Bar - now full width on mobile */}
           {/* Status Bar moved inside content area */}
