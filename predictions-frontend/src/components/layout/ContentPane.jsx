@@ -340,7 +340,7 @@ export default function ContentPane({
     }
   };
   return (
-    <div className={`min-h-screen md:h-full md:overflow-y-auto p-3 sm:p-4 md:p-6 ${
+    <div className={`min-h-screen h-full overflow-y-auto p-3 sm:p-4 md:p-6 ${
       theme === 'dark' 
         ? 'bg-primary-500 text-white' 
         : 'bg-slate-50 text-light-text'
