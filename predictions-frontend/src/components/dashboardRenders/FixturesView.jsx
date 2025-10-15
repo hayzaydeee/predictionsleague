@@ -193,16 +193,17 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
 
   return (
     <div className={spacing.normal}>
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4">
+      {/* HERO SECTION - Prominent header with clear hierarchy */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
         <div>
           <h1
             className={`${
               theme === "dark" ? "text-teal-100" : "text-teal-700"
-            } ${textScale.h1} font-bold font-dmSerif`}
+            } text-2xl sm:text-3xl font-bold font-dmSerif mb-0.5`}
           >
             Fixtures
           </h1>
-          <p className={`${text.secondary[theme]} font-outfit text-xs sm:text-sm`}>
+          <p className={`${text.secondary[theme]} font-outfit text-xs sm:text-sm opacity-70`}>
             View and predict upcoming fixtures
           </p>
         </div>
@@ -215,11 +216,12 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
         {/* <ViewToggleBarOption2 viewMode={viewMode} setViewMode={handleViewModeChange} /> */}
         {/* <ViewToggleBarOption3 viewMode={viewMode} setViewMode={handleViewModeChange} /> */}
       </div>
-      {/* Collapsible Gameweek Chips Panel */}
+      {/* CHIP STRATEGY SECTION - Elevated card with shadow */}
       <motion.div
         initial={{ height: "auto" }}
         animate={{ height: "auto" }}
         transition={{ duration: 0.3 }}
+        className="mb-4 sm:mb-5"
       >
         <GameweekChipsPanel
           currentGameweek={currentGameweek}
@@ -230,25 +232,25 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
         />
       </motion.div>
 
-      {/* API Status Banner */}
+      {/* API STATUS BANNER - Attention-grabbing warning */}
       {(hasApiError || !predictionsAvailable) && (
         <div
           className={`${
             theme === "dark"
-              ? "backdrop-blur-xl border-amber-700/50 bg-amber-900/20"
-              : "border-amber-200 bg-amber-50/80 backdrop-blur-sm shadow-sm"
-          } rounded-xl border mb-3 overflow-hidden font-outfit p-4`}
+              ? "backdrop-blur-xl border-amber-700/50 bg-amber-900/20 shadow-lg shadow-amber-900/20"
+              : "border-amber-200 bg-amber-50/80 backdrop-blur-sm shadow-md shadow-amber-500/10"
+          } rounded-xl border mb-4 sm:mb-5 overflow-hidden font-outfit p-3 sm:p-4`}
         >
           <div className="flex items-center gap-3">
-            <div className="text-amber-500">
-              {hasApiError ? "⚠️" : ""}
+            <div className="text-amber-500 text-lg">
+              {hasApiError ? "⚠️" : "ℹ️"}
             </div>
             <div className="flex-1">
-              <div className={`${text.primary[theme]} font-medium text-sm`}>
+              <div className={`${text.primary[theme]} font-semibold text-sm`}>
                 {hasApiError && "External Fixtures API Unavailable"}
                 {!predictionsAvailable && !hasApiError && "Predictions Service Unavailable"}
               </div>
-              <div className={`${text.secondary[theme]} text-xs mt-1`}>
+              <div className={`${text.secondary[theme]} text-xs mt-1 opacity-80`}>
                 {hasApiError && "Unable to connect to external fixtures API. Please check your connection or try again later."}
                 {!predictionsAvailable && "User predictions will be available when backend is connected."}
               </div>
@@ -257,7 +259,7 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
               <div className={`${text.secondary[theme]} text-xs text-right`}>
                 <div>{dataQuality.totalFixtures} fixtures</div>
                 {stats && (
-                  <div className="text-green-600">
+                  <div className="text-green-600 font-medium">
                     {Math.round(dataQuality.predictionRate * 100)}% predicted
                   </div>
                 )}
@@ -267,47 +269,57 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
         </div>
       )}
 
-      {/* Content container with active chips banner */}
+      {/* MAIN FIXTURES CONTAINER - Primary content card with elevation */}
       <div
         className={`${
           theme === "dark"
-            ? "backdrop-blur-xl border-slate-700/50 bg-slate-900/60"
-            : "border-slate-200 bg-white/80 backdrop-blur-sm shadow-sm"
-        } rounded-xl border mb-5 overflow-hidden font-outfit ${padding.cardCompact}`}
+            ? "backdrop-blur-xl border-slate-700/50 bg-slate-900/60 shadow-xl shadow-slate-950/50"
+            : "border-slate-200 bg-white/80 backdrop-blur-sm shadow-lg shadow-slate-900/5"
+        } rounded-xl border mb-5 overflow-hidden font-outfit`}
       >
         {/* Active gameweek chips banner */}
         <AnimatePresence>
           {activeGameweekChips.length > 0 && (
-            <ActiveChipsBanner
-              activeGameweekChips={activeGameweekChips}
-              currentGameweek={currentGameweek}
-            />
+            <div className="border-b border-slate-700/30">
+              <ActiveChipsBanner
+                activeGameweekChips={activeGameweekChips}
+                currentGameweek={currentGameweek}
+              />
+            </div>
           )}
         </AnimatePresence>
 
-        {/* Fixtures filter component */}
-        <FixtureFilters
-          activeFilter={activeFilter}
-          setActiveFilter={setActiveFilter}
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          dateFilter={dateFilter}
-          setDateFilter={setDateFilter}
-          sortBy={sortBy}
-          setSortBy={setSortBy}
-          showFilters={showFilters}
-          setShowFilters={setShowFilters}
-          fixtures={liveFixtures || []}
-        />
+        {/* FILTERS SECTION - Separated and de-emphasized */}
+        <div className={`${
+          theme === "dark" 
+            ? "bg-slate-800/30 border-b border-slate-700/30" 
+            : "bg-slate-50/50 border-b border-slate-200/50"
+        } ${padding.cardCompact}`}>
+          <FixtureFilters
+            activeFilter={activeFilter}
+            setActiveFilter={setActiveFilter}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            dateFilter={dateFilter}
+            setDateFilter={setDateFilter}
+            sortBy={sortBy}
+            setSortBy={setSortBy}
+            showFilters={showFilters}
+            setShowFilters={setShowFilters}
+            fixtures={liveFixtures || []}
+          />
+        </div>
 
-        {/* Content view with filtered fixtures */}
-        <ContentView
-          viewMode={viewMode}
-          fixtures={filteredFixtures}
-          onFixtureSelect={onFixtureSelect}
-          activeGameweekChips={activeGameweekChips}
-          searchQuery={searchQuery}
-        />
+        {/* FIXTURES CONTENT - Main focus area with breathing room */}
+        <div className={padding.cardCompact}>
+          <ContentView
+            viewMode={viewMode}
+            fixtures={filteredFixtures}
+            onFixtureSelect={onFixtureSelect}
+            activeGameweekChips={activeGameweekChips}
+            searchQuery={searchQuery}
+          />
+        </div>
       </div>
     </div>
   );
