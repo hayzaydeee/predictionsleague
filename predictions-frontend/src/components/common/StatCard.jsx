@@ -15,7 +15,7 @@ const StatCard = ({ title, value, subtitle, badge, icon, trend }) => {
         theme === "dark"
           ? "bg-slate-800/40 border-slate-700/50 hover:border-slate-600/50"
           : "bg-white border-slate-200 hover:border-slate-300 shadow-sm"
-      } backdrop-blur-sm rounded-xl p-5 border transition-all duration-200 overflow-hidden group`}
+      } backdrop-blur-sm rounded-lg sm:rounded-xl p-2 sm:p-3 md:p-5 border transition-all duration-200 overflow-hidden group`}
     >
       {" "}
       {/* Background gradient on hover */}
@@ -29,21 +29,21 @@ const StatCard = ({ title, value, subtitle, badge, icon, trend }) => {
       <div className="relative">
         {" "}
         {/* Header with icon and badge */}
-        <div className="flex justify-between items-start mb-3">
-          <div className="flex items-center gap-2">
+        <div className="flex justify-between items-start mb-1.5 sm:mb-2 md:mb-3">
+          <div className="flex items-center gap-1 sm:gap-2">
             {" "}
             {icon && (
               <div
-                className={`p-1.5 ${
+                className={`p-1 sm:p-1.5 ${
                   theme === "dark"
                     ? "bg-teal-500/10 border-teal-500/20"
                     : "bg-teal-50 border-teal-200"
-                } rounded-lg border`}
+                } rounded border`}
               >
                 <div
-                  className={
+                  className={`w-3 h-3 sm:w-4 sm:h-4 ${
                     theme === "dark" ? "text-teal-400" : "text-teal-600"
-                  }
+                  }`}
                 >
                   {icon}
                 </div>
@@ -52,7 +52,7 @@ const StatCard = ({ title, value, subtitle, badge, icon, trend }) => {
             <h3
               className={`${
                 theme === "dark" ? "text-slate-300" : "text-slate-600"
-              } font-outfit font-medium text-sm`}
+              } font-outfit font-medium text-xs sm:text-sm`}
             >
               {title}
             </h3>
@@ -92,9 +92,9 @@ const StatCard = ({ title, value, subtitle, badge, icon, trend }) => {
             ))}
         </div>{" "}
         {/* Value and trend */}
-        <div className="flex items-baseline gap-2 mb-1.5">
+        <div className="flex items-baseline gap-1 sm:gap-2 mb-1 sm:mb-1.5">
           <p
-            className={`text-3xl font-bold ${
+            className={`text-lg sm:text-2xl md:text-3xl font-bold ${
               theme === "dark" ? "text-white" : "text-slate-800"
             } font-dmSerif`}
           >
@@ -102,7 +102,7 @@ const StatCard = ({ title, value, subtitle, badge, icon, trend }) => {
           </p>
           {trend && (
             <div
-              className={`flex items-center gap-1 px-1.5 py-0.5 rounded-md ${
+              className={`flex items-center gap-0.5 sm:gap-1 px-1 sm:px-1.5 py-0.5 rounded-md ${
                 trend.direction === "up"
                   ? theme === "dark"
                     ? "bg-emerald-500/10 text-emerald-400"
@@ -113,11 +113,11 @@ const StatCard = ({ title, value, subtitle, badge, icon, trend }) => {
               }`}
             >
               {trend.direction === "up" ? (
-                <DoubleArrowUpIcon className="w-2.5 h-2.5" />
+                <DoubleArrowUpIcon className="w-2 h-2 sm:w-2.5 sm:h-2.5" />
               ) : (
-                <DoubleArrowDownIcon className="w-2.5 h-2.5" />
+                <DoubleArrowDownIcon className="w-2 h-2 sm:w-2.5 sm:h-2.5" />
               )}
-              <span className="text-xs font-medium">{trend.value}</span>
+              <span className="text-2xs sm:text-xs font-medium">{trend.value}</span>
             </div>
           )}{" "}
         </div>
@@ -125,7 +125,7 @@ const StatCard = ({ title, value, subtitle, badge, icon, trend }) => {
         <div
           className={`${
             theme === "dark" ? "text-slate-400" : "text-slate-500"
-          } text-xs font-outfit`}
+          } text-2xs sm:text-xs font-outfit`}
         >
           {subtitle}
         </div>

@@ -167,11 +167,11 @@ export default function Home() {
         <div className="flex-1 flex flex-col h-full overflow-hidden">
           {" "}
           {/* Mobile Menu (only shown on small screens) */}
-          <div className="md:hidden w-full bg-primary-500/90 backdrop-blur-md border-b border-primary-400/20 px-4 py-3">
+          <div className="md:hidden w-full bg-primary-500/90 backdrop-blur-md border-b border-primary-400/20 px-3 py-2">
             <select
               value={activeItem}
               onChange={(e) => navigateToSection(e.target.value)}
-              className="bg-primary-600/60 text-white font-outfit border border-primary-400/30 rounded-md px-3 py-2 w-full"
+              className="bg-primary-600/60 text-white font-outfit border border-primary-400/30 rounded-md px-2 py-1.5 w-full text-sm"
             >
               <option value="dashboard">Dashboard</option>
               <option value="profile">My Profile</option>
