@@ -15,27 +15,27 @@ import { padding, margins, textScale, iconSize, borderRadius } from "../../utils
 const StatCardOption3 = ({ title, value, subtitle, badge, icon, trend, accentColor = "teal" }) => {
   const { theme } = useContext(ThemeContext);
 
-  // Accent color variants with gradients
+  // Accent color variants with gradients - adapted to app colors
   const accentColors = {
     teal: {
-      gradient: "from-teal-500/20 via-cyan-500/10 to-transparent",
-      iconGlow: theme === "dark" ? "text-teal-400 drop-shadow-[0_0_8px_rgba(20,184,166,0.5)]" : "text-teal-600",
-      border: theme === "dark" ? "border-teal-500/30" : "border-teal-200",
+      gradient: "from-teal-600/40 via-cyan-600/20 to-indigo-600/10",
+      iconGlow: theme === "dark" ? "text-teal-300 drop-shadow-[0_0_12px_rgba(94,234,212,0.6)]" : "text-teal-600",
+      border: theme === "dark" ? "border-teal-500/40" : "border-teal-200",
     },
     purple: {
-      gradient: "from-purple-500/20 via-fuchsia-500/10 to-transparent",
-      iconGlow: theme === "dark" ? "text-purple-400 drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]" : "text-purple-600",
-      border: theme === "dark" ? "border-purple-500/30" : "border-purple-200",
+      gradient: "from-purple-600/40 via-fuchsia-600/20 to-pink-600/10",
+      iconGlow: theme === "dark" ? "text-purple-300 drop-shadow-[0_0_12px_rgba(216,180,254,0.6)]" : "text-purple-600",
+      border: theme === "dark" ? "border-purple-500/40" : "border-purple-200",
     },
     blue: {
-      gradient: "from-blue-500/20 via-indigo-500/10 to-transparent",
-      iconGlow: theme === "dark" ? "text-blue-400 drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]" : "text-blue-600",
-      border: theme === "dark" ? "border-blue-500/30" : "border-blue-200",
+      gradient: "from-blue-600/40 via-indigo-600/20 to-purple-600/10",
+      iconGlow: theme === "dark" ? "text-blue-300 drop-shadow-[0_0_12px_rgba(147,197,253,0.6)]" : "text-blue-600",
+      border: theme === "dark" ? "border-blue-500/40" : "border-blue-200",
     },
     amber: {
-      gradient: "from-amber-500/20 via-orange-500/10 to-transparent",
-      iconGlow: theme === "dark" ? "text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]" : "text-amber-600",
-      border: theme === "dark" ? "border-amber-500/30" : "border-amber-200",
+      gradient: "from-amber-600/40 via-orange-600/20 to-red-600/10",
+      iconGlow: theme === "dark" ? "text-amber-300 drop-shadow-[0_0_12px_rgba(252,211,77,0.6)]" : "text-amber-600",
+      border: theme === "dark" ? "border-amber-500/40" : "border-amber-200",
     },
   };
 
@@ -47,35 +47,48 @@ const StatCardOption3 = ({ title, value, subtitle, badge, icon, trend, accentCol
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
       className={`relative ${
         theme === "dark"
-          ? "bg-slate-800/30 border-slate-700/50 hover:border-slate-600/80"
-          : "bg-white/70 border-slate-200/60 hover:border-slate-300"
+          ? "bg-gradient-to-br from-slate-800 via-slate-800/95 to-slate-900 border-slate-700/50 hover:border-slate-600/80"
+          : "bg-gradient-to-br from-white via-slate-50 to-slate-100 border-slate-200/60 hover:border-slate-300"
       } backdrop-blur-xl ${borderRadius.card} ${padding.cardCompact} border transition-all duration-300 overflow-hidden group
-      ${theme === "dark" ? "hover:shadow-2xl hover:shadow-slate-900/50" : "shadow-lg hover:shadow-xl shadow-slate-200/50"}`}
+      ${theme === "dark" ? "hover:shadow-2xl hover:shadow-slate-900/80" : "shadow-lg hover:shadow-xl shadow-slate-200/50"}`}
     >
-      {/* Animated gradient background */}
+      {/* Colored gradient overlay - matching the reference image */}
       <div
-        className={`absolute inset-0 bg-gradient-to-br ${accent.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+        className={`absolute inset-0 bg-gradient-to-br ${accent.gradient} opacity-30 group-hover:opacity-40 transition-opacity duration-500`}
       />
 
-      {/* Subtle animated mesh gradient */}
-      <div className="absolute inset-0 opacity-30 group-hover:opacity-50 transition-opacity duration-500">
-        <div className={`absolute top-0 -left-10 w-40 h-40 bg-gradient-to-br ${accent.gradient} rounded-full blur-3xl`} />
-        <div className={`absolute bottom-0 -right-10 w-40 h-40 bg-gradient-to-tl ${accent.gradient} rounded-full blur-3xl`} />
+      {/* Subtle mesh gradient pattern */}
+      <div className="absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity duration-500">
+        <div className={`absolute -top-10 -left-10 w-32 h-32 bg-gradient-to-br ${accent.gradient} rounded-full blur-2xl`} />
+        <div className={`absolute -bottom-10 -right-10 w-32 h-32 bg-gradient-to-tl ${accent.gradient} rounded-full blur-2xl`} />
       </div>
 
       <div className="relative">
         {/* Header */}
-        <div className="flex items-start justify-between gap-2 mb-3">
+        <div className="flex items-start justify-between gap-3 mb-3">
+          {/* Icon in rounded container - like reference image */}
+          {icon && (
+            <div className={`p-3 sm:p-4 ${
+              theme === "dark" 
+                ? "bg-slate-700/50 border-slate-600/50" 
+                : "bg-slate-100 border-slate-200"
+            } rounded-xl sm:rounded-2xl border backdrop-blur-sm group-hover:scale-105 transition-transform duration-300`}>
+              <div className={`${iconSize.normal} sm:${iconSize.large} ${accent.iconGlow} opacity-90 group-hover:opacity-100 transition-all duration-300`}>
+                {icon}
+              </div>
+            </div>
+          )}
+
           <div className="flex-1">
             <h3
               className={`${
-                theme === "dark" ? "text-slate-400" : "text-slate-600"
-              } font-outfit font-medium ${textScale.label} mb-1`}
+                theme === "dark" ? "text-slate-300" : "text-slate-700"
+              } font-outfit font-semibold ${textScale.label} mb-1.5`}
             >
               {title}
             </h3>
             
-            {/* Subtitle moved up */}
+            {/* Subtitle */}
             <p
               className={`${
                 theme === "dark" ? "text-slate-500" : "text-slate-500"
@@ -84,13 +97,6 @@ const StatCardOption3 = ({ title, value, subtitle, badge, icon, trend, accentCol
               {subtitle}
             </p>
           </div>
-
-          {/* Glowing icon */}
-          {icon && (
-            <div className={`${iconSize.large} ${accent.iconGlow} opacity-80 group-hover:opacity-100 transition-all duration-300 group-hover:scale-110`}>
-              {icon}
-            </div>
-          )}
         </div>
 
         {/* Value - Takes center stage */}
