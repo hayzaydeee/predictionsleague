@@ -71,7 +71,7 @@ const FixtureCard = ({
             <span
               className={`${
                 theme === "dark" ? "text-white" : "text-slate-800"
-              } font-medium text-xs sm:text-sm truncate flex-1`}
+              } font-medium text-2xs sm:text-xs truncate flex-1`}
             >
               {fixture.homeTeam}
             </span>
@@ -85,7 +85,7 @@ const FixtureCard = ({
             <span
               className={`${
                 theme === "dark" ? "text-white" : "text-slate-800"
-              } font-medium text-xs sm:text-sm truncate flex-1 text-right`}
+              } font-medium text-2xs sm:text-xs truncate flex-1 text-right`}
             >
               {fixture.awayTeam}
             </span>
