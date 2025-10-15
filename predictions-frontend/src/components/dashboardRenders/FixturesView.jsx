@@ -211,10 +211,10 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
         {/* <ViewToggleBarOption1 viewMode={viewMode} setViewMode={handleViewModeChange} /> */}
         
         {/* Option 2: Bottom Sheet (uncomment to test) */}
-        <ViewToggleBarOption2 viewMode={viewMode} setViewMode={handleViewModeChange} />
+        {/* <ViewToggleBarOption2 viewMode={viewMode} setViewMode={handleViewModeChange} /> */}
         
         {/* Option 3: Minimalist Dropdown (uncomment to test) */}
-        {/* <ViewToggleBarOption3 viewMode={viewMode} setViewMode={handleViewModeChange} /> */}
+        <ViewToggleBarOption3 viewMode={viewMode} setViewMode={handleViewModeChange} />
       </div>
       {/* Collapsible Gameweek Chips Panel */}
       <motion.div
