@@ -196,13 +196,13 @@ const UpcomingMatchesPanel = ({ matches, onViewAll, onPredictMatch }) => {
                 >
                   {!match.predicted ? (
                     <>
-                      <PlusIcon className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                      <PlusIcon className="w-3 h-3 hidden sm:block" />
                       <span className="hidden sm:inline">Predict</span>
                       <span className="sm:hidden">+</span>
                     </>
                   ) : (
                     <>
-                      <LightningBoltIcon className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                      <LightningBoltIcon className="w-3 h-3 hidden sm:block" />
                       <span className="hidden sm:inline">Edit</span>
                       <span className="sm:hidden">✎</span>
                     </>
