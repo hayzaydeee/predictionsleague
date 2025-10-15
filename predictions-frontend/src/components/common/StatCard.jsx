@@ -39,10 +39,10 @@ const StatCard = ({ title, value, subtitle, badge, icon, trend }) => {
                   theme === "dark"
                     ? "bg-teal-500/10 border-teal-500/20"
                     : "bg-teal-50 border-teal-200"
-                } rounded border`}
+                } rounded border flex items-center justify-center`}
               >
                 <div
-                  className={`${iconSize.small} ${
+                  className={`${iconSize.tiny} ${
                     theme === "dark" ? "text-teal-400" : "text-teal-600"
                   }`}
                 >

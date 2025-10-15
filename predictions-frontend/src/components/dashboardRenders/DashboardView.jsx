@@ -190,10 +190,7 @@ const DashboardView = ({
     return {
       value: `${accuracyRate.percentage?.toFixed(0) || 0}%`,
       subtitle: `${accuracyRate.correct || 0} correct predictions`,
-      badge: {
-        text: "This season",
-        type: "info",
-      }
+      badge: null
     };
   };
 
