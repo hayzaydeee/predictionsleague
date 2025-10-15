@@ -197,20 +197,20 @@ const GameweekChipsPanel = ({
       <div className="h-0.5 bg-gradient-to-r from-teal-500 via-blue-500 to-purple-500"></div>
       {/* Header - OPTIMIZED FOR MOBILE */}
       <div
-        className={`px-3 sm:px-5 py-1.5 sm:py-3 border-b ${getThemeStyles(theme, {
+        className={`px-3 sm:px-5 py-2.5 sm:py-4 border-b ${getThemeStyles(theme, {
           dark: "border-slate-700/50",
           light: "border-slate-200",
         })}`}
       >
         <div className="flex items-center justify-between gap-2">
           {/* Left: Icon + Title (no subtitle on mobile) */}
-          <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
-            <div className="w-5 h-5 sm:w-8 sm:h-8 rounded-md sm:rounded-lg bg-teal-500/20 flex items-center justify-center flex-shrink-0">
-              <LightningBoltIcon className="w-2.5 h-2.5 sm:w-4 sm:h-4 text-teal-400" />
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-md sm:rounded-lg bg-teal-500/20 flex items-center justify-center flex-shrink-0">
+              <LightningBoltIcon className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-teal-400" />
             </div>
             <div className="min-w-0">
               <h3
-                className={`text-xs sm:text-base font-semibold ${getThemeStyles(
+                className={`text-sm sm:text-lg font-semibold ${getThemeStyles(
                   theme,
                   text.primary
                 )}`}
@@ -229,20 +229,20 @@ const GameweekChipsPanel = ({
           <div className="flex items-center gap-1 sm:gap-3 flex-shrink-0">
             {/* Active chips count - simplified on mobile */}
             {activeChipsCount > 0 && (
-              <div className={`rounded-full px-1.5 sm:px-3 py-0.5 sm:py-1 flex items-center font-outfit border ${getThemeStyles(
+              <div className={`rounded-full px-2 sm:px-3 py-0.5 sm:py-1 flex items-center font-outfit border ${getThemeStyles(
                 theme,
                 {
                   dark: "bg-teal-900/40 border-teal-700/30 text-teal-300",
                   light: "bg-teal-100 border-teal-200 text-teal-700",
                 }
               )}`}>
-                <span className="text-2xs sm:text-xs font-medium">{activeChipsCount}</span>
-                <span className="hidden sm:inline text-2xs sm:text-xs ml-0.5"> active</span>
+                <span className="text-xs sm:text-sm font-medium">{activeChipsCount}</span>
+                <span className="hidden sm:inline text-xs sm:text-sm ml-0.5"> active</span>
               </div>
             )}
             
             {/* Gameweek badge - simplified on mobile */}
-            <div className={`rounded-full px-1.5 sm:px-3 py-0.5 sm:py-1 flex items-center font-outfit border ${getThemeStyles(
+            <div className={`rounded-full px-2 sm:px-3 py-0.5 sm:py-1 flex items-center font-outfit border ${getThemeStyles(
               theme,
               {
                 dark: "bg-blue-900/40 border-blue-700/30 text-blue-300",

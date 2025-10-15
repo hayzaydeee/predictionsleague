@@ -194,7 +194,7 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
   return (
     <div className={spacing.normal}>
       {/* HERO SECTION - Prominent header with clear hierarchy */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+      <div className="flex flex-row justify-between items-center gap-3 mb-4 sm:mb-6">
         <div>
           <h1
             className={`${
