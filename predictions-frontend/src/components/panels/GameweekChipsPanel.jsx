@@ -38,13 +38,28 @@ const GameweekChipsPanel = ({
   // In a real app, you'd fetch these from an API
   const gameweekChips = [
     {
+      id: "opportunist",
+      name: "Opportunist",
+      description:
+        "Change all predictions up to 30 min before each match kickoff throughout the gameweek.",
+      icon: "⏱️",
+      color: "amber",
+      cooldown: 0,
+      seasonLimit: 2,
+      remainingUses: 2,
+      available: true,
+      type: "gameweek",
+      strategyTip:
+        "Use when late team news significantly impacts your predictions, such as key players being injured or rested.",
+    },
+    {
       id: "defensePlusPlus",
       name: "Defense++",
       description:
         "Earn +10 bonus points for each match where you correctly predict a clean sheet.",
       icon: "🛡️",
       color: "blue",
-      cooldown: 5,
+      cooldown: 3,
       cooldownRemaining: 0,
       available: true,
       type: "gameweek",
@@ -53,9 +68,10 @@ const GameweekChipsPanel = ({
       id: "allInWeek",
       name: "All-In Week",
       description:
-        "Doubles all points earned this gameweek (including deductions).",
+        "Doubles all points earned this gameweek.",
       icon: "🎯",
       color: "red",
+      cooldown: 5,
       seasonLimit: 2,
       remainingUses: 2,
       available: true,
@@ -67,9 +83,9 @@ const GameweekChipsPanel = ({
     {
       id: "doubleDown",
       name: "Double Down",
-      description: "Double points for a single match prediction.",
+      description: "Double all points earned from this match.",
       icon: "2x",
-      color: "teal",
+      color: "emerald",
       cooldown: 2,
       cooldownRemaining: 0,
       available: true,
@@ -80,43 +96,31 @@ const GameweekChipsPanel = ({
     {
       id: "wildcard",
       name: "Wildcard",
-      description: "Triple points for a single match prediction.",
+      description: "Triple all points earned from this match.",
       icon: "3x",
-      color: "indigo",
-      cooldown: 7,
+      color: "purple",
+      cooldown: 4,
+      seasonLimit: 3,
+      remainingUses: 3,
       cooldownRemaining: 0,
       available: true,
       type: "match",
       strategyTip:
-        "Save this for matches where you're extremely confident, or for derby matches where the points multiplier is already in effect.",
+        "Save this for matches where you're extremely confident. Only 3 uses per season with 4 gameweek cooldown!",
     },
     {
       id: "scorerFocus",
       name: "Scorer Focus",
-      description: "Double points for correct goalscorer predictions.",
+      description: "Double all points from goalscorer predictions.",
       icon: "⚽",
       color: "cyan",
-      cooldown: 3,
+      cooldown: 1,
       cooldownRemaining: 0,
       available: true,
       type: "match",
       strategyTip:
         "Best used in high-scoring matches where you're confident about multiple goalscorers.",
-    },
-    {
-      id: "opportunist",
-      name: "Opportunist",
-      description:
-        "Score points even if goalscorer prediction is partially correct.",
-      icon: "🎭",
-      color: "yellow",
-      cooldown: 2,
-      cooldownRemaining: 0,
-      available: true,
-      type: "match",
-      strategyTip:
-        "Use when late team news significantly impacts your predictions, such as key players being injured or rested.",
-    },
+    }
   ];
 
   // Combined chips for display

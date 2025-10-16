@@ -49,67 +49,67 @@ const ChipStrategyModal = memo(({ isOpen, onClose }) => {
         id: 'doubleDown',
         icon: '2x',
         name: 'Double Down',
-        cooldown: 'Available every gameweek',
-        description: 'Double all points earned from one selected match prediction.',
+        cooldown: 'Cooldown: 2 gameweeks between uses',
+        description: 'Double all points earned from this match.',
         bgColor: 'emerald',
         hoverColor: 'emerald-500/30',
         tipTitle: 'Strategic Usage:',
-        tip: 'Ideal for high-confidence predictions, especially exact scorelines or when you\'ve predicted multiple correct goalscorers. Combine with derby matches for maximum impact (1.5x multiplier applies first).'
+        tip: 'Ideal for high-confidence predictions, especially exact scorelines or when you\'ve predicted multiple correct goalscorers. Can be used frequently with only a 2 gameweek cooldown.'
       },
       {
         id: 'wildcard',
         icon: '3x', 
         name: 'Wildcard',
-        cooldown: 'Cooldown: 7 gameweeks between uses',
-        description: 'Triple all points earned from one selected match prediction.',
+        cooldown: 'Cooldown: 4 gameweeks + Limited: 3 per season',
+        description: 'Triple all points earned from this match.',
         bgColor: 'purple',
         hoverColor: 'purple-500/30',
         tipTitle: 'Strategic Usage:',
-        tip: 'Reserve for your most confident predictions of the season. Derby matches with exact scoreline predictions can yield 45+ points when combined with this chip.'
+        tip: 'Reserve for your most confident predictions of the season. Use wisely - only 3 available per season with a 4 gameweek cooldown between uses!'
       },
       {
         id: 'scorerFocus',
         icon: '⚽',
         name: 'Scorer Focus', 
-        cooldown: 'Cooldown: 5 gameweeks between uses',
+        cooldown: 'Cooldown: 1 gameweek between uses',
         description: 'Doubles all points from goalscorer predictions in one selected match.',
         bgColor: 'green',
         hoverColor: 'green-500/30',
         tipTitle: 'Strategic Usage:',
         tip: 'Perfect for matches featuring prolific goalscorers or games expected to be high-scoring. Research team news and recent form to maximize effectiveness.'
-      },
-      {
-        id: 'opportunist',
-        icon: '⏱️',
-        name: 'Opportunist',
-        cooldown: 'Limited use: Available twice per season', 
-        description: 'Change all six predictions up to 30 minutes before the first match kickoff.',
-        bgColor: 'amber',
-        hoverColor: 'amber-500/30',
-        tipTitle: 'Strategic Usage:',
-        tip: 'Save for gameweeks with significant late team news - injured key players, surprise lineups, or weather conditions. Monitor social media and club announcements.'
       }
     ],
     gameweekChips: [
       {
+        id: 'opportunist',
+        icon: '⏱️',
+        name: 'Opportunist',
+        usage: 'Limited use: Available twice per season', 
+        description: 'Change all predictions up to 30 minutes before each match kickoff throughout the gameweek.',
+        bgColor: 'amber',
+        hoverColor: 'amber-500/30',
+        tipTitle: 'Strategic Usage:',
+        tip: 'Save for gameweeks with significant late team news - injured key players, surprise lineups, or weather conditions. Monitor social media and club announcements for each match.'
+      },
+      {
         id: 'defenseBoost',
         icon: '🛡️',
         name: 'Defense++',
-        usage: 'Cooldown: 5 gameweeks between uses',
-        description: 'Earn 10 bonus points if you correctly predict clean sheets across ALL matches where you predicted them in the gameweek.',
+        usage: 'Cooldown: 3 gameweeks between uses',
+        description: 'Earn 10 bonus points for each match where you correctly predict a clean sheet in the gameweek.',
         bgColor: 'blue',
         tipTitle: 'Strategic Usage:',
-        tip: 'Analyze defensive statistics and upcoming fixtures. Best used when strong defensive teams face weaker attacking sides. Remember: ALL clean sheet predictions must be correct.'
+        tip: 'Analyze defensive statistics and upcoming fixtures. Best used when strong defensive teams face weaker attacking sides. Each correct clean sheet prediction earns the bonus.'
       },
       {
         id: 'allInWeek', 
         icon: '🎯',
         name: 'All-In Week',
-        usage: 'Limited use: Available twice per season',
-        description: 'Doubles your entire gameweek score, including both positive points and any negative deductions.',
+        usage: 'Cooldown: 5 gameweeks + Limited use: 2 per season',
+        description: 'Doubles all points earned from this week\'s matches.',
         bgColor: 'red',
         tipTitle: 'Strategic Usage:',  
-        tip: 'Use when extremely confident across all six matches. Ideal for gameweeks with many predictable fixtures, but remember that incorrect predictions with 2+ goal differences will also be doubled (-2 points each).'
+        tip: 'Use when extremely confident across all matches in the gameweek. Ideal for gameweeks with many predictable fixtures. Strategic timing is key with only 2 uses per season.'
       }
     ]
   }), []);

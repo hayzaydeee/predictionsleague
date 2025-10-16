@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { format, parseISO, addMinutes } from "date-fns";
 import { ThemeContext } from "../../context/ThemeContext";
+import { useChipManagement } from "../../context/ChipManagementContext";
 import { backgrounds, text, getThemeStyles } from "../../utils/themeUtils";
 import { InfoCircledIcon, ClockIcon, ExclamationTriangleIcon, CheckIcon } from "@radix-ui/react-icons";
 import { userPredictionsAPI } from "../../services/api/userPredictionsAPI";
@@ -27,6 +28,7 @@ export default function PredictionsModal({
 }) {
   const { theme } = useContext(ThemeContext);
   const { predictions, notify } = useNotifications();
+  const { useChips, checkCompatibility, simulateUsage, currentGameweek } = useChipManagement();
   
   // Step management
   const [currentStep, setCurrentStep] = useState(1);
@@ -42,6 +44,7 @@ export default function PredictionsModal({
   const [errors, setErrors] = useState({});
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [chipWarning, setChipWarning] = useState(null);
 
   // Validation on step change
   useEffect(() => {
@@ -97,6 +100,28 @@ export default function PredictionsModal({
     setCurrentStep((prevStep) => Math.max(1, prevStep - 1));
   };
 
+  // Validate chip usage when chips change
+  useEffect(() => {
+    if (selectedChips.length > 0) {
+      const compatibility = checkCompatibility(selectedChips);
+      if (!compatibility.compatible) {
+        setChipWarning(compatibility.reason);
+      } else {
+        const simulation = simulateUsage(selectedChips, fixture.gameweek || currentGameweek);
+        if (!simulation.allAvailable) {
+          const unavailableChips = simulation.chips.filter(c => !c.available);
+          if (unavailableChips.length > 0) {
+            setChipWarning(`Some chips unavailable: ${unavailableChips.map(c => c.name).join(', ')}`);
+          }
+        } else {
+          setChipWarning(null);
+        }
+      }
+    } else {
+      setChipWarning(null);
+    }
+  }, [selectedChips, fixture.gameweek, currentGameweek, checkCompatibility, simulateUsage]);
+
   // Form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -114,8 +139,21 @@ export default function PredictionsModal({
       console.log('🎯 Submitting prediction:', {
         fixture: fixture.id,
         prediction: frontendPrediction,
-        teams: `${fixture.homeTeam} vs ${fixture.awayTeam}`
+        teams: `${fixture.homeTeam} vs ${fixture.awayTeam}`,
+        chips: selectedChips
       });
+
+      // Validate and use chips (updates cooldowns and usage counts)
+      if (selectedChips.length > 0) {
+        const gameweek = fixture.gameweek || currentGameweek;
+        const chipResult = useChips(selectedChips, gameweek, fixture.id);
+        
+        if (!chipResult.success) {
+          throw new Error(`Chip validation failed: ${chipResult.reason}`);
+        }
+        
+        console.log('✅ Chips validated and marked as used:', chipResult);
+      }
 
       // Call new backend API
       const result = await userPredictionsAPI.makePrediction(frontendPrediction, fixture);
@@ -306,6 +344,8 @@ export default function PredictionsModal({
                     );
                   }}
                   toggleChipInfoModal={toggleChipInfoModal}
+                  gameweek={fixture.gameweek || currentGameweek}
+                  chipWarning={chipWarning}
                   errors={errors}
                 />
               )}

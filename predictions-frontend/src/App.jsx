@@ -4,6 +4,7 @@ import { ThemeProvider } from "./context/ThemeContext";
 import { UserPreferencesProvider } from "./context/UserPreferencesContext";
 import { AuthProvider } from "./context/AuthContext";
 import { QueryProvider } from "./context/QueryContext";
+import { ChipManagementProvider } from "./context/ChipManagementContext";
 import DefaultRedirect from "./components/common/DefaultRedirect";
 import PrivateRoute, { PublicRoute } from "./components/common/PrivateRoute";
 import LoadingState from "./components/common/LoadingState";
@@ -141,9 +142,11 @@ function App() {
       <ThemeProvider>
         <UserPreferencesProvider>
           <AuthProvider>
-            <Theme>
-              <AppRouter />
-            </Theme>
+            <ChipManagementProvider>
+              <Theme>
+                <AppRouter />
+              </Theme>
+            </ChipManagementProvider>
           </AuthProvider>
         </UserPreferencesProvider>
       </ThemeProvider>

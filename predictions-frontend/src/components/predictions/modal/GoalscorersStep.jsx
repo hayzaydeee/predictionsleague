@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { motion } from "framer-motion";
 import { ThemeContext } from "../../../context/ThemeContext";
 import { getThemeStyles } from "../../../utils/themeUtils";
-import { TargetIcon } from "@radix-ui/react-icons";
+import { TargetIcon, ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import ScoreDisplay from "./ScoreDisplay";
 import GoalscorerSelector from "./GoalscorerSelector";
 import ChipSelector from "./ChipSelector";
@@ -17,7 +17,9 @@ export default function GoalscorersStep({
   onAwayScorerChange, 
   selectedChips, 
   onToggleChip, 
-  toggleChipInfoModal, 
+  toggleChipInfoModal,
+  gameweek,
+  chipWarning,
   errors 
 }) {
   const { theme } = useContext(ThemeContext);
@@ -129,7 +131,36 @@ export default function GoalscorersStep({
         selectedChips={selectedChips}
         onToggleChip={onToggleChip}
         toggleChipInfoModal={toggleChipInfoModal}
+        gameweek={gameweek}
       />
+
+      {/* Chip warning banner */}
+      {chipWarning && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={`mt-4 rounded-xl p-4 border flex items-start gap-3 ${getThemeStyles(theme, {
+            dark: 'bg-amber-500/10 border-amber-500/30',
+            light: 'bg-amber-50 border-amber-300'
+          })}`}
+        >
+          <ExclamationTriangleIcon className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className={`text-sm font-medium font-outfit ${getThemeStyles(theme, {
+              dark: 'text-amber-300',
+              light: 'text-amber-700'
+            })}`}>
+              Chip Availability Warning
+            </p>
+            <p className={`text-xs mt-1 ${getThemeStyles(theme, {
+              dark: 'text-amber-200/80',
+              light: 'text-amber-600'
+            })}`}>
+              {chipWarning}
+            </p>
+          </div>
+        </motion.div>
+      )}
     </motion.div>
   );
 }

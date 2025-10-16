@@ -8,13 +8,17 @@ import EmptyState from "../common/EmptyState";
 import { ThemeContext } from "../../context/ThemeContext";
 import { useUserPreferences } from "../../context/UserPreferencesContext";
 import { text } from "../../utils/themeUtils";
+import { useUserPredictions } from "../../hooks/useClientSideFixtures";
 
-// Import data and utilities
-import { predictions, teamLogos } from "../../data/sampleData";
-
-const PredictionsView = ({ handleEditPrediction }) => {  // Get theme context and user preferences
+const PredictionsView = ({ handleEditPrediction }) => {
+  // Get theme context and user preferences
   const { theme } = useContext(ThemeContext);
   const { preferences, updatePreference } = useUserPreferences();
+  
+  // Fetch user predictions from backend
+  const { data: predictions = [], isLoading, error } = useUserPredictions({
+    status: 'all'
+  });
   
   const [activeFilter, setActiveFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -110,6 +114,37 @@ const PredictionsView = ({ handleEditPrediction }) => {  // Get theme context an
     handleCloseModal();
     handleEditPrediction(prediction);
   };
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <h1 className={`${theme === 'dark' ? 'text-teal-100' : 'text-teal-700'} text-3xl font-bold font-dmSerif`}>
+          My Predictions
+        </h1>
+        <div className={`${theme === 'dark' ? 'bg-slate-800/50' : 'bg-slate-50'} rounded-xl p-8 text-center`}>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-500 mx-auto mb-4"></div>
+          <p className={`${text.secondary[theme]} font-outfit`}>Loading predictions...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <h1 className={`${theme === 'dark' ? 'text-teal-100' : 'text-teal-700'} text-3xl font-bold font-dmSerif`}>
+          My Predictions
+        </h1>
+        <div className={`${theme === 'dark' ? 'bg-red-900/20 border-red-700' : 'bg-red-50 border-red-200'} rounded-xl p-8 text-center border`}>
+          <p className={`${theme === 'dark' ? 'text-red-300' : 'text-red-700'} font-outfit`}>
+            Failed to load predictions: {error.message}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -124,11 +159,14 @@ const PredictionsView = ({ handleEditPrediction }) => {  // Get theme context an
 
         {/* View toggle controls */}
         <PredictionViewToggleBar viewMode={viewMode} setViewMode={handleViewModeChange} />
-      </div>      {/* Potential Points Summary - Always visible but only shows pending predictions */}
-      <PotentialPointsSummary
-        predictions={pendingPredictions}
-        teamLogos={teamLogos}
-      />
+      </div>
+      
+      {/* Potential Points Summary - Always visible but only shows pending predictions */}
+      {pendingPredictions.length > 0 && (
+        <PotentialPointsSummary
+          predictions={pendingPredictions}
+        />
+      )}
 
       {/* Content container with filters and predictions */}
       <div
