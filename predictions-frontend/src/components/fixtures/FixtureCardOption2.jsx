@@ -77,20 +77,24 @@ const FixtureCardOption2 = ({
       </div>
 
       {/* Teams Grid */}
-      <div className="grid grid-cols-2 divide-x divide-slate-700/30">
+      <div className={`grid grid-cols-2 ${
+        theme === "dark" ? "divide-x divide-slate-700/30" : "divide-x divide-slate-200"
+      }`}>
         {/* Home Team Panel */}
-        <div className={`p-3 sm:p-4 ${
+        <div className={`p-3 sm:p-4 relative ${
           theme === "dark"
             ? "bg-gradient-to-br from-blue-950/20 to-transparent"
             : "bg-gradient-to-br from-blue-50/50 to-transparent"
         }`}>
           <div className="flex flex-col items-center text-center gap-2 sm:gap-3">
-            <TeamLogo
-              teamName={fixture.homeTeam}
-              size={LOGO_SIZES.lg}
-              theme={theme}
-              className="w-10 h-10 sm:w-16 sm:h-16"
-            />
+            <div className="flex items-center justify-center w-full">
+              <TeamLogo
+                teamName={fixture.homeTeam}
+                size={LOGO_SIZES.lg}
+                theme={theme}
+                className="w-10 h-10 sm:w-16 sm:h-16 flex-shrink-0"
+              />
+            </div>
             <div>
               <div className={`font-bold text-xs sm:text-sm mb-0.5 ${
                 theme === "dark" ? "text-white" : "text-slate-900"
@@ -127,21 +131,37 @@ const FixtureCardOption2 = ({
               </div>
             )}
           </div>
+          
+          {/* Predicted Badge - Home Side */}
+          {isPredicted && (
+            <div className="absolute top-2 left-2">
+              <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded-full text-2xs font-medium ${
+                theme === "dark"
+                  ? "bg-teal-900/60 text-teal-400 border border-teal-700/50"
+                  : "bg-teal-100 text-teal-700 border border-teal-300"
+              }`}>
+                <span className="w-1.5 h-1.5 rounded-full bg-teal-500"></span>
+                <span className="hidden sm:inline">Done</span>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Away Team Panel */}
-        <div className={`p-3 sm:p-4 ${
+        <div className={`p-3 sm:p-4 relative ${
           theme === "dark"
             ? "bg-gradient-to-bl from-red-950/20 to-transparent"
             : "bg-gradient-to-bl from-red-50/50 to-transparent"
         }`}>
           <div className="flex flex-col items-center text-center gap-2 sm:gap-3">
-            <TeamLogo
-              teamName={fixture.awayTeam}
-              size={LOGO_SIZES.lg}
-              theme={theme}
-              className="w-10 h-10 sm:w-16 sm:h-16"
-            />
+            <div className="flex items-center justify-center w-full">
+              <TeamLogo
+                teamName={fixture.awayTeam}
+                size={LOGO_SIZES.lg}
+                theme={theme}
+                className="w-10 h-10 sm:w-16 sm:h-16 flex-shrink-0"
+              />
+            </div>
             <div>
               <div className={`font-bold text-xs sm:text-sm mb-0.5 ${
                 theme === "dark" ? "text-white" : "text-slate-900"
@@ -178,11 +198,25 @@ const FixtureCardOption2 = ({
               </div>
             )}
           </div>
+          
+          {/* TODO Badge - Away Side */}
+          {!isPredicted && (
+            <div className="absolute top-2 right-2">
+              <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded-full text-2xs font-medium ${
+                theme === "dark"
+                  ? "bg-amber-900/60 text-amber-400 border border-amber-700/50"
+                  : "bg-amber-100 text-amber-700 border border-amber-300"
+              }`}>
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                <span className="hidden sm:inline">TODO</span>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Footer (Desktop Only) */}
-      <div className={`hidden sm:flex items-center justify-center px-3 py-2 border-t text-xs ${
+      {/* Footer - Venue */}
+      <div className={`flex items-center justify-center px-3 py-1.5 sm:py-2 border-t text-2xs sm:text-xs ${
         theme === "dark"
           ? "bg-slate-900/30 border-slate-700/50 text-slate-500"
           : "bg-slate-50 border-slate-200 text-slate-600"
