@@ -90,9 +90,9 @@ const FixtureCardOption2 = ({
             <div className="flex items-center justify-center w-full">
               <TeamLogo
                 teamName={fixture.homeTeam}
-                size={LOGO_SIZES.md}
+                size={LOGO_SIZES.sm}
                 theme={theme}
-                className="flex-shrink-0 w-8 h-8 sm:w-12 sm:h-12"
+                className="flex-shrink-0"
               />
             </div>
             <div className="w-full">
@@ -157,9 +157,9 @@ const FixtureCardOption2 = ({
             <div className="flex items-center justify-center w-full">
               <TeamLogo
                 teamName={fixture.awayTeam}
-                size={LOGO_SIZES.md}
+                size={LOGO_SIZES.sm}
                 theme={theme}
-                className="flex-shrink-0 w-8 h-8 sm:w-12 sm:h-12"
+                className="flex-shrink-0"
               />
             </div>
             <div className="w-full">
