@@ -87,12 +87,12 @@ const FixtureCardOption2 = ({
             : "bg-gradient-to-br from-blue-50/50 to-transparent"
         }`}>
           <div className="flex flex-col items-center text-center gap-2 sm:gap-3">
-            <div className="flex items-center justify-center w-full">
+            <div className="w-10 h-10 sm:w-16 sm:h-16 flex items-center justify-center">
               <TeamLogo
                 teamName={fixture.homeTeam}
                 size={LOGO_SIZES.lg}
                 theme={theme}
-                className="w-10 h-10 sm:w-16 sm:h-16 flex-shrink-0"
+                className="w-full h-full object-contain"
               />
             </div>
             <div>
@@ -154,12 +154,12 @@ const FixtureCardOption2 = ({
             : "bg-gradient-to-bl from-red-50/50 to-transparent"
         }`}>
           <div className="flex flex-col items-center text-center gap-2 sm:gap-3">
-            <div className="flex items-center justify-center w-full">
+            <div className="w-10 h-10 sm:w-16 sm:h-16 flex items-center justify-center">
               <TeamLogo
                 teamName={fixture.awayTeam}
                 size={LOGO_SIZES.lg}
                 theme={theme}
-                className="w-10 h-10 sm:w-16 sm:h-16 flex-shrink-0"
+                className="w-full h-full object-contain"
               />
             </div>
             <div>
