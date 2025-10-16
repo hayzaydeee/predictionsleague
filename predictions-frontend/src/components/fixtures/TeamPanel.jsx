@@ -4,8 +4,8 @@ import { PlusIcon, MinusIcon } from "@radix-ui/react-icons";
 import { getPredictionStats } from "../../utils/fixtureUtils";
 // Try each one:
 
-import FixtureCard from "./FixtureCardOption2"; // Split panel
-// import FixtureCard3 from "./FixtureCardOption3"; // Compact list
+// import FixtureCard from "./FixtureCardOption2"; // Split panel
+import FixtureCard from "./FixtureCardOption3"; // Compact list
 
 import { normalizeTeamName, getTeamLogo } from "../../utils/teamUtils";
 import { getLogoUrl } from "../../utils/logoCache";
