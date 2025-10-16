@@ -59,44 +59,49 @@ const FixtureCard = ({
           </div>
         </div>
       </div>
-      <div className="flex items-center gap-1.5 sm:gap-2">
-        <TeamLogo
-          teamName={fixture.homeTeam}
-          size={LOGO_SIZES.sm}
-          theme={theme}
-          className="flex-shrink-0 w-6 h-6 sm:w-8 sm:h-8"
-        />
-        <div className="flex-grow min-w-0">
-          <div className="flex justify-between items-center gap-1.5 sm:gap-2">
-            <span
-              className={`${
-                theme === "dark" ? "text-white" : "text-slate-800"
-              } font-medium text-2xs sm:text-xs truncate flex-1`}
-            >
-              {fixture.homeTeam}
-            </span>
-            <span
-              className={`${
-                theme === "dark" ? "text-slate-400" : "text-slate-500"
-              } font-outfit text-2xs sm:text-xs flex-shrink-0`}
-            >
-              vs
-            </span>
-            <span
-              className={`${
-                theme === "dark" ? "text-white" : "text-slate-800"
-              } font-medium text-2xs sm:text-xs truncate flex-1 text-right`}
-            >
-              {fixture.awayTeam}
-            </span>
-          </div>
+      <div className="flex items-center justify-between gap-2">
+        {/* Home Team */}
+        <div className="flex items-center gap-1.5 min-w-0 flex-1">
+          <TeamLogo
+            teamName={fixture.homeTeam}
+            size={LOGO_SIZES.sm}
+            theme={theme}
+            className="flex-shrink-0 w-6 h-6 sm:w-8 sm:h-8"
+          />
+          <span
+            className={`${
+              theme === "dark" ? "text-white" : "text-slate-800"
+            } font-medium text-2xs sm:text-xs truncate`}
+          >
+            {fixture.homeTeam}
+          </span>
         </div>
-        <TeamLogo
-          teamName={fixture.awayTeam}
-          size={LOGO_SIZES.sm}
-          theme={theme}
-          className="flex-shrink-0 w-6 h-6 sm:w-8 sm:h-8"
-        />
+
+        {/* VS Divider */}
+        <span
+          className={`${
+            theme === "dark" ? "text-slate-400" : "text-slate-500"
+          } font-outfit text-2xs sm:text-xs flex-shrink-0 px-1`}
+        >
+          vs
+        </span>
+
+        {/* Away Team */}
+        <div className="flex items-center gap-1.5 min-w-0 flex-1 justify-end">
+          <span
+            className={`${
+              theme === "dark" ? "text-white" : "text-slate-800"
+            } font-medium text-2xs sm:text-xs truncate text-right`}
+          >
+            {fixture.awayTeam}
+          </span>
+          <TeamLogo
+            teamName={fixture.awayTeam}
+            size={LOGO_SIZES.sm}
+            theme={theme}
+            className="flex-shrink-0 w-6 h-6 sm:w-8 sm:h-8"
+          />
+        </div>
       </div>
       <div className="mt-1.5 sm:mt-2 flex justify-between items-center gap-2">
         <div

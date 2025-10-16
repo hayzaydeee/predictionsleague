@@ -72,7 +72,7 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
   const [activeFilter, setActiveFilter] = useState("all");
   const [dateFilter, setDateFilter] = useState("all"); // New: all or today
   const [sortBy, setSortBy] = useState("date");
-  const [showFilters, setShowFilters] = useState(true);
+  const [showFilters, setShowFilters] = useState(false);
 
   // Handle applying gameweek chips
   const handleApplyGameweekChip = (chipId, gameweek, isRemoval = false) => {
