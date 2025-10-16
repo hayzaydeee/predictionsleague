@@ -78,6 +78,7 @@ export default function GoalscorersStep({
                   score={homeScore}
                   scorers={homeScorers}
                   onScorerChange={onHomeScorerChange}
+                  players={fixture.homePlayers || []}
                   error={errors.homeScorers}
                 />
               )}
@@ -90,6 +91,7 @@ export default function GoalscorersStep({
                   score={awayScore}
                   scorers={awayScorers}
                   onScorerChange={onAwayScorerChange}
+                  players={fixture.awayPlayers || []}
                   error={errors.awayScorers}
                 />
               )}

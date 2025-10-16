@@ -162,7 +162,9 @@ const transformers = {
     
     const optionalFields = [
       'homeScore', 'awayScore', 'predicted', 'referee',
-      'competitionCode', 'score'
+      'competitionCode', 'score',
+      // NEW FIELDS DETECTED 2025-10-16:
+      'homeId', 'awayId', 'homePlayers', 'awayPlayers'
     ];
 
     // New fields that might be added for live scores
@@ -266,6 +268,12 @@ const transformers = {
       // Optional fields
       ...(fixture.referee && { referee: fixture.referee }),
       ...(fixture.competitionCode && { competitionCode: fixture.competitionCode }),
+      
+      // NEW FIELDS: Team IDs and Player Squads (added 2025-10-16)
+      ...(fixture.homeId && { homeId: fixture.homeId }),
+      ...(fixture.awayId && { awayId: fixture.awayId }),
+      ...(fixture.homePlayers && { homePlayers: fixture.homePlayers }),
+      ...(fixture.awayPlayers && { awayPlayers: fixture.awayPlayers }),
     };
 
     // Add live score fields if present
