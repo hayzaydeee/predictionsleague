@@ -63,7 +63,8 @@ const FixtureCardOption2 = ({
           </span>
         </div>
         
-        {isPredicted && (
+        {/* Status Badge */}
+        {isPredicted ? (
           <div className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-2xs font-medium ${
             theme === "dark"
               ? "bg-teal-900/40 text-teal-400 border border-teal-700/50"
@@ -73,6 +74,16 @@ const FixtureCardOption2 = ({
             <span className="hidden sm:inline">Predicted</span>
             <span className="sm:hidden">✓</span>
           </div>
+        ) : (
+          <div className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-2xs font-medium ${
+            theme === "dark"
+              ? "bg-amber-900/60 text-amber-400 border border-amber-700/50"
+              : "bg-amber-100 text-amber-700 border border-amber-300"
+          }`}>
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+            <span className="hidden sm:inline">TODO</span>
+            <span className="sm:hidden">!</span>
+          </div>
         )}
       </div>
 
@@ -81,7 +92,7 @@ const FixtureCardOption2 = ({
         theme === "dark" ? "divide-x divide-slate-700/30" : "divide-x divide-slate-200"
       }`}>
         {/* Home Team Panel */}
-        <div className={`p-3 sm:p-4 relative ${
+        <div className={`p-3 sm:p-4 ${
           theme === "dark"
             ? "bg-gradient-to-br from-blue-950/20 to-transparent"
             : "bg-gradient-to-br from-blue-50/50 to-transparent"
@@ -131,24 +142,10 @@ const FixtureCardOption2 = ({
               </div>
             )}
           </div>
-          
-          {/* Predicted Badge - Home Side */}
-          {isPredicted && (
-            <div className="absolute top-2 left-2">
-              <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded-full text-2xs font-medium ${
-                theme === "dark"
-                  ? "bg-teal-900/60 text-teal-400 border border-teal-700/50"
-                  : "bg-teal-100 text-teal-700 border border-teal-300"
-              }`}>
-                <span className="w-1.5 h-1.5 rounded-full bg-teal-500"></span>
-                <span className="hidden sm:inline">Done</span>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Away Team Panel */}
-        <div className={`p-3 sm:p-4 relative ${
+        <div className={`p-3 sm:p-4 ${
           theme === "dark"
             ? "bg-gradient-to-bl from-red-950/20 to-transparent"
             : "bg-gradient-to-bl from-red-50/50 to-transparent"
@@ -198,20 +195,6 @@ const FixtureCardOption2 = ({
               </div>
             )}
           </div>
-          
-          {/* TODO Badge - Away Side */}
-          {!isPredicted && (
-            <div className="absolute top-2 right-2">
-              <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded-full text-2xs font-medium ${
-                theme === "dark"
-                  ? "bg-amber-900/60 text-amber-400 border border-amber-700/50"
-                  : "bg-amber-100 text-amber-700 border border-amber-300"
-              }`}>
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                <span className="hidden sm:inline">TODO</span>
-              </div>
-            </div>
-          )}
         </div>
       </div>
 
