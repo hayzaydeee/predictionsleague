@@ -87,14 +87,12 @@ const FixtureCardOption2 = ({
             : "bg-gradient-to-br from-blue-50/50 to-transparent"
         }`}>
           <div className="flex flex-col items-center text-center gap-2 sm:gap-3">
-            <div className="w-10 h-10 sm:w-16 sm:h-16 flex items-center justify-center">
-              <TeamLogo
-                teamName={fixture.homeTeam}
-                size={LOGO_SIZES.lg}
-                theme={theme}
-                className="w-full h-full object-contain"
-              />
-            </div>
+            <TeamLogo
+              teamName={fixture.homeTeam}
+              size={LOGO_SIZES.md}
+              theme={theme}
+              className="flex-shrink-0 w-8 h-8 sm:w-12 sm:h-12"
+            />
             <div>
               <div className={`font-bold text-xs sm:text-sm mb-0.5 ${
                 theme === "dark" ? "text-white" : "text-slate-900"
@@ -154,14 +152,12 @@ const FixtureCardOption2 = ({
             : "bg-gradient-to-bl from-red-50/50 to-transparent"
         }`}>
           <div className="flex flex-col items-center text-center gap-2 sm:gap-3">
-            <div className="w-10 h-10 sm:w-16 sm:h-16 flex items-center justify-center">
-              <TeamLogo
-                teamName={fixture.awayTeam}
-                size={LOGO_SIZES.lg}
-                theme={theme}
-                className="w-full h-full object-contain"
-              />
-            </div>
+            <TeamLogo
+              teamName={fixture.awayTeam}
+              size={LOGO_SIZES.md}
+              theme={theme}
+              className="flex-shrink-0 w-8 h-8 sm:w-12 sm:h-12"
+            />
             <div>
               <div className={`font-bold text-xs sm:text-sm mb-0.5 ${
                 theme === "dark" ? "text-white" : "text-slate-900"
