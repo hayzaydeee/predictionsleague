@@ -132,7 +132,7 @@ export default function PredictionsModal({
           awayScore: awayScore,
           homeScorers: homeScorers,
           awayScorers: awayScorers,
-          selectedChip: selectedChip,
+          selectedChip: selectedChips,
           utcDate: fixture.utcDate,
           matchDate: fixture.utcDate,
           gameweek: fixture.gameweek || fixture.matchday
