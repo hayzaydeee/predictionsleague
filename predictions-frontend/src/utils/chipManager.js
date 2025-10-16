@@ -37,8 +37,8 @@ export const CHIP_CONFIG = {
     description: "Double all points earned from this match",
     icon: "2x",
     color: "emerald",
-    cooldown: 2, // Can't use for 2 gameweeks after usage
-    seasonLimit: null, // Unlimited uses (respecting cooldown)
+    cooldown: 0, // Available every gameweek - no cooldown
+    seasonLimit: null, // Unlimited uses
     scope: "match" // Applied per match
   },
   wildcard: {
@@ -48,8 +48,8 @@ export const CHIP_CONFIG = {
     description: "Triple all points earned from this match",
     icon: "3x",
     color: "purple",
-    cooldown: 4, // Can't use for 4 gameweeks after usage
-    seasonLimit: 3, // Can only use 3 times per season
+    cooldown: 7, // Can't use for 7 gameweeks after usage
+    seasonLimit: null, // Unlimited uses (respecting cooldown)
     scope: "match"
   },
   opportunist: {
@@ -71,7 +71,7 @@ export const CHIP_CONFIG = {
     description: "Double all points from goalscorer predictions",
     icon: "⚽",
     color: "cyan",
-    cooldown: 1, // Can't use for 1 gameweek after usage
+    cooldown: 5, // Can't use for 5 gameweeks after usage
     seasonLimit: null,
     scope: "match"
   },
@@ -82,7 +82,7 @@ export const CHIP_CONFIG = {
     description: "Earn +10 bonus points for each match where you correctly predict a clean sheet",
     icon: "🛡️",
     color: "blue",
-    cooldown: 3, // Can't use for 3 gameweeks after usage
+    cooldown: 5, // Can't use for 5 gameweeks after usage
     seasonLimit: null,
     scope: "gameweek"
   },

@@ -49,29 +49,29 @@ const ChipStrategyModal = memo(({ isOpen, onClose }) => {
         id: 'doubleDown',
         icon: '2x',
         name: 'Double Down',
-        cooldown: 'Cooldown: 2 gameweeks between uses',
+        cooldown: 'Available every gameweek',
         description: 'Double all points earned from this match.',
         bgColor: 'emerald',
         hoverColor: 'emerald-500/30',
         tipTitle: 'Strategic Usage:',
-        tip: 'Ideal for high-confidence predictions, especially exact scorelines or when you\'ve predicted multiple correct goalscorers. Can be used frequently with only a 2 gameweek cooldown.'
+        tip: 'Ideal for high-confidence predictions, especially exact scorelines or when you\'ve predicted multiple correct goalscorers. Use freely - available every gameweek!'
       },
       {
         id: 'wildcard',
         icon: '3x', 
         name: 'Wildcard',
-        cooldown: 'Cooldown: 4 gameweeks + Limited: 3 per season',
+        cooldown: 'Cooldown: 7 gameweeks between uses',
         description: 'Triple all points earned from this match.',
         bgColor: 'purple',
         hoverColor: 'purple-500/30',
         tipTitle: 'Strategic Usage:',
-        tip: 'Reserve for your most confident predictions of the season. Use wisely - only 3 available per season with a 4 gameweek cooldown between uses!'
+        tip: 'Reserve for your most confident predictions. Use strategically - 7 gameweek cooldown means you can only use it a few times per season!'
       },
       {
         id: 'scorerFocus',
         icon: '⚽',
         name: 'Scorer Focus', 
-        cooldown: 'Cooldown: 1 gameweek between uses',
+        cooldown: 'Cooldown: 5 gameweeks between uses',
         description: 'Doubles all points from goalscorer predictions in one selected match.',
         bgColor: 'green',
         hoverColor: 'green-500/30',
@@ -95,7 +95,7 @@ const ChipStrategyModal = memo(({ isOpen, onClose }) => {
         id: 'defenseBoost',
         icon: '🛡️',
         name: 'Defense++',
-        usage: 'Cooldown: 3 gameweeks between uses',
+        usage: 'Cooldown: 5 gameweeks between uses',
         description: 'Earn 10 bonus points for each match where you correctly predict a clean sheet in the gameweek.',
         bgColor: 'blue',
         tipTitle: 'Strategic Usage:',
