@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { groupFixturesByDate, filterFixturesByQuery } from "../../utils/fixtureUtils";
-import FixtureCard from "./FixtureCard";
+import FixtureCard from "./FixtureCardOption2";
 import DateHeader from "./DateHeader";
 import EmptyFixtureState from "./EmptyFixtureState";
 import { teamLogos } from "../../data/sampleData";

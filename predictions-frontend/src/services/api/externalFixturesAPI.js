@@ -151,13 +151,88 @@ const apiClient = new BackendFixturesAPIClient();
  */
 const transformers = {
   /**
-   * Transform backend response to standard format
+   * Validate and log fixture structure changes
+   * This helps detect when backend adds new fields (like live scores, scorers, etc.)
    */
-  transformFixture(fixture) {
+  validateFixtureStructure(fixture, index = 0) {
+    const expectedFields = [
+      'id', 'homeTeam', 'awayTeam', 'date', 'status', 
+      'venue', 'gameweek', 'competition'
+    ];
+    
+    const optionalFields = [
+      'homeScore', 'awayScore', 'predicted', 'referee',
+      'competitionCode', 'score'
+    ];
+
+    // New fields that might be added for live scores
+    const potentialLiveFields = [
+      'minute', 'period', 'scorers', 'events', 'stats',
+      'halfTimeScore', 'penalties', 'extraTime'
+    ];
+
+    const fixtureKeys = Object.keys(fixture);
+    const unknownFields = fixtureKeys.filter(key => 
+      !expectedFields.includes(key) && 
+      !optionalFields.includes(key) &&
+      !potentialLiveFields.includes(key)
+    );
+
+    // Log new fields detected
+    if (unknownFields.length > 0) {
+      console.warn(`🆕 NEW FIXTURE FIELDS DETECTED (fixture #${index}):`, {
+        fields: unknownFields,
+        sampleValues: unknownFields.reduce((acc, key) => {
+          acc[key] = fixture[key];
+          return acc;
+        }, {}),
+        fullFixture: fixture
+      });
+    }
+
+    // Log live score fields if present
+    const liveFieldsPresent = potentialLiveFields.filter(field => 
+      fixture.hasOwnProperty(field) && fixture[field] != null
+    );
+    
+    if (liveFieldsPresent.length > 0) {
+      console.info(`⚽ LIVE SCORE DATA DETECTED (fixture #${index}):`, {
+        fields: liveFieldsPresent,
+        data: liveFieldsPresent.reduce((acc, key) => {
+          acc[key] = fixture[key];
+          return acc;
+        }, {}),
+        fixture: {
+          id: fixture.id,
+          match: `${fixture.homeTeam} vs ${fixture.awayTeam}`,
+          status: fixture.status
+        }
+      });
+    }
+
+    // Log if score structure is nested (backend might use score.home/score.away)
+    if (fixture.score && typeof fixture.score === 'object') {
+      console.info(`📊 NESTED SCORE STRUCTURE DETECTED:`, {
+        fixture: `${fixture.homeTeam} vs ${fixture.awayTeam}`,
+        scoreStructure: fixture.score
+      });
+    }
+
+    return true;
+  },
+
+  /**
+   * Transform backend response to standard format
+   * Now with enhanced logging and support for live score fields
+   */
+  transformFixture(fixture, index = 0) {
     if (!fixture) {
       console.warn('Received undefined fixture in transformer');
       return null;
     }
+
+    // Validate and log structure changes
+    transformers.validateFixtureStructure(fixture, index);
 
     // Ensure date has timezone info (assume UTC if missing)
     let fixtureDate = fixture.date || new Date().toISOString();
@@ -165,7 +240,17 @@ const transformers = {
       fixtureDate += 'Z'; // Add UTC timezone if missing
     }
 
-    return {
+    // Handle nested score structure (backend might use score.home/away)
+    let homeScore = fixture.homeScore;
+    let awayScore = fixture.awayScore;
+    
+    if (fixture.score && typeof fixture.score === 'object') {
+      homeScore = fixture.score.home ?? homeScore;
+      awayScore = fixture.score.away ?? awayScore;
+    }
+
+    // Build base fixture object
+    const transformedFixture = {
       id: fixture.id || Date.now(),
       homeTeam: fixture.homeTeam || 'TBD',
       awayTeam: fixture.awayTeam || 'TBD',
@@ -173,11 +258,27 @@ const transformers = {
       status: fixture.status || 'SCHEDULED',
       venue: fixture.venue || '',
       gameweek: fixture.gameweek || 1,
-      homeScore: fixture.homeScore || null,
-      awayScore: fixture.awayScore || null,
-      competition: 'Premier League', // All fixtures are Premier League
-      predicted: fixture.predicted || false // Will be merged with user predictions
+      homeScore: homeScore ?? null,
+      awayScore: awayScore ?? null,
+      competition: fixture.competition || 'Premier League',
+      predicted: fixture.predicted || false, // Will be merged with user predictions
+      
+      // Optional fields
+      ...(fixture.referee && { referee: fixture.referee }),
+      ...(fixture.competitionCode && { competitionCode: fixture.competitionCode }),
     };
+
+    // Add live score fields if present
+    if (fixture.minute != null) transformedFixture.minute = fixture.minute;
+    if (fixture.period) transformedFixture.period = fixture.period;
+    if (fixture.scorers) transformedFixture.scorers = fixture.scorers;
+    if (fixture.events) transformedFixture.events = fixture.events;
+    if (fixture.stats) transformedFixture.stats = fixture.stats;
+    if (fixture.halfTimeScore) transformedFixture.halfTimeScore = fixture.halfTimeScore;
+    if (fixture.penalties) transformedFixture.penalties = fixture.penalties;
+    if (fixture.extraTime) transformedFixture.extraTime = fixture.extraTime;
+
+    return transformedFixture;
   }
 };
 
@@ -193,20 +294,38 @@ export const externalFixturesAPI = {
    */
   async getFixtures() {
     try {
+      console.log('🔄 Fetching fixtures from backend API...');
       const response = await apiClient.request('');
 
       // Backend returns direct array of fixtures, not wrapped in {fixtures: []}
       const fixturesArray = Array.isArray(response) ? response : (response.fixtures || []);
       
+      console.log(`📦 Received ${fixturesArray.length} fixtures from backend`);
+      
+      // Log response structure for monitoring
+      if (fixturesArray.length > 0) {
+        console.log('📋 Sample fixture structure:', {
+          sampleFixture: fixturesArray[0],
+          allFields: Object.keys(fixturesArray[0]),
+          totalFixtures: fixturesArray.length
+        });
+      }
+      
       // Transform fixtures (filter out nulls from failed transforms)
       const transformedFixtures = fixturesArray
-        .map(transformers.transformFixture)
+        .map((fixture, index) => transformers.transformFixture(fixture, index))
         .filter(fixture => fixture !== null);
+
+      console.log(`✅ Successfully transformed ${transformedFixtures.length} fixtures`);
 
       // Deduplicate fixtures by ID (defensive against backend duplicates)
       const uniqueFixtures = transformedFixtures.filter((fixture, index, array) => 
         array.findIndex(f => f.id === fixture.id) === index
       );
+
+      if (uniqueFixtures.length < transformedFixtures.length) {
+        console.warn(`⚠️ Removed ${transformedFixtures.length - uniqueFixtures.length} duplicate fixtures`);
+      }
 
       return {
         success: true,
@@ -219,7 +338,7 @@ export const externalFixturesAPI = {
         }
       };
     } catch (error) {
-      console.error('Backend fixtures request failed:', error);
+      console.error('❌ Backend fixtures request failed:', error);
       
       return {
         success: false,
@@ -237,15 +356,28 @@ export const externalFixturesAPI = {
    */
   async getLiveFixtures() {
     try {
-      console.log('Attempting to fetch live fixtures from backend...');
+      console.log('⚡ Attempting to fetch live fixtures from backend...');
       const response = await apiClient.request('/live');
 
       // Backend returns direct array of fixtures, not wrapped in {fixtures: []}
       const fixturesArray = Array.isArray(response) ? response : (response.fixtures || []);
       
+      console.log(`⚽ Received ${fixturesArray.length} live fixtures from backend`);
+      
+      // Log live fixture structures (they may have additional fields)
+      if (fixturesArray.length > 0) {
+        console.log('⚡ Live fixture sample:', {
+          sampleFixture: fixturesArray[0],
+          allFields: Object.keys(fixturesArray[0]),
+          totalLiveFixtures: fixturesArray.length
+        });
+      }
+      
       const transformedFixtures = fixturesArray
-        .map(transformers.transformFixture)
+        .map((fixture, index) => transformers.transformFixture(fixture, index))
         .filter(fixture => fixture !== null);
+
+      console.log(`✅ Successfully transformed ${transformedFixtures.length} live fixtures`);
 
       return {
         success: true,
@@ -258,7 +390,7 @@ export const externalFixturesAPI = {
         }
       };
     } catch (error) {
-      console.error('Backend live fixtures request failed:', error);
+      console.error('❌ Backend live fixtures request failed:', error);
       
       return {
         success: false,

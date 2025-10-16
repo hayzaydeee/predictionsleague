@@ -10,7 +10,7 @@ import "swiper/css/effect-cards";
 import { EffectCards } from "swiper/modules";
 
 import EmptyFixtureState from "./EmptyFixtureState";
-import FixtureCard from "./FixtureCard";
+import FixtureCard from "./FixtureCardOption2";
 import { ThemeContext } from "../../context/ThemeContext";
 import { padding, textScale, spacing } from "../../utils/mobileScaleUtils";
 
