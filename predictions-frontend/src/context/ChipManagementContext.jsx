@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { 
   getChipManager, 
   CHIP_CONFIG, 
@@ -8,6 +8,7 @@ import {
   disablePremiumRestrictions 
 } from '../utils/chipManager';
 import { useAuth } from './AuthContext';
+import { useFixtures } from '../hooks/useFixtures';
 
 const ChipManagementContext = createContext(null);
 
@@ -17,8 +18,23 @@ const ChipManagementContext = createContext(null);
 export function ChipManagementProvider({ children }) {
   const { user } = useAuth();
   const [chipManager, setChipManager] = useState(null);
-  const [currentGameweek, setCurrentGameweek] = useState(1); // TODO: Get from backend/fixtures
   const [availableChips, setAvailableChips] = useState([]);
+  
+  // Get fixtures to determine current gameweek
+  const { fixtures } = useFixtures({ fallbackToSample: false });
+  
+  // Calculate current gameweek from fixtures data
+  const currentGameweek = useMemo(() => {
+    if (!fixtures || fixtures.length === 0) return 1;
+    
+    // Get the earliest upcoming gameweek from fixtures
+    const upcomingGameweeks = fixtures
+      .map(fixture => fixture.gameweek)
+      .filter(Boolean)
+      .sort((a, b) => a - b);
+    
+    return upcomingGameweeks[0] || 1;
+  }, [fixtures]);
 
   // Initialize chip manager when user changes
   useEffect(() => {

@@ -93,7 +93,7 @@ export const CHIP_CONFIG = {
     description: "Doubles the entire gameweek score (including deductions)",
     icon: "🎯",
     color: "red",
-    cooldown: 5, // Can't use for 5 gameweeks after usage
+    cooldown: 0, // No cooldown
     seasonLimit: 2, // Can only use 2 times per season
     scope: "gameweek"
   }
