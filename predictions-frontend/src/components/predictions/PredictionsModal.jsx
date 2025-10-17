@@ -100,18 +100,24 @@ export default function PredictionsModal({
     e.preventDefault();
     setSubmitting(true);
 
+    // Merge match chips (selectedChips) with gameweek chips (activeGameweekChips)
+    const allChips = [...new Set([...selectedChips, ...activeGameweekChips])];
+
     const frontendPrediction = {
       homeScore,
       awayScore,
       homeScorers,
       awayScorers,
-      chips: selectedChips,
+      chips: allChips,
     };
 
     try {
       console.log('🎯 Submitting prediction:', {
         fixture: fixture.id,
         prediction: frontendPrediction,
+        matchChips: selectedChips,
+        gameweekChips: activeGameweekChips,
+        allChips: allChips,
         teams: `${fixture.homeTeam} vs ${fixture.awayTeam}`
       });
 
