@@ -82,7 +82,7 @@ const FixtureFilters = ({
               <button
                 key={option.value}
                 onClick={() => setActiveFilter(option.value)}
-                className={`px-2.5 sm:px-4 md:px-5 py-2 sm:py-2.5 md:py-3 rounded-lg text-sm sm:text-xs md:text-sm font-medium transition-all duration-200 ${
+                className={`px-2.5 sm:px-3 py-2 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 ${
                   activeFilter === option.value
                     ? theme === "dark"
                       ? "bg-teal-600 text-white"
@@ -92,10 +92,10 @@ const FixtureFilters = ({
                     : "bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-800"
                 } whitespace-nowrap`}
               >
-                <span className="hidden sm:inline mr-1.5 md:mr-2">{option.label}</span>
+                <span className="hidden sm:inline mr-1.5">{option.label}</span>
                 <span className="sm:hidden mr-1">{option.label === "Unpredicted" ? "ToDo" : option.label}</span>
                 <span
-                  className={`inline-flex items-center justify-center w-4 h-4 sm:w-5 md:w-6 md:h-5 text-2xs sm:text-xs md:text-sm rounded-full font-bold ${
+                  className={`inline-flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 text-2xs sm:text-xs rounded-full font-bold ${
                     activeFilter === option.value
                       ? "bg-white/20 text-white"
                       : theme === "dark"
