@@ -35,10 +35,37 @@ export const userPredictionsAPI = {
         params: { status }
       });
 
-      console.log('User predictions fetched successfully', {
+      console.log('📥 User predictions fetched successfully', {
         count: response.data?.length || 0,
-        status
+        status,
+        rawResponse: response
       });
+
+      // Log detailed prediction data
+      if (response.data && response.data.length > 0) {
+        console.log('📊 First prediction sample:', {
+          prediction: response.data[0],
+          hasStatus: 'status' in response.data[0],
+          statusValue: response.data[0].status,
+          hasPoints: 'points' in response.data[0],
+          pointsValue: response.data[0].points,
+          hasActualScores: 'actualHomeScore' in response.data[0],
+          actualHomeScore: response.data[0].actualHomeScore,
+          actualAwayScore: response.data[0].actualAwayScore
+        });
+        
+        // Log all predictions with their status
+        console.log('📋 All predictions status breakdown:', 
+          response.data.map(p => ({
+            id: p.id,
+            match: `${p.homeTeam} vs ${p.awayTeam}`,
+            status: p.status,
+            points: p.points,
+            actualScores: `${p.actualHomeScore ?? 'null'}-${p.actualAwayScore ?? 'null'}`,
+            date: p.date || p.matchDate
+          }))
+        );
+      }
 
       return {
         success: true,
