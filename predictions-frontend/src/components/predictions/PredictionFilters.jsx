@@ -9,9 +9,9 @@ import {
 import { ThemeContext } from "../../context/ThemeContext";
 import { useUserPreferences } from "../../context/UserPreferencesContext";
 import { text, backgrounds } from "../../utils/themeUtils";
-import { predictions } from "../../data/sampleData";
 
 const PredictionFilters = ({
+  predictions = [], // Accept predictions as prop
   activeFilter,
   setActiveFilter,
   searchQuery,
@@ -30,11 +30,11 @@ const PredictionFilters = ({
   const { theme } = useContext(ThemeContext);
   const { preferences, updatePreference } = useUserPreferences();
 
-  // Extract unique values for filter options
+  // Extract unique values for filter options from actual predictions data
   const availableGameweeks = [...new Set(predictions.map(p => p.gameweek))].sort((a, b) => b - a);
   const availableTeams = [...new Set(predictions.flatMap(p => [p.homeTeam, p.awayTeam]))].sort();
 
-  // Filter options with counts
+  // Filter options with counts from actual data
   const filterOptions = [
     { value: "all", label: "All Predictions", count: predictions.length },
     { value: "pending", label: "Pending", count: predictions.filter(p => p.status === "pending").length },

@@ -102,18 +102,11 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
       }
     }
   };
-  // Filter fixtures and enhance with prediction status
-  const filteredFixtures = useMemo(() => {
+  // First, enhance ALL fixtures with prediction status (before filtering)
+  const enhancedFixtures = useMemo(() => {
     if (!liveFixtures) return [];
     
-    const filtered = fixtureFilters.applyFilters(liveFixtures, {
-      date: dateFilter,
-      status: activeFilter,
-      search: searchQuery
-    });
-
-    // Enhance with prediction status from localStorage
-    return filtered.map(fixture => ({
+    return liveFixtures.map(fixture => ({
       ...fixture,
       userPrediction: predictionStatus.getPrediction(
         fixture.id, 
@@ -126,7 +119,18 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
         fixture.awayTeam?.name || fixture.awayTeam
       )
     }));
-  }, [liveFixtures, dateFilter, activeFilter, searchQuery, predictionStatus]);
+  }, [liveFixtures, predictionStatus]);
+
+  // Then filter the enhanced fixtures
+  const filteredFixtures = useMemo(() => {
+    if (!enhancedFixtures) return [];
+    
+    return fixtureFilters.applyFilters(enhancedFixtures, {
+      date: dateFilter,
+      status: activeFilter,
+      search: searchQuery
+    });
+  }, [enhancedFixtures, dateFilter, activeFilter, searchQuery]);
 
   // Handle fixture selection
   const onFixtureSelect = (fixture) => {
@@ -320,7 +324,7 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
             setSortBy={setSortBy}
             showFilters={showFilters}
             setShowFilters={setShowFilters}
-            fixtures={liveFixtures || []}
+            fixtures={enhancedFixtures || []}
           />
         </div>
 

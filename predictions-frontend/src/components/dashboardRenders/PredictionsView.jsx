@@ -178,6 +178,7 @@ const PredictionsView = ({ handleEditPrediction }) => {
       >
         {/* Prediction filters component */}
         <PredictionFilters
+          predictions={predictions}
           activeFilter={activeFilter}
           setActiveFilter={setActiveFilter}
           searchQuery={searchQuery}
