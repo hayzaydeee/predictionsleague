@@ -181,7 +181,11 @@ const RecentPredictionsPanel = ({ predictions, onViewAll }) => {
                 <div className="flex items-center gap-2">
                   <div
                     className={`flex items-center gap-1.5 rounded-full px-2 py-1.5 font-outfit border ${
-                      points > 0
+                      isPending
+                        ? theme === "dark"
+                          ? "bg-slate-500/10 border-slate-500/20"
+                          : "bg-slate-100 border-slate-300"
+                        : points > 0
                         ? theme === "dark"
                           ? "bg-emerald-500/10 border-emerald-500/20"
                           : "bg-emerald-50 border-emerald-200"
@@ -192,7 +196,11 @@ const RecentPredictionsPanel = ({ predictions, onViewAll }) => {
                   >
                     <MagicWandIcon
                       className={`w-3 h-3 ${
-                        points > 0
+                        isPending
+                          ? theme === "dark"
+                            ? "text-slate-400"
+                            : "text-slate-500"
+                          : points > 0
                           ? theme === "dark"
                             ? "text-emerald-400"
                             : "text-emerald-600"
@@ -203,7 +211,11 @@ const RecentPredictionsPanel = ({ predictions, onViewAll }) => {
                     />
                     <span
                       className={`font-semibold text-xs ${
-                        points > 0
+                        isPending
+                          ? theme === "dark"
+                            ? "text-slate-400"
+                            : "text-slate-600"
+                          : points > 0
                           ? theme === "dark"
                             ? "text-emerald-400"
                             : "text-emerald-600"
@@ -212,8 +224,8 @@ const RecentPredictionsPanel = ({ predictions, onViewAll }) => {
                           : "text-red-600"
                       }`}
                     >
-                      {points > 0 ? "+" : ""}
-                      {points} pts
+                      {isPending ? "-" : points > 0 ? "+" : ""}
+                      {isPending ? "" : points} pts
                     </span>
                   </div>
                 </div>
