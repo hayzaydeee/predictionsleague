@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   CheckIcon,
@@ -12,6 +12,7 @@ import {
   InfoCircledIcon,
 } from "@radix-ui/react-icons";
 import { ThemeContext } from "../../context/ThemeContext";
+import { useChipManagement } from "../../context/ChipManagementContext";
 import {
   getThemeStyles,
   backgrounds,
@@ -35,93 +36,29 @@ const GameweekChipsPanel = ({
   // Get theme context
   const { theme } = useContext(ThemeContext);
 
-  // In a real app, you'd fetch these from an API
-  const gameweekChips = [
-    {
-      id: "opportunist",
-      name: "Opportunist",
-      description:
-        "Change all six predictions up to 30 minutes before the first kickoff.",
-      icon: "⏱️",
-      color: "amber",
-      cooldown: 0,
-      seasonLimit: 2,
-      remainingUses: 2,
-      available: true,
-      type: "gameweek",
-      strategyTip:
-        "Use when late team news significantly impacts your predictions, such as key players being injured or rested.",
-    },
-    {
-      id: "defensePlusPlus",
-      name: "Defense++",
-      description:
-        "Earn 10 bonus points if you correctly predict clean sheets across all matches where you predicted them.",
-      icon: "🛡️",
-      color: "blue",
-      cooldown: 5,
-      cooldownRemaining: 0,
-      available: true,
-      type: "gameweek",
-    },
-    {
-      id: "allInWeek",
-      name: "All-In Week",
-      description:
-        "Doubles the entire gameweek score (including deductions).",
-      icon: "🎯",
-      color: "red",
-      cooldown: 5,
-      seasonLimit: 2,
-      remainingUses: 2,
-      available: true,
-      type: "gameweek",
-    },
-  ];
+  // Get chip management context
+  const { 
+    availableChips, 
+    getMatchChips, 
+    getGameweekChips,
+    currentGameweek: contextGameweek 
+  } = useChipManagement();
 
-  const matchChips = [
-    {
-      id: "doubleDown",
-      name: "Double Down",
-      description: "Double all points earned from one selected match.",
-      icon: "2x",
-      color: "teal",
-      cooldown: 0,
-      cooldownRemaining: 0,
-      available: true,
-      type: "match",
-      strategyTip:
-        "Best used on matches where you have high confidence in your prediction, especially if you've predicted goalscorers correctly.",
-    },
-    {
-      id: "wildcard",
-      name: "Wildcard",
-      description: "Triple all points earned from one selected match.",
-      icon: "3x",
-      color: "purple",
-      cooldown: 7,
-      seasonLimit: null,
-      remainingUses: null,
-      cooldownRemaining: 0,
-      available: true,
-      type: "match",
-      strategyTip:
-        "Save this for matches where you're extremely confident. 7 gameweek cooldown means limited uses per season!",
-    },
-    {
-      id: "scorerFocus",
-      name: "Scorer Focus",
-      description: "Doubles all points from goalscorer predictions in one match.",
-      icon: "⚽",
-      color: "green",
-      cooldown: 5,
-      cooldownRemaining: 0,
-      available: true,
-      type: "match",
-      strategyTip:
-        "Best used in high-scoring matches where you're confident about multiple goalscorers.",
-    }
-  ];
+  // Use context gameweek if currentGameweek prop not provided
+  const activeGameweek = currentGameweek || contextGameweek;
+
+  // Get chips from context
+  const gameweekChips = getGameweekChips().map(chip => ({
+    ...chip,
+    // Map display properties
+    cooldownRemaining: chip.remainingGameweeks || 0,
+  }));
+
+  const matchChips = getMatchChips().map(chip => ({
+    ...chip,
+    // Map display properties
+    cooldownRemaining: chip.remainingGameweeks || 0,
+  }));
 
   // Combined chips for display
   const allChips = [...gameweekChips, ...matchChips];
@@ -157,7 +94,7 @@ const GameweekChipsPanel = ({
 
     // Call parent handler
     if (onApplyChip) {
-      onApplyChip(selectedChip.id, currentGameweek);
+      onApplyChip(selectedChip.id, activeGameweek);
     }
 
     setShowConfirmModal(false);
@@ -170,7 +107,7 @@ const GameweekChipsPanel = ({
 
     // Call parent handler to remove the chip
     if (onApplyChip) {
-      onApplyChip(chipId, currentGameweek, true); // true indicates removal
+      onApplyChip(chipId, activeGameweek, true); // true indicates removal
     }
   };
 
@@ -257,7 +194,7 @@ const GameweekChipsPanel = ({
                 dark: "text-blue-200/70",
                 light: "text-blue-600/70",
               })}`}>GW</span>
-              <span className="font-medium text-2xs sm:text-sm ml-0.5 sm:ml-1">{currentGameweek}</span>
+              <span className="font-medium text-2xs sm:text-sm ml-0.5 sm:ml-1">{activeGameweek}</span>
             </div>
             
             {/* Collapse button */}
@@ -853,7 +790,7 @@ const GameweekChipsPanel = ({
                       text.secondary
                     )}`}
                   >
-                    Gameweek {currentGameweek}
+                    Gameweek {activeGameweek}
                   </p>
                 </div>
               </div>{" "}

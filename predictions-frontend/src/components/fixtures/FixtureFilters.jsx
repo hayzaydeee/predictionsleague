@@ -82,7 +82,7 @@ const FixtureFilters = ({
               <button
                 key={option.value}
                 onClick={() => setActiveFilter(option.value)}
-                className={`px-2.5 sm:px-4 md:px-5 py-2 sm:py-2.5 md:py-3 rounded-lg text-2xs sm:text-xs md:text-sm font-medium transition-all duration-200 ${
+                className={`px-2.5 sm:px-4 md:px-5 py-2 sm:py-2.5 md:py-3 rounded-lg text-sm sm:text-xs md:text-sm font-medium transition-all duration-200 ${
                   activeFilter === option.value
                     ? theme === "dark"
                       ? "bg-teal-600 text-white"
@@ -113,7 +113,7 @@ const FixtureFilters = ({
           <div className="flex items-center gap-2 flex-shrink-0">
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className={`flex items-center gap-1.5 md:gap-2 px-2.5 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 rounded-lg text-xs sm:text-sm md:text-base font-medium transition-colors ${
+              className={`flex items-center gap-1.5 md:gap-2 px-2.5 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 rounded-lg text-md sm:text-sm md:text-base font-medium transition-colors ${
                 theme === "dark"
                   ? "bg-slate-800/50 text-slate-300 hover:bg-slate-800 hover:text-white border border-slate-700"
                   : "bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-800 border border-slate-200"

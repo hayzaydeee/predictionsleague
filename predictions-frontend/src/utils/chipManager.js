@@ -56,13 +56,13 @@ export const CHIP_CONFIG = {
     id: "opportunist",
     name: "Opportunist",
     type: "gameweek",
-    description: "Change all six predictions up to 30 minutes before the first kickoff",
+    description: "Change all predictions up to 30 minutes before each match kicks off",
     icon: "⏱️",
     color: "amber",
     cooldown: 0, // No cooldown
     seasonLimit: 2, // Can only use 2 times per season
     scope: "gameweek", // Applied to entire gameweek
-    behavior: "single_deadline" // All changes must be made before first match
+    behavior: "rolling_deadline" // Can change predictions before each match individually
   },
   scorerFocus: {
     id: "scorerFocus",
@@ -94,7 +94,7 @@ export const CHIP_CONFIG = {
     icon: "🎯",
     color: "red",
     cooldown: 0, // No cooldown
-    seasonLimit: 2, // Can only use 2 times per season
+    seasonLimit: 4, // Can only use 4 times per season
     scope: "gameweek"
   }
 };

@@ -20,6 +20,7 @@ import UpcomingMatchesPanel from "../panels/UpcomingMatchesPanel";
 import RecentPredictionsPanel from "../panels/RecentPredictionsPanel";
 import LeaguesTable from "../tables/LeaguesTable";
 import { ThemeContext } from "../../context/ThemeContext";
+import { useChipManagement } from "../../context/ChipManagementContext";
 import { text } from "../../utils/themeUtils";
 import { generatePerformanceInsights, getInsightColorClass } from "../../utils/performanceInsights";
 import { extendedPredictionHistory } from "../../data/sampleData";
@@ -69,6 +70,9 @@ const DashboardView = ({
   // State for processed upcoming fixtures
   const [upcomingFixtures, setUpcomingFixtures] = useState([]);
   const [selectedInsight, setSelectedInsight] = useState(null);
+
+  // Get chip management context
+  const { availableChips, currentGameweek } = useChipManagement();
 
   // Memoize fixtures array to prevent useEffect from running on reference changes
   const memoizedExternalFixtures = useMemo(() => externalFixtures, [
@@ -245,6 +249,34 @@ const DashboardView = ({
     return ((season.currentGameweek / season.totalGameweeks) * 100).toFixed(1);
   };
 
+  // Calculate available chips stats from chip management context
+  const getAvailableChipsStats = useMemo(() => {
+    if (!availableChips || availableChips.length === 0) {
+      return {
+        value: "0",
+        subtitle: "No chips available",
+      };
+    }
+
+    const available = availableChips.filter(chip => chip.available);
+    const onCooldown = availableChips.filter(chip => !chip.available && chip.remainingGameweeks > 0);
+    
+    if (available.length === 0) {
+      return {
+        value: "0",
+        subtitle: onCooldown.length > 0 ? `${onCooldown.length} on cooldown` : "No chips ready",
+      };
+    }
+
+    // Show count of available chips
+    return {
+      value: available.length.toString(),
+      subtitle: available.length === availableChips.length 
+        ? "All chips ready" 
+        : `${onCooldown.length} on cooldown`,
+    };
+  }, [availableChips]);
+
   // Get theme context
   const { theme } = useContext(ThemeContext);
 
@@ -393,8 +425,8 @@ const DashboardView = ({
             {/* Available Chips - Amber accent */}
             <StatCardOption3
               title="Available Chips"
-              value={essentialData?.stats?.availableChips?.value?.toString() || "0"}
-              subtitle={essentialData?.stats?.availableChips?.subtitle || "No chips available"}
+              value={getAvailableChipsStats.value}
+              subtitle={getAvailableChipsStats.subtitle}
               badge={{
                 icon: <InfoCircledIcon />,
                 type: "neutral",

@@ -85,11 +85,11 @@ const ChipStrategyModal = memo(({ isOpen, onClose }) => {
         icon: '⏱️',
         name: 'Opportunist',
         usage: 'Limited use: Available twice per season', 
-        description: 'Change all six predictions up to 30 minutes before the first kickoff.',
+        description: 'Change all predictions up to 30 minutes before each match kicks off.',
         bgColor: 'amber',
         hoverColor: 'amber-500/30',
         tipTitle: 'Strategic Usage:',
-        tip: 'Save for gameweeks with significant late team news - injured key players, surprise lineups, or weather conditions. All changes must be made before the first match kicks off.'
+        tip: 'Save for gameweeks with significant late team news. You can adjust predictions for each match individually up to 30 minutes before that match starts.'
       },
       {
         id: 'defenseBoost',
@@ -105,7 +105,7 @@ const ChipStrategyModal = memo(({ isOpen, onClose }) => {
         id: 'allInWeek', 
         icon: '🎯',
         name: 'All-In Week',
-        usage: 'Cooldown: 5 gameweeks + Limited use: 2 per season',
+        usage: 'Limited use: 4 per season',
         description: 'Doubles the entire gameweek score (including deductions).',
         bgColor: 'red',
         tipTitle: 'Strategic Usage:',  
