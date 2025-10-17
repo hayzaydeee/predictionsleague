@@ -36,7 +36,14 @@ export const fixtureMatching = {
    * @returns {boolean} Whether fixtures match
    */
   fixturesMatch(externalFixture, userPrediction) {
-    // Primary matching by fixture key
+    // PRIMARY MATCHING: Match by fixture ID / matchId (most reliable)
+    if (externalFixture.id && userPrediction.matchId) {
+      if (externalFixture.id === userPrediction.matchId) {
+        return true;
+      }
+    }
+
+    // SECONDARY MATCHING: Match by fixture key
     const externalKey = this.generateFixtureKey(externalFixture);
     const predictionKey = this.generateFixtureKey(userPrediction);
     
@@ -103,9 +110,41 @@ export const fixtureMatching = {
       return null;
     }
 
-    return userPredictions.find(prediction => 
-      this.fixturesMatch(externalFixture, prediction)
-    ) || null;
+    const match = userPredictions.find(prediction => {
+      const isMatch = this.fixturesMatch(externalFixture, prediction);
+      
+      // Log each comparison attempt
+      if (!isMatch) {
+        console.log('🔍 Fixture match attempt:', {
+          external: {
+            id: externalFixture.id,
+            home: externalFixture.homeTeam,
+            away: externalFixture.awayTeam,
+            date: externalFixture.date,
+            key: this.generateFixtureKey(externalFixture)
+          },
+          prediction: {
+            id: prediction.id,
+            matchId: prediction.matchId,
+            home: prediction.homeTeam,
+            away: prediction.awayTeam,
+            date: prediction.date,
+            key: this.generateFixtureKey(prediction)
+          },
+          matched: false
+        });
+      } else {
+        console.log('✅ Fixture matched:', {
+          externalId: externalFixture.id,
+          predictionId: prediction.id,
+          teams: `${externalFixture.homeTeam} vs ${externalFixture.awayTeam}`
+        });
+      }
+      
+      return isMatch;
+    });
+
+    return match || null;
   }
 };
 
