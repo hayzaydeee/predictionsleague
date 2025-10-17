@@ -11,6 +11,25 @@ import {
 } from "@radix-ui/react-icons";
 import { ThemeContext } from "../../context/ThemeContext";
 
+// Helper function to format time ago
+const formatTimeAgo = (dateString) => {
+  if (!dateString) return 'Unknown';
+  
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffMs = now - date;
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+
+  if (diffMins < 1) return 'Just now';
+  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffDays < 7) return `${diffDays}d ago`;
+  
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+};
+
 const RecentPredictionsPanel = ({ predictions, onViewAll }) => {
   const { theme } = useContext(ThemeContext);
 
@@ -72,7 +91,9 @@ const RecentPredictionsPanel = ({ predictions, onViewAll }) => {
       <div className="space-y-2">
         {predictions.map((prediction, index) => {
           const isCorrect = prediction.correct;
-          const points = prediction.points;
+          const points = prediction.points || 0;
+          const isPending = prediction.status === 'PENDING' || prediction.status === 'pending';
+          const matchDisplay = `${prediction.homeTeam} vs ${prediction.awayTeam}`;
 
           return (
             <motion.div
@@ -94,10 +115,18 @@ const RecentPredictionsPanel = ({ predictions, onViewAll }) => {
                         theme === "dark" ? "text-white" : "text-slate-800"
                       } font-outfit font-medium text-sm`}
                     >
-                      {prediction.match}
+                      {matchDisplay}
                     </div>
                     <div className="flex items-center gap-1.5">
-                      {isCorrect ? (
+                      {isPending ? (
+                        <ClockIcon
+                          className={`w-3 h-3 ${
+                            theme === "dark"
+                              ? "text-amber-400"
+                              : "text-amber-500"
+                          }`}
+                        />
+                      ) : isCorrect ? (
                         <CheckIcon
                           className={`w-3 h-3 ${
                             theme === "dark"
@@ -114,7 +143,11 @@ const RecentPredictionsPanel = ({ predictions, onViewAll }) => {
                       )}
                       <span
                         className={`text-xs font-medium font-outfit ${
-                          isCorrect
+                          isPending
+                            ? theme === "dark"
+                              ? "text-amber-400"
+                              : "text-amber-600"
+                            : isCorrect
                             ? theme === "dark"
                               ? "text-emerald-400"
                               : "text-emerald-600"
@@ -123,7 +156,7 @@ const RecentPredictionsPanel = ({ predictions, onViewAll }) => {
                             : "text-red-600"
                         }`}
                       >
-                        {isCorrect ? "Correct" : "Incorrect"}
+                        {isPending ? "Pending" : isCorrect ? "Correct" : "Incorrect"}
                       </span>
                     </div>
                   </div>
@@ -137,11 +170,11 @@ const RecentPredictionsPanel = ({ predictions, onViewAll }) => {
                         theme === "dark" ? "bg-slate-600/30" : "bg-slate-200/70"
                       }`}
                     >
-                      GW{35 - (prediction.id - 1)}
+                      GW{prediction.gameweek || '?'}
                     </div>
                     <div className="flex items-center gap-0.5">
                       <ClockIcon className="w-3 h-3" />
-                      <span>2 days ago</span>
+                      <span>{formatTimeAgo(prediction.date)}</span>
                     </div>
                   </div>
                 </div>
