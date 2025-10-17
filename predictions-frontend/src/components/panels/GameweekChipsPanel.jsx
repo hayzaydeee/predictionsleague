@@ -208,7 +208,7 @@ const GameweekChipsPanel = ({
                 dark: "text-blue-200/70",
                 light: "text-blue-600/70",
               })}`}>GW</span>
-              <span className="font-medium text-2xs sm:text-sm ml-0.5 sm:ml-1">{activeGameweek}</span>
+              <span className="font-medium text-sm sm:text-sm ml-0.5 sm:ml-1">{activeGameweek}</span>
             </div>
             
             {/* Collapse button */}

@@ -92,22 +92,22 @@ export default function StatusBar({
           : "bg-slate-50 border-slate-200"
       } backdrop-blur-md border`}
     >
-      <Box className="container mx-auto px-3 py-2 sm:px-4 sm:py-3">
+      <Box className="container mx-auto px-3 py-2 sm:px-6 sm:py-4">
         <div className="flex flex-wrap items-center justify-between gap-y-1 sm:gap-y-2">
           <div className="flex items-center">
             {loading ? (
-              <div className="h-7 w-7 sm:h-9 sm:w-9 bg-slate-700/50 rounded-full mr-2 sm:mr-3 animate-pulse" />
+              <div className="h-7 w-7 sm:h-12 sm:w-12 bg-slate-700/50 rounded-full mr-2 sm:mr-4 animate-pulse" />
             ) : (
-              <div className="h-7 w-7 sm:h-9 sm:w-9 bg-indigo-600 rounded-full flex items-center justify-center text-white font-medium mr-2 sm:mr-3 text-sm sm:text-base">
+              <div className="h-7 w-7 sm:h-12 sm:w-12 bg-indigo-600 rounded-full flex items-center justify-center text-white font-medium mr-2 sm:mr-4 text-sm sm:text-xl">
                 {userData.username.substring(0, 1).toUpperCase()}
               </div>
             )}
             <div>
               {loading ? (
                 <>
-                  <Skeleton width="w-24" height="h-5" />
+                  <Skeleton width="w-24 sm:w-32" height="h-5 sm:h-7" />
                   <div className="mt-1">
-                    <Skeleton width="w-20" height="h-3" />
+                    <Skeleton width="w-20 sm:w-24" height="h-3 sm:h-4" />
                   </div>
                 </>
               ) : (
@@ -115,12 +115,12 @@ export default function StatusBar({
                   <h3
                     className={`${
                       theme === "dark" ? "text-teal-100" : "text-teal-700"
-                    } font-medium font-outfit`}
+                    } font-medium font-outfit text-sm sm:text-lg`}
                   >
                     {userData.username}
                   </h3>
                   <div
-                    className={`flex items-center text-xs ${
+                    className={`flex items-center text-xs sm:text-sm ${
                       theme === "dark" ? "text-white/60" : "text-slate-500"
                     }`}
                   >
@@ -159,23 +159,23 @@ export default function StatusBar({
             </div>
           </div>
           {/* Stats */}
-          <div className="flex space-x-3 sm:space-x-6">
+          <div className="flex space-x-3 sm:space-x-8">
             {/* Points */}
             <div className="flex flex-col items-center">
               <span
-                className={`text-2xs sm:text-xs ${
+                className={`text-2xs sm:text-sm ${
                   theme === "dark" ? "text-white/60" : "text-slate-500"
-                } font-outfit`}
+                } font-outfit uppercase tracking-wide`}
               >
                 POINTS
               </span>
               {loading ? (
-                <Skeleton width="w-8 sm:w-12" height="h-5 sm:h-6" />
+                <Skeleton width="w-8 sm:w-16" height="h-5 sm:h-8" />
               ) : (
                 <span
                   className={`${
                     theme === "dark" ? "text-teal-200" : "text-teal-600"
-                  } font-bold font-dmSerif text-base sm:text-lg`}
+                  } font-bold font-dmSerif text-base sm:text-2xl`}
                 >
                   {userData.points?.toString() || "0"}
                 </span>
@@ -185,19 +185,19 @@ export default function StatusBar({
             {/* Predictions */}
             <div className="flex flex-col items-center">
               <span
-                className={`text-2xs sm:text-xs ${
+                className={`text-2xs sm:text-sm ${
                   theme === "dark" ? "text-white/60" : "text-slate-500"
-                } font-outfit`}
+                } font-outfit uppercase tracking-wide`}
               >
                 PREDICTIONS
               </span>
               {loading ? (
-                <Skeleton width="w-8" height="h-5 sm:h-6" />
+                <Skeleton width="w-8 sm:w-12" height="h-5 sm:h-8" />
               ) : (
                 <span
                   className={`${
                     theme === "dark" ? "text-teal-200" : "text-teal-600"
-                  } font-bold font-dmSerif text-base sm:text-lg`}
+                  } font-bold font-dmSerif text-base sm:text-2xl`}
                 >
                   {userData.predictions}
                 </span>
@@ -207,21 +207,21 @@ export default function StatusBar({
             {/* Next Match */}
             <div className="hidden md:flex flex-col items-center">
               <span
-                className={`text-xs ${
+                className={`text-sm ${
                   theme === "dark" ? "text-white/60" : "text-slate-500"
-                } font-outfit`}
+                } font-outfit uppercase tracking-wide`}
               >
                 NEXT MATCH IN
               </span>
               {loading || !nextMatchData ? (
-                <Skeleton width="w-16" height="h-6" />
+                <Skeleton width="w-16 sm:w-20" height="h-6 sm:h-8" />
               ) : (
                 <span
                   className={`${
                     theme === "dark" ? "text-teal-200" : "text-teal-600"
-                  } font-bold font-dmSerif text-lg flex items-center`}
+                  } font-bold font-dmSerif text-xl sm:text-2xl flex items-center`}
                 >
-                  <ClockIcon className="mr-1" /> {timeDisplay}
+                  <ClockIcon className="mr-1.5 w-5 h-5" /> {timeDisplay}
                 </span>
               )}
             </div>
@@ -230,7 +230,7 @@ export default function StatusBar({
           <div className="flex items-center space-x-3">
             {/* Action Button */}
             {loading ? (
-              <Skeleton width="w-32" height="h-9" />
+              <Skeleton width="w-32 sm:w-40" height="h-9 sm:h-11" />
             ) : userData.pendingPredictions > 0 ? (
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -240,11 +240,11 @@ export default function StatusBar({
                   theme === "dark"
                     ? "bg-indigo-600 hover:bg-indigo-700"
                     : "bg-indigo-600 hover:bg-indigo-700"
-                } text-white text-xs sm:text-sm py-1.5 px-2 sm:py-2 sm:px-4 rounded-md flex items-center font-outfit transition-colors`}
+                } text-white text-xs sm:text-base py-1.5 px-2 sm:py-2.5 sm:px-5 rounded-md flex items-center font-outfit transition-colors`}
               >
                 <span className="hidden sm:inline">Make Predictions</span>
                 <span className="sm:hidden">Predict</span>
-                <span className="ml-1 sm:ml-2 bg-white text-indigo-600 rounded-full h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center text-2xs sm:text-xs font-bold">
+                <span className="ml-1 sm:ml-2 bg-white text-indigo-600 rounded-full h-4 w-4 sm:h-6 sm:w-6 flex items-center justify-center text-2xs sm:text-sm font-bold">
                   {userData.pendingPredictions}
                 </span>
               </motion.button>
@@ -254,9 +254,9 @@ export default function StatusBar({
                   theme === "dark"
                     ? "bg-indigo-700/50 text-white/70"
                     : "bg-indigo-100 text-indigo-500"
-                } text-xs sm:text-sm py-1.5 px-2 sm:py-2 sm:px-4 rounded-md flex items-center font-outfit cursor-not-allowed`}
+                } text-xs sm:text-base py-1.5 px-2 sm:py-2.5 sm:px-5 rounded-md flex items-center font-outfit cursor-not-allowed`}
               >
-                <LockClosedIcon className="mr-1 w-3 h-3 sm:w-4 sm:h-4" /> 
+                <LockClosedIcon className="mr-1 w-3 h-3 sm:w-5 sm:h-5" /> 
                 <span className="hidden sm:inline">All Predictions Made</span>
                 <span className="sm:hidden">Complete</span>
               </button>
@@ -267,7 +267,7 @@ export default function StatusBar({
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={toggleTheme}
-              className={`p-1.5 sm:p-2 rounded-md transition-colors ${
+              className={`p-1.5 sm:p-3 rounded-md transition-colors ${
                 theme === "dark"
                   ? "text-white/70 hover:bg-primary-600/40 hover:text-teal-300"
                   : "text-slate-600 hover:bg-slate-100 hover:text-teal-700"
@@ -278,8 +278,9 @@ export default function StatusBar({
                 initial={{ rotate: 0 }}
                 animate={{ rotate: theme === "dark" ? 0 : 360 }}
                 transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="block"
               >
-                {theme === "dark" ? <SunIcon /> : <MoonIcon />}
+                {theme === "dark" ? <SunIcon className="w-4 h-4 sm:w-5 sm:h-5" /> : <MoonIcon className="w-4 h-4 sm:w-5 sm:h-5" />}
               </motion.span>
             </motion.button>
           </div>
