@@ -15,7 +15,7 @@ import { useChipManagement } from "../../context/ChipManagementContext";
 import { backgrounds, text } from "../../utils/themeUtils";
 import { useFixtures } from "../../hooks/useFixtures";
 import { fixtureFilters } from "../../services/api/externalFixturesAPI";
-import { usePredictionTracker } from "../../utils/predictionTracker";
+import { useUserPredictions } from "../../hooks/useClientSideFixtures";
 import { spacing, padding, textScale } from "../../utils/mobileScaleUtils";
 
 const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
@@ -38,8 +38,19 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
     fallbackToSample: false // Use only external API data
   });
 
-  // Use prediction tracker
-  const predictionStatus = usePredictionTracker(liveFixtures);
+  // Fetch user predictions to determine which fixtures have predictions
+  const {
+    data: userPredictions = [],
+    isLoading: predictionsLoading,
+  } = useUserPredictions({
+    status: 'all',
+    staleTime: 2 * 60 * 1000,
+  });
+
+  // Create a Set of matchIds that have predictions for quick lookup
+  const predictedMatchIds = useMemo(() => {
+    return new Set(userPredictions.map(p => p.matchId));
+  }, [userPredictions]);
 
   // API Status and Error Handling  
   const hasApiError = fixturesError;
@@ -102,24 +113,25 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
       }
     }
   };
-  // First, enhance ALL fixtures with prediction status (before filtering)
+  
+  // First, enhance ALL fixtures with prediction status from backend data (before filtering)
   const enhancedFixtures = useMemo(() => {
     if (!liveFixtures) return [];
     
-    return liveFixtures.map(fixture => ({
-      ...fixture,
-      userPrediction: predictionStatus.getPrediction(
-        fixture.id, 
-        fixture.homeTeam?.name || fixture.homeTeam, 
-        fixture.awayTeam?.name || fixture.awayTeam
-      ),
-      hasPrediction: predictionStatus.hasPrediction(
-        fixture.id, 
-        fixture.homeTeam?.name || fixture.homeTeam, 
-        fixture.awayTeam?.name || fixture.awayTeam
-      )
-    }));
-  }, [liveFixtures, predictionStatus]);
+    return liveFixtures.map(fixture => {
+      const hasPrediction = predictedMatchIds.has(fixture.id);
+      const userPrediction = hasPrediction 
+        ? userPredictions.find(p => p.matchId === fixture.id)
+        : null;
+      
+      return {
+        ...fixture,
+        hasPrediction,
+        userPrediction,
+        predicted: hasPrediction // Add predicted flag for compatibility
+      };
+    });
+  }, [liveFixtures, predictedMatchIds, userPredictions]);
 
   // Then filter the enhanced fixtures
   const filteredFixtures = useMemo(() => {

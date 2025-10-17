@@ -77,12 +77,12 @@ const FixtureFilters = ({
         {/* Quick Filter Buttons + Advanced Filters Toggle */}
         <div className="flex items-center justify-between gap-2 flex-wrap sm:flex-nowrap">
           {/* Quick Filter Buttons */}
-          <div className={`flex ${gaps.tight} flex-wrap flex-1`}>
+          <div className="flex gap-2 flex-wrap flex-1">
             {filterOptions.map((option) => (
               <button
                 key={option.value}
                 onClick={() => setActiveFilter(option.value)}
-                className={`px-2.5 sm:px-3 py-2 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 ${
+                className={`px-2.5 sm:px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 ${
                   activeFilter === option.value
                     ? theme === "dark"
                       ? "bg-teal-600 text-white"
@@ -95,7 +95,7 @@ const FixtureFilters = ({
                 <span className="hidden sm:inline mr-1.5">{option.label}</span>
                 <span className="sm:hidden mr-1">{option.label === "Unpredicted" ? "ToDo" : option.label}</span>
                 <span
-                  className={`inline-flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 text-2xs sm:text-xs rounded-full font-bold ${
+                  className={`inline-flex items-center justify-center w-4 h-4 sm:w-5 sm:h-4 text-2xs sm:text-xs rounded-full ${
                     activeFilter === option.value
                       ? "bg-white/20 text-white"
                       : theme === "dark"
