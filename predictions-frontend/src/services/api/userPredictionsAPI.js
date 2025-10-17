@@ -29,8 +29,9 @@ export const userPredictionsAPI = {
 
     try {
       // This endpoint will be implemented in the backend
-      const response = await apiCall('/predictions/user', {
+      const response = await apiCall({
         method: 'GET',
+        url: '/predictions/user',
         params: { status }
       });
 
@@ -92,8 +93,9 @@ export const userPredictionsAPI = {
       };
 
       // This endpoint will be implemented in the backend
-      const response = await apiCall('/predictions/status', {
+      const response = await apiCall({
         method: 'POST',
+        url: '/predictions/status',
         data: requestPayload
       });
 
@@ -126,7 +128,7 @@ export const userPredictionsAPI = {
   },
 
   /**
-   * Create or update a prediction (NEW BACKEND ENDPOINT)
+   * Create or update a prediction
    * @param {Object} frontendPrediction - Frontend prediction object
    * @param {Object} fixture - Frontend fixture object
    * @returns {Promise<Object>} Prediction creation response
@@ -150,8 +152,9 @@ export const userPredictionsAPI = {
         gameweek: backendPayload.gameweek
       });
 
-      const response = await apiCall('/predictions/make-prediction', {
+      const response = await apiCall({
         method: 'POST',
+        url: '/predictions/make-prediction',
         data: backendPayload
       });
 
@@ -194,8 +197,9 @@ export const userPredictionsAPI = {
     console.warn('⚠️ createPrediction is deprecated. Use makePrediction instead.');
     
     try {
-      const response = await apiCall('/predictions', {
+      const response = await apiCall({
         method: 'POST',
+        url: '/predictions',
         data: prediction
       });
 
@@ -236,8 +240,9 @@ export const userPredictionsAPI = {
    */
   async updatePrediction(predictionId, updates) {
     try {
-      const response = await apiCall(`/predictions/${predictionId}`, {
+      const response = await apiCall({
         method: 'PUT',
+        url: `/predictions/${predictionId}`,
         data: updates
       });
 
@@ -277,8 +282,9 @@ export const userPredictionsAPI = {
    */
   async deletePrediction(predictionId) {
     try {
-      const response = await apiCall(`/predictions/${predictionId}`, {
-        method: 'DELETE'
+      const response = await apiCall({
+        method: 'DELETE',
+        url: `/predictions/${predictionId}`
       });
 
       console.log('Prediction deleted successfully', {
@@ -315,8 +321,9 @@ export const userPredictionsAPI = {
    */
   async getPrediction(predictionId) {
     try {
-      const response = await apiCall(`/predictions/${predictionId}`, {
-        method: 'GET'
+      const response = await apiCall({
+        method: 'GET',
+        url: `/predictions/${predictionId}`
       });
 
       return {
@@ -348,8 +355,9 @@ export const userPredictionsAPI = {
    */
   async getPredictionStatistics() {
     try {
-      const response = await apiCall('/predictions/statistics', {
-        method: 'GET'
+      const response = await apiCall({
+        method: 'GET',
+        url: '/predictions/statistics'
       });
 
       return {

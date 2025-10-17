@@ -92,7 +92,7 @@ export default function StatusBar({
           : "bg-slate-50 border-slate-200"
       } backdrop-blur-md border`}
     >
-      <Box className="container mx-auto px-3 py-2 sm:px-6 sm:py-4">
+      <Box className="container mx-auto px-1 py-1 sm:px-6 sm:py-4">
         <div className="flex flex-wrap items-center justify-between gap-y-1 sm:gap-y-2">
           <div className="flex items-center">
             {loading ? (
