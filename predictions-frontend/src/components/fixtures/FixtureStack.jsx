@@ -127,7 +127,7 @@ export default function FixtureStack({
 
   return (
     <div
-      className={`relative backdrop-blur-md rounded-lg ${padding.cardCompact} ${
+      className={`relative backdrop-blur-md rounded-lg p-4 ${
         theme === "dark"
           ? "bg-slate-900/60 border border-slate-700/50"
           : "bg-white/80 border border-slate-200 shadow-sm"
