@@ -40,26 +40,6 @@ export function ChipManagementProvider({ children }) {
     return upcomingGameweeks[0] || 1;
   }, [fixtures, manualGameweek]);
 
-  // Initialize chip manager when user changes
-  useEffect(() => {
-    console.log('👤 ChipManagementContext: User/Gameweek changed', {
-      userId: user?.id,
-      currentGameweek,
-      hasUser: !!user?.id
-    });
-    
-    if (user?.id) {
-      const manager = getChipManager(user.id);
-      console.log('🎯 ChipManager initialized for user:', user.id);
-      setChipManager(manager);
-      refreshAvailableChips(manager, currentGameweek);
-    } else {
-      console.log('❌ No user, clearing chip manager');
-      setChipManager(null);
-      setAvailableChips([]);
-    }
-  }, [user?.id, currentGameweek, refreshAvailableChips]);
-
   /**
    * Refresh available chips list
    */
@@ -80,6 +60,26 @@ export function ChipManagementProvider({ children }) {
       chips: chips.map(c => ({ id: c.id, name: c.name, available: c.available }))
     });
   }, []);
+
+  // Initialize chip manager when user changes
+  useEffect(() => {
+    console.log('👤 ChipManagementContext: User/Gameweek changed', {
+      userId: user?.id,
+      currentGameweek,
+      hasUser: !!user?.id
+    });
+    
+    if (user?.id) {
+      const manager = getChipManager(user.id);
+      console.log('🎯 ChipManager initialized for user:', user.id);
+      setChipManager(manager);
+      refreshAvailableChips(manager, currentGameweek);
+    } else {
+      console.log('❌ No user, clearing chip manager');
+      setChipManager(null);
+      setAvailableChips([]);
+    }
+  }, [user?.id, currentGameweek, refreshAvailableChips]);
 
   /**
    * Check if chip can be used
