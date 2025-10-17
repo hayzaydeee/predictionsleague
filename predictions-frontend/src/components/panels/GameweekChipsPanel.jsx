@@ -63,6 +63,20 @@ const GameweekChipsPanel = ({
   // Combined chips for display
   const allChips = [...gameweekChips, ...matchChips];
 
+  // Debug logging
+  useEffect(() => {
+    console.log('🎮 GameweekChipsPanel Debug:', {
+      activeGameweek,
+      contextGameweek,
+      availableChips: availableChips?.length || 0,
+      gameweekChips: gameweekChips.length,
+      matchChips: matchChips.length,
+      allChips: allChips.length,
+      gameweekChipsData: gameweekChips,
+      matchChipsData: matchChips
+    });
+  }, [activeGameweek, contextGameweek, availableChips, gameweekChips, matchChips, allChips]);
+
   // Toggle chip selection
   const selectChipForConfirmation = (chipId) => {
     // Check if trying to remove or apply

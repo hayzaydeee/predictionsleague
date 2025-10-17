@@ -19,12 +19,16 @@ export function ChipManagementProvider({ children }) {
   const { user } = useAuth();
   const [chipManager, setChipManager] = useState(null);
   const [availableChips, setAvailableChips] = useState([]);
+  const [manualGameweek, setManualGameweek] = useState(null);
   
   // Get fixtures to determine current gameweek
   const { fixtures } = useFixtures({ fallbackToSample: false });
   
-  // Calculate current gameweek from fixtures data
+  // Calculate current gameweek from fixtures data or use manual override
   const currentGameweek = useMemo(() => {
+    // Use manual gameweek if set
+    if (manualGameweek !== null) return manualGameweek;
+    
     if (!fixtures || fixtures.length === 0) return 1;
     
     // Get the earliest upcoming gameweek from fixtures
@@ -34,33 +38,46 @@ export function ChipManagementProvider({ children }) {
       .sort((a, b) => a - b);
     
     return upcomingGameweeks[0] || 1;
-  }, [fixtures]);
+  }, [fixtures, manualGameweek]);
 
   // Initialize chip manager when user changes
   useEffect(() => {
+    console.log('👤 ChipManagementContext: User/Gameweek changed', {
+      userId: user?.id,
+      currentGameweek,
+      hasUser: !!user?.id
+    });
+    
     if (user?.id) {
       const manager = getChipManager(user.id);
+      console.log('🎯 ChipManager initialized for user:', user.id);
       setChipManager(manager);
       refreshAvailableChips(manager, currentGameweek);
     } else {
+      console.log('❌ No user, clearing chip manager');
       setChipManager(null);
       setAvailableChips([]);
     }
-  }, [user?.id, currentGameweek]);
+  }, [user?.id, currentGameweek, refreshAvailableChips]);
 
   /**
    * Refresh available chips list
    */
   const refreshAvailableChips = useCallback((manager, gameweek) => {
-    if (!manager) return;
+    if (!manager) {
+      console.log('⚠️ refreshAvailableChips: No manager provided');
+      return;
+    }
     
+    console.log('🔄 Refreshing chips for GW', gameweek);
     const chips = manager.getAvailableChips(gameweek);
     setAvailableChips(chips);
     
     console.log('🔄 Available chips refreshed for GW' + gameweek, {
       total: chips.length,
       available: chips.filter(c => c.available).length,
-      onCooldown: chips.filter(c => !c.available && c.remainingGameweeks).length
+      onCooldown: chips.filter(c => !c.available && c.remainingGameweeks).length,
+      chips: chips.map(c => ({ id: c.id, name: c.name, available: c.available }))
     });
   }, []);
 
@@ -245,7 +262,8 @@ export function ChipManagementProvider({ children }) {
    * Update current gameweek (called when fixtures load)
    */
   const updateGameweek = useCallback((gameweek) => {
-    setCurrentGameweek(gameweek);
+    console.log('📅 Manually updating gameweek to:', gameweek);
+    setManualGameweek(gameweek);
     if (chipManager) {
       refreshAvailableChips(chipManager, gameweek);
     }
