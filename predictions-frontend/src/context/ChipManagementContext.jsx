@@ -9,76 +9,49 @@ import {
 } from '../utils/chipManager';
 import { useAuth } from './AuthContext';
 import { useFixtures } from '../hooks/useFixtures';
+import { useChips } from '../hooks/useChips'; // NEW: React Query hook
 
 const ChipManagementContext = createContext(null);
 
 /**
- * ChipManagementProvider - Provides chip state management throughout the app
+ * ChipManagementProvider - NOW BACKEND-DRIVEN with React Query
  */
 export function ChipManagementProvider({ children }) {
   const authContext = useAuth();
   const { user, isAuthenticated, isLoading: authLoading } = authContext;
   const [chipManager, setChipManager] = useState(null);
-  const [availableChips, setAvailableChips] = useState([]);
   const [manualGameweek, setManualGameweek] = useState(null);
   
-  // Get fixtures to determine current gameweek
-  const { fixtures } = useFixtures({ fallbackToSample: false });
+  // NEW: Use React Query hook for chip data
+  const {
+    chips: availableChips,
+    currentGameweek: backendGameweek,
+    isLoading: chipsLoading,
+    error: chipsError,
+    validateChips,
+    recordChipUsage,
+    refresh: refreshChips,
+    isValidating,
+    isRecording
+  } = useChips();
   
-  // Calculate current gameweek from fixtures data or use manual override
+  // Determine current gameweek (prefer backend, fallback to manual override)
   const currentGameweek = useMemo(() => {
-    // Use manual gameweek if set
     if (manualGameweek !== null) return manualGameweek;
-    
-    if (!fixtures || fixtures.length === 0) return 1;
-    
-    // Get the earliest upcoming gameweek from fixtures
-    const upcomingGameweeks = fixtures
-      .map(fixture => fixture.gameweek)
-      .filter(Boolean)
-      .sort((a, b) => a - b);
-    
-    return upcomingGameweeks[0] || 1;
-  }, [fixtures, manualGameweek]);
-
-  /**
-   * Refresh available chips list
-   */
-  const refreshAvailableChips = useCallback((manager, gameweek) => {
-    if (!manager) {
-      console.log('⚠️ refreshAvailableChips: No manager provided');
-      return;
-    }
-    
-    console.log('🔄 Refreshing chips for GW', gameweek);
-    const chips = manager.getAvailableChips(gameweek);
-    setAvailableChips(chips);
-    
-    console.log('🔄 Available chips refreshed for GW' + gameweek, {
-      total: chips.length,
-      available: chips.filter(c => c.available).length,
-      onCooldown: chips.filter(c => !c.available && c.remainingGameweeks).length,
-      chips: chips.map(c => ({ id: c.id, name: c.name, available: c.available }))
-    });
-  }, []);
+    return backendGameweek || 1;
+  }, [backendGameweek, manualGameweek]);
 
   // Initialize chip manager when user changes
   useEffect(() => {
-    // Use username as the unique identifier (backend may not provide 'id')
     const userId = user?.id || user?.username;
     
-    console.log('👤 ChipManagementContext: User/Gameweek changed', {
+    console.log('👤 ChipManagementContext: User changed', {
       userId,
       userName: user?.username,
-      userEmail: user?.email,
-      currentGameweek,
-      hasUser: !!userId,
       isAuthenticated,
-      authLoading,
-      fullUser: user
+      authLoading
     });
     
-    // Wait for auth to complete before initializing
     if (authLoading) {
       console.log('⏳ Waiting for authentication to complete...');
       return;
@@ -86,135 +59,117 @@ export function ChipManagementProvider({ children }) {
     
     if (userId && isAuthenticated) {
       const manager = getChipManager(userId);
-      console.log('🎯 ChipManager initialized for user:', userId, manager);
+      console.log('🎯 ChipManager initialized (backend wrapper) for user:', userId);
       setChipManager(manager);
-      refreshAvailableChips(manager, currentGameweek);
     } else {
-      console.log('❌ No user or not authenticated, clearing chip manager', {
-        hasUserId: !!userId,
-        isAuthenticated
-      });
+      console.log('❌ No user or not authenticated, clearing chip manager');
       setChipManager(null);
-      setAvailableChips([]);
     }
-  }, [user?.id, user?.username, currentGameweek, isAuthenticated, authLoading, refreshAvailableChips]);
+  }, [user?.id, user?.username, isAuthenticated, authLoading]);
 
   /**
-   * Check if chip can be used
+   * Check if chip can be used (sync wrapper around availableChips data)
    */
-  const canUseChip = useCallback((chipId, gameweek = currentGameweek) => {
-    if (!chipManager) return false;
-    
-    const availability = chipManager.getChipAvailability(chipId, gameweek);
-    return availability.available;
-  }, [chipManager, currentGameweek]);
+  const canUseChip = useCallback((chipId) => {
+    const chip = availableChips.find(c => c.chipId === chipId);
+    return chip?.available || false;
+  }, [availableChips]);
 
   /**
-   * Get chip availability info
+   * Get chip availability info (sync wrapper around availableChips data)
    */
-  const getChipInfo = useCallback((chipId, gameweek = currentGameweek) => {
-    if (!chipManager) return null;
+  const getChipInfo = useCallback((chipId) => {
+    const chip = availableChips.find(c => c.chipId === chipId);
+    if (!chip) return null;
     
-    const availability = chipManager.getChipAvailability(chipId, gameweek);
     const config = CHIP_CONFIG[chipId];
-    
     return {
       ...config,
-      ...availability
+      ...chip
     };
-  }, [chipManager, currentGameweek]);
+  }, [availableChips]);
 
   /**
-   * Use chip (called when prediction is submitted)
+   * Use chip (async - called AFTER prediction is submitted to backend)
+   * @param {string} chipId - Chip to use
+   * @param {number} gameweek - Gameweek number
+   * @param {string} matchId - Match ID
+   * @param {string} predictionId - Prediction ID from backend response
+   * @returns {Promise<Object>} Result with success/error
    */
-  const useChip = useCallback((chipId, gameweek, matchId = null) => {
+  const useChip = useCallback(async (chipId, gameweek, matchId, predictionId) => {
     if (!chipManager) {
       return { success: false, reason: 'Chip manager not initialized' };
     }
 
-    const result = chipManager.useChip(chipId, gameweek, matchId);
-    
-    if (result.success) {
-      // Refresh available chips
-      refreshAvailableChips(chipManager, currentGameweek);
-    }
-    
-    return result;
-  }, [chipManager, currentGameweek, refreshAvailableChips]);
-
-  /**
-   * Use multiple chips at once (for predictions with multiple chips)
-   */
-  const useChips = useCallback((chipIds, gameweek, matchId = null) => {
-    if (!chipManager) {
-      return { success: false, reason: 'Chip manager not initialized' };
-    }
-
-    // Check compatibility first
-    const compatibility = chipManager.checkChipCompatibility(chipIds);
-    if (!compatibility.compatible) {
-      return {
-        success: false,
-        reason: compatibility.reason,
-        conflictingChips: compatibility.conflictingChips
-      };
-    }
-
-    // Use all chips
-    const results = [];
-    let allSuccess = true;
-
-    for (const chipId of chipIds) {
-      const result = chipManager.useChip(chipId, gameweek, matchId);
-      results.push({ chipId, ...result });
+    try {
+      const result = await chipManager.useChip(chipId, gameweek, matchId, predictionId);
       
-      if (!result.success) {
-        allSuccess = false;
-        // Rollback previous chips
-        for (let i = 0; i < results.length - 1; i++) {
-          chipManager.undoChipUsage(results[i].chipId, gameweek);
-        }
-        break;
+      if (result.success) {
+        // React Query will auto-invalidate and refresh
+        console.log('✅ Chip recorded:', chipId);
       }
+      
+      return result;
+    } catch (error) {
+      console.error('❌ useChip error:', error);
+      return { success: false, reason: error.message };
     }
-
-    if (allSuccess) {
-      refreshAvailableChips(chipManager, currentGameweek);
-    }
-
-    return {
-      success: allSuccess,
-      results,
-      reason: allSuccess ? 'All chips used successfully' : 'Failed to use some chips'
-    };
-  }, [chipManager, currentGameweek, refreshAvailableChips]);
+  }, [chipManager]);
 
   /**
-   * Undo chip usage (when prediction is cancelled/deleted)
+   * Use multiple chips at once (async - called AFTER prediction submission)
+   * @param {Array} chipIds - Chips to use
+   * @param {number} gameweek - Gameweek number
+   * @param {string} matchId - Match ID
+   * @param {string} predictionId - Prediction ID from backend
+   * @returns {Promise<Object>} Result with success/error
    */
-  const undoChipUsage = useCallback((chipId, gameweek) => {
-    if (!chipManager) return;
+  const useMultipleChips = useCallback(async (chipIds, gameweek, matchId, predictionId) => {
+    if (!chipManager) {
+      return { success: false, reason: 'Chip manager not initialized' };
+    }
 
-    chipManager.undoChipUsage(chipId, gameweek);
-    refreshAvailableChips(chipManager, currentGameweek);
-    
-    console.log(`↩️ Chip usage undone: ${chipId}`);
-  }, [chipManager, currentGameweek, refreshAvailableChips]);
+    if (!chipIds || chipIds.length === 0) {
+      return { success: true, reason: 'No chips to record' };
+    }
+
+    try {
+      // Record all chips in one call to backend
+      const result = await recordChipUsage({
+        predictionId,
+        chipIds,
+        gameweek,
+        matchId
+      });
+
+      console.log('✅ Multiple chips recorded:', chipIds);
+      return { success: true, data: result };
+    } catch (error) {
+      console.error('❌ useMultipleChips error:', error);
+      return { success: false, reason: error.message };
+    }
+  }, [chipManager, recordChipUsage]);
 
   /**
-   * Undo multiple chips
+   * Undo chip usage - NOW HANDLED BY BACKEND
+   * When a prediction is deleted, backend automatically releases chips
+   * Frontend just needs to refresh the chip status
    */
-  const undoChipsUsage = useCallback((chipIds, gameweek) => {
-    if (!chipManager) return;
+  const undoChipUsage = useCallback(async (chipId, gameweek) => {
+    console.warn('⚠️ undoChipUsage: Backend should handle this when prediction is deleted');
+    // Just refresh chip status from backend
+    await refreshChips();
+  }, [refreshChips]);
 
-    chipIds.forEach(chipId => {
-      chipManager.undoChipUsage(chipId, gameweek);
-    });
-    
-    refreshAvailableChips(chipManager, currentGameweek);
-    
-    console.log(`↩️ Multiple chips undone:`, chipIds);
-  }, [chipManager, currentGameweek, refreshAvailableChips]);
+  /**
+   * Undo multiple chips - NOW HANDLED BY BACKEND
+   */
+  const undoChipsUsage = useCallback(async (chipIds, gameweek) => {
+    console.warn('⚠️ undoChipsUsage: Backend should handle this when prediction is deleted');
+    // Just refresh chip status from backend
+    await refreshChips();
+  }, [refreshChips]);
 
   /**
    * Get chips filtered by scope (match or gameweek)
@@ -238,85 +193,112 @@ export function ChipManagementProvider({ children }) {
   }, [getChipsByScope]);
 
   /**
-   * Check if chips can be used together
+   * Check if chips can be used together (async - validates with backend)
    */
-  const checkCompatibility = useCallback((chipIds) => {
-    if (!chipManager) return { compatible: false, reason: 'Chip manager not initialized' };
+  const checkCompatibility = useCallback(async (chipIds, gameweek, matchId = null) => {
+    if (!chipManager) {
+      return { compatible: false, reason: 'Chip manager not initialized' };
+    }
     
-    return chipManager.checkChipCompatibility(chipIds);
+    try {
+      return await chipManager.checkChipCompatibility(chipIds, gameweek, matchId);
+    } catch (error) {
+      console.error('❌ checkCompatibility error:', error);
+      return { compatible: false, reason: error.message };
+    }
   }, [chipManager]);
 
   /**
-   * Simulate chip usage (for preview without committing)
+   * Simulate chip usage (async - validates with backend)
    */
-  const simulateUsage = useCallback((chipIds, gameweek = currentGameweek) => {
+  const simulateUsage = useCallback(async (chipIds, gameweek = currentGameweek, matchId = null) => {
     if (!chipManager) return null;
     
-    return chipManager.simulateChipUsage(chipIds, gameweek);
+    try {
+      return await chipManager.simulateChipUsage(chipIds, gameweek, matchId);
+    } catch (error) {
+      console.error('❌ simulateUsage error:', error);
+      return null;
+    }
   }, [chipManager, currentGameweek]);
 
   /**
-   * Get usage statistics
+   * Get usage statistics (async - fetches from backend)
    */
-  const getUsageStats = useCallback(() => {
+  const getUsageStats = useCallback(async () => {
     if (!chipManager) return null;
     
-    return chipManager.getUsageStats();
+    try {
+      return await chipManager.getUsageStats();
+    } catch (error) {
+      console.error('❌ getUsageStats error:', error);
+      return null;
+    }
   }, [chipManager]);
 
   /**
-   * Reset chip state (for new season or testing)
+   * Reset chip state (async - calls backend reset endpoint)
    */
-  const resetChips = useCallback(() => {
+  const resetChipsState = useCallback(async () => {
     if (!chipManager) return;
     
-    chipManager.resetState();
-    refreshAvailableChips(chipManager, currentGameweek);
-    
-    console.log('🔄 All chips reset');
-  }, [chipManager, currentGameweek, refreshAvailableChips]);
+    try {
+      await chipManager.resetChips();
+      console.log('🔄 All chips reset (backend)');
+    } catch (error) {
+      console.error('❌ resetChips error:', error);
+    }
+  }, [chipManager]);
 
   /**
-   * Update current gameweek (called when fixtures load)
+   * Update current gameweek (manual override)
    */
   const updateGameweek = useCallback((gameweek) => {
     console.log('📅 Manually updating gameweek to:', gameweek);
     setManualGameweek(gameweek);
-    if (chipManager) {
-      refreshAvailableChips(chipManager, gameweek);
-    }
-  }, [chipManager, refreshAvailableChips]);
+  }, []);
 
   const value = {
-    // State
+    // State (from React Query)
     availableChips,
     currentGameweek,
     chipManager,
     compatibilityRules: COMPATIBILITY_RULES,
     
-    // Chip availability checks
+    // Loading states
+    isLoading: chipsLoading || authLoading,
+    isValidating,
+    isRecording,
+    error: chipsError,
+    
+    // Chip availability checks (sync - uses cached data)
     canUseChip,
     getChipInfo,
-    checkCompatibility,
-    simulateUsage,
     
-    // Chip filtering
+    // Chip filtering (sync)
     getMatchChips,
     getGameweekChips,
     getChipsByScope,
     
-    // Chip usage (for prediction submission)
+    // Validation (async - calls backend)
+    checkCompatibility,
+    simulateUsage,
+    validateChips, // Direct access to React Query mutation
+    
+    // Chip usage (async - records to backend AFTER prediction submission)
     useChip,
-    useChips,
-    undoChipUsage,
-    undoChipsUsage,
+    useMultipleChips,
+    recordChipUsage, // Direct access to React Query mutation
+    undoChipUsage, // Deprecated - backend handles this
+    undoChipsUsage, // Deprecated - backend handles this
     
-    // Statistics and management
+    // Statistics and management (async)
     getUsageStats,
-    resetChips,
+    resetChips: resetChipsState,
     updateGameweek,
+    refreshChips, // Manual refresh trigger
     
-    // Premium/Paywall features
+    // Premium/Paywall features (local config)
     setStrictMode,
     enablePremiumRestrictions,
     disablePremiumRestrictions,

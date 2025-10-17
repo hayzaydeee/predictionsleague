@@ -10,7 +10,6 @@ const DashboardPage = () => {
     essentialLoading,
     statusBarData,
     statusBarLoading,
-    upcomingMatches,
     recentPredictions,
     leagues,
     secondaryLoading,
@@ -48,7 +47,6 @@ const DashboardPage = () => {
           <DashboardView
             // Data props
             essentialData={essentialData}
-            upcomingMatches={upcomingMatches}
             recentPredictions={recentPredictions}
             leagues={leagues}
             

@@ -22,25 +22,6 @@ export const dashboardAPI = {
   },
 
   // Secondary data - loads after essential data (updated to dashboard/ prefix)
-  getUpcomingMatches: async (limit = 5) => {
-    try {
-      const response = await apiCall({
-        method: 'GET',
-        url: `/dashboard/matches/upcoming?limit=${limit}`,
-      });
-      
-      if (response.success) {
-        return response.data;
-      } else {
-        console.error('Failed to fetch upcoming matches:', response.error);
-        return []; // Return empty array on error to not break UI
-      }
-    } catch (error) {
-      console.error('Failed to fetch upcoming matches:', error);
-      return []; // Return empty array on error to not break UI
-    }
-  },
-
   getRecentPredictions: async (limit = 5) => {
     try {
       const response = await apiCall({
@@ -93,25 +74,6 @@ export const dashboardAPI = {
       }
     } catch (error) {
       console.error('Failed to fetch performance insights:', error);
-      return [];
-    }
-  },
-
-  getExtendedMatches: async (limit = 10) => {
-    try {
-      const response = await apiCall({
-        method: 'GET',
-        url: `/dashboard/matches/upcoming?limit=${limit}`,
-      });
-      
-      if (response.success) {
-        return response.data;
-      } else {
-        console.error('Failed to fetch extended matches:', response.error);
-        return [];
-      }
-    } catch (error) {
-      console.error('Failed to fetch extended matches:', error);
       return [];
     }
   }

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { dashboardAPI } from '../services/api/dashboardApi';
+import { dashboardAPI } from '../services/api/dashboardAPI';
 import leagueAPI from '../services/api/leagueAPI';
 import { useNextMatch } from './useNextMatch';
 
@@ -23,14 +23,12 @@ const useDashboardData = () => {
   
   // Secondary data state (loads progressively)
   const [secondaryData, setSecondaryData] = useState({
-    upcomingMatches: null,
     recentPredictions: null,
     leagues: null,
     insights: null,
   });
   
   const [secondaryLoading, setSecondaryLoading] = useState({
-    matches: true,
     predictions: true,
     leagues: true,
     insights: true,
@@ -106,19 +104,6 @@ const useDashboardData = () => {
     if (!essentialData) return;
 
     const fetchSecondaryData = async () => {
-      // Fetch upcoming matches
-      try {
-        console.log('🚀 Fetching upcoming matches...');
-        const upcomingMatches = await dashboardAPI.getUpcomingMatches(5);
-        console.log('✅ Upcoming matches received:', upcomingMatches);
-        setSecondaryData(prev => ({ ...prev, upcomingMatches }));
-        setSecondaryLoading(prev => ({ ...prev, matches: false }));
-      } catch (error) {
-        console.error('❌ Failed to fetch upcoming matches:', error);
-        setErrors(prev => ({ ...prev, matches: error }));
-        setSecondaryLoading(prev => ({ ...prev, matches: false }));
-      }
-
       // Fetch recent predictions
       try {
         console.log('🚀 Fetching recent predictions...');
@@ -198,7 +183,6 @@ const useDashboardData = () => {
     statusBarLoading,
     
     // Secondary data
-    upcomingMatches: secondaryData.upcomingMatches || [],
     recentPredictions: secondaryData.recentPredictions || [],
     leagues: secondaryData.leagues || [],
     

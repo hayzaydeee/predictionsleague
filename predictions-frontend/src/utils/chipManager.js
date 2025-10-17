@@ -99,257 +99,274 @@ export const CHIP_CONFIG = {
   }
 };
 
+import { chipAPI } from '../services/api/chipAPI';
+
 /**
- * ChipManager Class - Manages chip state client-side
+ * ChipManager Class - Backend-driven chip state management
+ * NOW A THIN WRAPPER around chipAPI.js
  */
 export class ChipManager {
   constructor(userId) {
     this.userId = userId;
-    this.storageKey = `chipState_${userId}`;
-    this.state = this.loadState();
+    this.cachedState = null; // Local cache of backend state
+    this.lastFetch = null; // Timestamp of last fetch
+    this.cacheTimeout = 30000; // 30 seconds
   }
 
   /**
-   * Load chip state from localStorage
+   * Fetch chip state from backend
+   * @returns {Promise<Object>} Chip state from server
    */
-  loadState() {
+  async fetchState() {
+    const now = Date.now();
+    
+    // Return cached state if still valid
+    if (this.cachedState && this.lastFetch && (now - this.lastFetch) < this.cacheTimeout) {
+      return this.cachedState;
+    }
+
     try {
-      const stored = localStorage.getItem(this.storageKey);
-      if (stored) {
-        return JSON.parse(stored);
+      const result = await chipAPI.getChipStatus();
+      
+      if (!result.success) {
+        throw new Error(result.error?.message || 'Failed to fetch chip state');
       }
-    } catch (error) {
-      console.error('❌ Failed to load chip state:', error);
-    }
 
-    // Initialize default state
-    return {
-      seasonUsage: {}, // { chipId: usageCount }
-      cooldowns: {}, // { chipId: { gameweek, expiresAt } }
-      lastUsed: {}, // { chipId: gameweek }
-      history: [] // Array of { chipId, gameweek, matchId, timestamp }
-    };
-  }
-
-  /**
-   * Save chip state to localStorage
-   */
-  saveState() {
-    try {
-      localStorage.setItem(this.storageKey, JSON.stringify(this.state));
+      this.cachedState = result.data;
+      this.lastFetch = now;
+      
+      return this.cachedState;
     } catch (error) {
-      console.error('❌ Failed to save chip state:', error);
+      console.error('❌ Failed to fetch chip state:', error);
+      throw error;
     }
   }
 
   /**
-   * Reset chip state (for new season or testing)
+   * Invalidate cache to force fresh fetch
    */
-  resetState() {
-    this.state = {
-      seasonUsage: {},
-      cooldowns: {},
-      lastUsed: {},
-      history: []
-    };
-    this.saveState();
-    console.log('🔄 Chip state reset');
+  invalidateCache() {
+    this.cachedState = null;
+    this.lastFetch = null;
+    console.log('🔄 Chip cache invalidated');
+  }
+
+  /**
+   * Clear chip state (for logout)
+   */
+  clearState() {
+    this.invalidateCache();
+    console.log('🗑️ Chip state cleared');
   }
 
   /**
    * Get chip availability for a specific gameweek
    * @param {string} chipId - Chip identifier
-   * @param {number} currentGameweek - Current gameweek number
-   * @returns {Object} Availability status with reason
+   * @param {number} currentGameweek - Current gameweek number (optional - uses backend's current GW)
+   * @returns {Promise<Object>} Availability status with reason
    */
-  getChipAvailability(chipId, currentGameweek) {
-    const config = CHIP_CONFIG[chipId];
-    if (!config) {
-      return { available: false, reason: 'Unknown chip' };
-    }
-
-    // Check season limit
-    if (config.seasonLimit !== null) {
-      const usageCount = this.state.seasonUsage[chipId] || 0;
-      if (usageCount >= config.seasonLimit) {
-        return {
-          available: false,
-          reason: `Season limit reached (${usageCount}/${config.seasonLimit})`,
-          usageCount,
-          seasonLimit: config.seasonLimit
-        };
+  async getChipAvailability(chipId, currentGameweek = null) {
+    try {
+      const state = await this.fetchState();
+      const chip = state.chips.find(c => c.chipId === chipId);
+      
+      if (!chip) {
+        return { available: false, reason: 'Unknown chip' };
       }
-    }
 
-    // Check cooldown
-    if (config.cooldown > 0) {
-      const cooldownInfo = this.state.cooldowns[chipId];
-      if (cooldownInfo && cooldownInfo.expiresAt >= currentGameweek) {
-        const remainingGameweeks = cooldownInfo.expiresAt - currentGameweek + 1;
-        return {
-          available: false,
-          reason: `On cooldown for ${remainingGameweeks} more GW`,
-          remainingGameweeks,
-          cooldownExpires: cooldownInfo.expiresAt
-        };
-      }
+      return {
+        available: chip.available,
+        reason: chip.available ? 'Available' : chip.reason || 'Unavailable',
+        usageCount: chip.usageCount,
+        seasonLimit: chip.seasonLimit,
+        remainingUses: chip.remainingUses,
+        cooldownExpires: chip.cooldownExpires,
+        remainingGameweeks: chip.remainingGameweeks
+      };
+    } catch (error) {
+      console.error('❌ getChipAvailability error:', error);
+      return { available: false, reason: 'Error fetching chip data' };
     }
-
-    return {
-      available: true,
-      reason: 'Available',
-      usageCount: this.state.seasonUsage[chipId] || 0,
-      seasonLimit: config.seasonLimit,
-      remainingUses: config.seasonLimit ? config.seasonLimit - (this.state.seasonUsage[chipId] || 0) : null
-    };
   }
 
   /**
-   * Use a chip - updates usage counts and cooldowns
+   * Use a chip - records usage via backend
    * @param {string} chipId - Chip identifier
    * @param {number} gameweek - Gameweek where chip is used
    * @param {string} matchId - Match identifier (for match-scoped chips)
-   * @returns {Object} Success status with updated availability
+   * @param {string} predictionId - Prediction ID from backend
+   * @returns {Promise<Object>} Success status with updated availability
    */
-  useChip(chipId, gameweek, matchId = null) {
-    const availability = this.getChipAvailability(chipId, gameweek);
-    
-    if (!availability.available) {
+  async useChip(chipId, gameweek, matchId = null, predictionId) {
+    try {
+      // Validate chips first
+      const validation = await chipAPI.validateChips([chipId], gameweek, matchId);
+      
+      if (!validation.success || !validation.data.valid) {
+        return {
+          success: false,
+          reason: validation.data?.conflicts?.[0]?.message || 'Chip validation failed',
+          conflicts: validation.data?.conflicts
+        };
+      }
+
+      // Record usage
+      const result = await chipAPI.recordChipUsage(predictionId, [chipId], gameweek, matchId);
+      
+      if (!result.success) {
+        throw new Error(result.error?.message || 'Failed to record chip usage');
+      }
+
+      // Invalidate cache to force refresh
+      this.invalidateCache();
+
+      console.log(`✅ Chip used: ${chipId} (GW${gameweek})`, result.data);
+
+      return {
+        success: true,
+        data: result.data
+      };
+    } catch (error) {
+      console.error('❌ useChip error:', error);
       return {
         success: false,
-        reason: availability.reason,
-        availability
+        reason: error.message
       };
     }
-
-    const config = CHIP_CONFIG[chipId];
-
-    // Update season usage
-    this.state.seasonUsage[chipId] = (this.state.seasonUsage[chipId] || 0) + 1;
-
-    // Update cooldown
-    if (config.cooldown > 0) {
-      this.state.cooldowns[chipId] = {
-        gameweek,
-        expiresAt: gameweek + config.cooldown
-      };
-    }
-
-    // Update last used
-    this.state.lastUsed[chipId] = gameweek;
-
-    // Add to history
-    this.state.history.push({
-      chipId,
-      gameweek,
-      matchId,
-      timestamp: new Date().toISOString()
-    });
-
-    this.saveState();
-
-    console.log(`✅ Chip used: ${config.name} (GW${gameweek})`, {
-      usageCount: this.state.seasonUsage[chipId],
-      cooldownExpires: this.state.cooldowns[chipId]?.expiresAt
-    });
-
-    return {
-      success: true,
-      availability: this.getChipAvailability(chipId, gameweek + 1)
-    };
   }
 
   /**
    * Undo chip usage (for prediction cancellation)
+   * NOTE: Backend should handle this when prediction is deleted
    * @param {string} chipId - Chip identifier
    * @param {number} gameweek - Gameweek where chip was used
    */
-  undoChipUsage(chipId, gameweek) {
-    // Decrease usage count
-    if (this.state.seasonUsage[chipId] > 0) {
-      this.state.seasonUsage[chipId]--;
-    }
-
-    // Remove cooldown if it was set for this gameweek
-    if (this.state.cooldowns[chipId]?.gameweek === gameweek) {
-      delete this.state.cooldowns[chipId];
-    }
-
-    // Remove from history
-    this.state.history = this.state.history.filter(
-      entry => !(entry.chipId === chipId && entry.gameweek === gameweek)
-    );
-
-    this.saveState();
-
-    console.log(`↩️ Chip usage undone: ${chipId} (GW${gameweek})`);
+  async undoChipUsage(chipId, gameweek) {
+    console.warn('⚠️ undoChipUsage should be handled by backend when deleting prediction');
+    this.invalidateCache();
   }
 
   /**
    * Get all available chips for a gameweek
-   * @param {number} currentGameweek - Current gameweek number
+   * @param {number} currentGameweek - Current gameweek number (optional)
    * @param {string} scope - Filter by scope: 'match' or 'gameweek'
-   * @returns {Array} Array of available chip objects with availability info
+   * @returns {Promise<Array>} Array of available chip objects with availability info
    */
-  getAvailableChips(currentGameweek, scope = null) {
-    const chips = Object.values(CHIP_CONFIG);
-    
-    return chips
-      .filter(chip => scope === null || chip.scope === scope)
-      .map(chip => {
-        const availability = this.getChipAvailability(chip.id, currentGameweek);
-        return {
-          ...chip,
-          ...availability
-        };
-      });
+  async getAvailableChips(currentGameweek = null, scope = null) {
+    try {
+      const state = await this.fetchState();
+      
+      let chips = state.chips || [];
+      
+      // Filter by scope if specified
+      if (scope) {
+        chips = chips.filter(chip => chip.scope === scope);
+      }
+      
+      return chips;
+    } catch (error) {
+      console.error('❌ getAvailableChips error:', error);
+      return [];
+    }
   }
 
   /**
    * Get chip usage statistics
-   * @returns {Object} Usage statistics
+   * @returns {Promise<Object>} Usage statistics from backend
    */
-  getUsageStats() {
-    const totalChipsUsed = Object.values(this.state.seasonUsage).reduce((sum, count) => sum + count, 0);
-    const chipsOnCooldown = Object.keys(this.state.cooldowns).length;
-    
-    return {
-      totalChipsUsed,
-      chipsOnCooldown,
-      seasonUsage: { ...this.state.seasonUsage },
-      mostUsedChip: this.getMostUsedChip(),
-      recentHistory: this.state.history.slice(-10)
-    };
+  async getUsageStats() {
+    try {
+      const history = await chipAPI.getChipHistory();
+      
+      if (!history.success) {
+        throw new Error('Failed to fetch chip history');
+      }
+
+      const usageData = history.data.usage || [];
+      const totalChipsUsed = usageData.reduce((sum, chip) => sum + chip.usageCount, 0);
+      
+      // Find most used chip
+      let mostUsedChip = null;
+      if (usageData.length > 0) {
+        const sorted = [...usageData].sort((a, b) => b.usageCount - a.usageCount);
+        mostUsedChip = {
+          chipId: sorted[0].chipId,
+          name: sorted[0].chipId, // Backend should return chip name
+          count: sorted[0].usageCount
+        };
+      }
+
+      return {
+        totalChipsUsed,
+        chipsOnCooldown: history.data.cooldowns?.length || 0,
+        seasonUsage: usageData.reduce((acc, chip) => {
+          acc[chip.chipId] = chip.usageCount;
+          return acc;
+        }, {}),
+        mostUsedChip,
+        recentHistory: history.data.history?.slice(-10) || []
+      };
+    } catch (error) {
+      console.error('❌ getUsageStats error:', error);
+      return {
+        totalChipsUsed: 0,
+        chipsOnCooldown: 0,
+        seasonUsage: {},
+        mostUsedChip: null,
+        recentHistory: []
+      };
+    }
   }
 
   /**
    * Get most used chip
-   * @returns {Object} Most used chip with count
+   * @returns {Promise<Object>} Most used chip with count
    */
-  getMostUsedChip() {
-    let maxChip = null;
-    let maxCount = 0;
-
-    for (const [chipId, count] of Object.entries(this.state.seasonUsage)) {
-      if (count > maxCount) {
-        maxCount = count;
-        maxChip = chipId;
-      }
-    }
-
-    return maxChip ? {
-      chipId: maxChip,
-      name: CHIP_CONFIG[maxChip].name,
-      count: maxCount
-    } : null;
+  async getMostUsedChip() {
+    const stats = await this.getUsageStats();
+    return stats.mostUsedChip;
   }
 
   /**
    * Check if specific chips can be used together
+   * NOW CALLS BACKEND VALIDATION
+   * @param {Array} chipIds - Array of chip IDs to check
+   * @param {number} gameweek - Target gameweek
+   * @param {string} matchId - Match ID (for match-scoped chips)
+   * @returns {Promise<Object>} Compatibility check result from backend
+   */
+  async checkChipCompatibility(chipIds, gameweek, matchId = null) {
+    try {
+      const result = await chipAPI.validateChips(chipIds, gameweek, matchId);
+      
+      if (!result.success) {
+        throw new Error(result.error?.message || 'Validation failed');
+      }
+
+      return {
+        compatible: result.data.valid,
+        reason: result.data.valid ? 'Chips can be used together' : 'Validation failed',
+        conflicts: result.data.conflicts || [],
+        strictMode: true // Backend always enforces rules
+      };
+    } catch (error) {
+      console.error('❌ checkChipCompatibility error:', error);
+      return {
+        compatible: false,
+        reason: error.message,
+        conflicts: [],
+        strictMode: true
+      };
+    }
+  }
+
+  /**
+   * DEPRECATED: Local compatibility check (kept for backward compatibility)
+   * Use checkChipCompatibility() which calls backend instead
    * @param {Array} chipIds - Array of chip IDs to check
    * @returns {Object} Compatibility check result
    */
-  checkChipCompatibility(chipIds) {
+  checkChipCompatibilityLocal(chipIds) {
     // If not in strict mode, allow all combinations
     if (!COMPATIBILITY_RULES.STRICT_MODE) {
       return {
@@ -421,27 +438,69 @@ export class ChipManager {
 
   /**
    * Simulate chip usage (for prediction preview without committing)
+   * NOW CALLS BACKEND VALIDATION
    * @param {Array} chipIds - Chips to simulate
    * @param {number} gameweek - Target gameweek
-   * @returns {Object} Simulation results
+   * @param {string} matchId - Match ID (for match-scoped chips)
+   * @returns {Promise<Object>} Simulation results from backend
    */
-  simulateChipUsage(chipIds, gameweek) {
-    const results = chipIds.map(chipId => {
-      const availability = this.getChipAvailability(chipId, gameweek);
-      return {
-        chipId,
-        name: CHIP_CONFIG[chipId].name,
-        ...availability
+  async simulateChipUsage(chipIds, gameweek, matchId = null) {
+    try {
+      const [statusResult, validationResult] = await Promise.all([
+        this.fetchState(),
+        chipAPI.validateChips(chipIds, gameweek, matchId)
+      ]);
+
+      const results = chipIds.map(chipId => {
+        const chip = statusResult.chips.find(c => c.chipId === chipId);
+        return {
+          chipId,
+          name: chip?.name || chipId,
+          available: chip?.available || false,
+          reason: chip?.reason || 'Unknown'
+        };
+      });
+
+      const compatibility = {
+        compatible: validationResult.data?.valid || false,
+        conflicts: validationResult.data?.conflicts || []
       };
-    });
 
-    const compatibility = this.checkChipCompatibility(chipIds);
+      return {
+        chips: results,
+        compatibility,
+        allAvailable: results.every(r => r.available) && compatibility.compatible
+      };
+    } catch (error) {
+      console.error('❌ simulateChipUsage error:', error);
+      return {
+        chips: [],
+        compatibility: { compatible: false, conflicts: [] },
+        allAvailable: false
+      };
+    }
+  }
 
-    return {
-      chips: results,
-      compatibility,
-      allAvailable: results.every(r => r.available) && compatibility.compatible
-    };
+  /**
+   * Reset chips for new season (admin only)
+   * @returns {Promise<Object>} Reset result
+   */
+  async resetChips() {
+    try {
+      const result = await chipAPI.resetChips();
+      
+      if (!result.success) {
+        throw new Error(result.error?.message || 'Failed to reset chips');
+      }
+
+      this.invalidateCache();
+      console.log('♻️ Chips reset for new season');
+      
+      return { success: true, data: result.data };
+    } catch (error) {
+      console.error('❌ resetChips error:', error);
+      return { success: false, reason: error.message };
+    }
   }
 }
 

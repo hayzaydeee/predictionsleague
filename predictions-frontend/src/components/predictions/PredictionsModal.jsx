@@ -6,6 +6,7 @@ import { backgrounds, text, getThemeStyles } from "../../utils/themeUtils";
 import { InfoCircledIcon, ClockIcon, ExclamationTriangleIcon, CheckIcon } from "@radix-ui/react-icons";
 import { userPredictionsAPI } from "../../services/api/userPredictionsAPI";
 import { showToast } from "../../services/notificationService";
+import { useChipManagement } from "../../context/ChipManagementContext";
 
 // Import modular components
 import ModalHeader from "./modal/ModalHeader";
@@ -25,6 +26,14 @@ export default function PredictionsModal({
   toggleChipInfoModal,
 }) {
   const { theme } = useContext(ThemeContext);
+  
+  // Chip management with backend integration
+  const { 
+    validateChips, 
+    recordChipUsage, 
+    isValidating, 
+    isRecording 
+  } = useChipManagement();
   
   // Step management
   const [currentStep, setCurrentStep] = useState(1);
@@ -95,7 +104,7 @@ export default function PredictionsModal({
     setCurrentStep((prevStep) => Math.max(1, prevStep - 1));
   };
 
-  // Form submission
+  // Form submission with 3-step chip integration
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
@@ -108,7 +117,7 @@ export default function PredictionsModal({
       awayScore,
       homeScorers,
       awayScorers,
-      chips: allChips,
+      // DON'T include chips in prediction payload - will be recorded separately
     };
 
     try {
@@ -121,30 +130,80 @@ export default function PredictionsModal({
         teams: `${fixture.homeTeam} vs ${fixture.awayTeam}`
       });
 
-      // Call new backend API
+      // STEP 1: Validate chips with backend (if any selected)
+      if (allChips.length > 0) {
+        console.log('🔍 Validating chips with backend...');
+        
+        try {
+          const validation = await validateChips({
+            chipIds: allChips,
+            gameweek: fixture.gameweek,
+            matchId: fixture.id
+          });
+
+          if (!validation.data.valid) {
+            const errorMsg = validation.data.conflicts[0]?.reason || 'Chip validation failed';
+            throw new Error(errorMsg);
+          }
+
+          console.log('✅ Chips validated successfully');
+        } catch (validationError) {
+          throw new Error(`Chip validation failed: ${validationError.message}`);
+        }
+      }
+
+      // STEP 2: Submit prediction to backend
       const result = await userPredictionsAPI.makePrediction(frontendPrediction, fixture);
       
-      if (result.success) {
-        console.log('✅ Prediction submitted successfully');
-        showToast(
-          isEditing ? 'Prediction updated successfully!' : 'Prediction submitted successfully!', 
-          'success'
-        );
-        
-        // Call onSave if provided (for parent component updates)
-        if (onSave) {
-          onSave(frontendPrediction);
-        }
-        
-        setShowConfirmation(true);
-
-        // Close modal after showing confirmation
-        setTimeout(() => {
-          if (onClose) onClose();
-        }, 2000);
-      } else {
+      if (!result.success) {
         throw new Error(result.error?.message || 'Failed to submit prediction');
       }
+
+      console.log('✅ Prediction submitted successfully');
+      const predictionId = result.data?.id;
+
+      // STEP 3: Record chip usage (if any selected)
+      if (allChips.length > 0 && predictionId) {
+        console.log('💾 Recording chip usage...');
+        
+        try {
+          await recordChipUsage({
+            predictionId,
+            chipIds: allChips,
+            gameweek: fixture.gameweek,
+            matchId: fixture.id
+          });
+
+          console.log('✅ Chips recorded successfully');
+        } catch (chipError) {
+          // Chip recording failed, but prediction was saved
+          // Don't fail the whole operation
+          console.error('⚠️ Chip recording failed:', chipError.message);
+          showToast(
+            'Prediction saved, but chip tracking failed. Contact support.', 
+            'warning'
+          );
+        }
+      }
+
+      // Success!
+      showToast(
+        isEditing ? 'Prediction updated successfully!' : 'Prediction submitted successfully!', 
+        'success'
+      );
+      
+      // Call onSave if provided (for parent component updates)
+      if (onSave) {
+        onSave(frontendPrediction);
+      }
+      
+      setShowConfirmation(true);
+
+      // Close modal after showing confirmation
+      setTimeout(() => {
+        if (onClose) onClose();
+      }, 2000);
+
     } catch (error) {
       console.error('❌ Prediction submission failed:', error.message);
       showToast(
@@ -318,6 +377,8 @@ export default function PredictionsModal({
           onNextStep={nextStep}
           onSubmit={handleSubmit}
           submitting={submitting}
+          isValidating={isValidating}
+          isRecording={isRecording}
         />
 
         {/* Success confirmation overlay */}

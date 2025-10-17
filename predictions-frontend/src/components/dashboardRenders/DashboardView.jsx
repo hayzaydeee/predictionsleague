@@ -32,7 +32,6 @@ import { ResponsiveGrid, ResponsiveText, ResponsiveStack } from "../common";
 import { textScale, margins, patterns } from "../../utils/mobileScaleUtils";
 
 const DashboardView = ({
-  upcomingMatches,
   recentPredictions,
   leagues,
   goToPredictions,
@@ -42,7 +41,6 @@ const DashboardView = ({
   // Loading states for progressive loading
   essentialLoading = false,
   secondaryLoading = {
-    matches: false,
     predictions: false,
     leagues: false,
     insights: false,
@@ -451,7 +449,7 @@ const DashboardView = ({
         <div className="xl:col-span-2 space-y-5">
           {/* Upcoming Matches Panel - Using Real External Fixtures Data */}
           <motion.div variants={itemVariants}>
-            {(externalFixturesLoading || secondaryLoading.matches) ? (
+            {externalFixturesLoading ? (
               <PanelSkeleton title="Upcoming Matches" rows={3} />
             ) : upcomingFixtures && upcomingFixtures.length > 0 ? (
               <UpcomingMatchesPanel
