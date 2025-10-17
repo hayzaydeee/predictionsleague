@@ -64,12 +64,15 @@ export function ChipManagementProvider({ children }) {
 
   // Initialize chip manager when user changes
   useEffect(() => {
+    // Use username as the unique identifier (backend may not provide 'id')
+    const userId = user?.id || user?.username;
+    
     console.log('👤 ChipManagementContext: User/Gameweek changed', {
-      userId: user?.id,
+      userId,
       userName: user?.username,
       userEmail: user?.email,
       currentGameweek,
-      hasUser: !!user?.id,
+      hasUser: !!userId,
       isAuthenticated,
       authLoading,
       fullUser: user
@@ -81,17 +84,20 @@ export function ChipManagementProvider({ children }) {
       return;
     }
     
-    if (user?.id && isAuthenticated) {
-      const manager = getChipManager(user.id);
-      console.log('🎯 ChipManager initialized for user:', user.id, manager);
+    if (userId && isAuthenticated) {
+      const manager = getChipManager(userId);
+      console.log('🎯 ChipManager initialized for user:', userId, manager);
       setChipManager(manager);
       refreshAvailableChips(manager, currentGameweek);
     } else {
-      console.log('❌ No user or not authenticated, clearing chip manager');
+      console.log('❌ No user or not authenticated, clearing chip manager', {
+        hasUserId: !!userId,
+        isAuthenticated
+      });
       setChipManager(null);
       setAvailableChips([]);
     }
-  }, [user?.id, currentGameweek, isAuthenticated, authLoading, refreshAvailableChips]);
+  }, [user?.id, user?.username, currentGameweek, isAuthenticated, authLoading, refreshAvailableChips]);
 
   /**
    * Check if chip can be used
