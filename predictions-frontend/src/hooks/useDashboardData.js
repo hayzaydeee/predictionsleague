@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { dashboardAPI } from '../services/api/dashboardAPI';
+import dashboardAPI from '../services/api/dashboardAPI';
 import leagueAPI from '../services/api/leagueAPI';
 import { useNextMatch } from './useNextMatch';
 
