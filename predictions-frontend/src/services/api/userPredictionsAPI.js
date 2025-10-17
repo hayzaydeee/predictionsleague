@@ -67,9 +67,44 @@ export const userPredictionsAPI = {
         );
       }
 
+      // 🔧 NORMALIZE DATA: Fix backend inconsistencies
+      const normalizedData = (response.data || []).map(prediction => {
+        const normalized = { ...prediction };
+        
+        // Convert backend "PENDING" status to lowercase "pending"
+        if (normalized.status) {
+          normalized.status = normalized.status.toLowerCase();
+        }
+        
+        // If status is pending and points is 0, set to null
+        // This fixes the backend returning 0 instead of null for pending predictions
+        if (normalized.status === 'pending' && normalized.points === 0) {
+          normalized.points = null;
+          console.log('🔧 Fixed points for pending prediction:', {
+            match: `${normalized.homeTeam} vs ${normalized.awayTeam}`,
+            oldPoints: 0,
+            newPoints: null
+          });
+        }
+        
+        // Ensure actualScores are truly null if match hasn't been played
+        if (normalized.status === 'pending') {
+          if (normalized.actualHomeScore === 0 || normalized.actualHomeScore === undefined) {
+            normalized.actualHomeScore = null;
+          }
+          if (normalized.actualAwayScore === 0 || normalized.actualAwayScore === undefined) {
+            normalized.actualAwayScore = null;
+          }
+        }
+        
+        return normalized;
+      });
+
+      console.log('✅ Data normalized - points set to null for pending predictions');
+
       return {
         success: true,
-        data: response.data || [],
+        data: normalizedData,
         meta: response.meta || {},
         error: null
       };
