@@ -104,19 +104,6 @@ const useDashboardData = () => {
     if (!essentialData) return;
 
     const fetchSecondaryData = async () => {
-      // Fetch recent predictions
-      try {
-        console.log('🚀 Fetching recent predictions...');
-        const recentPredictions = await dashboardAPI.getRecentPredictions(5);
-        console.log('✅ Recent predictions received:', recentPredictions);
-        setSecondaryData(prev => ({ ...prev, recentPredictions }));
-        setSecondaryLoading(prev => ({ ...prev, predictions: false }));
-      } catch (error) {
-        console.error('❌ Failed to fetch recent predictions:', error);
-        setErrors(prev => ({ ...prev, predictions: error }));
-        setSecondaryLoading(prev => ({ ...prev, predictions: false }));
-      }
-
       // Fetch user leagues
       try {
         console.log('🚀 Fetching user leagues...');
@@ -183,7 +170,6 @@ const useDashboardData = () => {
     statusBarLoading,
     
     // Secondary data
-    recentPredictions: secondaryData.recentPredictions || [],
     leagues: secondaryData.leagues || [],
     
     // Loading states

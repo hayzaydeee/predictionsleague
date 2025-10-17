@@ -27,6 +27,7 @@ import { extendedPredictionHistory } from "../../data/sampleData";
 import InsightDetailModal from "../common/InsightDetailModal";
 import { normalizeTeamName } from "../../utils/teamUtils";
 import { useExternalFixtures } from "../../hooks/useExternalFixtures";
+import { useUserPredictions } from "../../hooks/useClientSideFixtures";
 // Responsive utilities
 import { ResponsiveGrid, ResponsiveText, ResponsiveStack } from "../common";
 import { textScale, margins, patterns } from "../../utils/mobileScaleUtils";
@@ -62,6 +63,26 @@ const DashboardView = ({
     isError: externalFixturesError,
     error: externalFixturesErrorDetails,
   } = useExternalFixtures(externalFixturesOptions);
+
+  // Fetch user predictions for Recent Predictions panel
+  const {
+    data: userPredictions = [],
+    isLoading: predictionsLoading,
+    error: predictionsError,
+  } = useUserPredictions({
+    status: 'all',
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    cacheTime: 10 * 60 * 1000, // 10 minutes
+  });
+
+  // Get most recent 3 predictions for the panel
+  const recentPredictionsData = useMemo(() => {
+    if (!userPredictions || userPredictions.length === 0) return [];
+    
+    return [...userPredictions]
+      .sort((a, b) => new Date(b.date) - new Date(a.date))
+      .slice(0, 3);
+  }, [userPredictions]);
 
 
 
@@ -482,11 +503,11 @@ const DashboardView = ({
 
           {/* Recent Predictions Panel */}
           <motion.div variants={itemVariants}>
-            {secondaryLoading.predictions ? (
-              <PanelSkeleton title="Recent Predictions" rows={4} />
-            ) : recentPredictions && recentPredictions.length > 0 ? (
+            {predictionsLoading ? (
+              <PanelSkeleton title="Recent Predictions" rows={3} />
+            ) : recentPredictionsData && recentPredictionsData.length > 0 ? (
               <RecentPredictionsPanel
-                predictions={recentPredictions}
+                predictions={recentPredictionsData}
                 onViewAll={() => navigateToSection("predictions")}
               />
             ) : (

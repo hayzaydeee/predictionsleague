@@ -21,25 +21,6 @@ const dashboardAPI = {
     }
   },
 
-  // Secondary data - loads after essential data (updated to dashboard/ prefix)
-  getRecentPredictions: async (limit = 5) => {
-    try {
-      const response = await apiCall({
-        method: 'GET',
-        url: `/dashboard/predictions/recent?limit=${limit}`,
-      });
-      
-      if (response.success) {
-        return response.data;
-      } else {
-        console.error('Failed to fetch recent predictions:', response.error);
-        return [];
-      }
-    } catch (error) {
-      console.error('Failed to fetch recent predictions:', error);
-      return []; // Return empty array on error to not break UI
-    }
-  },
   getUserLeagues: async (limit = 5) => {
     try {
       const response = await apiCall({
