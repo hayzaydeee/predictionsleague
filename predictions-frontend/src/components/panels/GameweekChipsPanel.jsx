@@ -41,7 +41,7 @@ const GameweekChipsPanel = ({
       id: "opportunist",
       name: "Opportunist",
       description:
-        "Change all predictions up to 30 min before each match kickoff throughout the gameweek.",
+        "Change all six predictions up to 30 minutes before the first kickoff.",
       icon: "⏱️",
       color: "amber",
       cooldown: 0,
@@ -56,7 +56,7 @@ const GameweekChipsPanel = ({
       id: "defensePlusPlus",
       name: "Defense++",
       description:
-        "Earn +10 bonus points for each match where you correctly predict a clean sheet.",
+        "Earn 10 bonus points if you correctly predict clean sheets across all matches where you predicted them.",
       icon: "🛡️",
       color: "blue",
       cooldown: 5,
@@ -68,7 +68,7 @@ const GameweekChipsPanel = ({
       id: "allInWeek",
       name: "All-In Week",
       description:
-        "Doubles all points earned this gameweek.",
+        "Doubles the entire gameweek score (including deductions).",
       icon: "🎯",
       color: "red",
       cooldown: 5,
@@ -83,9 +83,9 @@ const GameweekChipsPanel = ({
     {
       id: "doubleDown",
       name: "Double Down",
-      description: "Double all points earned from this match.",
+      description: "Double all points earned from one selected match.",
       icon: "2x",
-      color: "emerald",
+      color: "teal",
       cooldown: 0,
       cooldownRemaining: 0,
       available: true,
@@ -96,7 +96,7 @@ const GameweekChipsPanel = ({
     {
       id: "wildcard",
       name: "Wildcard",
-      description: "Triple all points earned from this match.",
+      description: "Triple all points earned from one selected match.",
       icon: "3x",
       color: "purple",
       cooldown: 7,
@@ -111,9 +111,9 @@ const GameweekChipsPanel = ({
     {
       id: "scorerFocus",
       name: "Scorer Focus",
-      description: "Double all points from goalscorer predictions.",
+      description: "Doubles all points from goalscorer predictions in one match.",
       icon: "⚽",
-      color: "cyan",
+      color: "green",
       cooldown: 5,
       cooldownRemaining: 0,
       available: true,

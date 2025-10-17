@@ -34,9 +34,9 @@ export const CHIP_CONFIG = {
     id: "doubleDown",
     name: "Double Down",
     type: "match",
-    description: "Double all points earned from this match",
+    description: "Double all points earned from one selected match",
     icon: "2x",
-    color: "emerald",
+    color: "teal",
     cooldown: 0, // Available every gameweek - no cooldown
     seasonLimit: null, // Unlimited uses
     scope: "match" // Applied per match
@@ -45,7 +45,7 @@ export const CHIP_CONFIG = {
     id: "wildcard",
     name: "Wildcard",
     type: "match",
-    description: "Triple all points earned from this match",
+    description: "Triple all points earned from one selected match",
     icon: "3x",
     color: "purple",
     cooldown: 7, // Can't use for 7 gameweeks after usage
@@ -56,21 +56,21 @@ export const CHIP_CONFIG = {
     id: "opportunist",
     name: "Opportunist",
     type: "gameweek",
-    description: "Change all predictions up to 30 min before each match kickoff",
+    description: "Change all six predictions up to 30 minutes before the first kickoff",
     icon: "⏱️",
     color: "amber",
     cooldown: 0, // No cooldown
     seasonLimit: 2, // Can only use 2 times per season
     scope: "gameweek", // Applied to entire gameweek
-    behavior: "rolling_deadline"
+    behavior: "single_deadline" // All changes must be made before first match
   },
   scorerFocus: {
     id: "scorerFocus",
     name: "Scorer Focus",
     type: "match",
-    description: "Double all points from goalscorer predictions",
+    description: "Doubles all points from goalscorer predictions in one match",
     icon: "⚽",
-    color: "cyan",
+    color: "green",
     cooldown: 5, // Can't use for 5 gameweeks after usage
     seasonLimit: null,
     scope: "match"
@@ -79,7 +79,7 @@ export const CHIP_CONFIG = {
     id: "defensePlusPlus",
     name: "Defense++",
     type: "gameweek",
-    description: "Earn +10 bonus points for each match where you correctly predict a clean sheet",
+    description: "Earn 10 bonus points if you correctly predict clean sheets across all matches where you predicted them",
     icon: "🛡️",
     color: "blue",
     cooldown: 5, // Can't use for 5 gameweeks after usage
@@ -90,9 +90,9 @@ export const CHIP_CONFIG = {
     id: "allInWeek",
     name: "All-In Week",
     type: "gameweek",
-    description: "Double all points earned from this week's matches",
+    description: "Doubles the entire gameweek score (including deductions)",
     icon: "🎯",
-    color: "rose",
+    color: "red",
     cooldown: 5, // Can't use for 5 gameweeks after usage
     seasonLimit: 2, // Can only use 2 times per season
     scope: "gameweek"
