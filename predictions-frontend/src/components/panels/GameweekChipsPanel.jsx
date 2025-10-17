@@ -204,7 +204,7 @@ const GameweekChipsPanel = ({
                 light: "bg-blue-100 border-blue-200 text-blue-700",
               }
             )}`}>
-              <span className={`text-2xs sm:text-sm ${getThemeStyles(theme, {
+              <span className={`text-sm sm:text-sm ${getThemeStyles(theme, {
                 dark: "text-blue-200/70",
                 light: "text-blue-600/70",
               })}`}>GW</span>
