@@ -1,7 +1,10 @@
 /**
- * Client-side prediction tracker using localStorage
+ * Client-side prediction tracker using SECURE localStorage
  * Syncs prediction status across all components
+ * Now with encryption, signatures, and tampering detection
  */
+
+import { secureStorage } from './secureStorage';
 
 const STORAGE_KEY = 'userPredictions';
 const PREDICTION_EXPIRY_HOURS = 72; // Predictions expire after 3 days
@@ -9,21 +12,34 @@ const PREDICTION_EXPIRY_HOURS = 72; // Predictions expire after 3 days
 class PredictionTracker {
   constructor() {
     this.listeners = new Set();
+    this.useSecureStorage = true; // Toggle for secure storage
     this.cleanupExpiredPredictions();
+    
+    // Listen for security events
+    window.addEventListener('security:tamper-detected', (e) => {
+      console.error('🚨 Security breach detected:', e.detail);
+      // Optionally show user warning or force re-login
+    });
   }
 
-  // Get all predictions from localStorage
+  // Get all predictions from secure storage
   getAllPredictions() {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      return stored ? JSON.parse(stored) : [];
+      if (this.useSecureStorage) {
+        const stored = secureStorage.getItem(STORAGE_KEY);
+        return stored ? (Array.isArray(stored) ? stored : [stored]) : [];
+      } else {
+        // Fallback to regular localStorage (for debugging)
+        const stored = localStorage.getItem(STORAGE_KEY);
+        return stored ? JSON.parse(stored) : [];
+      }
     } catch (error) {
-      console.error('Error reading predictions from localStorage:', error);
+      console.error('Error reading predictions from storage:', error);
       return [];
     }
   }
 
-  // Save prediction to localStorage
+  // Save prediction to secure storage
   savePrediction(prediction) {
     try {
       const predictions = this.getAllPredictions();
@@ -32,6 +48,7 @@ class PredictionTracker {
       const predictionWithTimestamp = {
         ...prediction,
         id: prediction.fixtureId || `${prediction.homeTeam}_${prediction.awayTeam}`,
+        fixtureId: prediction.fixtureId,
         timestamp,
         expiresAt: timestamp + (PREDICTION_EXPIRY_HOURS * 60 * 60 * 1000)
       };
@@ -42,7 +59,13 @@ class PredictionTracker {
       // Add new prediction
       const updated = [...filtered, predictionWithTimestamp];
       
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      if (this.useSecureStorage) {
+        // Store array securely
+        secureStorage.setItem(STORAGE_KEY, updated);
+      } else {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      }
+      
       this.notifyListeners();
       
       return true;
@@ -127,7 +150,11 @@ class PredictionTracker {
       );
 
       if (validPredictions.length !== predictions.length) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(validPredictions));
+        if (this.useSecureStorage) {
+          secureStorage.setItem(STORAGE_KEY, validPredictions);
+        } else {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(validPredictions));
+        }
         this.notifyListeners();
       }
     } catch (error) {
@@ -154,8 +181,26 @@ class PredictionTracker {
 
   // Clear all predictions (useful for logout)
   clearAllPredictions() {
-    localStorage.removeItem(STORAGE_KEY);
-    this.notifyListeners();
+    try {
+      if (this.useSecureStorage) {
+        secureStorage.removeItem(STORAGE_KEY);
+      } else {
+        localStorage.removeItem(STORAGE_KEY);
+      }
+      this.notifyListeners();
+      return true;
+    } catch (error) {
+      console.error('Error clearing predictions:', error);
+      return false;
+    }
+  }
+
+  // Run security health check
+  runSecurityCheck() {
+    if (this.useSecureStorage) {
+      return secureStorage.healthCheck();
+    }
+    return { healthy: 0, corrupted: 0 };
   }
 
   // Get prediction details for specific fixture
