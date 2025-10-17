@@ -142,7 +142,13 @@ export const userPredictionsAPI = {
         throw new Error(`Invalid prediction data: ${validation.errors.join(', ')}`);
       }
 
-      console.log('🚀 Making prediction with backend payload:', backendPayload);
+      console.log('🚀 Making prediction with backend payload:', {
+        matchId: backendPayload.matchId,
+        teams: `${backendPayload.homeTeam} vs ${backendPayload.awayTeam}`,
+        score: `${backendPayload.homeScore}-${backendPayload.awayScore}`,
+        chips: backendPayload.chips,
+        gameweek: backendPayload.gameweek
+      });
 
       const response = await apiCall('/predictions/make-prediction', {
         method: 'POST',

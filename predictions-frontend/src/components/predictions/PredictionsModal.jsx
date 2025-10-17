@@ -2,12 +2,10 @@ import { useState, useEffect, useContext } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { format, parseISO, addMinutes } from "date-fns";
 import { ThemeContext } from "../../context/ThemeContext";
-import { useChipManagement } from "../../context/ChipManagementContext";
 import { backgrounds, text, getThemeStyles } from "../../utils/themeUtils";
 import { InfoCircledIcon, ClockIcon, ExclamationTriangleIcon, CheckIcon } from "@radix-ui/react-icons";
 import { userPredictionsAPI } from "../../services/api/userPredictionsAPI";
-import { useNotifications } from "../../hooks/useNotifications";
-import { predictionTracker } from "../../utils/predictionTracker";
+import { showToast } from "../../services/notificationService";
 
 // Import modular components
 import ModalHeader from "./modal/ModalHeader";
@@ -27,8 +25,6 @@ export default function PredictionsModal({
   toggleChipInfoModal,
 }) {
   const { theme } = useContext(ThemeContext);
-  const { predictions, notify } = useNotifications();
-  const { useChips, checkCompatibility, simulateUsage, currentGameweek } = useChipManagement();
   
   // Step management
   const [currentStep, setCurrentStep] = useState(1);
@@ -44,7 +40,6 @@ export default function PredictionsModal({
   const [errors, setErrors] = useState({});
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [chipWarning, setChipWarning] = useState(null);
 
   // Validation on step change
   useEffect(() => {
@@ -100,28 +95,6 @@ export default function PredictionsModal({
     setCurrentStep((prevStep) => Math.max(1, prevStep - 1));
   };
 
-  // Validate chip usage when chips change
-  useEffect(() => {
-    if (selectedChips.length > 0) {
-      const compatibility = checkCompatibility(selectedChips);
-      if (!compatibility.compatible) {
-        setChipWarning(compatibility.reason);
-      } else {
-        const simulation = simulateUsage(selectedChips, fixture.gameweek || currentGameweek);
-        if (!simulation.allAvailable) {
-          const unavailableChips = simulation.chips.filter(c => !c.available);
-          if (unavailableChips.length > 0) {
-            setChipWarning(`Some chips unavailable: ${unavailableChips.map(c => c.name).join(', ')}`);
-          }
-        } else {
-          setChipWarning(null);
-        }
-      }
-    } else {
-      setChipWarning(null);
-    }
-  }, [selectedChips, fixture.gameweek, currentGameweek, checkCompatibility, simulateUsage]);
-
   // Form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -139,49 +112,18 @@ export default function PredictionsModal({
       console.log('🎯 Submitting prediction:', {
         fixture: fixture.id,
         prediction: frontendPrediction,
-        teams: `${fixture.homeTeam} vs ${fixture.awayTeam}`,
-        chips: selectedChips
+        teams: `${fixture.homeTeam} vs ${fixture.awayTeam}`
       });
-
-      // Validate and use chips (updates cooldowns and usage counts)
-      if (selectedChips.length > 0) {
-        const gameweek = fixture.gameweek || currentGameweek;
-        const chipResult = useChips(selectedChips, gameweek, fixture.id);
-        
-        if (!chipResult.success) {
-          throw new Error(`Chip validation failed: ${chipResult.reason}`);
-        }
-        
-        console.log('✅ Chips validated and marked as used:', chipResult);
-      }
 
       // Call new backend API
       const result = await userPredictionsAPI.makePrediction(frontendPrediction, fixture);
       
       if (result.success) {
         console.log('✅ Prediction submitted successfully');
-        
-        // Save to localStorage prediction tracker
-        predictionTracker.savePrediction({
-          fixtureId: fixture.id,
-          homeTeam: fixture.homeTeam,
-          awayTeam: fixture.awayTeam,
-          homeScore: homeScore,
-          awayScore: awayScore,
-          homeScorers: homeScorers,
-          awayScorers: awayScorers,
-          selectedChip: selectedChips,
-          utcDate: fixture.utcDate,
-          matchDate: fixture.utcDate,
-          gameweek: fixture.gameweek || fixture.matchday
-        });
-        
-        // Show notification
-        if (isEditing) {
-          predictions.updateSuccess(fixture.homeTeam, fixture.awayTeam);
-        } else {
-          predictions.submitSuccess(fixture.homeTeam, fixture.awayTeam);
-        }
+        showToast(
+          isEditing ? 'Prediction updated successfully!' : 'Prediction submitted successfully!', 
+          'success'
+        );
         
         // Call onSave if provided (for parent component updates)
         if (onSave) {
@@ -199,12 +141,10 @@ export default function PredictionsModal({
       }
     } catch (error) {
       console.error('❌ Prediction submission failed:', error.message);
-      notify({
-        type: 'error',
-        message: `Failed to ${isEditing ? 'update' : 'submit'} prediction: ${error.message}`,
-        icon: 'target',
-        trackAsActivity: false
-      });
+      showToast(
+        `Failed to ${isEditing ? 'update' : 'submit'} prediction: ${error.message}`, 
+        'error'
+      );
     } finally {
       setSubmitting(false);
     }
@@ -344,8 +284,6 @@ export default function PredictionsModal({
                     );
                   }}
                   toggleChipInfoModal={toggleChipInfoModal}
-                  gameweek={fixture.gameweek || currentGameweek}
-                  chipWarning={chipWarning}
                   errors={errors}
                 />
               )}
