@@ -119,17 +119,17 @@ const FixtureCardOption2 = ({
               </div>
             </div>
             
-            {/* Score Display */}
-            {userPrediction ? (
+            {/* Score Display - Actual Match Score Only */}
+            {fixture.homeScore !== null && fixture.homeScore !== undefined ? (
               <div className={`w-full py-1.5 sm:py-2 rounded-lg ${
                 theme === "dark"
                   ? "bg-slate-900/60 border border-slate-700/50"
                   : "bg-white border border-slate-200"
               }`}>
                 <div className={`text-xl sm:text-3xl font-bold ${
-                  theme === "dark" ? "text-teal-400" : "text-teal-600"
+                  theme === "dark" ? "text-white" : "text-slate-900"
                 }`}>
-                  {userPrediction.homeScore}
+                  {fixture.homeScore}
                 </div>
               </div>
             ) : (
@@ -172,17 +172,17 @@ const FixtureCardOption2 = ({
               </div>
             </div>
             
-            {/* Score Display */}
-            {userPrediction ? (
+            {/* Score Display - Actual Match Score Only */}
+            {fixture.awayScore !== null && fixture.awayScore !== undefined ? (
               <div className={`w-full py-1.5 sm:py-2 rounded-lg ${
                 theme === "dark"
                   ? "bg-slate-900/60 border border-slate-700/50"
                   : "bg-white border border-slate-200"
               }`}>
                 <div className={`text-xl sm:text-3xl font-bold ${
-                  theme === "dark" ? "text-teal-400" : "text-teal-600"
+                  theme === "dark" ? "text-white" : "text-slate-900"
                 }`}>
-                  {userPrediction.awayScore}
+                  {fixture.awayScore}
                 </div>
               </div>
             ) : (

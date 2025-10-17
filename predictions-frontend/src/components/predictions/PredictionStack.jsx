@@ -204,13 +204,6 @@ const PredictionStack = ({
                           />
                         ))}
                       </div>
-                      <div
-                        className={`text-center mt-2 text-xs ${
-                          theme === "dark" ? "text-white/50" : "text-slate-400"
-                        }`}
-                      >
-                        Swipe for more dates
-                      </div>
                     </div>
                   </SwiperSlide>
                 ))}
