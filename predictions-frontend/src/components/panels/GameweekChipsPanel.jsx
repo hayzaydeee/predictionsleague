@@ -37,31 +37,35 @@ const GameweekChipsPanel = ({
   const { theme } = useContext(ThemeContext);
 
   // Get chip management context
-  const { 
-    availableChips, 
-    getMatchChips, 
+  const {
+    availableChips,
+    getMatchChips,
     getGameweekChips,
-    currentGameweek: contextGameweek 
+    currentGameweek: contextGameweek,
   } = useChipManagement();
 
   // Use context gameweek if currentGameweek prop not provided
   const activeGameweek = currentGameweek || contextGameweek;
 
   // Get chips from context
-  const gameweekChips = getGameweekChips().map(chip => ({
+  const gameweekChips = getGameweekChips().map((chip) => ({
     ...chip,
     // Map display properties
     cooldownRemaining: chip.remainingGameweeks || 0,
     // Calculate remaining uses: seasonLimit - usageCount
-    remainingUses: chip.seasonLimit ? chip.seasonLimit - (chip.usageCount || 0) : null,
+    remainingUses: chip.seasonLimit
+      ? chip.seasonLimit - (chip.usageCount || 0)
+      : null,
   }));
 
-  const matchChips = getMatchChips().map(chip => ({
+  const matchChips = getMatchChips().map((chip) => ({
     ...chip,
     // Map display properties
     cooldownRemaining: chip.remainingGameweeks || 0,
     // Calculate remaining uses: seasonLimit - usageCount
-    remainingUses: chip.seasonLimit ? chip.seasonLimit - (chip.usageCount || 0) : null,
+    remainingUses: chip.seasonLimit
+      ? chip.seasonLimit - (chip.usageCount || 0)
+      : null,
   }));
 
   // Combined chips for display
@@ -69,7 +73,7 @@ const GameweekChipsPanel = ({
 
   // Debug logging
   useEffect(() => {
-    console.log('🎮 GameweekChipsPanel Debug:', {
+    console.log("🎮 GameweekChipsPanel Debug:", {
       activeGameweek,
       contextGameweek,
       availableChips: availableChips?.length || 0,
@@ -77,9 +81,16 @@ const GameweekChipsPanel = ({
       matchChips: matchChips.length,
       allChips: allChips.length,
       gameweekChipsData: gameweekChips,
-      matchChipsData: matchChips
+      matchChipsData: matchChips,
     });
-  }, [activeGameweek, contextGameweek, availableChips, gameweekChips, matchChips, allChips]);
+  }, [
+    activeGameweek,
+    contextGameweek,
+    availableChips,
+    gameweekChips,
+    matchChips,
+    allChips,
+  ]);
 
   // Toggle chip selection
   const selectChipForConfirmation = (chipId) => {
@@ -156,10 +167,13 @@ const GameweekChipsPanel = ({
       <div className="h-0.5 bg-gradient-to-r from-teal-500 via-blue-500 to-purple-500"></div>
       {/* Header - OPTIMIZED FOR MOBILE */}
       <div
-        className={`px-3 sm:px-5 py-2.5 sm:py-4 border-b ${getThemeStyles(theme, {
-          dark: "border-slate-700/50",
-          light: "border-slate-200",
-        })}`}
+        className={`px-3 sm:px-5 py-2.5 sm:py-4 border-b ${getThemeStyles(
+          theme,
+          {
+            dark: "border-slate-700/50",
+            light: "border-slate-200",
+          }
+        )}`}
       >
         <div className="flex items-center justify-between gap-2">
           {/* Left: Icon + Title (no subtitle on mobile) */}
@@ -178,43 +192,63 @@ const GameweekChipsPanel = ({
                 <span className="sm:hidden">Chips</span>
               </h3>
               {/* Subtitle only on desktop */}
-              <p className={`hidden sm:block text-xs sm:text-sm ${getThemeStyles(theme, text.secondary)}`}>
+              <p
+                className={`hidden sm:block text-xs sm:text-sm ${getThemeStyles(
+                  theme,
+                  text.secondary
+                )}`}
+              >
                 Enhance your predictions with strategic chip usage
               </p>
             </div>
           </div>
-          
+
           {/* Right: Badges + Collapse button */}
           <div className="flex items-center gap-1 sm:gap-3 flex-shrink-0">
             {/* Active chips count - simplified on mobile */}
             {activeChipsCount > 0 && (
-              <div className={`rounded-full px-2 sm:px-3 py-0.5 sm:py-1 flex items-center font-outfit border ${getThemeStyles(
-                theme,
-                {
-                  dark: "bg-teal-900/40 border-teal-700/30 text-teal-300",
-                  light: "bg-teal-100 border-teal-200 text-teal-700",
-                }
-              )}`}>
-                <span className="text-xs sm:text-sm font-medium">{activeChipsCount}</span>
-                <span className="hidden sm:inline text-xs sm:text-sm ml-0.5"> active</span>
+              <div
+                className={`rounded-full px-2 sm:px-3 py-0.5 sm:py-1 flex items-center font-outfit border ${getThemeStyles(
+                  theme,
+                  {
+                    dark: "bg-teal-900/40 border-teal-700/30 text-teal-300",
+                    light: "bg-teal-100 border-teal-200 text-teal-700",
+                  }
+                )}`}
+              >
+                <span className="text-xs sm:text-sm font-medium">
+                  {activeChipsCount}
+                </span>
+                <span className="hidden sm:inline text-xs sm:text-sm ml-0.5">
+                  {" "}
+                  active
+                </span>
               </div>
             )}
-            
+
             {/* Gameweek badge - simplified on mobile */}
-            <div className={`rounded-full px-2 sm:px-3 py-0.5 sm:py-1 flex items-center font-outfit border ${getThemeStyles(
-              theme,
-              {
-                dark: "bg-blue-900/40 border-blue-700/30 text-blue-300",
-                light: "bg-blue-100 border-blue-200 text-blue-700",
-              }
-            )}`}>
-              <span className={`text-sm sm:text-sm ${getThemeStyles(theme, {
-                dark: "text-blue-200/70",
-                light: "text-blue-600/70",
-              })}`}>GW</span>
-              <span className="font-medium text-sm sm:text-sm ml-0.5 sm:ml-1">{activeGameweek}</span>
+            <div
+              className={`rounded-full px-2 sm:px-3 py-0.5 sm:py-1 flex items-center font-outfit border ${getThemeStyles(
+                theme,
+                {
+                  dark: "bg-blue-900/40 border-blue-700/30 text-blue-300",
+                  light: "bg-blue-100 border-blue-200 text-blue-700",
+                }
+              )}`}
+            >
+              <span
+                className={`text-sm sm:text-sm ${getThemeStyles(theme, {
+                  dark: "text-blue-200/70",
+                  light: "text-blue-600/70",
+                })}`}
+              >
+                GW
+              </span>
+              <span className="font-medium text-sm sm:text-sm ml-0.5 sm:ml-1">
+                {activeGameweek}
+              </span>
             </div>
-            
+
             {/* Collapse button */}
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -258,7 +292,8 @@ const GameweekChipsPanel = ({
                 })}`}
               >
                 <div className="flex">
-                  {" "}                  <button
+                  {" "}
+                  <button
                     onClick={() => setSelectedTab("gameweek")}
                     className={`py-2 px-4 text-sm relative transition-colors ${
                       selectedTab === "gameweek"
@@ -282,7 +317,8 @@ const GameweekChipsPanel = ({
                         layoutId="tabIndicator"
                       />
                     )}
-                  </button>{" "}                  <button
+                  </button>{" "}
+                  <button
                     onClick={() => setSelectedTab("match")}
                     className={`py-2 px-4 text-sm relative transition-colors ${
                       selectedTab === "match"
@@ -386,14 +422,18 @@ const GameweekChipsPanel = ({
                                         )}`}
                                       >
                                         {chip.name}
-                                      </div>{" "}                                      {isActive && (
-                                        <div className={`flex items-center text-2xs px-1.5 py-0.5 rounded ${getThemeStyles(
-                                          theme,
-                                          {
-                                            dark: "bg-teal-700/30 text-teal-300",
-                                            light: "bg-teal-100 text-teal-700",
-                                          }
-                                        )}`}>
+                                      </div>{" "}
+                                      {isActive && (
+                                        <div
+                                          className={`flex items-center text-2xs px-1.5 py-0.5 rounded ${getThemeStyles(
+                                            theme,
+                                            {
+                                              dark: "bg-teal-700/30 text-teal-300",
+                                              light:
+                                                "bg-teal-100 text-teal-700",
+                                            }
+                                          )}`}
+                                        >
                                           <CheckIcon className="w-2.5 h-2.5 mr-0.5" />
                                           <span>Active</span>
                                         </div>
@@ -435,13 +475,12 @@ const GameweekChipsPanel = ({
                                           {chip.seasonLimit} left
                                         </div>
                                       )}
-                                    </div>{" "}
-                                    {!isActive &&
-                                      chip.cooldownRemaining > 0 && (
-                                        <div className="bg-red-900/30 text-red-300 px-1.5 py-0.5 rounded">
-                                          {chip.cooldownRemaining} GW
-                                        </div>
-                                      )}
+                                    </div>
+                                    {!isActive && chip.cooldownRemaining > 0 && (
+                                      <div className="bg-red-900/30 text-red-300 px-1.5 py-0.5 rounded">
+                                        {chip.cooldownRemaining} GW
+                                      </div>
+                                    )}
                                   </div>
                                 </div>{" "}
                                 {/* Apply/Remove button */}{" "}
@@ -585,12 +624,11 @@ const GameweekChipsPanel = ({
                                         </div>
                                       )}
 
-                                      {usageCount === 0 &&
-                                        chip.cooldownRemaining > 0 && (
-                                          <div className="bg-red-900/30 text-red-300 text-xs px-1.5 py-0.5 rounded">
-                                            {chip.cooldownRemaining} GW
-                                          </div>
-                                        )}
+                                      {usageCount === 0 && chip.cooldownRemaining > 0 && (
+                                        <div className="bg-red-900/30 text-red-300 text-xs px-1.5 py-0.5 rounded">
+                                          {chip.cooldownRemaining} GW
+                                        </div>
+                                      )}
                                     </div>
                                   </div>
                                 </div>
@@ -823,12 +861,15 @@ const GameweekChipsPanel = ({
                   className={`text-sm leading-relaxed mb-1.5 ${getThemeStyles(
                     theme,
                     text.secondary
-                  )}`}                >
+                  )}`}
+                >
                   This chip affects{" "}
-                  <span className={`font-medium ${getThemeStyles(theme, {
-                    dark: "text-teal-300",
-                    light: "text-teal-600",
-                  })}`}>
+                  <span
+                    className={`font-medium ${getThemeStyles(theme, {
+                      dark: "text-teal-300",
+                      light: "text-teal-600",
+                    })}`}
+                  >
                     all predictions
                   </span>{" "}
                   for this gameweek.
