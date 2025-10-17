@@ -120,7 +120,7 @@ const FixtureFilters = ({
               }`}
             >
               <MixerHorizontalIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" />
-              <span className="hidden sm:inline">Filters</span>
+              <span className="hidden sm:inline pl-1">Filters</span>
               <ChevronDownIcon
                 className={`w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 transition-transform ${showFilters ? "rotate-180" : ""}`}
               />

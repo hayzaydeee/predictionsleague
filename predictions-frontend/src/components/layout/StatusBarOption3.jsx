@@ -84,11 +84,11 @@ export default function StatusBarOption3({
           : "bg-slate-50 border-slate-200"
       } backdrop-blur-md border`}
     >
-      <Box className="container mx-auto px-3 py-2">
-        <div className="flex items-center justify-between gap-3">
+      <Box className="container mx-auto px-3 py-2 lg:py-4">
+        <div className="flex items-center justify-between gap-3 lg:gap-6">
           {/* Left: Profile Chip */}
           <div
-            className={`flex items-center gap-2 px-2.5 py-1 rounded-full flex-shrink-0 ${
+            className={`flex items-center gap-2 px-2.5 py-1 lg:px-3 lg:py-1.5 rounded-full flex-shrink-0 ${
               theme === "dark"
                 ? "bg-slate-800/50 border border-slate-700/50"
                 : "bg-white border border-slate-200"
@@ -96,18 +96,18 @@ export default function StatusBarOption3({
           >
             {loading ? (
               <>
-                <div className="h-6 w-6 bg-slate-700/50 rounded-full animate-pulse" />
-                <Skeleton width="w-16" height="h-4" />
+                <div className="h-6 w-6 lg:h-8 lg:w-8 bg-slate-700/50 rounded-full animate-pulse" />
+                <Skeleton width="w-16 lg:w-20" height="h-4 lg:h-5" />
               </>
             ) : (
               <>
-                <div className="h-6 w-6 bg-indigo-600 rounded-full flex items-center justify-center text-white font-medium text-xs">
+                <div className="h-6 w-6 lg:h-8 lg:w-8 bg-indigo-600 rounded-full flex items-center justify-center text-white font-medium text-xs lg:text-sm">
                   {userData.username.substring(0, 1).toUpperCase()}
                 </div>
                 <span
                   className={`${
                     theme === "dark" ? "text-teal-100" : "text-teal-700"
-                  } font-medium font-outfit text-xs`}
+                  } font-medium font-outfit text-xs lg:text-sm`}
                 >
                   {userData.username}
                 </span>
@@ -116,29 +116,29 @@ export default function StatusBarOption3({
           </div>
 
           {/* Center: Stats Bar */}
-          <div className="flex items-center gap-3 flex-1 justify-center">
+          <div className="flex items-center gap-3 lg:gap-6 flex-1 justify-center">
             {/* Next Match In */}
             <div className="flex flex-col items-center">
               <span
-                className={`text-2xs ${
+                className={`text-2xs lg:text-xs ${
                   theme === "dark" ? "text-white/50" : "text-slate-400"
                 } font-outfit leading-tight`}
               >
                 NEXT
               </span>
               {loading ? (
-                <Skeleton width="w-12" height="h-5" />
+                <Skeleton width="w-12 lg:w-16" height="h-5 lg:h-6" />
               ) : (
-                <div className="flex items-center gap-0.5">
+                <div className="flex items-center gap-0.5 lg:gap-1">
                   <ClockIcon
-                    className={`w-3 h-3 ${
+                    className={`w-3 h-3 lg:w-4 lg:h-4 ${
                       theme === "dark" ? "text-teal-400" : "text-teal-500"
                     }`}
                   />
                   <span
                     className={`${
                       theme === "dark" ? "text-teal-200" : "text-teal-600"
-                    } font-bold font-dmSerif text-sm`}
+                    } font-bold font-dmSerif text-sm lg:text-base`}
                   >
                     {timeDisplay}
                   </span>
@@ -148,7 +148,7 @@ export default function StatusBarOption3({
 
             {/* Divider */}
             <div
-              className={`h-6 w-px ${
+              className={`h-6 lg:h-8 w-px ${
                 theme === "dark" ? "bg-slate-700" : "bg-slate-200"
               }`}
             />
@@ -156,19 +156,19 @@ export default function StatusBarOption3({
             {/* Points */}
             <div className="flex flex-col items-center">
               <span
-                className={`text-2xs ${
+                className={`text-2xs lg:text-xs ${
                   theme === "dark" ? "text-white/50" : "text-slate-400"
                 } font-outfit leading-tight`}
               >
                 POINTS
               </span>
               {loading ? (
-                <Skeleton width="w-8" height="h-5" />
+                <Skeleton width="w-8 lg:w-12" height="h-5 lg:h-6" />
               ) : (
                 <span
                   className={`${
                     theme === "dark" ? "text-teal-200" : "text-teal-600"
-                  } font-bold font-dmSerif text-sm`}
+                  } font-bold font-dmSerif text-sm lg:text-base`}
                 >
                   {userData.points}
                 </span>
@@ -177,9 +177,9 @@ export default function StatusBarOption3({
           </div>
 
           {/* Right: Actions */}
-          <div className="flex items-center gap-2 flex-shrink-0">
+          <div className="flex items-center gap-2 lg:gap-3 flex-shrink-0">
             {loading ? (
-              <Skeleton width="w-16" height="h-8" />
+              <Skeleton width="w-16 lg:w-20" height="h-8 lg:h-10" />
             ) : userData.pendingPredictions > 0 ? (
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -189,10 +189,10 @@ export default function StatusBarOption3({
                   theme === "dark"
                     ? "bg-indigo-600 hover:bg-indigo-700"
                     : "bg-indigo-600 hover:bg-indigo-700"
-                } text-white rounded-md px-2.5 py-1.5 flex items-center gap-1.5 font-outfit font-medium text-xs transition-colors shadow-lg`}
+                } text-white rounded-md px-2.5 py-1.5 lg:px-4 lg:py-2 flex items-center gap-1.5 font-outfit font-medium text-xs lg:text-sm transition-colors shadow-lg`}
               >
                 <span>Predict</span>
-                <span className="bg-white text-indigo-600 rounded-full h-4 w-4 flex items-center justify-center text-2xs font-bold">
+                <span className="bg-white text-indigo-600 rounded-full h-4 w-4 lg:h-5 lg:w-5 flex items-center justify-center text-2xs lg:text-xs font-bold">
                   {userData.pendingPredictions}
                 </span>
               </motion.button>
@@ -202,7 +202,7 @@ export default function StatusBarOption3({
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={toggleTheme}
-              className={`p-1.5 rounded-md transition-colors ${
+              className={`p-1.5 lg:p-2 rounded-md transition-colors ${
                 theme === "dark"
                   ? "text-white/70 hover:bg-primary-600/40 hover:text-teal-300"
                   : "text-slate-600 hover:bg-slate-100 hover:text-teal-700"
@@ -212,8 +212,9 @@ export default function StatusBarOption3({
                 initial={{ rotate: 0 }}
                 animate={{ rotate: theme === "dark" ? 0 : 360 }}
                 transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="block w-4 h-4 lg:w-5 lg:h-5"
               >
-                {theme === "dark" ? <SunIcon /> : <MoonIcon />}
+                {theme === "dark" ? <SunIcon className="w-full h-full" /> : <MoonIcon className="w-full h-full" />}
               </motion.span>
             </motion.button>
           </div>
