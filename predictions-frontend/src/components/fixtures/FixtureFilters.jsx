@@ -113,7 +113,7 @@ const FixtureFilters = ({
           <div className="flex items-center gap-2 flex-shrink-0">
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className={`flex items-center gap-1.5 md:gap-2 px-2.5 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 rounded-lg text-md sm:text-sm md:text-base font-medium transition-colors ${
+              className={`flex items-center px-2.5 sm:px-3 py-2 sm:py-2 rounded-lg text-xs sm:text-sm font-medium md:text-base transition-colors ${
                 theme === "dark"
                   ? "bg-slate-800/50 text-slate-300 hover:bg-slate-800 hover:text-white border border-slate-700"
                   : "bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-800 border border-slate-200"

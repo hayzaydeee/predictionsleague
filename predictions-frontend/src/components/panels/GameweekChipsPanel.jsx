@@ -446,7 +446,7 @@ const GameweekChipsPanel = ({
                                   {" "}
                                   <div className="flex items-center justify-between text-xs">
                                     <div className="flex gap-1">
-                                      {chip.cooldown !== undefined && chip.cooldown !== null && (
+                                      {(chip.cooldown > 0 || (chip.cooldown === 0 && !chip.seasonLimit)) && (
                                         <div
                                           className={`px-1.5 py-0.5 rounded ${getThemeStyles(
                                             theme,
@@ -457,7 +457,7 @@ const GameweekChipsPanel = ({
                                             }
                                           )}`}
                                         >
-                                          {chip.cooldown === 0 ? "Always available" : `${chip.cooldown} GW`}
+                                          {chip.cooldown === 0 && !chip.seasonLimit ? "Always available" : `${chip.cooldown} GW`}
                                         </div>
                                       )}
                                       {chip.seasonLimit && (
