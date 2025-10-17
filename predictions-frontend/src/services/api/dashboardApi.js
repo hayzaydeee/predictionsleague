@@ -1,7 +1,7 @@
 // src/services/api/dashboardAPI.js
 import { apiCall } from './baseAPI';
 
-export const dashboardAPI = {
+const dashboardAPI = {
   // Critical data - loads first (includes user data for StatusBar)
   getEssentialData: async () => {
     try {
@@ -78,3 +78,5 @@ export const dashboardAPI = {
     }
   }
 };
+
+export default dashboardAPI;
