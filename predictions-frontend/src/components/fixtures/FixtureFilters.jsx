@@ -58,32 +58,32 @@ const FixtureFilters = ({
     <div>
       {/* MOBILE VIEW - Icon-based layout */}
       <div className="sm:hidden">
-        {/* Row 1: Search Icon + Filters Button */}
+        {/* Row 1: Search Icon + Filters Button - Reduced size */}
         {!showSearchOnMobile && (
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-2">
             <button
               onClick={() => setShowSearchOnMobile(true)}
-              className={`p-2.5 rounded-lg transition-colors ${
+              className={`p-2 rounded-md transition-colors ${
                 theme === "dark"
-                  ? "bg-slate-800/50 text-slate-300 hover:bg-slate-800 hover:text-white border border-slate-700"
-                  : "bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-800 border border-slate-200"
+                  ? "bg-slate-800/30 text-slate-400 hover:bg-slate-800/50 hover:text-slate-300 border border-slate-700/50"
+                  : "bg-slate-50/50 text-slate-500 hover:bg-slate-100 hover:text-slate-700 border border-slate-200/50"
               }`}
             >
-              <MagnifyingGlassIcon className="w-5 h-5" />
+              <MagnifyingGlassIcon className="w-4 h-4" />
             </button>
 
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors ${
                 theme === "dark"
-                  ? "bg-slate-800/50 text-slate-300 hover:bg-slate-800 hover:text-white border border-slate-700"
-                  : "bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-800 border border-slate-200"
+                  ? "bg-slate-800/30 text-slate-400 hover:bg-slate-800/50 hover:text-slate-300 border border-slate-700/50"
+                  : "bg-slate-50/50 text-slate-500 hover:bg-slate-100 hover:text-slate-700 border border-slate-200/50"
               }`}
             >
-              <MixerHorizontalIcon className="w-4 h-4" />
+              <MixerHorizontalIcon className="w-3.5 h-3.5" />
               <span>Filters</span>
               <ChevronDownIcon
-                className={`w-4 h-4 transition-transform ${showFilters ? "rotate-180" : ""}`}
+                className={`w-3.5 h-3.5 transition-transform ${showFilters ? "rotate-180" : ""}`}
               />
             </button>
           </div>
