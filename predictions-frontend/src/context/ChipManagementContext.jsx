@@ -16,7 +16,8 @@ const ChipManagementContext = createContext(null);
  * ChipManagementProvider - Provides chip state management throughout the app
  */
 export function ChipManagementProvider({ children }) {
-  const { user } = useAuth();
+  const authContext = useAuth();
+  const { user, isAuthenticated, isLoading: authLoading } = authContext;
   const [chipManager, setChipManager] = useState(null);
   const [availableChips, setAvailableChips] = useState([]);
   const [manualGameweek, setManualGameweek] = useState(null);
@@ -65,21 +66,32 @@ export function ChipManagementProvider({ children }) {
   useEffect(() => {
     console.log('👤 ChipManagementContext: User/Gameweek changed', {
       userId: user?.id,
+      userName: user?.username,
+      userEmail: user?.email,
       currentGameweek,
-      hasUser: !!user?.id
+      hasUser: !!user?.id,
+      isAuthenticated,
+      authLoading,
+      fullUser: user
     });
     
-    if (user?.id) {
+    // Wait for auth to complete before initializing
+    if (authLoading) {
+      console.log('⏳ Waiting for authentication to complete...');
+      return;
+    }
+    
+    if (user?.id && isAuthenticated) {
       const manager = getChipManager(user.id);
-      console.log('🎯 ChipManager initialized for user:', user.id);
+      console.log('🎯 ChipManager initialized for user:', user.id, manager);
       setChipManager(manager);
       refreshAvailableChips(manager, currentGameweek);
     } else {
-      console.log('❌ No user, clearing chip manager');
+      console.log('❌ No user or not authenticated, clearing chip manager');
       setChipManager(null);
       setAvailableChips([]);
     }
-  }, [user?.id, currentGameweek, refreshAvailableChips]);
+  }, [user?.id, currentGameweek, isAuthenticated, authLoading, refreshAvailableChips]);
 
   /**
    * Check if chip can be used
