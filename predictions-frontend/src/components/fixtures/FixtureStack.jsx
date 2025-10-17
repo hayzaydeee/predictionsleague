@@ -148,12 +148,12 @@ export default function FixtureStack({
                 onSlideChange={handleSlideChange}
                 onSwiper={handleSwiperInit}
                 cardsEffect={{
-                  slideShadows: true,
-                  perSlideRotate: 5,
-                  perSlideOffset: 12,
+                  slideShadows: false,
+                  perSlideRotate: 3,
+                  perSlideOffset: 8,
                   rotate: true,
                 }}
-                speed={600}
+                speed={400}
                 initialSlide={activeIndex}
                 preventInteractionOnTransition={true}
                 allowTouchMove={true}
