@@ -52,12 +52,16 @@ const GameweekChipsPanel = ({
     ...chip,
     // Map display properties
     cooldownRemaining: chip.remainingGameweeks || 0,
+    // Calculate remaining uses: seasonLimit - usageCount
+    remainingUses: chip.seasonLimit ? chip.seasonLimit - (chip.usageCount || 0) : null,
   }));
 
   const matchChips = getMatchChips().map(chip => ({
     ...chip,
     // Map display properties
     cooldownRemaining: chip.remainingGameweeks || 0,
+    // Calculate remaining uses: seasonLimit - usageCount
+    remainingUses: chip.seasonLimit ? chip.seasonLimit - (chip.usageCount || 0) : null,
   }));
 
   // Combined chips for display

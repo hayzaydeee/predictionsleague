@@ -11,6 +11,7 @@ import ContentView from "../fixtures/ContentView";
 import FixtureFilters from "../fixtures/FixtureFilters";
 import { ThemeContext } from "../../context/ThemeContext";
 import { useUserPreferences } from "../../context/UserPreferencesContext";
+import { useChipManagement } from "../../context/ChipManagementContext";
 import { backgrounds, text } from "../../utils/themeUtils";
 import { useFixtures } from "../../hooks/useFixtures";
 import { fixtureFilters } from "../../services/api/externalFixturesAPI";
@@ -21,6 +22,9 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
   // Get theme context and user preferences
   const { theme } = useContext(ThemeContext);
   const { preferences, updatePreference } = useUserPreferences();
+  
+  // Get chip management context
+  const { useChip, undoChipUsage } = useChipManagement();
 
   // Fetch fixtures using the external API only
   const {
@@ -77,16 +81,26 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
   // Handle applying gameweek chips
   const handleApplyGameweekChip = (chipId, gameweek, isRemoval = false) => {
     if (isRemoval) {
+      // Remove from local state
       setActiveGameweekChips((prev) => prev.filter((id) => id !== chipId));
+      
+      // Undo chip usage in chip management context
+      undoChipUsage(chipId, gameweek);
+      
+      console.log(`✅ Removed gameweek chip ${chipId} for gameweek ${gameweek}`);
     } else {
-      setActiveGameweekChips((prev) => [...prev, chipId]);
+      // Use chip through chip management context
+      const result = useChip(chipId, gameweek);
+      
+      if (result.success) {
+        // Add to local state only if successful
+        setActiveGameweekChips((prev) => [...prev, chipId]);
+        console.log(`✅ Applied gameweek chip ${chipId} for gameweek ${gameweek}`);
+      } else {
+        console.error(`❌ Failed to apply chip ${chipId}:`, result.reason);
+        // Optionally show an error message to the user
+      }
     }
-
-    console.log(
-      `${
-        isRemoval ? "Removed" : "Applied"
-      } gameweek chip ${chipId} for gameweek ${gameweek}`
-    );
   };
   // Filter fixtures and enhance with prediction status
   const filteredFixtures = useMemo(() => {
