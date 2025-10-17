@@ -54,15 +54,15 @@ const ViewToggleBarHybrid = ({ viewMode, setViewMode }) => {
       <div className="hidden md:block relative">
         <button
           onClick={() => setShowDropdown(!showDropdown)}
-          className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md transition-colors text-xs font-medium ${
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-lg border transition-colors text-sm font-medium ${
             theme === "dark"
-              ? "text-slate-400 hover:text-white hover:bg-slate-800/50"
-              : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+              ? "bg-slate-800/50 border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white"
+              : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-900"
           }`}
         >
-          {CurrentIcon && <CurrentIcon className="w-3.5 h-3.5" />}
+          {CurrentIcon && <CurrentIcon className="w-4 h-4" />}
           <span>{currentView?.label}</span>
-          <ChevronDownIcon className={`w-3.5 h-3.5 transition-transform ${showDropdown ? 'rotate-180' : ''}`} />
+          <ChevronDownIcon className={`w-4 h-4 transition-transform ${showDropdown ? 'rotate-180' : ''}`} />
         </button>
 
         {/* Desktop Dropdown menu */}
@@ -79,7 +79,7 @@ const ViewToggleBarHybrid = ({ viewMode, setViewMode }) => {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: -10 }}
                 transition={{ duration: 0.15 }}
-                className={`absolute top-full right-0 mt-2 rounded-lg border shadow-lg py-1 z-50 min-w-[140px] ${
+                className={`absolute top-full right-0 mt-2 rounded-lg border shadow-lg py-1.5 z-50 min-w-[180px] ${
                   theme === "dark"
                     ? "bg-slate-800 border-slate-700"
                     : "bg-white border-slate-200 shadow-xl"
@@ -95,7 +95,7 @@ const ViewToggleBarHybrid = ({ viewMode, setViewMode }) => {
                         setViewMode(view.id);
                         setShowDropdown(false);
                       }}
-                      className={`w-full flex items-center gap-2 px-3 py-2 transition-colors text-left ${
+                      className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 transition-colors text-left ${
                         isActive
                           ? theme === "dark"
                             ? "bg-teal-600/20 text-teal-400"
@@ -105,10 +105,10 @@ const ViewToggleBarHybrid = ({ viewMode, setViewMode }) => {
                           : "text-slate-700 hover:bg-slate-50"
                       }`}
                     >
-                      <Icon className="w-4 h-4" />
-                      <span className="text-sm">{view.label}</span>
+                      <Icon className="w-4 h-4 flex-shrink-0" />
+                      <span className="text-sm font-medium">{view.label}</span>
                       {isActive && (
-                        <span className="ml-auto text-teal-500">✓</span>
+                        <span className="ml-auto text-teal-500 font-bold">✓</span>
                       )}
                     </button>
                   );

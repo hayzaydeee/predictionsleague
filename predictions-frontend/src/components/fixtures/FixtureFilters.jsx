@@ -82,7 +82,7 @@ const FixtureFilters = ({
               <button
                 key={option.value}
                 onClick={() => setActiveFilter(option.value)}
-                className={`px-2.5 sm:px-3 py-2 sm:py-2.5 rounded-lg text-2xs sm:text-xs font-medium transition-all duration-200 ${
+                className={`px-2.5 sm:px-4 md:px-5 py-2 sm:py-2.5 md:py-3 rounded-lg text-2xs sm:text-xs md:text-sm font-medium transition-all duration-200 ${
                   activeFilter === option.value
                     ? theme === "dark"
                       ? "bg-teal-600 text-white"
@@ -92,10 +92,10 @@ const FixtureFilters = ({
                     : "bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-800"
                 } whitespace-nowrap`}
               >
-                <span className="hidden sm:inline mr-1">{option.label}</span>
+                <span className="hidden sm:inline mr-1.5 md:mr-2">{option.label}</span>
                 <span className="sm:hidden mr-1">{option.label === "Unpredicted" ? "ToDo" : option.label}</span>
                 <span
-                  className={`inline-flex items-center justify-center w-4 h-4 sm:w-5 sm:h-4 text-2xs sm:text-xs rounded-full font-bold ${
+                  className={`inline-flex items-center justify-center w-4 h-4 sm:w-5 md:w-6 md:h-5 text-2xs sm:text-xs md:text-sm rounded-full font-bold ${
                     activeFilter === option.value
                       ? "bg-white/20 text-white"
                       : theme === "dark"
@@ -113,23 +113,23 @@ const FixtureFilters = ({
           <div className="flex items-center gap-2 flex-shrink-0">
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
+              className={`flex items-center gap-1.5 md:gap-2 px-2.5 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 rounded-lg text-xs sm:text-sm md:text-base font-medium transition-colors ${
                 theme === "dark"
                   ? "bg-slate-800/50 text-slate-300 hover:bg-slate-800 hover:text-white border border-slate-700"
                   : "bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-800 border border-slate-200"
               }`}
             >
-              <MixerHorizontalIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <MixerHorizontalIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" />
               <span className="hidden sm:inline">Filters</span>
               <ChevronDownIcon
-                className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform ${showFilters ? "rotate-180" : ""}`}
+                className={`w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 transition-transform ${showFilters ? "rotate-180" : ""}`}
               />
             </button>
 
             {hasActiveFilters && (
               <button
                 onClick={clearAllFilters}
-                className={`px-2.5 sm:px-3 py-2 sm:py-2.5 rounded-lg text-2xs sm:text-xs font-medium transition-colors ${
+                className={`px-2.5 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 rounded-lg text-2xs sm:text-xs md:text-sm font-medium transition-colors ${
                   theme === "dark"
                     ? "bg-red-600/20 text-red-400 hover:bg-red-600/30 border border-red-600/30"
                     : "bg-red-50 text-red-600 hover:bg-red-100 border border-red-200"
