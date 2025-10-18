@@ -167,16 +167,13 @@ const GameweekChipsPanel = ({
       <div className="h-0.5 bg-gradient-to-r from-teal-500 via-blue-500 to-purple-500"></div>
       {/* Header - OPTIMIZED FOR MOBILE */}
       <div
-        className={`px-4 sm:px-5 py-3 sm:py-4 border-b ${getThemeStyles(
-          theme,
-          {
-            dark: "border-slate-700/50",
-            light: "border-slate-200",
-          }
-        )}`}
+        className={`px-4 sm:px-5 py-3 sm:py-4 border-b ${getThemeStyles(theme, {
+          dark: "border-slate-700/50",
+          light: "border-slate-200",
+        })}`}
       >
         <div className="flex items-center justify-between gap-3">
-          {/* Left: Icon + Title + Subtitle (full on mobile) */}
+          /* Left: Icon + Title + Subtitle (hide subtitle on mobile) */
           <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
             <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-teal-500/20 flex items-center justify-center flex-shrink-0">
               <LightningBoltIcon className="w-4 h-4 sm:w-5 sm:h-5 text-teal-400" />
@@ -190,9 +187,9 @@ const GameweekChipsPanel = ({
               >
                 Chip Strategy
               </h3>
-              {/* Subtitle visible on all screens */}
+              {/* Subtitle hidden on mobile */}
               <p
-                className={`text-xs sm:text-sm ${getThemeStyles(
+                className={`hidden sm:block text-xs sm:text-sm ${getThemeStyles(
                   theme,
                   text.secondary
                 )}`}
@@ -201,7 +198,6 @@ const GameweekChipsPanel = ({
               </p>
             </div>
           </div>
-
           {/* Right: Badges + Collapse button */}
           <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
             {/* Active chips count - show on all screens */}
@@ -218,10 +214,7 @@ const GameweekChipsPanel = ({
                 <span className="text-xs sm:text-sm font-medium">
                   {activeChipsCount}
                 </span>
-                <span className="text-xs sm:text-sm ml-0.5">
-                  {" "}
-                  active
-                </span>
+                <span className="text-xs sm:text-sm ml-0.5"> active</span>
               </div>
             )}
 
@@ -445,7 +438,9 @@ const GameweekChipsPanel = ({
                                   {" "}
                                   <div className="flex items-center justify-between text-xs">
                                     <div className="flex gap-1">
-                                      {(chip.cooldown > 0 || (chip.cooldown === 0 && !chip.seasonLimit)) && (
+                                      {(chip.cooldown > 0 ||
+                                        (chip.cooldown === 0 &&
+                                          !chip.seasonLimit)) && (
                                         <div
                                           className={`px-1.5 py-0.5 rounded ${getThemeStyles(
                                             theme,
@@ -456,7 +451,10 @@ const GameweekChipsPanel = ({
                                             }
                                           )}`}
                                         >
-                                          {chip.cooldown === 0 && !chip.seasonLimit ? "Always available" : `${chip.cooldown} GW`}
+                                          {chip.cooldown === 0 &&
+                                          !chip.seasonLimit
+                                            ? "Always available"
+                                            : `${chip.cooldown} GW`}
                                         </div>
                                       )}
                                       {chip.seasonLimit && (
@@ -475,11 +473,12 @@ const GameweekChipsPanel = ({
                                         </div>
                                       )}
                                     </div>
-                                    {!isActive && chip.cooldownRemaining > 0 && (
-                                      <div className="bg-red-900/30 text-red-300 px-1.5 py-0.5 rounded">
-                                        {chip.cooldownRemaining} GW
-                                      </div>
-                                    )}
+                                    {!isActive &&
+                                      chip.cooldownRemaining > 0 && (
+                                        <div className="bg-red-900/30 text-red-300 px-1.5 py-0.5 rounded">
+                                          {chip.cooldownRemaining} GW
+                                        </div>
+                                      )}
                                   </div>
                                 </div>{" "}
                                 {/* Apply/Remove button */}{" "}
@@ -623,11 +622,12 @@ const GameweekChipsPanel = ({
                                         </div>
                                       )}
 
-                                      {usageCount === 0 && chip.cooldownRemaining > 0 && (
-                                        <div className="bg-red-900/30 text-red-300 text-xs px-1.5 py-0.5 rounded">
-                                          {chip.cooldownRemaining} GW
-                                        </div>
-                                      )}
+                                      {usageCount === 0 &&
+                                        chip.cooldownRemaining > 0 && (
+                                          <div className="bg-red-900/30 text-red-300 text-xs px-1.5 py-0.5 rounded">
+                                            {chip.cooldownRemaining} GW
+                                          </div>
+                                        )}
                                     </div>
                                   </div>
                                 </div>

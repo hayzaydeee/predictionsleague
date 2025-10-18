@@ -26,7 +26,7 @@ const PredictionsView = ({ handleEditPrediction }) => {
   const [gameweekFilter, setGameweekFilter] = useState("all");
   const [sortBy, setSortBy] = useState("date");
   const [filterTeam, setFilterTeam] = useState("all");
-  const [showFilters, setShowFilters] = useState(true);
+  const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState(preferences.defaultPredictionsView);
   const [cardStyle, setCardStyle] = useState(preferences.cardStyle);
   const [selectedPrediction, setSelectedPrediction] = useState(null);
