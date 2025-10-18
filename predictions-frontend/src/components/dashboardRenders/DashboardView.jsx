@@ -18,6 +18,7 @@ import PanelSkeleton from "../common/PanelSkeleton";
 import DashboardEmptyState from "../common/DashboardEmptyState";
 import UpcomingMatchesPanel from "../panels/UpcomingMatchesPanel";
 import RecentPredictionsPanel from "../panels/RecentPredictionsPanel";
+import TodaysMatchesPanel from "../panels/TodaysMatchesPanel";
 import LeaguesTable from "../tables/LeaguesTable";
 import { ThemeContext } from "../../context/ThemeContext";
 import { useChipManagement } from "../../context/ChipManagementContext";
@@ -62,6 +63,7 @@ const DashboardView = ({
     isLoading: externalFixturesLoading,
     isError: externalFixturesError,
     error: externalFixturesErrorDetails,
+    refetch: refetchFixtures,
   } = useExternalFixtures(externalFixturesOptions);
 
   // Fetch user predictions for Recent Predictions panel
@@ -88,6 +90,7 @@ const DashboardView = ({
 
   // State for processed upcoming fixtures
   const [upcomingFixtures, setUpcomingFixtures] = useState([]);
+  const [todaysMatches, setTodaysMatches] = useState([]);
   const [selectedInsight, setSelectedInsight] = useState(null);
 
   // Get chip management context
@@ -174,10 +177,84 @@ const DashboardView = ({
       }));
       
       setUpcomingFixtures(processedFixtures);
+      
+      // Filter today's matches (live or finished today)
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      
+      const todaysFixtures = memoizedExternalFixtures
+        .filter(fixture => {
+          const fixtureDate = new Date(fixture.date);
+          const isToday = fixtureDate >= today && fixtureDate < tomorrow;
+          const isLiveOrFinished = 
+            fixture.status === 'live' || 
+            fixture.status === 'in_progress' || 
+            fixture.status === 'LIVE' ||
+            fixture.status === 'completed' || 
+            fixture.status === 'finished' || 
+            fixture.status === 'FT';
+          
+          return isToday && isLiveOrFinished;
+        })
+        .sort((a, b) => {
+          // Sort by status first (live first), then by date
+          const statusOrder = { 'live': 1, 'in_progress': 1, 'LIVE': 1, 'completed': 2, 'finished': 2, 'FT': 2 };
+          const statusA = statusOrder[a.status] || 3;
+          const statusB = statusOrder[b.status] || 3;
+          
+          if (statusA !== statusB) {
+            return statusA - statusB;
+          }
+          
+          return new Date(a.date) - new Date(b.date);
+        })
+        .map(fixture => ({
+          id: fixture.id,
+          gameweek: fixture.gameweek,
+          homeTeam: normalizeTeamName(fixture.homeTeam),
+          awayTeam: normalizeTeamName(fixture.awayTeam),
+          date: fixture.date,
+          venue: fixture.venue || "Stadium",
+          competition: fixture.competition || "Premier League",
+          status: fixture.status,
+          homeScore: fixture.homeScore,
+          awayScore: fixture.awayScore,
+          // Check if user has made a prediction for this match
+          predicted: userPredictions?.some(p => p.fixtureId === fixture.id),
+          userPrediction: userPredictions?.find(p => p.fixtureId === fixture.id),
+        }));
+      
+      setTodaysMatches(todaysFixtures);
     };
 
     processFixtures();
-  }, [memoizedExternalFixtures, externalFixturesError, externalFixturesLoading]);
+  }, [memoizedExternalFixtures, externalFixturesError, externalFixturesLoading, userPredictions]);
+
+  // Auto-refresh for live matches (every 60 seconds)
+  useEffect(() => {
+    // Only set up refresh if there are live matches
+    const hasLiveMatches = todaysMatches.some(m => 
+      m.status === 'live' || m.status === 'in_progress' || m.status === 'LIVE'
+    );
+
+    if (!hasLiveMatches) {
+      return;
+    }
+
+    console.log('⚽ Setting up auto-refresh for live matches (60s interval)');
+    
+    const refreshInterval = setInterval(() => {
+      console.log('🔄 Auto-refreshing fixtures for live match updates...');
+      refetchFixtures();
+    }, 60 * 1000); // 60 seconds
+
+    return () => {
+      console.log('⏹️ Clearing auto-refresh interval');
+      clearInterval(refreshInterval);
+    };
+  }, [todaysMatches, refetchFixtures]);
 
   // Helper function to format match data for the predictions modal
   const formatMatchForPrediction = (match) => {
@@ -496,6 +573,20 @@ const DashboardView = ({
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
         {/* Main Content - 2/3 width on xl screens */}
         <div className="xl:col-span-2 space-y-5">
+          {/* Today's Matches Panel - Live or Finished Today */}
+          {todaysMatches && todaysMatches.length > 0 && (
+            <motion.div variants={itemVariants}>
+              <TodaysMatchesPanel
+                matches={todaysMatches}
+                onViewAll={() => navigateToSection("fixtures")}
+                onViewPrediction={(prediction) => {
+                  // TODO: Open prediction detail modal
+                  console.log('View prediction:', prediction);
+                }}
+              />
+            </motion.div>
+          )}
+          
           {/* Upcoming Matches Panel - Using Real External Fixtures Data */}
           <motion.div variants={itemVariants}>
             {externalFixturesLoading ? (
