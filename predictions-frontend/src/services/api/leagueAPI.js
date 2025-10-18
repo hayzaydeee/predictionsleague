@@ -170,15 +170,20 @@ const leagueAPI = {
       
       // Log detailed prediction structure to debug undefined values
       console.log('📋 First prediction sample:', response.data?.[0]);
-      console.log('📋 All predictions:', response.data);
       
-      // Check for any predictions with missing userDisplayName
-      const withoutDisplayName = response.data?.filter(p => !p.userDisplayName) || [];
-      if (withoutDisplayName.length > 0) {
-        console.warn('⚠️ Predictions without userDisplayName:', withoutDisplayName);
-      }
+      // Map predictions to ensure userDisplayName exists
+      // Backend returns 'username' field, map it to 'userDisplayName' for frontend compatibility
+      const mappedPredictions = (response.data || []).map(prediction => ({
+        ...prediction,
+        userDisplayName: prediction.username || prediction.userDisplayName || 'Unknown User'
+      }));
       
-      return response.data || [];
+      console.log('✅ Mapped predictions with userDisplayName:', {
+        count: mappedPredictions.length,
+        sampleNames: mappedPredictions.slice(0, 3).map(p => p.userDisplayName)
+      });
+      
+      return mappedPredictions;
     } catch (error) {
       console.error('❌ Failed to fetch league predictions:', {
         error: error.message,
