@@ -5,6 +5,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { chipAPI } from '../services/api/chipAPI';
+import { CHIP_CONFIG } from '../utils/chipManager';
 
 // Query keys
 export const CHIP_QUERY_KEYS = {
@@ -45,8 +46,75 @@ export const useChipStatus = (options = {}) => {
         throw new Error(result.error?.message || 'Failed to fetch chip status');
       }
       
-      console.log('✅ useChipStatus: Returning data:', result.data);
-      return result.data;
+      // 🔧 MERGE backend data with frontend CHIP_CONFIG to add missing fields (scope, etc.)
+      const enhancedData = {
+        ...result.data,
+        chips: (result.data?.chips || []).map(backendChip => {
+          // Try direct match first, then try various conversions
+          let chipId = backendChip.chipId;
+          let config = CHIP_CONFIG[chipId];
+          
+          // If not found, try converting from various backend formats
+          if (!config && chipId) {
+            // Convert UPPER_SNAKE_CASE or snake_case to camelCase
+            // e.g., "WILDCARD" -> "wildcard"
+            // e.g., "DEFENSE_PLUS_PLUS" -> "defensePlusPlus"
+            // e.g., "defense_plus_plus" -> "defensePlusPlus"
+            const normalized = chipId
+              .toLowerCase() // Convert to lowercase first
+              .replace(/_([a-z])/g, (g) => g[1].toUpperCase()); // Convert to camelCase
+            
+            config = CHIP_CONFIG[normalized];
+            if (config) {
+              console.log(`📝 Converted chip ID: ${backendChip.chipId} -> ${normalized}`);
+              chipId = normalized;
+            }
+          }
+          
+          if (!config) {
+            console.warn(`⚠️ Unknown chip from backend:`, {
+              chipId: backendChip.chipId,
+              availableConfigIds: Object.keys(CHIP_CONFIG),
+              backendChip
+            });
+            // Return backend chip as-is but mark it
+            return { ...backendChip, scope: 'unknown' };
+          }
+          
+          // Merge backend state with frontend config
+          return {
+            ...config, // Frontend config (has scope, name, description, etc.)
+            ...backendChip, // Backend state (has available, usageCount, cooldowns, etc.)
+            id: chipId, // Use normalized chipId as id (for ChipSelector compatibility)
+            chipId, // Also keep chipId
+            // Ensure critical fields from config aren't overwritten
+            scope: config.scope,
+            name: config.name,
+            description: config.description,
+            icon: config.icon,
+            color: config.color
+          };
+        })
+      };
+      
+      console.log('✅ useChipStatus: Enhanced data with CHIP_CONFIG:', {
+        originalChipsCount: result.data?.chips?.length || 0,
+        enhancedChipsCount: enhancedData.chips?.length || 0,
+        chipsWithScope: enhancedData.chips?.filter(c => c.scope).length || 0,
+        scopeBreakdown: {
+          match: enhancedData.chips?.filter(c => c.scope === 'match').length || 0,
+          gameweek: enhancedData.chips?.filter(c => c.scope === 'gameweek').length || 0
+        },
+        enhancedChips: enhancedData.chips?.map(c => ({
+          chipId: c.chipId,
+          id: c.id,
+          name: c.name,
+          scope: c.scope,
+          available: c.available
+        }))
+      });
+      
+      return enhancedData;
     },
     enabled,
     refetchInterval,

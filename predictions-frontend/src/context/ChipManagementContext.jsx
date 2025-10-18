@@ -200,7 +200,10 @@ export function ChipManagementProvider({ children }) {
       scope,
       availableChips,
       availableChipsCount: availableChips?.length || 0,
-      isArray: Array.isArray(availableChips)
+      isArray: Array.isArray(availableChips),
+      firstChipStructure: availableChips?.[0] ? Object.keys(availableChips[0]) : [],
+      firstChipFull: availableChips?.[0],
+      allChipScopes: availableChips?.map(c => ({ chipId: c.chipId, scope: c.scope, hasScope: 'scope' in c }))
     });
     
     if (!availableChips || !Array.isArray(availableChips)) {
