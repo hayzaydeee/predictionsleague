@@ -143,30 +143,18 @@ export function ChipManagementProvider({ children }) {
    * @returns {Promise<Object>} Result with success/error
    */
   const useMultipleChips = useCallback(async (chipIds, gameweek, matchId, predictionId) => {
-    if (!chipManager) {
-      return { success: false, reason: 'Chip manager not initialized' };
-    }
-
+    console.warn('⚠️ useMultipleChips is deprecated. Backend records chips automatically on prediction submission.');
+    
     if (!chipIds || chipIds.length === 0) {
       return { success: true, reason: 'No chips to record' };
     }
 
-    try {
-      // Record all chips in one call to backend
-      const result = await recordChipUsage({
-        predictionId,
-        chipIds,
-        gameweek,
-        matchId
-      });
-
-      console.log('✅ Multiple chips recorded:', chipIds);
-      return { success: true, data: result };
-    } catch (error) {
-      console.error('❌ useMultipleChips error:', error);
-      return { success: false, reason: error.message };
-    }
-  }, [chipManager, recordChipUsage]);
+    // Just refresh chip status to get updated availability
+    await refreshChips();
+    
+    console.log('✅ Chip status refreshed after prediction submission');
+    return { success: true, data: { chipsRecorded: chipIds } };
+  }, [refreshChips]);
 
   /**
    * Undo chip usage - NOW HANDLED BY BACKEND

@@ -10,8 +10,6 @@ export default function ModalFooter({
   onNextStep, 
   onSubmit, 
   submitting = false,
-  isValidating = false,
-  isRecording = false,
   disableNext = false
 }) {
   const { theme } = useContext(ThemeContext);
@@ -70,26 +68,16 @@ export default function ModalFooter({
           <motion.button
             type="button"
             onClick={onSubmit}
-            disabled={submitting || isValidating || isRecording}
-            whileHover={{ scale: (submitting || isValidating || isRecording) ? 1 : 1.02 }}
-            whileTap={{ scale: (submitting || isValidating || isRecording) ? 1 : 0.98 }}
+            disabled={submitting}
+            whileHover={{ scale: submitting ? 1 : 1.02 }}
+            whileTap={{ scale: submitting ? 1 : 0.98 }}
             className={`px-6 py-2.5 rounded-lg transition-all duration-200 text-sm font-medium font-outfit flex items-center ${
-              (submitting || isValidating || isRecording)
+              submitting
                 ? "bg-purple-700/50 cursor-not-allowed text-purple-200"
                 : "bg-purple-600 hover:bg-purple-700 text-white shadow-lg shadow-purple-600/25 hover:shadow-purple-600/40"
             }`}
           >
-            {isValidating ? (
-              <>
-                <div className="w-4 h-4 border-2 border-purple-200/30 border-t-purple-200 rounded-full animate-spin mr-2"></div>
-                Validating chips...
-              </>
-            ) : isRecording ? (
-              <>
-                <div className="w-4 h-4 border-2 border-purple-200/30 border-t-purple-200 rounded-full animate-spin mr-2"></div>
-                Recording chips...
-              </>
-            ) : submitting ? (
+            {submitting ? (
               <>
                 <div className="w-4 h-4 border-2 border-purple-200/30 border-t-purple-200 rounded-full animate-spin mr-2"></div>
                 Submitting...

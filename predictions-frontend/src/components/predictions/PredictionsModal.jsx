@@ -27,12 +27,9 @@ export default function PredictionsModal({
 }) {
   const { theme } = useContext(ThemeContext);
   
-  // Chip management with backend integration
+  // Chip management - only need refreshChips since backend handles recording
   const { 
-    validateChips, 
-    recordChipUsage, 
-    isValidating, 
-    isRecording 
+    refreshChips
   } = useChipManagement();
   
   // Step management
@@ -231,38 +228,23 @@ export default function PredictionsModal({
       console.log(`✅ Prediction ${isEditing ? 'updated' : 'submitted'} successfully`);
       const predictionId = result.data?.id;
 
-      // STEP 3: Record chip usage
-      // - For new predictions: Always record if chips selected
-      // - For edits: Only record if adding chips for the first time (no chips existed before)
-      const shouldRecordChips = allChips.length > 0 && (!isEditing || !hasExistingChips);
-      
-      if (shouldRecordChips && predictionId) {
-        console.log('💾 Recording chip usage...', {
+      // STEP 3: Refresh chip status after prediction submission
+      // Backend automatically records chip usage and updates cooldowns
+      // We just need to refresh the frontend cache
+      if (allChips.length > 0) {
+        console.log('� Refreshing chip status after prediction submission...', {
           isNewPrediction: !isEditing,
-          addingChipsToExisting: isEditing && !hasExistingChips,
-          chipsToRecord: allChips
+          chipsUsed: allChips
         });
         
         try {
-          await recordChipUsage({
-            predictionId,
-            chipIds: allChips,
-            gameweek: fixture.gameweek,
-            matchId: fixture.id
-          });
-
-          console.log('✅ Chips recorded successfully');
+          await refreshChips();
+          console.log('✅ Chip status refreshed - cooldowns updated');
         } catch (chipError) {
-          // Chip recording failed, but prediction was saved
-          // Don't fail the whole operation
-          console.error('⚠️ Chip recording failed:', chipError.message);
-          showToast(
-            'Prediction saved, but chip tracking failed. Contact support.', 
-            'warning'
-          );
+          // Chip refresh failed, but prediction was saved
+          // User can manually refresh later
+          console.error('⚠️ Chip status refresh failed:', chipError.message);
         }
-      } else if (isEditing && hasExistingChips) {
-        console.log('ℹ️ Skipping chip recording - chips are immutable once applied');
       }
 
       // Success!
@@ -466,8 +448,6 @@ export default function PredictionsModal({
           onNextStep={nextStep}
           onSubmit={handleSubmit}
           submitting={submitting}
-          isValidating={isValidating}
-          isRecording={isRecording}
           disableNext={deadline.isPast && isEditing && currentStep === 1}
         />
 
