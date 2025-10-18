@@ -5,13 +5,15 @@ import { ThemeContext } from "../../../context/ThemeContext";
 import { getThemeStyles, backgrounds, text, buttons, status } from "../../../utils/themeUtils";
 import { Cross2Icon, CalendarIcon, ClockIcon } from "@radix-ui/react-icons";
 
-export default function ModalHeader({ fixture, onClose, isEditing = false }) {
+export default function ModalHeader({ title, fixture, onClose, deadline }) {
   const { theme } = useContext(ThemeContext);
   
-  const modalTitle = isEditing ? "Edit Prediction" : "Make Prediction";
+  // Determine if editing based on title or use passed title
+  const isEditing = title?.includes('Edit');
+  const modalTitle = title || "Make Prediction";
   const matchDate = parseISO(fixture.date);
   const formattedDate = format(matchDate, "MMM dd, HH:mm");
-  const deadlineTime = addMinutes(matchDate, -45);
+  const deadlineTime = deadline?.timeLeft ? new Date(Date.now() + deadline.timeLeft) : addMinutes(matchDate, -30);
 
   return (
     <div className={`p-6 border-b ${getThemeStyles(theme, {
