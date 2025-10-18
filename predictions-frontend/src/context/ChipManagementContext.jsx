@@ -22,17 +22,13 @@ export function ChipManagementProvider({ children }) {
   const [chipManager, setChipManager] = useState(null);
   const [manualGameweek, setManualGameweek] = useState(null);
   
-  // NEW: Use React Query hook for chip data
+  // Use React Query hook for chip data (only fetches status)
   const {
     chips: availableChips,
     currentGameweek: backendGameweek,
     isLoading: chipsLoading,
     error: chipsError,
-    validateChips,
-    recordChipUsage,
-    refresh: refreshChips,
-    isValidating,
-    isRecording
+    refresh: refreshChips
   } = useChips();
   
   // DEBUG: Log chip data from React Query
@@ -306,7 +302,7 @@ export function ChipManagementProvider({ children }) {
   }, []);
 
   const value = {
-    // State (from React Query)
+    // State (from React Query - backend-driven)
     availableChips,
     currentGameweek,
     chipManager,
@@ -314,8 +310,6 @@ export function ChipManagementProvider({ children }) {
     
     // Loading states
     isLoading: chipsLoading || authLoading,
-    isValidating,
-    isRecording,
     error: chipsError,
     
     // Chip availability checks (sync - uses cached data)
@@ -327,23 +321,20 @@ export function ChipManagementProvider({ children }) {
     getGameweekChips,
     getChipsByScope,
     
-    // Validation (async - calls backend)
+    // Compatibility checking (local - frontend rules)
     checkCompatibility,
     simulateUsage,
-    validateChips, // Direct access to React Query mutation
     
-    // Chip usage (async - records to backend AFTER prediction submission)
+    // Chip usage (Note: backend handles validation and recording)
+    // These are kept for UI flow but backend does the actual work
     useChip,
     useMultipleChips,
-    recordChipUsage, // Direct access to React Query mutation
-    undoChipUsage, // Deprecated - backend handles this
-    undoChipsUsage, // Deprecated - backend handles this
     
-    // Statistics and management (async)
+    // Statistics and management
     getUsageStats,
     resetChips: resetChipsState,
     updateGameweek,
-    refreshChips, // Manual refresh trigger
+    refreshChips, // Manual refresh trigger (refetches /chips/status)
     
     // Premium/Paywall features (local config)
     setStrictMode,

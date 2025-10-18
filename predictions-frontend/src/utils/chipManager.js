@@ -191,6 +191,8 @@ export class ChipManager {
 
   /**
    * Use a chip - records usage via backend
+   * @deprecated Backend now handles chip validation and recording automatically.
+   * Use the prediction submission API with chipIds in the payload instead.
    * @param {string} chipId - Chip identifier
    * @param {number} gameweek - Gameweek where chip is used
    * @param {string} matchId - Match identifier (for match-scoped chips)
@@ -198,6 +200,16 @@ export class ChipManager {
    * @returns {Promise<Object>} Success status with updated availability
    */
   async useChip(chipId, gameweek, matchId = null, predictionId) {
+    console.warn('⚠️ chipManager.useChip() is deprecated. Backend handles chip recording automatically.');
+    console.warn('   Include chipIds in prediction submission payload instead.');
+    
+    return {
+      success: false,
+      reason: 'This method is deprecated. Backend handles chip recording automatically.',
+      deprecated: true
+    };
+
+    /* DEPRECATED CODE - Backend now handles validation and recording
     try {
       // Validate chips first
       const validation = await chipAPI.validateChips([chipId], gameweek, matchId);
@@ -233,16 +245,17 @@ export class ChipManager {
         reason: error.message
       };
     }
+    */
   }
 
   /**
    * Undo chip usage (for prediction cancellation)
-   * NOTE: Backend should handle this when prediction is deleted
+   * @deprecated Backend handles this when prediction is deleted
    * @param {string} chipId - Chip identifier
    * @param {number} gameweek - Gameweek where chip was used
    */
   async undoChipUsage(chipId, gameweek) {
-    console.warn('⚠️ undoChipUsage should be handled by backend when deleting prediction');
+    console.warn('⚠️ undoChipUsage is deprecated. Backend handles this when prediction is deleted.');
     this.invalidateCache();
   }
 
@@ -272,9 +285,19 @@ export class ChipManager {
 
   /**
    * Get chip usage statistics
+   * @deprecated Backend returns usage stats in /chips/status response
    * @returns {Promise<Object>} Usage statistics from backend
    */
   async getUsageStats() {
+    console.warn('⚠️ getUsageStats is deprecated. Use chip.seasonUsageCount from /chips/status instead.');
+    
+    return {
+      totalChipsUsed: 0,
+      chipBreakdown: {},
+      deprecated: true
+    };
+
+    /* DEPRECATED CODE - Backend includes usage in status endpoint
     try {
       const history = await chipAPI.getChipHistory();
       
@@ -316,26 +339,36 @@ export class ChipManager {
         recentHistory: []
       };
     }
+    */
   }
 
   /**
    * Get most used chip
+   * @deprecated Use chip.seasonUsageCount from /chips/status instead
    * @returns {Promise<Object>} Most used chip with count
    */
   async getMostUsedChip() {
-    const stats = await this.getUsageStats();
-    return stats.mostUsedChip;
+    console.warn('⚠️ getMostUsedChip is deprecated. Use chip.seasonUsageCount from /chips/status instead.');
+    return null;
   }
 
   /**
    * Check if specific chips can be used together
-   * NOW CALLS BACKEND VALIDATION
+   * @deprecated Backend validates compatibility automatically
+   * Use checkChipCompatibilityLocal() for frontend-only validation
    * @param {Array} chipIds - Array of chip IDs to check
    * @param {number} gameweek - Target gameweek
    * @param {string} matchId - Match ID (for match-scoped chips)
    * @returns {Promise<Object>} Compatibility check result from backend
    */
   async checkChipCompatibility(chipIds, gameweek, matchId = null) {
+    console.warn('⚠️ checkChipCompatibility is deprecated. Backend validates automatically on submission.');
+    console.warn('   Use checkChipCompatibilityLocal() for frontend-only validation.');
+    
+    // Fall back to local validation
+    return this.checkChipCompatibilityLocal(chipIds);
+
+    /* DEPRECATED CODE - Backend handles validation
     try {
       const result = await chipAPI.validateChips(chipIds, gameweek, matchId);
       
@@ -358,11 +391,12 @@ export class ChipManager {
         strictMode: true
       };
     }
+    */
   }
 
   /**
-   * DEPRECATED: Local compatibility check (kept for backward compatibility)
-   * Use checkChipCompatibility() which calls backend instead
+   * Local compatibility check (frontend-only validation)
+   * Used for UI feedback before submission
    * @param {Array} chipIds - Array of chip IDs to check
    * @returns {Object} Compatibility check result
    */
@@ -438,13 +472,32 @@ export class ChipManager {
 
   /**
    * Simulate chip usage (for prediction preview without committing)
-   * NOW CALLS BACKEND VALIDATION
+  /**
+   * Simulate chip usage to see what would happen
+   * @deprecated Backend validates automatically on submission
    * @param {Array} chipIds - Chips to simulate
    * @param {number} gameweek - Target gameweek
    * @param {string} matchId - Match ID (for match-scoped chips)
    * @returns {Promise<Object>} Simulation results from backend
    */
   async simulateChipUsage(chipIds, gameweek, matchId = null) {
+    console.warn('⚠️ simulateChipUsage is deprecated. Use checkChipCompatibilityLocal() for frontend validation.');
+    
+    // Use local compatibility check
+    const compatibility = this.checkChipCompatibilityLocal(chipIds);
+    
+    return {
+      chips: chipIds.map(chipId => ({
+        chipId,
+        name: CHIP_CONFIG[chipId]?.name || chipId,
+        available: true,
+        reason: 'Check /chips/status for availability'
+      })),
+      compatibility,
+      allAvailable: compatibility.compatible
+    };
+
+    /* DEPRECATED CODE - Backend validates on submission
     try {
       const [statusResult, validationResult] = await Promise.all([
         this.fetchState(),
@@ -479,13 +532,24 @@ export class ChipManager {
         allAvailable: false
       };
     }
+    */
   }
 
   /**
    * Reset chips for new season (admin only)
+   * @deprecated Backend should provide admin endpoint for this
    * @returns {Promise<Object>} Reset result
    */
   async resetChips() {
+    console.warn('⚠️ resetChips is deprecated. Use backend admin endpoint for season resets.');
+    
+    return {
+      success: false,
+      reason: 'This method is deprecated. Use backend admin endpoint.',
+      deprecated: true
+    };
+
+    /* DEPRECATED CODE - Backend should handle admin functions
     try {
       const result = await chipAPI.resetChips();
       
@@ -501,6 +565,7 @@ export class ChipManager {
       console.error('❌ resetChips error:', error);
       return { success: false, reason: error.message };
     }
+    */
   }
 }
 
