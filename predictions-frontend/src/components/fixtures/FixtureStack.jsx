@@ -126,63 +126,52 @@ export default function FixtureStack({
   }, [filteredFixtures.length, activeIndex]);
 
   return (
-    <div
-      className={`relative backdrop-blur-md rounded-lg p-4 ${
-        theme === "dark"
-          ? "bg-slate-900/60 border border-slate-700/50"
-          : "bg-white/80 border border-slate-200 shadow-sm"
-      }`}
-    >
-      <div className="mb-4 sm:mb-6">
-        {filteredFixtures.length === 0 ? (
-          <EmptyFixtureState searchQuery={searchQuery} />
-        ) : (
-          <div className="relative">
-            {/* Stack of individual fixture cards using Swiper */}
-            <div className="fixture-swiper-container">
-              <Swiper
-                effect={"cards"}
-                grabCursor={true}
-                modules={[EffectCards]}
-                className="fixture-stack-swiper"
-                onSlideChange={handleSlideChange}
-                onSwiper={handleSwiperInit}
-                cardsEffect={{
-                  slideShadows: false,
-                  perSlideRotate: 3,
-                  perSlideOffset: 8,
-                  rotate: true,
-                }}
-                speed={400}
-                initialSlide={activeIndex}
-                preventInteractionOnTransition={true}
-                allowTouchMove={true}
-                watchSlidesProgress={true}
-                observer={true}
-                observeParents={true}
-                resistanceRatio={0.85}
-                watchOverflow={true}
-                touchStartPreventDefault={false}
-              >
-                {filteredFixtures.map((fixture, index) => (
-                  <SwiperSlide key={fixture.id} className="fixture-stack-slide">
-                    {/* Use FixtureCard directly as the stack item */}
-                    <FixtureCard
-                      fixture={fixture}
-                      selected={selectedFixture && selectedFixture.id === fixture.id}
-                      onClick={handleFixtureClick}
-                    />
-                  </SwiperSlide>
-                ))}
-              </Swiper>
-            </div>
+    <>
+      {filteredFixtures.length === 0 ? (
+        <EmptyFixtureState searchQuery={searchQuery} />
+      ) : (
+        <>
+          {/* Stack of individual fixture cards using Swiper */}
+          <div className="fixture-swiper-container">
+            <Swiper
+              effect={"cards"}
+              grabCursor={true}
+              modules={[EffectCards]}
+              className="fixture-stack-swiper"
+              onSlideChange={handleSlideChange}
+              onSwiper={handleSwiperInit}
+              cardsEffect={{
+                slideShadows: false,
+                perSlideRotate: 3,
+                perSlideOffset: 8,
+                rotate: true,
+              }}
+              speed={400}
+              initialSlide={activeIndex}
+              preventInteractionOnTransition={true}
+              allowTouchMove={true}
+              watchSlidesProgress={true}
+              observer={true}
+              observeParents={true}
+              resistanceRatio={0.85}
+              watchOverflow={true}
+              touchStartPreventDefault={false}
+            >
+              {filteredFixtures.map((fixture, index) => (
+                <SwiperSlide key={fixture.id} className="fixture-stack-slide">
+                  {/* Use FixtureCard directly as the stack item */}
+                  <FixtureCard
+                    fixture={fixture}
+                    selected={selectedFixture && selectedFixture.id === fixture.id}
+                    onClick={handleFixtureClick}
+                  />
+                </SwiperSlide>
+              ))}
+            </Swiper>
           </div>
-        )}
-      </div>
 
-      {/* Progress indicators */}
-      {filteredFixtures.length > 0 && (
-        <div className="flex flex-col items-center mt-4 gap-2">
+          {/* Progress indicators */}
+          <div className="flex flex-col items-center mt-4 gap-2">
           {/* Numeric indicator for large lists */}
           {filteredFixtures.length > 10 && (
             <div
@@ -215,8 +204,9 @@ export default function FixtureStack({
               ))}
             </div>
           )}
-        </div>
+          </div>
+        </>
       )}
-    </div>
+    </>
   );
 }
