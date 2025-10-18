@@ -106,11 +106,36 @@ export default function ContentPane({
   const handleEditPrediction = (prediction) => {
     console.log('🔧 Editing prediction:', prediction);
     
+    // Log available fixtures for debugging
+    console.log('🔍 Available fixtures:', {
+      fixturesCount: fixturesData?.length || 0,
+      fixtures: fixturesData?.map(f => ({
+        id: f.id,
+        matchId: f.matchId,
+        match: `${f.homeTeam} vs ${f.awayTeam}`,
+        gameweek: f.gameweek,
+        date: f.date
+      }))
+    });
+    
     // Try to find the full fixture data (including player squads) from current fixtures
     let fullFixture = fixturesData?.find(f => 
       f.id === prediction.matchId || 
+      f.matchId === prediction.matchId ||
       (f.homeTeam === prediction.homeTeam && f.awayTeam === prediction.awayTeam && f.gameweek === prediction.gameweek)
     );
+    
+    console.log('🔍 Fixture search result:', {
+      searchingForMatchId: prediction.matchId,
+      searchingForTeams: `${prediction.homeTeam} vs ${prediction.awayTeam}`,
+      searchingForGameweek: prediction.gameweek,
+      found: !!fullFixture,
+      foundFixture: fullFixture ? {
+        id: fullFixture.id,
+        matchId: fullFixture.matchId,
+        hasPlayers: !!(fullFixture.homePlayers?.length || fullFixture.awayPlayers?.length)
+      } : null
+    });
     
     // If not found in fixtures, construct basic fixture object
     // Note: Player squads may not be available for completed/past matches

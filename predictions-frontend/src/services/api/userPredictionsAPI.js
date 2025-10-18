@@ -54,6 +54,19 @@ export const userPredictionsAPI = {
           actualAwayScore: response.data[0].actualAwayScore
         });
         
+        // Log date fields to debug matchDate vs predictedAt issue
+        console.log('📅 Backend date fields received:', 
+          response.data.map(p => ({
+            id: p.id,
+            match: `${p.homeTeam} vs ${p.awayTeam}`,
+            date: p.date,
+            matchDate: p.matchDate,
+            predictedAt: p.predictedAt,
+            createdAt: p.createdAt,
+            updatedAt: p.updatedAt
+          }))
+        );
+        
         // Log all predictions with their status
         console.log('📋 All predictions status breakdown:', 
           response.data.map(p => ({
