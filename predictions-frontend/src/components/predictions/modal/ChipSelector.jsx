@@ -86,6 +86,15 @@ export default function ChipSelector({
 
   // Get match-scoped chips with availability info
   const matchChips = getMatchChips();
+  
+  // DEBUG: Log chip data
+  console.log('🎯 ChipSelector - Match Chips:', {
+    matchChips,
+    matchChipsCount: matchChips?.length || 0,
+    matchChipsType: Array.isArray(matchChips) ? 'array' : typeof matchChips,
+    selectedChips,
+    gameweek
+  });
 
   return (
     <div className="mb-6">

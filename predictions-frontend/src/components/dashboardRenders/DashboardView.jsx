@@ -270,7 +270,16 @@ const DashboardView = ({
 
   // Calculate available chips stats from chip management context
   const getAvailableChipsStats = useMemo(() => {
+    console.log('🔍 DashboardView - Calculating chip stats:', {
+      availableChips,
+      availableChipsLength: availableChips?.length || 0,
+      availableChipsType: Array.isArray(availableChips) ? 'array' : typeof availableChips,
+      isNull: availableChips === null,
+      isUndefined: availableChips === undefined
+    });
+    
     if (!availableChips || availableChips.length === 0) {
+      console.log('⚠️ No chips available in DashboardView');
       return {
         value: "0",
         subtitle: "No chips available",
@@ -279,6 +288,14 @@ const DashboardView = ({
 
     const available = availableChips.filter(chip => chip.available);
     const onCooldown = availableChips.filter(chip => !chip.available && chip.remainingGameweeks > 0);
+    
+    console.log('📊 Chip stats calculated:', {
+      totalChips: availableChips.length,
+      availableCount: available.length,
+      onCooldownCount: onCooldown.length,
+      availableChipIds: available.map(c => c.chipId),
+      cooldownChipIds: onCooldown.map(c => c.chipId)
+    });
     
     if (available.length === 0) {
       return {

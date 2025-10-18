@@ -29,12 +29,23 @@ export const useChipStatus = (options = {}) => {
   return useQuery({
     queryKey: [CHIP_QUERY_KEYS.STATUS],
     queryFn: async () => {
+      console.log('🔄 useChipStatus: Fetching chip status...');
       const result = await chipAPI.getChipStatus();
       
+      console.log('📦 useChipStatus: chipAPI result:', {
+        success: result.success,
+        hasData: !!result.data,
+        dataKeys: result.data ? Object.keys(result.data) : [],
+        chipsCount: result.data?.chips?.length || 0,
+        error: result.error
+      });
+      
       if (!result.success) {
+        console.error('❌ useChipStatus: Failed to fetch', result.error);
         throw new Error(result.error?.message || 'Failed to fetch chip status');
       }
       
+      console.log('✅ useChipStatus: Returning data:', result.data);
       return result.data;
     },
     enabled,
@@ -43,7 +54,14 @@ export const useChipStatus = (options = {}) => {
     cacheTime,
     retry: 2,
     onError: (error) => {
-      console.error('useChipStatus error:', error);
+      console.error('❌ useChipStatus error:', error);
+    },
+    onSuccess: (data) => {
+      console.log('✅ useChipStatus success:', {
+        hasChips: !!data?.chips,
+        chipsCount: data?.chips?.length || 0,
+        currentGameweek: data?.currentGameweek
+      });
     }
   });
 };
@@ -193,6 +211,18 @@ export const useChips = () => {
   const { data, isLoading, error, refetch } = useChipStatus();
   const recordUsage = useRecordChipUsage();
   const validate = useValidateChips();
+
+  // DEBUG: Log data transformation
+  console.log('🔍 useChips: Data transformation', {
+    rawData: data,
+    hasData: !!data,
+    dataType: typeof data,
+    dataKeys: data ? Object.keys(data) : [],
+    chipsArray: data?.chips,
+    chipsCount: data?.chips?.length || 0,
+    isLoading,
+    hasError: !!error
+  });
 
   return {
     // Data

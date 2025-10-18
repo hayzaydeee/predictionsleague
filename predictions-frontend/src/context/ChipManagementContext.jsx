@@ -35,6 +35,27 @@ export function ChipManagementProvider({ children }) {
     isRecording
   } = useChips();
   
+  // DEBUG: Log chip data from React Query
+  useEffect(() => {
+    console.log('🔍 ChipManagementContext - Chip Data Updated:', {
+      availableChips,
+      availableChipsCount: availableChips?.length || 0,
+      availableChipsType: Array.isArray(availableChips) ? 'array' : typeof availableChips,
+      backendGameweek,
+      chipsLoading,
+      chipsError,
+      hasError: !!chipsError
+    });
+    
+    if (availableChips && availableChips.length > 0) {
+      console.log('📊 Available Chips Breakdown:', availableChips.map(chip => ({
+        chipId: chip.chipId,
+        available: chip.available,
+        scope: chip.scope
+      })));
+    }
+  }, [availableChips, backendGameweek, chipsLoading, chipsError]);
+  
   // Determine current gameweek (prefer backend, fallback to manual override)
   const currentGameweek = useMemo(() => {
     if (manualGameweek !== null) return manualGameweek;
@@ -175,13 +196,35 @@ export function ChipManagementProvider({ children }) {
    * Get chips filtered by scope (match or gameweek)
    */
   const getChipsByScope = useCallback((scope) => {
-    return availableChips.filter(chip => chip.scope === scope);
+    console.log('🔍 getChipsByScope called:', {
+      scope,
+      availableChips,
+      availableChipsCount: availableChips?.length || 0,
+      isArray: Array.isArray(availableChips)
+    });
+    
+    if (!availableChips || !Array.isArray(availableChips)) {
+      console.warn('⚠️ availableChips is not an array:', {
+        availableChips,
+        type: typeof availableChips
+      });
+      return [];
+    }
+    
+    const filtered = availableChips.filter(chip => chip.scope === scope);
+    console.log(`📊 Filtered ${scope} chips:`, {
+      count: filtered.length,
+      chips: filtered.map(c => ({ chipId: c.chipId, available: c.available }))
+    });
+    
+    return filtered;
   }, [availableChips]);
 
   /**
    * Get match-scoped chips (for prediction modal)
    */
   const getMatchChips = useCallback(() => {
+    console.log('🎯 getMatchChips called');
     return getChipsByScope('match');
   }, [getChipsByScope]);
 
@@ -189,6 +232,7 @@ export function ChipManagementProvider({ children }) {
    * Get gameweek-scoped chips
    */
   const getGameweekChips = useCallback(() => {
+    console.log('🏆 getGameweekChips called');
     return getChipsByScope('gameweek');
   }, [getChipsByScope]);
 

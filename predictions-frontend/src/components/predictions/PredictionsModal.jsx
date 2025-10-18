@@ -45,6 +45,18 @@ export default function PredictionsModal({
   const [awayScorers, setAwayScorers] = useState(initialValues?.awayScorers || []);
   const [selectedChips, setSelectedChips] = useState(initialValues?.chips || []);
   
+  // Track if chips were already applied to this prediction (for immutability)
+  const hasExistingChips = isEditing && (initialValues?.chips || []).length > 0;
+  const canModifyChips = !hasExistingChips; // Can only add/remove chips if none exist yet
+  
+  console.log('🔒 Chip modification rules:', {
+    isEditing,
+    initialChips: initialValues?.chips,
+    hasExistingChips,
+    canModifyChips,
+    message: hasExistingChips ? 'Chips are immutable once applied' : 'Can add chips'
+  });
+  
   // UI state
   const [errors, setErrors] = useState({});
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -219,10 +231,17 @@ export default function PredictionsModal({
       console.log(`✅ Prediction ${isEditing ? 'updated' : 'submitted'} successfully`);
       const predictionId = result.data?.id;
 
-      // STEP 3: Record chip usage (only for new predictions, not edits)
-      // Chips can't be changed after initial prediction, so skip on edits
-      if (!isEditing && allChips.length > 0 && predictionId) {
-        console.log('💾 Recording chip usage...');
+      // STEP 3: Record chip usage
+      // - For new predictions: Always record if chips selected
+      // - For edits: Only record if adding chips for the first time (no chips existed before)
+      const shouldRecordChips = allChips.length > 0 && (!isEditing || !hasExistingChips);
+      
+      if (shouldRecordChips && predictionId) {
+        console.log('💾 Recording chip usage...', {
+          isNewPrediction: !isEditing,
+          addingChipsToExisting: isEditing && !hasExistingChips,
+          chipsToRecord: allChips
+        });
         
         try {
           await recordChipUsage({
@@ -242,6 +261,8 @@ export default function PredictionsModal({
             'warning'
           );
         }
+      } else if (isEditing && hasExistingChips) {
+        console.log('ℹ️ Skipping chip recording - chips are immutable once applied');
       }
 
       // Success!
@@ -401,18 +422,23 @@ export default function PredictionsModal({
                     setAwayScorers(newScorers);
                   }}
                   onToggleChip={(chipId) => {
-                    // Only allow chip toggling on new predictions, not edits
-                    if (!isEditing) {
+                    // Chips are immutable once applied
+                    // Only allow toggling if no chips existed on the original prediction
+                    if (canModifyChips) {
                       setSelectedChips(prev => 
                         prev.includes(chipId) 
                           ? prev.filter(id => id !== chipId)
                           : [...prev, chipId]
                       );
+                    } else {
+                      console.log('⚠️ Cannot modify chips - chips are immutable once applied');
+                      showToast('Chips cannot be changed once applied', 'error');
                     }
                   }}
                   toggleChipInfoModal={toggleChipInfoModal}
                   errors={errors}
                   isEditing={isEditing}
+                  canModifyChips={canModifyChips}
                 />
               )}
 

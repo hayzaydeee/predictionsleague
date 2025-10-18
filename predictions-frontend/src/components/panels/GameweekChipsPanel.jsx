@@ -76,8 +76,11 @@ const GameweekChipsPanel = ({
     console.log("🎮 GameweekChipsPanel Debug:", {
       activeGameweek,
       contextGameweek,
-      availableChips: availableChips?.length || 0,
-      gameweekChips: gameweekChips.length,
+      availableChips,
+      availableChipsCount: availableChips?.length || 0,
+      availableChipsType: Array.isArray(availableChips) ? 'array' : typeof availableChips,
+      gameweekChips,
+      gameweekChipsCount: gameweekChips.length,
       matchChips: matchChips.length,
       allChips: allChips.length,
       gameweekChipsData: gameweekChips,

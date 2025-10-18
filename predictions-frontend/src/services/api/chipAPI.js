@@ -45,8 +45,36 @@ export const chipAPI = {
         url: '/chips/status'
       });
 
+      console.log('🔍 RAW CHIP STATUS RESPONSE:', {
+        fullResponse: JSON.parse(JSON.stringify(response)),
+        hasData: !!response.data,
+        dataType: typeof response.data,
+        dataKeys: response.data ? Object.keys(response.data) : [],
+        chipsArray: response.data?.chips,
+        chipsCount: response.data?.chips?.length || 0,
+        currentGameweek: response.data?.currentGameweek,
+        currentSeason: response.data?.currentSeason
+      });
+
+      // Log each chip in detail
+      if (response.data?.chips) {
+        console.log('🎯 CHIP DETAILS:', response.data.chips.map(chip => ({
+          chipId: chip.chipId,
+          name: chip.name,
+          available: chip.available,
+          reason: chip.reason,
+          scope: chip.scope,
+          usageCount: chip.usageCount,
+          seasonLimit: chip.seasonLimit,
+          remainingUses: chip.remainingUses,
+          cooldownExpires: chip.cooldownExpires,
+          remainingGameweeks: chip.remainingGameweeks
+        })));
+      }
+
       console.log('✅ Chip status fetched successfully', {
         chipsCount: response.data?.chips?.length || 0,
+        availableCount: response.data?.chips?.filter(c => c.available)?.length || 0,
         currentGameweek: response.data?.currentGameweek
       });
 
@@ -57,7 +85,8 @@ export const chipAPI = {
       };
     } catch (error) {
       console.error('❌ Failed to fetch chip status', {
-        error: error.message
+        error: error.message,
+        stack: error.stack
       });
 
       return {
