@@ -328,7 +328,7 @@ const LeagueDetailView = ({ leagueId, league, onBack, onManage, essentialData })
             />
           )}
           {activeTab === "predictions" && (
-            <PredictionsContent leagueId={leagueId} />
+            <PredictionsContent leagueId={leagueId} essentialData={essentialData} />
           )}
         </AnimatePresence>
       </motion.div>
@@ -569,7 +569,7 @@ const LeaderboardContent = ({ leagueId, formatSafeDate }) => {
 };
 
 // Predictions Content Component
-const PredictionsContent = ({ leagueId }) => {
+const PredictionsContent = ({ leagueId, essentialData }) => {
   const { theme } = useContext(ThemeContext);
   const { preferences, updatePreference } = useUserPreferences();
   const [predictions, setPredictions] = useState([]);
