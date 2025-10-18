@@ -195,13 +195,21 @@ const DashboardView = ({
         .filter(fixture => {
           const fixtureDate = new Date(fixture.date);
           const isToday = fixtureDate >= today && fixtureDate < tomorrow;
+          
+          // Check for live or finished status (multiple possible formats)
+          const statusLower = fixture.status?.toLowerCase() || '';
           const isLiveOrFinished = 
-            fixture.status === 'live' || 
-            fixture.status === 'in_progress' || 
-            fixture.status === 'LIVE' ||
-            fixture.status === 'completed' || 
-            fixture.status === 'finished' || 
-            fixture.status === 'FT';
+            // Live statuses
+            statusLower === 'live' || 
+            statusLower === 'in_progress' || 
+            statusLower === 'in_play' ||
+            statusLower === 'playing' ||
+            // Finished statuses
+            statusLower === 'completed' || 
+            statusLower === 'finished' || 
+            statusLower === 'ft' ||
+            statusLower === 'full_time' ||
+            statusLower === 'fulltime';
           
           console.log('🏟️ Fixture check:', {
             id: fixture.id,
@@ -210,6 +218,7 @@ const DashboardView = ({
             date: fixture.date,
             fixtureDate: fixtureDate.toISOString(),
             status: fixture.status,
+            statusLower,
             isToday,
             isLiveOrFinished,
             passed: isToday && isLiveOrFinished
@@ -259,9 +268,13 @@ const DashboardView = ({
   // Auto-refresh for live matches (every 60 seconds)
   useEffect(() => {
     // Only set up refresh if there are live matches
-    const hasLiveMatches = todaysMatches.some(m => 
-      m.status === 'live' || m.status === 'in_progress' || m.status === 'LIVE'
-    );
+    const hasLiveMatches = todaysMatches.some(m => {
+      const statusLower = m.status?.toLowerCase() || '';
+      return statusLower === 'live' || 
+             statusLower === 'in_progress' || 
+             statusLower === 'in_play' ||
+             statusLower === 'playing';
+    });
 
     if (!hasLiveMatches) {
       return;

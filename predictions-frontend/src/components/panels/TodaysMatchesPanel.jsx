@@ -26,12 +26,22 @@ const TodaysMatchesPanel = ({ matches = [], onViewAll, onViewPrediction }) => {
   }
 
   // Categorize matches
-  const liveMatches = matches.filter(m => 
-    m.status === 'live' || m.status === 'in_progress' || m.status === 'LIVE'
-  );
-  const finishedMatches = matches.filter(m => 
-    m.status === 'completed' || m.status === 'finished' || m.status === 'FT'
-  );
+  const liveMatches = matches.filter(m => {
+    const statusLower = m.status?.toLowerCase() || '';
+    return statusLower === 'live' || 
+           statusLower === 'in_progress' || 
+           statusLower === 'in_play' ||
+           statusLower === 'playing';
+  });
+  
+  const finishedMatches = matches.filter(m => {
+    const statusLower = m.status?.toLowerCase() || '';
+    return statusLower === 'completed' || 
+           statusLower === 'finished' || 
+           statusLower === 'ft' ||
+           statusLower === 'full_time' ||
+           statusLower === 'fulltime';
+  });
 
   const hasLiveMatches = liveMatches.length > 0;
   const panelTitle = hasLiveMatches ? "Live Matches" : "Finished Today";
@@ -89,8 +99,16 @@ const TodaysMatchesPanel = ({ matches = [], onViewAll, onViewPrediction }) => {
       {/* Matches List */}
       <div className="divide-y divide-slate-700/40">
         {matches.map((match, index) => {
-          const isLive = match.status === 'live' || match.status === 'in_progress' || match.status === 'LIVE';
-          const isFinished = match.status === 'completed' || match.status === 'finished' || match.status === 'FT';
+          const statusLower = match.status?.toLowerCase() || '';
+          const isLive = statusLower === 'live' || 
+                        statusLower === 'in_progress' || 
+                        statusLower === 'in_play' ||
+                        statusLower === 'playing';
+          const isFinished = statusLower === 'completed' || 
+                            statusLower === 'finished' || 
+                            statusLower === 'ft' ||
+                            statusLower === 'full_time' ||
+                            statusLower === 'fulltime';
           const hasPrediction = match.predicted || match.userPrediction;
 
           return (
