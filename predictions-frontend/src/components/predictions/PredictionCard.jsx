@@ -140,7 +140,17 @@ const PredictionCard = ({
 
         {/* Points Display */}
         <div className="text-right ml-3">
-          {prediction.points !== null && prediction.points !== undefined ? (
+          {prediction.status === "pending" ? (
+            <div
+              className={`${
+                isCompact ? "text-lg" : "text-xl"
+              } font-bold font-outfit ${
+                theme === "dark" ? "text-slate-400" : "text-slate-600"
+              }`}
+            >
+              —
+            </div>
+          ) : prediction.points !== null && prediction.points !== undefined ? (
             <div className="flex items-baseline gap-1">
               <span
                 className={`${isCompact ? "text-lg" : "text-xl"} font-bold ${
