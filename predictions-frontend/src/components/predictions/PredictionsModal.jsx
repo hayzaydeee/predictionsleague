@@ -196,29 +196,8 @@ export default function PredictionsModal({
         teams: `${fixture.homeTeam} vs ${fixture.awayTeam}`
       });
 
-      // STEP 1: Validate chips with backend (if any selected)
-      if (allChips.length > 0) {
-        console.log('🔍 Validating chips with backend...');
-        
-        try {
-          const validation = await validateChips({
-            chipIds: allChips,
-            gameweek: fixture.gameweek,
-            matchId: fixture.id
-          });
-
-          if (!validation.data.valid) {
-            const errorMsg = validation.data.conflicts[0]?.reason || 'Chip validation failed';
-            throw new Error(errorMsg);
-          }
-
-          console.log('✅ Chips validated successfully');
-        } catch (validationError) {
-          throw new Error(`Chip validation failed: ${validationError.message}`);
-        }
-      }
-
-      // STEP 2: Submit prediction to backend (with isEditing flag)
+      // Submit prediction to backend (backend will validate chips automatically)
+      // If chips are invalid, backend will return an error
       const result = await userPredictionsAPI.makePrediction(frontendPrediction, fixture, isEditing);
       
       if (!result.success) {
