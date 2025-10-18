@@ -438,9 +438,9 @@ const PredictionCarousel = ({
             </div>
             
             {/* Predictions Cards Container */}
-            <div className="relative overflow-hidden">
+            <div className="relative overflow-hidden -mx-2">
               <motion.div
-                className="flex gap-4"
+                className="flex gap-4 px-2"
                 animate={{
                   x: `${getTransformX()}%`
                 }}
@@ -448,17 +448,20 @@ const PredictionCarousel = ({
               >
                 {currentMatch.predictions.map((prediction, index) => (
                   <motion.div
-                    key={prediction.id}
+                    key={`${prediction.matchId}-${prediction.username || prediction.userDisplayName}-${index}`}
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: index * 0.1 }}
+                    transition={{ delay: index * 0.05 }}
                     className={`flex-shrink-0 ${
-                      selectedPrediction?.id === prediction.id
-                        ? "ring-2 ring-teal-500"
+                      selectedPrediction?.matchId === prediction.matchId &&
+                      selectedPrediction?.username === prediction.username
+                        ? "ring-2 ring-teal-500 rounded-lg"
                         : ""
                     }`}
                     style={{
-                      width: `calc(${100 / itemsPerView}% - ${(itemsPerView - 1) * 16 / itemsPerView}px)`
+                      width: totalItems <= itemsPerView 
+                        ? `calc(${100 / Math.min(totalItems, itemsPerView)}% - ${16}px)`
+                        : `calc(${100 / itemsPerView}% - ${16}px)`
                     }}
                   >
                     <PredictionCard
