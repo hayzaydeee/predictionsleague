@@ -72,6 +72,20 @@ baseAPI.interceptors.request.use(
 // Response interceptor - Handle responses and errors
 baseAPI.interceptors.response.use(
   (response) => {
+    // Log RAW response for predictions endpoint
+    if (response.config.url?.includes('/predictions/user')) {
+      console.log('🔍 RAW AXIOS RESPONSE (absolute raw from backend):', {
+        url: response.config.url,
+        status: response.status,
+        headers: response.headers,
+        dataType: typeof response.data,
+        dataIsArray: Array.isArray(response.data),
+        dataLength: response.data?.length,
+        firstItemRaw: response.data?.[0] ? JSON.parse(JSON.stringify(response.data[0])) : null,
+        fullDataRaw: JSON.parse(JSON.stringify(response.data))
+      });
+    }
+    
     // Log API call duration in development
     if (import.meta.env.DEV && response.config.metadata) {
       const duration = new Date() - response.config.metadata.startTime;

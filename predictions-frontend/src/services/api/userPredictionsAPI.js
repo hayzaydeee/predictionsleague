@@ -35,6 +35,16 @@ export const userPredictionsAPI = {
         params: { status }
       });
 
+      // Log RAW backend response BEFORE any transformations
+      console.log('🔍 RAW BACKEND RESPONSE (before any transformations):', {
+        status,
+        responseType: typeof response,
+        responseKeys: Object.keys(response || {}),
+        fullRawResponse: JSON.parse(JSON.stringify(response)), // Deep clone to see original
+        dataLength: response.data?.length || 0,
+        firstPredictionRaw: response.data?.[0] ? JSON.parse(JSON.stringify(response.data[0])) : null
+      });
+
       console.log('📥 User predictions fetched successfully', {
         count: response.data?.length || 0,
         status,

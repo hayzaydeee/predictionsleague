@@ -103,7 +103,7 @@ export default function ContentPane({
   };
 
   // Handler for editing predictions
-  const handleEditPrediction = (prediction) => {
+  const handleEditPrediction = async (prediction) => {
     console.log('🔧 Editing prediction:', prediction);
     
     // Log available fixtures for debugging
@@ -137,27 +137,55 @@ export default function ContentPane({
       } : null
     });
     
-    // If not found in fixtures, construct basic fixture object
+    // If not found in loaded fixtures, try to fetch from backend
+    if (!fullFixture) {
+      console.warn('⚠️ Full fixture data not found in loaded fixtures, attempting to fetch from backend');
+      
+      try {
+        // Try to fetch fixture from backend by gameweek
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/fixtures?gameweek=${prediction.gameweek}`);
+        if (response.ok) {
+          const data = await response.json();
+          console.log('📥 Fetched fixtures for gameweek', prediction.gameweek, data);
+          
+          // Find the specific fixture
+          fullFixture = data.find(f => 
+            f.id === prediction.matchId || 
+            f.matchId === prediction.matchId ||
+            (f.homeTeam === prediction.homeTeam && f.awayTeam === prediction.awayTeam)
+          );
+          
+          if (fullFixture) {
+            console.log('✅ Found fixture from backend:', fullFixture);
+          }
+        }
+      } catch (error) {
+        console.error('❌ Failed to fetch fixture from backend:', error);
+      }
+    }
+    
+    // If still not found, construct basic fixture object
     // Note: Player squads may not be available for completed/past matches
     if (!fullFixture) {
-      console.warn('⚠️ Full fixture data not found in fixtures list, using basic fixture structure');
+      console.warn('⚠️ Could not find fixture data anywhere, using basic fixture structure');
       
-      // IMPORTANT: Use matchDate (fixture time) not prediction.date (could be predictedAt)
-      // Backend should return matchDate for the actual fixture datetime
+      // IMPORTANT: Backend bug - matchDate contains prediction timestamp, not fixture datetime
+      // For now, we'll use a placeholder but this needs backend fix
       const fixtureDate = prediction.matchDate || prediction.date;
       
       console.log('📅 Date fields in prediction:', {
         date: prediction.date,
         matchDate: prediction.matchDate,
         predictedAt: prediction.predictedAt,
-        usingDate: fixtureDate
+        usingDate: fixtureDate,
+        WARNING: 'Backend is sending prediction timestamp in matchDate field!'
       });
       
       fullFixture = {
         id: prediction.matchId,
         homeTeam: prediction.homeTeam,
         awayTeam: prediction.awayTeam,
-        date: fixtureDate, // Use matchDate not predictedAt
+        date: fixtureDate, // This is wrong but it's a backend bug
         venue: prediction.venue || "Premier League",
         gameweek: prediction.gameweek,
         // Player squads might not be available for past matches
