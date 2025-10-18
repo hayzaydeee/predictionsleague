@@ -36,7 +36,8 @@ const PredictionsByMember = ({
 
   // Group predictions by member/user
   const predictionsByMember = filteredPredictions.reduce((groups, prediction) => {
-    const memberId = isLeagueMode ? prediction.userId : 'personal';
+    // Use userDisplayName (or username as fallback) for grouping since backend doesn't provide userId
+    const memberId = isLeagueMode ? (prediction.userDisplayName || prediction.username || 'unknown') : 'personal';
     if (!groups[memberId]) {
       groups[memberId] = {
         memberInfo: {
