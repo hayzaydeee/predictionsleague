@@ -81,6 +81,18 @@ export default function PredictionsModal({
     const matchDate = parseISO(fixture.date);
     const deadline = addMinutes(matchDate, -30); // 30 minutes before kickoff
     
+    console.log('⏰ Deadline calculation:', {
+      fixtureDate: fixture.date,
+      parsedMatchDate: matchDate.toISOString(),
+      parsedMatchDateLocal: matchDate.toString(),
+      deadline: deadline.toISOString(),
+      deadlineLocal: deadline.toString(),
+      now: now.toISOString(),
+      nowLocal: now.toString(),
+      isPast: now > deadline,
+      timeLeft: deadline.getTime() - now.getTime()
+    });
+    
     return {
       isPast: now > deadline,
       timeLeft: deadline.getTime() - now.getTime(),

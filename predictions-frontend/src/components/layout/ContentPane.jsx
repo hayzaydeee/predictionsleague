@@ -146,7 +146,17 @@ export default function ContentPane({
         const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/fixtures?gameweek=${prediction.gameweek}`);
         if (response.ok) {
           const data = await response.json();
-          console.log('📥 Fetched fixtures for gameweek', prediction.gameweek, data);
+          console.log('📥 Fetched fixtures for gameweek', prediction.gameweek, {
+            fixturesCount: data.length,
+            allFixtures: data.map(f => ({
+              id: f.id,
+              matchId: f.matchId,
+              teams: `${f.homeTeam} vs ${f.awayTeam}`,
+              date: f.date,
+              utcDate: f.utcDate,
+              dateFields: Object.keys(f).filter(k => k.toLowerCase().includes('date'))
+            }))
+          });
           
           // Find the specific fixture
           fullFixture = data.find(f => 
@@ -156,7 +166,15 @@ export default function ContentPane({
           );
           
           if (fullFixture) {
-            console.log('✅ Found fixture from backend:', fullFixture);
+            console.log('✅ Found fixture from backend:', {
+              id: fullFixture.id,
+              matchId: fullFixture.matchId,
+              teams: `${fullFixture.homeTeam} vs ${fullFixture.awayTeam}`,
+              date: fullFixture.date,
+              utcDate: fullFixture.utcDate,
+              allDateFields: Object.keys(fullFixture).filter(k => k.toLowerCase().includes('date')),
+              hasPlayers: !!(fullFixture.homePlayers?.length || fullFixture.awayPlayers?.length)
+            });
           }
         }
       } catch (error) {
