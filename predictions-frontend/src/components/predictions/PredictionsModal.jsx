@@ -78,11 +78,20 @@ export default function PredictionsModal({
     if (!fixture?.date) return { isPast: false, timeLeft: null };
     
     const now = new Date();
-    const matchDate = parseISO(fixture.date);
+    
+    // Fix for backend sending date without timezone indicator
+    // If date doesn't end with 'Z' or have timezone offset, assume it's UTC
+    let dateString = fixture.date;
+    if (!dateString.endsWith('Z') && !dateString.match(/[+-]\d{2}:\d{2}$/)) {
+      dateString = dateString + 'Z'; // Treat as UTC
+    }
+    
+    const matchDate = parseISO(dateString);
     const deadline = addMinutes(matchDate, -30); // 30 minutes before kickoff
     
     console.log('⏰ Deadline calculation:', {
       fixtureDate: fixture.date,
+      fixedDateString: dateString,
       parsedMatchDate: matchDate.toISOString(),
       parsedMatchDateLocal: matchDate.toString(),
       deadline: deadline.toISOString(),
