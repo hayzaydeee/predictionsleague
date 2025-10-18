@@ -1,9 +1,10 @@
 import React, { useState, useContext } from "react";
 import { motion } from "framer-motion";
 import { TargetIcon } from "@radix-ui/react-icons";
-import { filterPredictionsByQuery } from "../../utils/predictionUtils";
+import { filterPredictionsByQuery, groupPredictionsByPredictedDate } from "../../utils/predictionUtils";
 import { ThemeContext } from "../../context/ThemeContext";
 import PredictionCard from "./PredictionCard";
+import DateHeader from "../fixtures/DateHeader";
 
 
 
@@ -52,6 +53,9 @@ const PredictionGrid = ({
     }
   });
 
+  // Group predictions by the date they were created (predictedAt)
+  const predictionsByDate = groupPredictionsByPredictedDate(sortedPredictions);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -70,23 +74,35 @@ const PredictionGrid = ({
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {sortedPredictions.map((prediction, index) => (
-            <motion.div
-              key={prediction.id}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: index * 0.05 }}
-            >
-              <PredictionCard
-                prediction={prediction}
-                mode={mode}
-                showMemberInfo={mode === "league"}
-                onSelect={handlePredictionClick}
-                onEdit={onEditClick}
-                isReadonly={mode === "league"}
-                size={cardStyle}
+          {Object.entries(predictionsByDate).map(([date, dayPredictions]) => (
+            <React.Fragment key={date}>
+              {/* Date header component */}
+              <DateHeader 
+                date={date} 
+                itemsCount={dayPredictions.length}
+                type="predictions"
               />
-            </motion.div>
+              
+              {/* Predictions for this date */}
+              {dayPredictions.map((prediction, index) => (
+                <motion.div
+                  key={prediction.id}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: index * 0.05 }}
+                >
+                  <PredictionCard
+                    prediction={prediction}
+                    mode={mode}
+                    showMemberInfo={mode === "league"}
+                    onSelect={handlePredictionClick}
+                    onEdit={onEditClick}
+                    isReadonly={mode === "league"}
+                    size={cardStyle}
+                  />
+                </motion.div>
+              ))}
+            </React.Fragment>
           ))}
         </div>
       )}

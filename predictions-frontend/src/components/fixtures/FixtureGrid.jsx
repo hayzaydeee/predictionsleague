@@ -34,7 +34,8 @@ function FixtureGrid({ fixtures, onFixtureSelect, searchQuery = "" }) {
               {/* Date header component */}
               <DateHeader 
                 date={date} 
-                fixturesCount={dayFixtures.length} 
+                itemsCount={dayFixtures.length}
+                type="fixtures"
               />
               
               {/* Fixtures for this date */}
