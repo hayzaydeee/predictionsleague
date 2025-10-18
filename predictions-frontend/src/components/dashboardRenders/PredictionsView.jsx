@@ -159,7 +159,7 @@ const PredictionsView = ({ handleEditPrediction }) => {
             My Predictions
           </h1>
           <p className={`${text.secondary[theme]} font-outfit text-xs sm:text-sm opacity-70`}>
-            View and manage your predictions for past and upcoming matches
+            View and manage your predictions
           </p>
         </div>
 

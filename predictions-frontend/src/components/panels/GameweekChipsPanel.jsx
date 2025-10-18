@@ -167,7 +167,7 @@ const GameweekChipsPanel = ({
       <div className="h-0.5 bg-gradient-to-r from-teal-500 via-blue-500 to-purple-500"></div>
       {/* Header - OPTIMIZED FOR MOBILE */}
       <div
-        className={`px-3 sm:px-5 py-2.5 sm:py-4 border-b ${getThemeStyles(
+        className={`px-4 sm:px-5 py-3 sm:py-4 border-b ${getThemeStyles(
           theme,
           {
             dark: "border-slate-700/50",
@@ -175,25 +175,24 @@ const GameweekChipsPanel = ({
           }
         )}`}
       >
-        <div className="flex items-center justify-between gap-2">
-          {/* Left: Icon + Title (no subtitle on mobile) */}
-          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-            <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-md sm:rounded-lg bg-teal-500/20 flex items-center justify-center flex-shrink-0">
-              <LightningBoltIcon className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-teal-400" />
+        <div className="flex items-center justify-between gap-3">
+          {/* Left: Icon + Title + Subtitle (full on mobile) */}
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-teal-500/20 flex items-center justify-center flex-shrink-0">
+              <LightningBoltIcon className="w-4 h-4 sm:w-5 sm:h-5 text-teal-400" />
             </div>
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <h3
-                className={`text-sm sm:text-lg font-semibold ${getThemeStyles(
+                className={`text-base sm:text-lg font-semibold ${getThemeStyles(
                   theme,
                   text.primary
                 )}`}
               >
-                <span className="hidden sm:inline">Chip Strategy</span>
-                <span className="sm:hidden">Chips</span>
+                Chip Strategy
               </h3>
-              {/* Subtitle only on desktop */}
+              {/* Subtitle visible on all screens */}
               <p
-                className={`hidden sm:block text-xs sm:text-sm ${getThemeStyles(
+                className={`text-xs sm:text-sm ${getThemeStyles(
                   theme,
                   text.secondary
                 )}`}
@@ -204,11 +203,11 @@ const GameweekChipsPanel = ({
           </div>
 
           {/* Right: Badges + Collapse button */}
-          <div className="flex items-center gap-1 sm:gap-3 flex-shrink-0">
-            {/* Active chips count - simplified on mobile */}
+          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+            {/* Active chips count - show on all screens */}
             {activeChipsCount > 0 && (
               <div
-                className={`rounded-full px-2 sm:px-3 py-0.5 sm:py-1 flex items-center font-outfit border ${getThemeStyles(
+                className={`rounded-full px-2.5 sm:px-3 py-1 flex items-center font-outfit border ${getThemeStyles(
                   theme,
                   {
                     dark: "bg-teal-900/40 border-teal-700/30 text-teal-300",
@@ -219,16 +218,16 @@ const GameweekChipsPanel = ({
                 <span className="text-xs sm:text-sm font-medium">
                   {activeChipsCount}
                 </span>
-                <span className="hidden sm:inline text-xs sm:text-sm ml-0.5">
+                <span className="text-xs sm:text-sm ml-0.5">
                   {" "}
                   active
                 </span>
               </div>
             )}
 
-            {/* Gameweek badge - simplified on mobile */}
+            {/* Gameweek badge - consistent sizing */}
             <div
-              className={`rounded-full px-2 sm:px-3 py-0.5 sm:py-1 flex items-center font-outfit border ${getThemeStyles(
+              className={`rounded-full px-2.5 sm:px-3 py-1 flex items-center font-outfit border ${getThemeStyles(
                 theme,
                 {
                   dark: "bg-blue-900/40 border-blue-700/30 text-blue-300",
@@ -237,24 +236,24 @@ const GameweekChipsPanel = ({
               )}`}
             >
               <span
-                className={`text-sm sm:text-sm ${getThemeStyles(theme, {
+                className={`text-xs sm:text-sm ${getThemeStyles(theme, {
                   dark: "text-blue-200/70",
                   light: "text-blue-600/70",
                 })}`}
               >
                 GW
               </span>
-              <span className="font-medium text-sm sm:text-sm ml-0.5 sm:ml-1">
+              <span className="font-medium text-xs sm:text-sm ml-0.5 sm:ml-1">
                 {activeGameweek}
               </span>
             </div>
 
-            {/* Collapse button */}
+            {/* Collapse button - increased mobile size */}
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setIsPanelCollapsed(!isPanelCollapsed)}
-              className={`p-1 sm:p-2 rounded-md sm:rounded-lg transition-all duration-200 border ${getThemeStyles(
+              className={`p-1.5 sm:p-2 rounded-lg transition-all duration-200 border ${getThemeStyles(
                 theme,
                 {
                   dark: "bg-slate-700/50 hover:bg-slate-700/70 text-slate-300 hover:text-slate-200 border-slate-600/50 hover:border-slate-500/50",
@@ -264,7 +263,7 @@ const GameweekChipsPanel = ({
               )}`}
             >
               <ChevronDownIcon
-                className={`w-3 h-3 sm:w-4 sm:h-4 transition-transform duration-200 ${
+                className={`w-4 h-4 transition-transform duration-200 ${
                   isPanelCollapsed ? "rotate-180" : ""
                 }`}
               />
