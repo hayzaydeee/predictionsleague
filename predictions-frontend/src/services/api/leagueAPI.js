@@ -148,25 +148,24 @@ const leagueAPI = {
   },
 
   // Get league predictions (all member predictions for league fixtures)
-  // Default call returns current gameweek
-  // Pass gameweek parameter to fetch specific gameweek
-  getLeaguePredictions: async (leagueId, gameweek = null) => {
+  // Gameweek parameter is required - backend always needs a specific gameweek
+  getLeaguePredictions: async (leagueId, gameweek) => {
     try {
+      if (!gameweek) {
+        throw new Error('Gameweek parameter is required');
+      }
+      
       console.log('📊 Fetching league predictions...', { leagueId, gameweek });
       
-      // Build URL based on whether gameweek is specified
-      // Default: /leagues/{id}/predictions (returns current gameweek)
-      // Specific: /leagues/{id}/predictions/{gameweek}
-      const url = gameweek 
-        ? `/leagues/${leagueId}/predictions/${gameweek}`
-        : `/leagues/${leagueId}/predictions`;
+      // Always use gameweek in URL path
+      const url = `/leagues/${leagueId}/predictions/${gameweek}`;
       
       const response = await api.get(url);
       
       console.log('✅ League predictions fetched:', {
         predictionsCount: response.data?.length || 0,
         leagueId,
-        gameweek: gameweek || 'current'
+        gameweek
       });
       
       return response.data || [];

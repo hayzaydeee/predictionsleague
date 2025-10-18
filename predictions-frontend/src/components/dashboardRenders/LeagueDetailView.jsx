@@ -600,10 +600,10 @@ const PredictionsContent = ({ leagueId, essentialData }) => {
         setLoading(true);
         
         // Determine which gameweek to fetch
-        // "current" or null = current gameweek (backend default)
+        // "current" or "all" = use currentGameweek (backend requires gameweek to always be specified)
         // Specific number = that gameweek
         const gameweekToFetch = gameweekFilter === "current" || gameweekFilter === "all"
-          ? null // Backend returns current gameweek by default
+          ? currentGameweek // Use current gameweek from essentialData
           : parseInt(gameweekFilter);
         
         console.log('📊 Fetching league predictions for gameweek:', {
