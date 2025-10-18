@@ -35,7 +35,7 @@ const FixtureCardOption2 = ({
       onClick={() => onClick(fixture)}
       className={`rounded-xl overflow-hidden cursor-pointer transition-all ${
         theme === "dark"
-          ? "bg-slate-800/50 border border-slate-700/50"
+          ? "bg-slate-800 border border-slate-700/50"
           : "bg-white border border-slate-200 shadow-sm hover:shadow-md"
       } ${
         selected
@@ -46,7 +46,7 @@ const FixtureCardOption2 = ({
       {/* Header Bar */}
       <div className={`px-3 py-2 border-b flex items-center justify-between ${
         theme === "dark"
-          ? "bg-slate-900/60 border-slate-700/50"
+          ? "bg-slate-900 border-slate-700/50"
           : "bg-slate-50 border-slate-200"
       }`}>
         <div className={`flex items-center gap-2 text-2xs sm:text-xs ${
