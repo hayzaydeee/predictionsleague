@@ -4,6 +4,7 @@ import PredictionsModal from "../predictions/PredictionsModal";
 import ChipStrategyModal from "../predictions/ChipStrategyModal";
 import { ThemeContext } from "../../context/ThemeContext";
 import { backgrounds } from "../../utils/themeUtils";
+import { useClientSideFixtures } from "../../hooks/useClientSideFixtures";
 
 // Import from centralized data file for non-dashboard views
 import {
@@ -32,6 +33,9 @@ export default function ContentPane({
 }) {
   // Access theme context
   const { theme } = useContext(ThemeContext);
+
+  // Get fixtures data (includes player squads)
+  const { data: fixturesData } = useClientSideFixtures();
 
   // Extract dashboard data from props
   const {
@@ -100,24 +104,47 @@ export default function ContentPane({
 
   // Handler for editing predictions
   const handleEditPrediction = (prediction) => {
-    // Convert the prediction to the fixture format expected by PredictionsModal
-    const fixture = {
-      id: prediction.matchId,
-      homeTeam: prediction.homeTeam,
-      awayTeam: prediction.awayTeam,
-      date: prediction.date,
-      venue: "Premier League",
-      gameweek: prediction.gameweek,
-    };
+    console.log('🔧 Editing prediction:', prediction);
+    
+    // Try to find the full fixture data (including player squads) from current fixtures
+    let fullFixture = fixturesData?.find(f => 
+      f.id === prediction.matchId || 
+      (f.homeTeam === prediction.homeTeam && f.awayTeam === prediction.awayTeam && f.gameweek === prediction.gameweek)
+    );
+    
+    // If not found in fixtures, construct basic fixture object
+    // Note: Player squads may not be available for completed/past matches
+    if (!fullFixture) {
+      console.warn('⚠️ Full fixture data not found in fixtures list, using basic fixture structure');
+      fullFixture = {
+        id: prediction.matchId,
+        homeTeam: prediction.homeTeam,
+        awayTeam: prediction.awayTeam,
+        date: prediction.date,
+        venue: prediction.venue || "Premier League",
+        gameweek: prediction.gameweek,
+        // Player squads might not be available for past matches
+        homePlayers: [],
+        awayPlayers: [],
+      };
+    }
+
+    console.log('📋 Fixture data for edit:', {
+      fixtureId: fullFixture.id,
+      hasHomePlayers: !!fullFixture.homePlayers?.length,
+      hasAwayPlayers: !!fullFixture.awayPlayers?.length,
+      homePlayersCount: fullFixture.homePlayers?.length || 0,
+      awayPlayersCount: fullFixture.awayPlayers?.length || 0
+    });
 
     setModalData({
       isOpen: true,
-      fixture: fixture,
+      fixture: fullFixture,
       initialValues: {
         homeScore: prediction.homeScore,
         awayScore: prediction.awayScore,
-        homeScorers: prediction.homeScorers,
-        awayScorers: prediction.awayScorers,
+        homeScorers: prediction.homeScorers || [],
+        awayScorers: prediction.awayScorers || [],
         chips: prediction.chips || [],
       },
       isEditing: true,

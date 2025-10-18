@@ -20,7 +20,8 @@ export default function GoalscorersStep({
   toggleChipInfoModal,
   gameweek,
   chipWarning,
-  errors 
+  errors,
+  isEditing = false
 }) {
   const { theme } = useContext(ThemeContext);
 
@@ -127,12 +128,50 @@ export default function GoalscorersStep({
       </div>
 
       {/* Chips section */}
-      <ChipSelector
-        selectedChips={selectedChips}
-        onToggleChip={onToggleChip}
-        toggleChipInfoModal={toggleChipInfoModal}
-        gameweek={gameweek}
-      />
+      {isEditing ? (
+        /* Show chips as read-only when editing */
+        <div className={`rounded-xl p-6 ${getThemeStyles(theme, {
+          dark: 'bg-slate-800/50 border border-slate-700/60',
+          light: 'bg-slate-50 border border-slate-200'
+        })}`}>
+          <div className={`text-xs font-medium mb-3 font-outfit ${getThemeStyles(theme, {
+            dark: 'text-slate-400',
+            light: 'text-slate-600'
+          })}`}>
+            Applied Chips (Cannot be changed)
+          </div>
+          {selectedChips && selectedChips.length > 0 ? (
+            <div className="flex flex-wrap gap-2">
+              {selectedChips.map(chipId => (
+                <div
+                  key={chipId}
+                  className={`px-3 py-2 rounded-lg text-sm font-medium font-outfit ${getThemeStyles(theme, {
+                    dark: 'bg-slate-700 text-slate-300 border border-slate-600',
+                    light: 'bg-slate-200 text-slate-700 border border-slate-300'
+                  })}`}
+                >
+                  {chipId.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className={`text-sm font-outfit ${getThemeStyles(theme, {
+              dark: 'text-slate-500',
+              light: 'text-slate-600'
+            })}`}>
+              No chips applied to this prediction
+            </p>
+          )}
+        </div>
+      ) : (
+        /* Show chip selector for new predictions */
+        <ChipSelector
+          selectedChips={selectedChips}
+          onToggleChip={onToggleChip}
+          toggleChipInfoModal={toggleChipInfoModal}
+          gameweek={gameweek}
+        />
+      )}
 
       {/* Chip warning banner */}
       {chipWarning && (

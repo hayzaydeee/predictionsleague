@@ -190,12 +190,13 @@ export const userPredictionsAPI = {
   },
 
   /**
-   * Create a prediction
+   * Create or update a prediction
    * @param {Object} frontendPrediction - Frontend prediction object
    * @param {Object} fixture - Frontend fixture object
-   * @returns {Promise<Object>} Prediction creation response
+   * @param {boolean} isEditing - Whether this is an update (true) or creation (false)
+   * @returns {Promise<Object>} Prediction creation/update response
    */
-  async makePrediction(frontendPrediction, fixture) {
+  async makePrediction(frontendPrediction, fixture, isEditing = false) {
     try {
       // Transform frontend data to backend format
       const backendPayload = transformPredictionToBackend(frontendPrediction, fixture);
@@ -206,21 +207,22 @@ export const userPredictionsAPI = {
         throw new Error(`Invalid prediction data: ${validation.errors.join(', ')}`);
       }
 
-      console.log('🚀 Making prediction with backend payload:', {
+      console.log(`🚀 ${isEditing ? 'Updating' : 'Creating'} prediction with backend payload:`, {
         matchId: backendPayload.matchId,
         teams: `${backendPayload.homeTeam} vs ${backendPayload.awayTeam}`,
         score: `${backendPayload.homeScore}-${backendPayload.awayScore}`,
         chips: backendPayload.chips,
-        gameweek: backendPayload.gameweek
+        gameweek: backendPayload.gameweek,
+        isEditing
       });
 
       const response = await apiCall({
-        method: 'POST',
+        method: isEditing ? 'PUT' : 'POST',
         url: '/predictions/make-prediction',
         data: backendPayload
       });
 
-      console.log('✅ Prediction created successfully', {
+      console.log(`✅ Prediction ${isEditing ? 'updated' : 'created'} successfully`, {
         predictionId: response.data?.id,
         matchId: backendPayload.matchId
       });
@@ -231,10 +233,11 @@ export const userPredictionsAPI = {
         error: null
       };
     } catch (error) {
-      console.error('❌ Failed to make prediction', {
+      console.error(`❌ Failed to ${isEditing ? 'update' : 'create'} prediction`, {
         error: error.message,
         frontendPrediction,
-        fixture
+        fixture,
+        isEditing
       });
 
       return {
@@ -242,56 +245,13 @@ export const userPredictionsAPI = {
         data: null,
         error: {
           message: error.message,
-          type: 'PREDICTION_CREATE_ERROR',
+          type: isEditing ? 'PREDICTION_UPDATE_ERROR' : 'PREDICTION_CREATE_ERROR',
           timestamp: new Date().toISOString()
         }
       };
     }
   },
 
-
-  /**
-   * Update an existing prediction
-   * @param {number} predictionId - Prediction ID
-   * @param {Object} updates - Prediction updates
-   * @returns {Promise<Object>} Prediction update response
-   */
-  async updatePrediction(predictionId, updates) {
-    try {
-      const response = await apiCall({
-        method: 'PUT',
-        url: `/predictions/make-prediction/`,
-        data: updates
-      });
-
-      console.log('Prediction updated successfully', {
-        predictionId,
-        updates
-      });
-
-      return {
-        success: true,
-        data: response.data,
-        error: null
-      };
-    } catch (error) {
-      console.error('Failed to update prediction', {
-        error: error.message,
-        predictionId,
-        updates
-      });
-
-      return {
-        success: false,
-        data: null,
-        error: {
-          message: error.message,
-          type: 'PREDICTION_UPDATE_ERROR',
-          timestamp: new Date().toISOString()
-        }
-      };
-    }
-  },
 
   /**
    * Delete a prediction

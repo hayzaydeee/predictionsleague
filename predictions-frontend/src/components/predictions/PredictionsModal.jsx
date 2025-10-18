@@ -88,10 +88,37 @@ export default function PredictionsModal({
   };
 
   // Update scorer arrays when scores change
+  // BUT preserve existing scorers when editing (only resize arrays if needed)
   useEffect(() => {
-    setHomeScorers(Array(homeScore).fill(""));
-    setAwayScorers(Array(awayScore).fill(""));
-  }, [homeScore, awayScore]);
+    if (isEditing) {
+      // When editing, only adjust array size if score changed
+      setHomeScorers(prev => {
+        if (prev.length === homeScore) return prev; // No change needed
+        if (homeScore > prev.length) {
+          // Score increased, add empty slots
+          return [...prev, ...Array(homeScore - prev.length).fill("")];
+        } else {
+          // Score decreased, trim array
+          return prev.slice(0, homeScore);
+        }
+      });
+      
+      setAwayScorers(prev => {
+        if (prev.length === awayScore) return prev; // No change needed
+        if (awayScore > prev.length) {
+          // Score increased, add empty slots
+          return [...prev, ...Array(awayScore - prev.length).fill("")];
+        } else {
+          // Score decreased, trim array
+          return prev.slice(0, awayScore);
+        }
+      });
+    } else {
+      // When creating new prediction, reset arrays completely
+      setHomeScorers(Array(homeScore).fill(""));
+      setAwayScorers(Array(awayScore).fill(""));
+    }
+  }, [homeScore, awayScore, isEditing]);
 
   // Step navigation
   const nextStep = () => {
@@ -152,18 +179,19 @@ export default function PredictionsModal({
         }
       }
 
-      // STEP 2: Submit prediction to backend
-      const result = await userPredictionsAPI.makePrediction(frontendPrediction, fixture);
+      // STEP 2: Submit prediction to backend (with isEditing flag)
+      const result = await userPredictionsAPI.makePrediction(frontendPrediction, fixture, isEditing);
       
       if (!result.success) {
-        throw new Error(result.error?.message || 'Failed to submit prediction');
+        throw new Error(result.error?.message || `Failed to ${isEditing ? 'update' : 'submit'} prediction`);
       }
 
-      console.log('✅ Prediction submitted successfully');
+      console.log(`✅ Prediction ${isEditing ? 'updated' : 'submitted'} successfully`);
       const predictionId = result.data?.id;
 
-      // STEP 3: Record chip usage (if any selected)
-      if (allChips.length > 0 && predictionId) {
+      // STEP 3: Record chip usage (only for new predictions, not edits)
+      // Chips can't be changed after initial prediction, so skip on edits
+      if (!isEditing && allChips.length > 0 && predictionId) {
         console.log('💾 Recording chip usage...');
         
         try {
@@ -342,14 +370,18 @@ export default function PredictionsModal({
                     setAwayScorers(newScorers);
                   }}
                   onToggleChip={(chipId) => {
-                    setSelectedChips(prev => 
-                      prev.includes(chipId) 
-                        ? prev.filter(id => id !== chipId)
-                        : [...prev, chipId]
-                    );
+                    // Only allow chip toggling on new predictions, not edits
+                    if (!isEditing) {
+                      setSelectedChips(prev => 
+                        prev.includes(chipId) 
+                          ? prev.filter(id => id !== chipId)
+                          : [...prev, chipId]
+                      );
+                    }
                   }}
                   toggleChipInfoModal={toggleChipInfoModal}
                   errors={errors}
+                  isEditing={isEditing}
                 />
               )}
 
