@@ -1,10 +1,11 @@
 import React, { useState, useContext } from "react";
 import { motion } from "framer-motion";
-import { format, parseISO } from "date-fns";
+import { format, parseISO, addMinutes } from "date-fns";
 import {
   ChevronDownIcon,
   ChevronUpIcon,
   PersonIcon,
+  ExclamationTriangleIcon,
 } from "@radix-ui/react-icons";
 import { ThemeContext } from "../../context/ThemeContext";
 import TeamLogo from "../ui/TeamLogo";
@@ -23,12 +24,31 @@ const PredictionCard = ({
   const [showGoalscorers, setShowGoalscorers] = useState(false);
   const [showChips, setShowChips] = useState(false);
 
+  // Check if deadline has passed
+  const isPastDeadline = () => {
+    if (!prediction.matchDate && !prediction.date) return false;
+    
+    try {
+      let dateString = prediction.matchDate || prediction.date;
+      // Fix for backend sending date without timezone
+      if (!dateString.endsWith('Z') && !dateString.match(/[+-]\d{2}:\d{2}$/)) {
+        dateString = dateString + 'Z';
+      }
+      const matchDate = parseISO(dateString);
+      const deadline = addMinutes(matchDate, -30);
+      return new Date() > deadline;
+    } catch (error) {
+      console.error('Error checking deadline:', error);
+      return false;
+    }
+  };
+
+  const deadlinePassed = isPastDeadline();
+
   // Determine if card should be interactive
   const isPersonalMode = mode === "personal";
-  const canEdit = isPersonalMode && typeof onEdit === "function" && !isReadonly;
-  const isCompact = size === "compact";
-
-  // Helper function to count goals per scorer
+  const canEdit = isPersonalMode && typeof onEdit === "function" && !isReadonly && !deadlinePassed;
+  const isCompact = size === "compact";  // Helper function to count goals per scorer
   const getGoalCounts = (scorers) => {
     if (!scorers || scorers.length === 0) return {};
     return scorers.reduce((counts, scorer) => {

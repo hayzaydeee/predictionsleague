@@ -9,7 +9,8 @@ export default function ScorePredictionStep({
   homeScore, 
   awayScore, 
   onHomeScoreChange, 
-  onAwayScoreChange 
+  onAwayScoreChange,
+  disabled = false
 }) {
   const { theme } = useContext(ThemeContext);
 
@@ -73,6 +74,7 @@ export default function ScorePredictionStep({
                     max="9"
                     value={homeScore === 0 ? "" : homeScore}
                     onChange={(e) => {
+                      if (disabled) return;
                       const val = e.target.value;
                       onHomeScoreChange(
                         val === ""
@@ -80,10 +82,18 @@ export default function ScorePredictionStep({
                           : Math.min(9, Math.max(0, parseInt(val) || 0))
                       );
                     }}
-                    className={`appearance-none rounded-lg w-20 h-16 text-3xl text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none font-outfit font-bold ${getThemeStyles(theme, {
-                      dark: 'bg-slate-800/80 border border-slate-600/50 text-slate-100',
-                      light: 'bg-slate-50 border border-slate-300 text-slate-900'
-                    })}`}
+                    disabled={disabled}
+                    className={`appearance-none rounded-lg w-20 h-16 text-3xl text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none font-outfit font-bold ${
+                      disabled 
+                        ? getThemeStyles(theme, {
+                            dark: 'bg-slate-900/50 border border-slate-700/30 text-slate-600 cursor-not-allowed',
+                            light: 'bg-slate-100 border border-slate-200 text-slate-400 cursor-not-allowed'
+                          })
+                        : getThemeStyles(theme, {
+                            dark: 'bg-slate-800/80 border border-slate-600/50 text-slate-100',
+                            light: 'bg-slate-50 border border-slate-300 text-slate-900'
+                          })
+                    }`}
                     aria-label={`${fixture.homeTeam} score`}
                     placeholder="0"
                   />
@@ -105,6 +115,7 @@ export default function ScorePredictionStep({
                     max="9"
                     value={awayScore === 0 ? "" : awayScore}
                     onChange={(e) => {
+                      if (disabled) return;
                       const val = e.target.value;
                       onAwayScoreChange(
                         val === ""
@@ -112,10 +123,18 @@ export default function ScorePredictionStep({
                           : Math.min(9, Math.max(0, parseInt(val) || 0))
                       );
                     }}
-                    className={`appearance-none rounded-lg w-20 h-16 text-3xl text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none font-outfit font-bold ${getThemeStyles(theme, {
-                      dark: 'bg-slate-800/80 border border-slate-600/50 text-slate-100',
-                      light: 'bg-slate-50 border border-slate-300 text-slate-900'
-                    })}`}
+                    disabled={disabled}
+                    className={`appearance-none rounded-lg w-20 h-16 text-3xl text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none font-outfit font-bold ${
+                      disabled 
+                        ? getThemeStyles(theme, {
+                            dark: 'bg-slate-900/50 border border-slate-700/30 text-slate-600 cursor-not-allowed',
+                            light: 'bg-slate-100 border border-slate-200 text-slate-400 cursor-not-allowed'
+                          })
+                        : getThemeStyles(theme, {
+                            dark: 'bg-slate-800/80 border border-slate-600/50 text-slate-100',
+                            light: 'bg-slate-50 border border-slate-300 text-slate-900'
+                          })
+                    }`}
                     aria-label={`${fixture.awayTeam} score`}
                     placeholder="0"
                   />

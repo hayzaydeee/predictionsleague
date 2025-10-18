@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { motion } from "framer-motion";
 import { format, parseISO } from "date-fns";
-import { ClockIcon, DotFilledIcon } from "@radix-ui/react-icons";
+import { ClockIcon, DotFilledIcon, Pencil1Icon } from "@radix-ui/react-icons";
 import TeamLogo from "../ui/TeamLogo";
 import { LOGO_SIZES } from "../../utils/teamLogos";
 import { ThemeContext } from "../../context/ThemeContext";
@@ -33,7 +33,7 @@ const FixtureCardOption2 = ({
       whileHover={{ scale: 1.01 }}
       whileTap={{ scale: 0.99 }}
       onClick={() => onClick(fixture)}
-      className={`rounded-xl overflow-hidden cursor-pointer transition-all ${
+      className={`group rounded-xl overflow-hidden cursor-pointer transition-all ${
         theme === "dark"
           ? "bg-slate-800 border border-slate-700/50"
           : "bg-white border border-slate-200 shadow-sm hover:shadow-md"
@@ -65,7 +65,7 @@ const FixtureCardOption2 = ({
         
         {/* Status Badge */}
         {isPredicted ? (
-          <div className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-2xs font-medium ${
+          <div className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-2xs font-medium group-hover:pr-1 transition-all ${
             theme === "dark"
               ? "bg-teal-900/40 text-teal-400 border border-teal-700/50"
               : "bg-teal-100 text-teal-700 border border-teal-300"
@@ -73,6 +73,7 @@ const FixtureCardOption2 = ({
             <span className="w-1.5 h-1.5 rounded-full bg-teal-500"></span>
             <span className="hidden sm:inline">Predicted</span>
             <span className="sm:hidden">✓</span>
+            <Pencil1Icon className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity hidden sm:block" />
           </div>
         ) : (
           <div className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-2xs font-medium ${

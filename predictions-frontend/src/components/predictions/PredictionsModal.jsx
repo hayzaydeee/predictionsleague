@@ -155,6 +155,15 @@ export default function PredictionsModal({
   // Form submission with 3-step chip integration
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Block if deadline passed and editing
+    const currentDeadline = deadlineStatus();
+    if (currentDeadline.isPast && isEditing) {
+      showToast('Deadline has passed - cannot edit prediction', 'error');
+      onClose();
+      return;
+    }
+    
     setSubmitting(true);
 
     // Merge match chips (selectedChips) with gameweek chips (activeGameweekChips)
@@ -370,6 +379,7 @@ export default function PredictionsModal({
                   awayScore={awayScore}
                   onHomeScoreChange={setHomeScore}
                   onAwayScoreChange={setAwayScore}
+                  disabled={deadline.isPast && isEditing}
                 />
               )}              {/* Step 2: Goalscorers & Chips */}
               {currentStep === 2 && (
@@ -432,6 +442,7 @@ export default function PredictionsModal({
           submitting={submitting}
           isValidating={isValidating}
           isRecording={isRecording}
+          disableNext={deadline.isPast && isEditing && currentStep === 1}
         />
 
         {/* Success confirmation overlay */}

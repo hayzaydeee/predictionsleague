@@ -92,12 +92,14 @@ export default function ContentPane({
   };
 
   // Consolidated handler for fixture selection
-  const handleFixtureSelect = (fixture, gameweekChips = []) => {
+  const handleFixtureSelect = (fixture, gameweekChips = [], options = {}) => {
+    const { isEditing = false, initialValues = null } = options;
+    
     setModalData({
       isOpen: true,
       fixture: fixture,
-      initialValues: null,
-      isEditing: false,
+      initialValues: initialValues,
+      isEditing: isEditing,
       activeGameweekChips: gameweekChips || [],
     });
   };

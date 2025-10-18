@@ -144,9 +144,29 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
     });
   }, [enhancedFixtures, dateFilter, activeFilter, searchQuery]);
 
-  // Handle fixture selection
+  // Handle fixture selection - Smart Click: Edit if predicted, Create if not
   const onFixtureSelect = (fixture) => {
-    handleFixtureSelect(fixture, activeGameweekChips);
+    // Check if user has already predicted this fixture
+    const existingPrediction = fixture.userPrediction;
+    
+    if (existingPrediction) {
+      // Edit mode: Open modal with existing prediction data
+      console.log('🔄 Opening edit mode for existing prediction:', existingPrediction);
+      handleFixtureSelect(fixture, activeGameweekChips, {
+        isEditing: true,
+        initialValues: {
+          homeScore: existingPrediction.homeScore,
+          awayScore: existingPrediction.awayScore,
+          homeScorers: existingPrediction.homeScorers || [],
+          awayScorers: existingPrediction.awayScorers || [],
+          chips: existingPrediction.chips || [],
+        }
+      });
+    } else {
+      // Create mode: Open modal for new prediction
+      console.log('➕ Opening create mode for new prediction');
+      handleFixtureSelect(fixture, activeGameweekChips);
+    }
   };
 
   // Loading state

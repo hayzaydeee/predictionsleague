@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { format, parseISO } from 'date-fns';
+import { format, parseISO, addMinutes } from 'date-fns';
 import { ThemeContext } from '../../context/ThemeContext';
 import { backgrounds, text, getThemeStyles } from '../../utils/themeUtils';
 import { calculatePoints, getPointsBreakdown } from '../../utils/pointsCalculation';
@@ -10,7 +10,8 @@ import {
   StarIcon,
   PersonIcon,
   ClockIcon,
-  MagicWandIcon
+  MagicWandIcon,
+  ExclamationTriangleIcon
 } from '@radix-ui/react-icons';
 import TeamLogo from "../ui/TeamLogo";
 import { LOGO_SIZES } from "../../utils/teamLogos";
@@ -23,7 +24,27 @@ const PredictionBreakdownModal = ({
 }) => {
   const { theme } = useContext(ThemeContext);
   
-  if (!prediction) return null;
+  // Check if deadline has passed
+  const isPastDeadline = () => {
+    if (!prediction?.matchDate && !prediction?.date) return false;
+    
+    try {
+      let dateString = prediction.matchDate || prediction.date;
+      // Fix for backend sending date without timezone
+      if (!dateString.endsWith('Z') && !dateString.match(/[+-]\d{2}:\d{2}$/)) {
+        dateString = dateString + 'Z';
+      }
+      const matchDate = parseISO(dateString);
+      const deadline = addMinutes(matchDate, -30);
+      return new Date() > deadline;
+    } catch (error) {
+      console.error('Error checking deadline:', error);
+      return false;
+    }
+  };
+
+  const deadlinePassed = isPastDeadline();
+    if (!prediction) return null;
 
   // Calculate accurate points using utility function
   const calculatedPoints = calculatePoints(prediction);
@@ -145,18 +166,38 @@ const PredictionBreakdownModal = ({
               </h2>
               <div className="flex items-center space-x-2">
                 {onEdit && prediction.status === 'pending' && (
-                  <button
-                    onClick={() => {
-                      onEdit(prediction);
-                      onClose();
-                    }}
-                    className={`px-4 py-2 rounded-lg font-medium text-sm font-outfit transition-colors ${getThemeStyles(theme, {
-                      dark: 'bg-blue-600 hover:bg-blue-700 text-white',
-                      light: 'bg-blue-600 hover:bg-blue-700 text-white'
-                    })}`}
-                  >
-                    Edit Prediction
-                  </button>
+                  <>
+                    {deadlinePassed && (
+                      <div className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-outfit ${getThemeStyles(theme, {
+                        dark: 'bg-amber-900/20 text-amber-300 border border-amber-700/30',
+                        light: 'bg-amber-50 text-amber-700 border border-amber-200'
+                      })}`}>
+                        <ExclamationTriangleIcon className="w-4 h-4" />
+                        <span>Deadline passed</span>
+                      </div>
+                    )}
+                    <button
+                      onClick={() => {
+                        if (deadlinePassed) return;
+                        onEdit(prediction);
+                        onClose();
+                      }}
+                      disabled={deadlinePassed}
+                      className={`px-4 py-2 rounded-lg font-medium text-sm font-outfit transition-colors ${
+                        deadlinePassed 
+                          ? getThemeStyles(theme, {
+                              dark: 'bg-slate-700 text-slate-500 cursor-not-allowed opacity-50',
+                              light: 'bg-slate-200 text-slate-400 cursor-not-allowed opacity-50'
+                            })
+                          : getThemeStyles(theme, {
+                              dark: 'bg-blue-600 hover:bg-blue-700 text-white',
+                              light: 'bg-blue-600 hover:bg-blue-700 text-white'
+                            })
+                      }`}
+                    >
+                      Edit Prediction
+                    </button>
+                  </>
                 )}
                 <button
                   onClick={onClose}
