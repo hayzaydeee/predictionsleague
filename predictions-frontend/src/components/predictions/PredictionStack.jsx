@@ -7,6 +7,7 @@ import "swiper/css";
 import "swiper/css/effect-cards";
 // Import required modules
 import { EffectCards } from "swiper/modules";
+import { ChevronUpIcon, ChevronDownIcon } from "@radix-ui/react-icons";
 
 import PredictionCard from "./PredictionCard";
 import EmptyState from "../common/EmptyState";
@@ -132,45 +133,77 @@ const PredictionStack = ({
       ) : (
         <>
           {/* Stack of individual prediction cards using Swiper */}
-          <div className="fixture-swiper-container">
-            <Swiper
-              effect={"cards"}
-              grabCursor={true}
-              modules={[EffectCards]}
-              className="fixture-stack-swiper"
-              onSlideChange={handleSlideChange}
-              onSwiper={handleSwiperInit}
-              cardsEffect={{
-                slideShadows: false,
-                perSlideRotate: 3,
-                perSlideOffset: 8,
-                rotate: true,
-              }}
-              speed={400}
-              initialSlide={activeIndex}
-              preventInteractionOnTransition={true}
-              allowTouchMove={true}
-              watchSlidesProgress={true}
-              observer={true}
-              observeParents={true}
-              resistanceRatio={0.85}
-              watchOverflow={true}
-              touchStartPreventDefault={false}
-            >
-              {filteredPredictions.map((prediction, index) => (
-                <SwiperSlide key={prediction.id} className="fixture-stack-slide">
-                  {/* Use PredictionCard directly as the stack item */}
-                  <PredictionCard
-                    prediction={prediction}
-                    mode="personal"
-                    onSelect={handlePredictionClick}
-                    onEdit={onEditClick}
-                    isReadonly={false}
-                    size={cardStyle}
-                  />
-                </SwiperSlide>
-              ))}
-            </Swiper>
+          <div className="relative">
+            {/* Previous Card Button */}
+            {activeIndex > 0 && (
+              <button
+                onClick={() => swiperRef.current?.swiper.slidePrev()}
+                className={`absolute left-1/2 -translate-x-1/2 -top-2 z-10 p-2 rounded-full transition-all ${
+                  theme === "dark"
+                    ? "bg-slate-700 hover:bg-slate-600 text-slate-300"
+                    : "bg-white hover:bg-slate-50 text-slate-700 shadow-md"
+                }`}
+                aria-label="Previous prediction"
+              >
+                <ChevronUpIcon className="w-5 h-5" />
+              </button>
+            )}
+
+            <div className="fixture-swiper-container">
+              <Swiper
+                effect={"cards"}
+                grabCursor={true}
+                modules={[EffectCards]}
+                className="fixture-stack-swiper"
+                onSlideChange={handleSlideChange}
+                onSwiper={handleSwiperInit}
+                cardsEffect={{
+                  slideShadows: false,
+                  perSlideRotate: 3,
+                  perSlideOffset: 8,
+                  rotate: true,
+                }}
+                speed={400}
+                initialSlide={activeIndex}
+                preventInteractionOnTransition={true}
+                allowTouchMove={true}
+                watchSlidesProgress={true}
+                observer={true}
+                observeParents={true}
+                resistanceRatio={0.85}
+                watchOverflow={true}
+                touchStartPreventDefault={false}
+              >
+                {filteredPredictions.map((prediction, index) => (
+                  <SwiperSlide key={prediction.id} className="fixture-stack-slide">
+                    {/* Use PredictionCard directly as the stack item */}
+                    <PredictionCard
+                      prediction={prediction}
+                      mode="personal"
+                      onSelect={handlePredictionClick}
+                      onEdit={onEditClick}
+                      isReadonly={false}
+                      size={cardStyle}
+                    />
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            </div>
+
+            {/* Next Card Button */}
+            {activeIndex < filteredPredictions.length - 1 && (
+              <button
+                onClick={() => swiperRef.current?.swiper.slideNext()}
+                className={`absolute left-1/2 -translate-x-1/2 -bottom-2 z-10 p-2 rounded-full transition-all ${
+                  theme === "dark"
+                    ? "bg-slate-700 hover:bg-slate-600 text-slate-300"
+                    : "bg-white hover:bg-slate-50 text-slate-700 shadow-md"
+                }`}
+                aria-label="Next prediction"
+              >
+                <ChevronDownIcon className="w-5 h-5" />
+              </button>
+            )}
           </div>
 
           {/* Progress indicators */}

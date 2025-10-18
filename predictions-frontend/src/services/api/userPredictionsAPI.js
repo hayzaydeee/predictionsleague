@@ -190,7 +190,7 @@ export const userPredictionsAPI = {
   },
 
   /**
-   * Create or update a prediction
+   * Create a prediction
    * @param {Object} frontendPrediction - Frontend prediction object
    * @param {Object} fixture - Frontend fixture object
    * @returns {Promise<Object>} Prediction creation response
@@ -249,50 +249,6 @@ export const userPredictionsAPI = {
     }
   },
 
-  /**
-   * LEGACY: Create or update a prediction (for backwards compatibility)
-   * @param {Object} prediction - Prediction data
-   * @returns {Promise<Object>} Prediction creation response
-   * @deprecated Use makePrediction instead
-   */
-  async createPrediction(prediction) {
-    console.warn('⚠️ createPrediction is deprecated. Use makePrediction instead.');
-    
-    try {
-      const response = await apiCall({
-        method: 'POST',
-        url: '/predictions',
-        data: prediction
-      });
-
-      console.log('Prediction created successfully', {
-        predictionId: response.data?.id,
-        homeTeam: prediction.homeTeam,
-        awayTeam: prediction.awayTeam
-      });
-
-      return {
-        success: true,
-        data: response.data,
-        error: null
-      };
-    } catch (error) {
-      console.error('Failed to create prediction', {
-        error: error.message,
-        prediction
-      });
-
-      return {
-        success: false,
-        data: null,
-        error: {
-          message: error.message,
-          type: 'PREDICTION_CREATE_ERROR',
-          timestamp: new Date().toISOString()
-        }
-      };
-    }
-  },
 
   /**
    * Update an existing prediction
@@ -304,7 +260,7 @@ export const userPredictionsAPI = {
     try {
       const response = await apiCall({
         method: 'PUT',
-        url: `/predictions/${predictionId}`,
+        url: `/predictions/make-prediction/`,
         data: updates
       });
 

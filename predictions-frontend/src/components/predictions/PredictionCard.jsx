@@ -63,8 +63,8 @@ const PredictionCard = ({
         !isReadonly && typeof onSelect === 'function' ? "cursor-pointer" : ""
       } ${
         theme === "dark"
-          ? `bg-slate-700/30 border-slate-600/30 ${
-              !isReadonly && typeof onSelect === 'function' ? "hover:bg-slate-700/50" : ""
+          ? `bg-slate-700 border-slate-600/30 ${
+              !isReadonly && typeof onSelect === 'function' ? "hover:bg-slate-700/90" : ""
             }`
           : `bg-slate-50 border-slate-200 ${
               !isReadonly && typeof onSelect === 'function' ? "hover:bg-slate-100" : ""

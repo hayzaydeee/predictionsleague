@@ -7,6 +7,7 @@ import "swiper/css";
 import "swiper/css/effect-cards";
 // Import required modules
 import { EffectCards } from "swiper/modules";
+import { ChevronUpIcon, ChevronDownIcon } from "@radix-ui/react-icons";
 
 import EmptyFixtureState from "./EmptyFixtureState";
 import FixtureCard from "./FixtureCardOption2";
@@ -132,42 +133,74 @@ export default function FixtureStack({
       ) : (
         <>
           {/* Stack of individual fixture cards using Swiper */}
-          <div className="fixture-swiper-container">
-            <Swiper
-              effect={"cards"}
-              grabCursor={true}
-              modules={[EffectCards]}
-              className="fixture-stack-swiper"
-              onSlideChange={handleSlideChange}
-              onSwiper={handleSwiperInit}
-              cardsEffect={{
-                slideShadows: false,
-                perSlideRotate: 3,
-                perSlideOffset: 8,
-                rotate: true,
-              }}
-              speed={400}
-              initialSlide={activeIndex}
-              preventInteractionOnTransition={true}
-              allowTouchMove={true}
-              watchSlidesProgress={true}
-              observer={true}
-              observeParents={true}
-              resistanceRatio={0.85}
-              watchOverflow={true}
-              touchStartPreventDefault={false}
-            >
-              {filteredFixtures.map((fixture, index) => (
-                <SwiperSlide key={fixture.id} className="fixture-stack-slide">
-                  {/* Use FixtureCard directly as the stack item */}
-                  <FixtureCard
-                    fixture={fixture}
-                    selected={selectedFixture && selectedFixture.id === fixture.id}
-                    onClick={handleFixtureClick}
-                  />
-                </SwiperSlide>
-              ))}
-            </Swiper>
+          <div className="relative">
+            {/* Previous Card Button */}
+            {activeIndex > 0 && (
+              <button
+                onClick={() => swiperRef.current?.swiper.slidePrev()}
+                className={`absolute left-1/2 -translate-x-1/2 -top-2 z-10 p-2 rounded-full transition-all ${
+                  theme === "dark"
+                    ? "bg-slate-700 hover:bg-slate-600 text-slate-300"
+                    : "bg-white hover:bg-slate-50 text-slate-700 shadow-md"
+                }`}
+                aria-label="Previous fixture"
+              >
+                <ChevronUpIcon className="w-5 h-5" />
+              </button>
+            )}
+
+            <div className="fixture-swiper-container">
+              <Swiper
+                effect={"cards"}
+                grabCursor={true}
+                modules={[EffectCards]}
+                className="fixture-stack-swiper"
+                onSlideChange={handleSlideChange}
+                onSwiper={handleSwiperInit}
+                cardsEffect={{
+                  slideShadows: false,
+                  perSlideRotate: 3,
+                  perSlideOffset: 8,
+                  rotate: true,
+                }}
+                speed={400}
+                initialSlide={activeIndex}
+                preventInteractionOnTransition={true}
+                allowTouchMove={true}
+                watchSlidesProgress={true}
+                observer={true}
+                observeParents={true}
+                resistanceRatio={0.85}
+                watchOverflow={true}
+                touchStartPreventDefault={false}
+              >
+                {filteredFixtures.map((fixture, index) => (
+                  <SwiperSlide key={fixture.id} className="fixture-stack-slide">
+                    {/* Use FixtureCard directly as the stack item */}
+                    <FixtureCard
+                      fixture={fixture}
+                      selected={selectedFixture && selectedFixture.id === fixture.id}
+                      onClick={handleFixtureClick}
+                    />
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            </div>
+
+            {/* Next Card Button */}
+            {activeIndex < filteredFixtures.length - 1 && (
+              <button
+                onClick={() => swiperRef.current?.swiper.slideNext()}
+                className={`absolute left-1/2 -translate-x-1/2 -bottom-2 z-10 p-2 rounded-full transition-all ${
+                  theme === "dark"
+                    ? "bg-slate-700 hover:bg-slate-600 text-slate-300"
+                    : "bg-white hover:bg-slate-50 text-slate-700 shadow-md"
+                }`}
+                aria-label="Next fixture"
+              >
+                <ChevronDownIcon className="w-5 h-5" />
+              </button>
+            )}
           </div>
 
           {/* Progress indicators */}

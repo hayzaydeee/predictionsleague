@@ -62,7 +62,7 @@ select {
 
 .fixture-swiper-container {
   width: 100%;
-  height: 350px;
+  height: 450px;
   position: relative;
   display: flex;
   align-items: center;
@@ -73,7 +73,7 @@ select {
   width: 100%;
   max-width: 400px;
   margin: 0 auto;
-  height: 320px;
+  height: 420px;
 }
 
 .fixture-stack-slide {
