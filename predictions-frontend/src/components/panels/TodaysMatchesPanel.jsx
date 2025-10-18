@@ -5,7 +5,7 @@ import { getThemeStyles } from "../../utils/themeUtils";
 import { ClockIcon, CheckCircledIcon, EyeOpenIcon } from "@radix-ui/react-icons";
 import { format, parseISO } from "date-fns";
 import TeamLogo from "../ui/TeamLogo";
-import { LOGO_SIZES } from "../../constants/logoSizes";
+import { LOGO_SIZES } from "../../utils/teamLogos";
 
 /**
  * TodaysMatchesPanel
