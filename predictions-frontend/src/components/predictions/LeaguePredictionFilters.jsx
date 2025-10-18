@@ -39,7 +39,8 @@ const LeaguePredictionFilters = ({
   ).reverse(); // Reverse to show newest first
 
   // Extract unique members from predictions for member filter
-  const availableMembers = [...new Set(predictions.map(p => p.userDisplayName))].sort();
+  // Filter out undefined/null values before sorting
+  const availableMembers = [...new Set(predictions.map(p => p.userDisplayName).filter(Boolean))].sort();
 
   // Filter options
   const filterOptions = [
