@@ -168,6 +168,16 @@ const leagueAPI = {
         gameweek
       });
       
+      // Log detailed prediction structure to debug undefined values
+      console.log('📋 First prediction sample:', response.data?.[0]);
+      console.log('📋 All predictions:', response.data);
+      
+      // Check for any predictions with missing userDisplayName
+      const withoutDisplayName = response.data?.filter(p => !p.userDisplayName) || [];
+      if (withoutDisplayName.length > 0) {
+        console.warn('⚠️ Predictions without userDisplayName:', withoutDisplayName);
+      }
+      
       return response.data || [];
     } catch (error) {
       console.error('❌ Failed to fetch league predictions:', {

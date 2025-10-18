@@ -613,6 +613,13 @@ const PredictionsContent = ({ leagueId, essentialData }) => {
         });
         
         const data = await leagueAPI.getLeaguePredictions(leagueId, gameweekToFetch);
+        
+        console.log('🔍 Received predictions data:', {
+          count: data?.length,
+          firstPrediction: data?.[0],
+          allUserDisplayNames: data?.map(p => p.userDisplayName)
+        });
+        
         setPredictions(data);
       } catch (err) {
         console.error('Failed to fetch league predictions:', err);
