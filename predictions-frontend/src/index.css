@@ -85,6 +85,21 @@ select {
   justify-content: center;
 }
 
+/* Fix opacity for stacked cards - keep them visible */
+.fixture-stack-swiper .swiper-slide {
+  opacity: 1 !important;
+}
+
+.fixture-stack-swiper .swiper-slide-next,
+.fixture-stack-swiper .swiper-slide-prev {
+  opacity: 0.85 !important;
+}
+
+/* Ensure cards behind are slightly less opaque but still visible */
+.fixture-stack-swiper .swiper-slide:not(.swiper-slide-active):not(.swiper-slide-next):not(.swiper-slide-prev) {
+  opacity: 0.7 !important;
+}
+
 /* Add these styles to your CSS file */
 .fixtures-container {
   scrollbar-width: thin;
