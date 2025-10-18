@@ -71,6 +71,22 @@ export const userPredictionsAPI = {
       const normalizedData = (response.data || []).map(prediction => {
         const normalized = { ...prediction };
         
+        // Normalize date fields to prevent confusion between fixture date and prediction timestamp
+        // Backend may send: date (fixture datetime), matchDate (fixture datetime), predictedAt (when prediction was made)
+        if (!normalized.matchDate && normalized.date) {
+          // If matchDate is missing, use date as the fixture datetime
+          normalized.matchDate = normalized.date;
+        }
+        // Ensure we always have matchDate for the fixture datetime
+        if (!normalized.matchDate) {
+          console.warn('⚠️ Prediction missing matchDate field:', {
+            id: normalized.id,
+            match: `${normalized.homeTeam} vs ${normalized.awayTeam}`,
+            date: normalized.date,
+            predictedAt: normalized.predictedAt
+          });
+        }
+        
         // Convert backend "PENDING" status to lowercase "pending"
         if (normalized.status) {
           normalized.status = normalized.status.toLowerCase();

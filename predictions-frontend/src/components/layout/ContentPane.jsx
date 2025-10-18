@@ -116,11 +116,23 @@ export default function ContentPane({
     // Note: Player squads may not be available for completed/past matches
     if (!fullFixture) {
       console.warn('⚠️ Full fixture data not found in fixtures list, using basic fixture structure');
+      
+      // IMPORTANT: Use matchDate (fixture time) not prediction.date (could be predictedAt)
+      // Backend should return matchDate for the actual fixture datetime
+      const fixtureDate = prediction.matchDate || prediction.date;
+      
+      console.log('📅 Date fields in prediction:', {
+        date: prediction.date,
+        matchDate: prediction.matchDate,
+        predictedAt: prediction.predictedAt,
+        usingDate: fixtureDate
+      });
+      
       fullFixture = {
         id: prediction.matchId,
         homeTeam: prediction.homeTeam,
         awayTeam: prediction.awayTeam,
-        date: prediction.date,
+        date: fixtureDate, // Use matchDate not predictedAt
         venue: prediction.venue || "Premier League",
         gameweek: prediction.gameweek,
         // Player squads might not be available for past matches
