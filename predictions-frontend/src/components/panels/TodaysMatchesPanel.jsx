@@ -1,8 +1,7 @@
-import { useContext } from "react";
+import React, { useContext } from "react";
 import { motion } from "framer-motion";
 import { ThemeContext } from "../../context/ThemeContext";
-import { getThemeStyles } from "../../utils/themeUtils";
-import { ClockIcon, CheckCircledIcon, EyeOpenIcon } from "@radix-ui/react-icons";
+import { CheckCircledIcon, EyeOpenIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import { format, parseISO } from "date-fns";
 import TeamLogo from "../ui/TeamLogo";
 import { LOGO_SIZES } from "../../utils/teamLogos";
@@ -46,36 +45,38 @@ const TodaysMatchesPanel = ({ matches = [], onViewAll, onViewPrediction }) => {
   const hasLiveMatches = liveMatches.length > 0;
   const panelTitle = hasLiveMatches ? "Live Matches" : "Finished Today";
   const panelIcon = hasLiveMatches ? "🔴" : "✅";
+  const iconColorClass = hasLiveMatches 
+    ? theme === "dark" ? "bg-red-500/10 border-red-500/20" : "bg-red-50 border-red-200"
+    : theme === "dark" ? "bg-green-500/10 border-green-500/20" : "bg-green-50 border-green-200";
+  const titleColorClass = hasLiveMatches
+    ? theme === "dark" ? "text-red-200" : "text-red-700"
+    : theme === "dark" ? "text-green-200" : "text-green-700";
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.3 }}
-      className={`rounded-2xl border overflow-hidden font-outfit ${getThemeStyles(theme, {
-        dark: 'bg-slate-800/40 border-slate-700/60',
-        light: 'bg-white border-slate-200'
-      })}`}
+    <div
+      className={`${
+        theme === "dark"
+          ? "bg-slate-800/40 border-slate-700/50 hover:border-slate-600/50"
+          : "bg-white border-slate-200 shadow-sm hover:border-slate-300"
+      } backdrop-blur-sm rounded-lg sm:rounded-xl p-3 sm:p-4 md:p-5 border transition-all duration-200`}
     >
       {/* Header */}
-      <div className={`p-4 border-b flex items-center justify-between ${getThemeStyles(theme, {
-        dark: 'border-slate-700/60 bg-slate-800/60',
-        light: 'border-slate-200 bg-slate-50'
-      })}`}>
-        <div className="flex items-center gap-3">
-          <span className="text-2xl">{panelIcon}</span>
+      <div className="flex justify-between items-center mb-2 sm:mb-3 md:mb-5">
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className={`p-1 sm:p-1.5 rounded border ${iconColorClass}`}>
+            <span className="text-sm sm:text-base">{panelIcon}</span>
+          </div>
           <div>
-            <h3 className={`text-lg font-bold ${getThemeStyles(theme, {
-              dark: 'text-slate-100',
-              light: 'text-slate-900'
-            })}`}>
+            <h3
+              className={`${titleColorClass} font-outfit font-semibold text-sm sm:text-base`}
+            >
               {panelTitle}
             </h3>
-            <p className={`text-xs ${getThemeStyles(theme, {
-              dark: 'text-slate-400',
-              light: 'text-slate-600'
-            })}`}>
+            <p
+              className={`${
+                theme === "dark" ? "text-slate-400" : "text-slate-500"
+              } text-2xs sm:text-xs font-outfit hidden sm:block`}
+            >
               {hasLiveMatches ? `${liveMatches.length} match${liveMatches.length !== 1 ? 'es' : ''} in progress` 
                 : `${finishedMatches.length} match${finishedMatches.length !== 1 ? 'es' : ''} completed today`}
             </p>
@@ -84,20 +85,25 @@ const TodaysMatchesPanel = ({ matches = [], onViewAll, onViewPrediction }) => {
         
         {/* View All Button */}
         {onViewAll && (
-          <button
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={onViewAll}
-            className={`text-sm px-3 py-1.5 rounded-lg font-medium transition-colors ${getThemeStyles(theme, {
-              dark: 'text-teal-400 hover:bg-teal-900/20',
-              light: 'text-teal-600 hover:bg-teal-50'
-            })}`}
+            className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 border rounded text-2xs sm:text-xs transition-all duration-200 ${
+              theme === "dark"
+                ? "bg-slate-700/50 hover:bg-slate-700/70 border-slate-600/30 text-slate-300 hover:text-white"
+                : "bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-600 hover:text-slate-800"
+            }`}
           >
-            View All
-          </button>
+            <span className="hidden sm:inline">View all</span>
+            <span className="sm:hidden">All</span>
+            <ChevronRightIcon className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+          </motion.button>
         )}
       </div>
 
       {/* Matches List */}
-      <div className="divide-y divide-slate-700/40">
+      <div className="space-y-1.5 sm:space-y-2">
         {matches.map((match, index) => {
           const statusLower = match.status?.toLowerCase() || '';
           const isLive = statusLower === 'live' || 
@@ -114,112 +120,130 @@ const TodaysMatchesPanel = ({ matches = [], onViewAll, onViewPrediction }) => {
           return (
             <motion.div
               key={match.id || index}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: index * 0.05 }}
-              className={`p-4 ${getThemeStyles(theme, {
-                dark: 'hover:bg-slate-700/20',
-                light: 'hover:bg-slate-50'
-              })} transition-colors`}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.1 }}
+              className={`group relative rounded p-2 sm:p-3 border transition-all duration-200 ${
+                theme === "dark"
+                  ? "bg-slate-700/20 hover:bg-slate-700/40 border-slate-600/20 hover:border-slate-500/40"
+                  : "bg-slate-50/50 hover:bg-slate-100/50 border-slate-200/50 hover:border-slate-300/50"
+              }`}
             >
-              <div className="flex items-center justify-between gap-4">
-                {/* Status Badge */}
-                <div className="flex-shrink-0">
-                  {isLive ? (
-                    <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-red-500/20 border border-red-500/30">
-                      <span className="relative flex h-2 w-2">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  {/* Teams Row */}
+                  <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-1.5">
+                    <div className="flex items-center gap-1 sm:gap-2">
+                      <TeamLogo 
+                        teamName={match.homeTeam || match.home}
+                        size={LOGO_SIZES.xs}
+                        className="flex-shrink-0"
+                      />
+                      <span
+                        className={`${
+                          theme === "dark" ? "text-white" : "text-slate-800"
+                        } font-outfit font-medium text-xs sm:text-sm`}
+                      >
+                        {match.homeTeam || match.home}
                       </span>
-                      <span className="text-xs font-bold text-red-400">LIVE</span>
+                      {(isLive || isFinished) && match.homeScore !== undefined && (
+                        <span className={`${
+                          theme === "dark" ? "text-white" : "text-slate-900"
+                        } font-outfit font-bold text-xs sm:text-sm`}>
+                          {match.homeScore}
+                        </span>
+                      )}
                     </div>
-                  ) : isFinished ? (
-                    <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-green-500/20 border border-green-500/30">
-                      <CheckCircledIcon className="w-3 h-3 text-green-400" />
-                      <span className="text-xs font-bold text-green-400">FT</span>
-                    </div>
-                  ) : null}
-                </div>
-
-                {/* Teams */}
-                <div className="flex-1 min-w-0">
-                  {/* Home Team */}
-                  <div className="flex items-center gap-2 mb-1">
-                    <TeamLogo 
-                      teamName={match.homeTeam || match.home}
-                      size={LOGO_SIZES.xs}
-                      theme={theme}
-                    />
-                    <span className={`text-sm font-medium truncate ${getThemeStyles(theme, {
-                      dark: 'text-slate-200',
-                      light: 'text-slate-800'
-                    })}`}>
-                      {match.homeTeam || match.home}
+                    
+                    <span
+                      className={`${
+                        theme === "dark" ? "text-slate-400" : "text-slate-500"
+                      } text-xs sm:text-sm font-outfit`}
+                    >
+                      -
                     </span>
-                    {(isLive || isFinished) && match.homeScore !== undefined && (
-                      <span className={`text-sm font-bold ml-auto ${getThemeStyles(theme, {
-                        dark: 'text-slate-100',
-                        light: 'text-slate-900'
-                      })}`}>
-                        {match.homeScore}
+                    
+                    <div className="flex items-center gap-1 sm:gap-2">
+                      {(isLive || isFinished) && match.awayScore !== undefined && (
+                        <span className={`${
+                          theme === "dark" ? "text-white" : "text-slate-900"
+                        } font-outfit font-bold text-xs sm:text-sm`}>
+                          {match.awayScore}
+                        </span>
+                      )}
+                      <span
+                        className={`${
+                          theme === "dark" ? "text-white" : "text-slate-800"
+                        } font-outfit font-medium text-xs sm:text-sm`}
+                      >
+                        {match.awayTeam || match.away}
                       </span>
-                    )}
-                  </div>
-                  
-                  {/* Away Team */}
-                  <div className="flex items-center gap-2">
-                    <TeamLogo 
-                      teamName={match.awayTeam || match.away}
-                      size={LOGO_SIZES.xs}
-                      theme={theme}
-                    />
-                    <span className={`text-sm font-medium truncate ${getThemeStyles(theme, {
-                      dark: 'text-slate-200',
-                      light: 'text-slate-800'
-                    })}`}>
-                      {match.awayTeam || match.away}
-                    </span>
-                    {(isLive || isFinished) && match.awayScore !== undefined && (
-                      <span className={`text-sm font-bold ml-auto ${getThemeStyles(theme, {
-                        dark: 'text-slate-100',
-                        light: 'text-slate-900'
-                      })}`}>
-                        {match.awayScore}
-                      </span>
-                    )}
+                      <TeamLogo 
+                        teamName={match.awayTeam || match.away}
+                        size={LOGO_SIZES.xs}
+                        className="flex-shrink-0"
+                      />
+                    </div>
+
+                    {/* Status Badge */}
+                    {isLive ? (
+                      <div className="flex items-center gap-0.5 sm:gap-1 text-2xs sm:text-xs font-bold py-0.5 px-1 sm:px-1.5 rounded-full border bg-red-500/10 text-red-400 border-red-500/20">
+                        <span className="relative flex h-1.5 w-1.5 sm:h-2 sm:w-2">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-full w-full bg-red-500"></span>
+                        </span>
+                        <span>LIVE</span>
+                      </div>
+                    ) : isFinished ? (
+                      <div className="flex items-center gap-0.5 sm:gap-1 text-2xs sm:text-xs font-medium py-0.5 px-1 sm:px-1.5 rounded-full border bg-green-500/10 text-green-400 border-green-500/20">
+                        <CheckCircledIcon className="w-2 h-2 sm:w-2.5 sm:h-2.5" />
+                        <span>FT</span>
+                      </div>
+                    ) : null}
                   </div>
 
-                  {/* Match Time */}
-                  {!isLive && !isFinished && match.date && (
-                    <div className={`flex items-center gap-1 mt-1 text-xs ${getThemeStyles(theme, {
-                      dark: 'text-slate-400',
-                      light: 'text-slate-600'
-                    })}`}>
-                      <ClockIcon className="w-3 h-3" />
-                      {format(parseISO(match.date), 'HH:mm')}
+                  {/* Match Info Row */}
+                  <div
+                    className={`flex items-center gap-2 sm:gap-3 text-2xs sm:text-xs ${
+                      theme === "dark" ? "text-slate-400" : "text-slate-500"
+                    } font-outfit`}
+                  >
+                    {match.venue && (
+                      <span className="hidden sm:inline">{match.venue}</span>
+                    )}
+                    <div
+                      className={`text-2xs sm:text-xs px-1 sm:px-1.5 py-0.5 rounded ${
+                        theme === "dark" ? "bg-slate-600/30" : "bg-slate-200/70"
+                      }`}
+                    >
+                      GW{match.gameweek || 1}
                     </div>
-                  )}
+                  </div>
                 </div>
 
                 {/* Action Button */}
                 {hasPrediction && onViewPrediction && (
-                  <button
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={() => onViewPrediction(match.userPrediction || match.prediction)}
-                    className={`flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 ${getThemeStyles(theme, {
-                      dark: 'bg-indigo-900/30 text-indigo-300 hover:bg-indigo-900/50 border border-indigo-700/30',
-                      light: 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200'
-                    })}`}
+                    className={`flex items-center gap-1 sm:gap-1.5 border rounded px-2 sm:px-3 py-1 sm:py-1.5 text-2xs sm:text-xs font-medium transition-all duration-200 opacity-70 hover:opacity-100 ${
+                      theme === "dark"
+                        ? "bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-200 hover:text-indigo-200 border-indigo-500/30"
+                        : "bg-indigo-50 hover:bg-indigo-100 text-indigo-600 hover:text-indigo-700 border-indigo-200"
+                    }`}
                   >
-                    <EyeOpenIcon className="w-3 h-3" />
-                    View
-                  </button>
+                    <EyeOpenIcon className="w-3 h-3 hidden sm:block" />
+                    <span className="hidden sm:inline">View</span>
+                    <span className="sm:hidden">👁</span>
+                  </motion.button>
                 )}
               </div>
             </motion.div>
           );
         })}
       </div>
-    </motion.div>
+    </div>
   );
 };
 
