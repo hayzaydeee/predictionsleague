@@ -237,8 +237,34 @@ export const userPredictionsAPI = {
    */
   async makePrediction(frontendPrediction, fixture, isEditing = false) {
     try {
+      console.log('🔍 [TRANSFORM] Frontend data BEFORE transformation:', {
+        frontendPrediction: {
+          ...frontendPrediction,
+          chips: frontendPrediction.chips,
+          chipsArray: Array.isArray(frontendPrediction.chips) ? frontendPrediction.chips : 'NOT AN ARRAY'
+        },
+        fixture: {
+          id: fixture.id,
+          matchId: fixture.matchId,
+          homeTeam: fixture.homeTeam || fixture.home,
+          awayTeam: fixture.awayTeam || fixture.away
+        },
+        isEditing
+      });
+      
       // Transform frontend data to backend format
       const backendPayload = transformPredictionToBackend(frontendPrediction, fixture);
+      
+      console.log('🔧 [TRANSFORM] Backend payload AFTER transformation:', {
+        backendPayload: {
+          ...backendPayload,
+          chipsBeforeMapping: frontendPrediction.chips,
+          chipsAfterMapping: backendPayload.chips,
+          chipsType: typeof backendPayload.chips,
+          chipsIsArray: Array.isArray(backendPayload.chips),
+          chipsLength: backendPayload.chips?.length
+        }
+      });
       
       // Validate the payload before sending
       const validation = validateBackendPayload(backendPayload);
