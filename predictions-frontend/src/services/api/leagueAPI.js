@@ -161,10 +161,7 @@ const leagueAPI = {
         ? `/leagues/${leagueId}/predictions/${gameweek}`
         : `/leagues/${leagueId}/predictions`;
       
-      const response = await apiCall({
-        method: 'GET',
-        url
-      });
+      const response = await api.get(url);
       
       console.log('✅ League predictions fetched:', {
         predictionsCount: response.data?.length || 0,
