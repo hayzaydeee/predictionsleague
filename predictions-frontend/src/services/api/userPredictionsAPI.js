@@ -256,7 +256,7 @@ export const userPredictionsAPI = {
       });
 
       const response = await apiCall({
-        method: isEditing ? 'PUT' : 'POST',
+        method: 'POST',
         url: '/predictions/make-prediction',
         data: backendPayload
       });
