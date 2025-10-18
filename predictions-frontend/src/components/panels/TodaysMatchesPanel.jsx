@@ -4,7 +4,7 @@ import { ThemeContext } from "../../context/ThemeContext";
 import { getThemeStyles } from "../../utils/themeUtils";
 import { ClockIcon, CheckCircledIcon, EyeOpenIcon } from "@radix-ui/react-icons";
 import { format, parseISO } from "date-fns";
-import TeamLogo from "../common/TeamLogo";
+import TeamLogo from "../ui/TeamLogo";
 import { LOGO_SIZES } from "../../constants/logoSizes";
 
 /**
