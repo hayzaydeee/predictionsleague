@@ -194,16 +194,19 @@ const DashboardView = ({
       const todaysFixtures = memoizedExternalFixtures
         .filter(fixture => {
           const fixtureDate = new Date(fixture.date);
+          const now = new Date();
           const isToday = fixtureDate >= today && fixtureDate < tomorrow;
           
           // Check for live or finished status (multiple possible formats)
           const statusLower = fixture.status?.toLowerCase() || '';
-          const isLiveOrFinished = 
+          const hasLiveStatus = 
             // Live statuses
             statusLower === 'live' || 
             statusLower === 'in_progress' || 
             statusLower === 'in_play' ||
-            statusLower === 'playing' ||
+            statusLower === 'playing';
+          
+          const hasFinishedStatus =
             // Finished statuses
             statusLower === 'completed' || 
             statusLower === 'finished' || 
@@ -211,15 +214,27 @@ const DashboardView = ({
             statusLower === 'full_time' ||
             statusLower === 'fulltime';
           
+          // WORKAROUND: If status is TIMED/SCHEDULED but kickoff has passed, treat as live
+          const kickoffPassed = fixtureDate < now;
+          const isScheduledStatus = statusLower === 'timed' || statusLower === 'scheduled';
+          const isProbablyLive = isScheduledStatus && kickoffPassed && isToday;
+          
+          const isLiveOrFinished = hasLiveStatus || hasFinishedStatus || isProbablyLive;
+          
           console.log('🏟️ Fixture check:', {
             id: fixture.id,
             homeTeam: fixture.homeTeam,
             awayTeam: fixture.awayTeam,
             date: fixture.date,
             fixtureDate: fixtureDate.toISOString(),
+            now: now.toISOString(),
             status: fixture.status,
             statusLower,
             isToday,
+            kickoffPassed,
+            hasLiveStatus,
+            hasFinishedStatus,
+            isProbablyLive,
             isLiveOrFinished,
             passed: isToday && isLiveOrFinished
           });
