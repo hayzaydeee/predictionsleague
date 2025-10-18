@@ -33,7 +33,7 @@ const FixtureCardOption2 = ({
       whileHover={{ scale: 1.01 }}
       whileTap={{ scale: 0.99 }}
       onClick={() => onClick(fixture)}
-      className={`group rounded-xl overflow-hidden cursor-pointer transition-all ${
+      className={`group relative rounded-xl overflow-hidden cursor-pointer transition-all ${
         theme === "dark"
           ? "bg-slate-800 border border-slate-700/50"
           : "bg-white border border-slate-200 shadow-sm hover:shadow-md"
@@ -206,6 +206,45 @@ const FixtureCardOption2 = ({
           : "bg-slate-50 border-slate-200 text-slate-600"
       }`}>
         <span>📍 {fixture.venue}</span>
+      </div>
+
+      {/* Animated Hover Overlay */}
+      <div className={`absolute inset-0 flex items-center justify-center backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none ${
+        theme === "dark"
+          ? "bg-slate-900/95"
+          : "bg-white/95"
+      }`}>
+        <div className="text-center px-6">
+          <motion.div
+            initial={{ scale: 0.95, y: 5 }}
+            whileInView={{ scale: 1, y: 0 }}
+            className="group-hover:animate-pulse-subtle"
+          >
+            <div className={`inline-flex items-center gap-3 px-6 py-4 rounded-2xl font-outfit font-semibold text-sm sm:text-base ${
+              isPredicted
+                ? theme === "dark"
+                  ? "bg-gradient-to-r from-teal-600 to-blue-600 text-white shadow-lg shadow-teal-500/50"
+                  : "bg-gradient-to-r from-teal-500 to-blue-500 text-white shadow-lg shadow-teal-400/50"
+                : theme === "dark"
+                  ? "bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg shadow-purple-500/50"
+                  : "bg-gradient-to-r from-purple-500 to-blue-500 text-white shadow-lg shadow-purple-400/50"
+            }`}>
+              {isPredicted ? (
+                <>
+                  <Pencil1Icon className="w-5 h-5" />
+                  <span>Click to Edit Prediction</span>
+                </>
+              ) : (
+                <>
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  <span>Click to Make Prediction</span>
+                </>
+              )}
+            </div>
+          </motion.div>
+        </div>
       </div>
     </motion.div>
   );
