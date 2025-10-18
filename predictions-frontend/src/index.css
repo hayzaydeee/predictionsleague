@@ -85,19 +85,41 @@ select {
   justify-content: center;
 }
 
-/* Fix opacity for stacked cards - keep them visible */
-.fixture-stack-swiper .swiper-slide {
+/* Fix opacity for stacked cards - STRONG overrides to combat Swiper's cards effect */
+.fixture-stack-swiper .swiper-slide,
+.fixture-stack-swiper .swiper-slide-active,
+.fixture-stack-swiper .swiper-slide-next,
+.fixture-stack-swiper .swiper-slide-prev {
   opacity: 1 !important;
 }
 
-.fixture-stack-swiper .swiper-slide-next,
-.fixture-stack-swiper .swiper-slide-prev {
-  opacity: 0.85 !important;
+/* Override Swiper's cards effect opacity transforms */
+.fixture-stack-swiper .swiper-slide > * {
+  opacity: 1 !important;
 }
 
-/* Ensure cards behind are slightly less opaque but still visible */
-.fixture-stack-swiper .swiper-slide:not(.swiper-slide-active):not(.swiper-slide-next):not(.swiper-slide-prev) {
-  opacity: 0.7 !important;
+/* Target all cards regardless of their state */
+.fixture-stack-swiper .swiper-slide[data-swiper-slide-index] {
+  opacity: 1 !important;
+}
+
+/* Override any inline opacity styles */
+.fixture-stack-swiper .swiper-slide[style*="opacity"] {
+  opacity: 1 !important;
+}
+
+/* Remove any shadow overlays that Swiper adds */
+.fixture-stack-swiper .swiper-slide-shadow,
+.fixture-stack-swiper .swiper-slide-shadow-left,
+.fixture-stack-swiper .swiper-slide-shadow-right {
+  display: none !important;
+  opacity: 0 !important;
+}
+
+/* Ensure card content is always visible */
+.fixture-stack-swiper .swiper-slide .fixture-card,
+.fixture-stack-swiper .swiper-slide > div {
+  opacity: 1 !important;
 }
 
 /* Add these styles to your CSS file */
