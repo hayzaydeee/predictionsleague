@@ -174,16 +174,19 @@ const leagueAPI = {
       // Map predictions to ensure compatibility with frontend expectations
       // Backend returns 'username' → map to 'userDisplayName'
       // Backend returns 'predictedAt' → map to 'date' for sorting
+      // Backend returns 'PENDING'/'COMPLETE' → normalize to lowercase
       const mappedPredictions = (response.data || []).map(prediction => ({
         ...prediction,
         userDisplayName: prediction.username || prediction.userDisplayName || 'Unknown User',
-        date: prediction.predictedAt || prediction.date // Map predictedAt to date for sorting
+        date: prediction.predictedAt || prediction.date, // Map predictedAt to date for sorting
+        status: prediction.status ? prediction.status.toLowerCase() : 'pending' // Normalize status to lowercase
       }));
       
-      console.log('✅ Mapped predictions with userDisplayName and date:', {
+      console.log('✅ Mapped predictions with userDisplayName, date, and status:', {
         count: mappedPredictions.length,
         sampleNames: mappedPredictions.slice(0, 3).map(p => p.userDisplayName),
         sampleDates: mappedPredictions.slice(0, 3).map(p => p.date),
+        sampleStatuses: mappedPredictions.slice(0, 3).map(p => p.status),
         allUniqueUsernames: [...new Set(mappedPredictions.map(p => p.username))],
         allUniqueUserDisplayNames: [...new Set(mappedPredictions.map(p => p.userDisplayName))]
       });
