@@ -617,8 +617,21 @@ const PredictionsContent = ({ leagueId, essentialData }) => {
         console.log('🔍 Received predictions data:', {
           count: data?.length,
           firstPrediction: data?.[0],
-          allUserDisplayNames: data?.map(p => p.userDisplayName)
+          allUserDisplayNames: data?.map(p => p.userDisplayName),
+          allFields: data?.[0] ? Object.keys(data[0]) : []
         });
+        
+        // Check for any undefined/null fields that might cause issues
+        if (data && data.length > 0) {
+          const firstPred = data[0];
+          const nullFields = Object.entries(firstPred)
+            .filter(([key, value]) => value === null || value === undefined)
+            .map(([key]) => key);
+          
+          if (nullFields.length > 0) {
+            console.warn('⚠️ Predictions contain null/undefined fields:', nullFields);
+          }
+        }
         
         setPredictions(data);
       } catch (err) {

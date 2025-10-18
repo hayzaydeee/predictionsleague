@@ -171,16 +171,19 @@ const leagueAPI = {
       // Log detailed prediction structure to debug undefined values
       console.log('📋 First prediction sample:', response.data?.[0]);
       
-      // Map predictions to ensure userDisplayName exists
-      // Backend returns 'username' field, map it to 'userDisplayName' for frontend compatibility
+      // Map predictions to ensure compatibility with frontend expectations
+      // Backend returns 'username' → map to 'userDisplayName'
+      // Backend returns 'predictedAt' → map to 'date' for sorting
       const mappedPredictions = (response.data || []).map(prediction => ({
         ...prediction,
-        userDisplayName: prediction.username || prediction.userDisplayName || 'Unknown User'
+        userDisplayName: prediction.username || prediction.userDisplayName || 'Unknown User',
+        date: prediction.predictedAt || prediction.date // Map predictedAt to date for sorting
       }));
       
-      console.log('✅ Mapped predictions with userDisplayName:', {
+      console.log('✅ Mapped predictions with userDisplayName and date:', {
         count: mappedPredictions.length,
-        sampleNames: mappedPredictions.slice(0, 3).map(p => p.userDisplayName)
+        sampleNames: mappedPredictions.slice(0, 3).map(p => p.userDisplayName),
+        sampleDates: mappedPredictions.slice(0, 3).map(p => p.date)
       });
       
       return mappedPredictions;
