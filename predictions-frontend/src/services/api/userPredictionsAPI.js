@@ -254,11 +254,25 @@ export const userPredictionsAPI = {
         gameweek: backendPayload.gameweek,
         isEditing
       });
+      
+      console.log('📤 [REQUEST] Full prediction request details:', {
+        method: 'POST',
+        url: '/predictions/make-prediction',
+        fullPayload: backendPayload,
+        payloadSize: JSON.stringify(backendPayload).length,
+        timestamp: new Date().toISOString()
+      });
 
       const response = await apiCall({
         method: 'POST',
         url: '/predictions/make-prediction',
         data: backendPayload
+      });
+      
+      console.log('📥 [RESPONSE] Backend response:', {
+        status: 'success',
+        responseData: response.data,
+        timestamp: new Date().toISOString()
       });
 
       console.log(`✅ Prediction ${isEditing ? 'updated' : 'created'} successfully`, {
