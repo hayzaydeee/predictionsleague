@@ -97,6 +97,28 @@ export const useChipStatus = (options = {}) => {
         })
       };
       
+      // 🎯 ADD DOUBLE DOWN - Always available, no backend tracking needed
+      const hasDoubleDown = enhancedData.chips.some(chip => 
+        chip.chipId === 'doubleDown' || chip.id === 'doubleDown'
+      );
+      
+      if (!hasDoubleDown) {
+        const doubleDownConfig = CHIP_CONFIG.doubleDown;
+        enhancedData.chips.push({
+          ...doubleDownConfig,
+          id: 'doubleDown',
+          chipId: 'doubleDown',
+          available: true, // Always available
+          reason: 'Available',
+          usageCount: 0, // Not tracked
+          seasonLimit: null,
+          remainingUses: null,
+          cooldownExpires: null,
+          remainingGameweeks: 0
+        });
+        console.log('✅ Added Double Down chip (always available, no backend tracking)');
+      }
+      
       console.log('✅ useChipStatus: Enhanced data with CHIP_CONFIG:', {
         originalChipsCount: result.data?.chips?.length || 0,
         enhancedChipsCount: enhancedData.chips?.length || 0,

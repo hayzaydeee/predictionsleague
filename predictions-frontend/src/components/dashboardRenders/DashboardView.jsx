@@ -181,6 +181,14 @@ const DashboardView = ({
 
   // Helper function to format match data for the predictions modal
   const formatMatchForPrediction = (match) => {
+    console.log('🔧 formatMatchForPrediction:', {
+      matchId: match.id,
+      hasHomePlayers: !!match.homePlayers,
+      hasAwayPlayers: !!match.awayPlayers,
+      homePlayersCount: match.homePlayers?.length || 0,
+      awayPlayersCount: match.awayPlayers?.length || 0
+    });
+    
     return {
       id: match.id,
       homeTeam: normalizeTeamName(match.homeTeam || match.home),
@@ -189,6 +197,9 @@ const DashboardView = ({
       venue: match.venue || "Stadium",
       gameweek: match.gameweek || essentialData?.season?.currentGameweek || 1,
       competition: match.competition || "Premier League",
+      // Include player data for goalscorer selection
+      homePlayers: match.homePlayers || [],
+      awayPlayers: match.awayPlayers || [],
     };
   };
 

@@ -384,6 +384,9 @@ export default function ContentPane({
                 venue: match.venue,
                 gameweek: match.gameweek,
                 competition: match.competition,
+                // Include player data for goalscorer selection
+                homePlayers: match.homePlayers || [],
+                awayPlayers: match.awayPlayers || [],
               })
             }
             navigateToSection={navigateToSection}
@@ -443,6 +446,9 @@ export default function ContentPane({
                 venue: match.venue,
                 gameweek: match.gameweek,
                 competition: match.competition,
+                // Include player data for goalscorer selection
+                homePlayers: match.homePlayers || [],
+                awayPlayers: match.awayPlayers || [],
               })
             }
             navigateToSection={navigateToSection}
