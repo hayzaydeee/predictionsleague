@@ -173,7 +173,6 @@ const GameweekChipsPanel = ({
         })}`}
       >
         <div className="flex items-center justify-between gap-3">
-          /* Left: Icon + Title + Subtitle (hide subtitle on mobile) */
           <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
             <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-teal-500/20 flex items-center justify-center flex-shrink-0">
               <LightningBoltIcon className="w-4 h-4 sm:w-5 sm:h-5 text-teal-400" />
