@@ -24,27 +24,23 @@ const PredictionBreakdownModal = ({
 }) => {
   const { theme } = useContext(ThemeContext);
   
+  if (!prediction) return null;
+  
   // Check if deadline has passed
-  const isPastDeadline = () => {
-    if (!prediction?.matchDate && !prediction?.date) return false;
-    
-    try {
-      let dateString = prediction.matchDate || prediction.date;
-      // Fix for backend sending date without timezone
-      if (!dateString.endsWith('Z') && !dateString.match(/[+-]\d{2}:\d{2}$/)) {
-        dateString = dateString + 'Z';
-      }
-      const matchDate = parseISO(dateString);
-      const deadline = addMinutes(matchDate, -30);
-      return new Date() > deadline;
-    } catch (error) {
-      console.error('Error checking deadline:', error);
-      return false;
-    }
-  };
-
-  const deadlinePassed = isPastDeadline();
-    if (!prediction) return null;
+  // NOTE: We need to fetch the actual fixture date from somewhere else
+  // because prediction.matchDate/prediction.date contains the prediction creation timestamp
+  // For now, only allow editing if match status is still 'pending'
+  // Backend should also validate deadline on their end
+  const canEdit = prediction.status === 'pending';
+  
+  console.log('🔍 PredictionBreakdownModal - Checking edit permission:', {
+    predictionId: prediction.id,
+    status: prediction.status,
+    canEdit,
+    predictionDate: prediction.date,
+    predictionMatchDate: prediction.matchDate,
+    note: 'Backend date fields contain prediction timestamp, not fixture date'
+  });
 
   // Calculate accurate points using utility function
   const calculatedPoints = calculatePoints(prediction);
@@ -167,24 +163,24 @@ const PredictionBreakdownModal = ({
               <div className="flex items-center space-x-2">
                 {onEdit && prediction.status === 'pending' && (
                   <>
-                    {deadlinePassed && (
+                    {!canEdit && (
                       <div className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-outfit ${getThemeStyles(theme, {
                         dark: 'bg-amber-900/20 text-amber-300 border border-amber-700/30',
                         light: 'bg-amber-50 text-amber-700 border border-amber-200'
                       })}`}>
                         <ExclamationTriangleIcon className="w-4 h-4" />
-                        <span>Deadline passed</span>
+                        <span>Match started</span>
                       </div>
                     )}
                     <button
                       onClick={() => {
-                        if (deadlinePassed) return;
+                        if (!canEdit) return;
                         onEdit(prediction);
                         onClose();
                       }}
-                      disabled={deadlinePassed}
+                      disabled={!canEdit}
                       className={`px-4 py-2 rounded-lg font-medium text-sm font-outfit transition-colors ${
-                        deadlinePassed 
+                        !canEdit 
                           ? getThemeStyles(theme, {
                               dark: 'bg-slate-700 text-slate-500 cursor-not-allowed opacity-50',
                               light: 'bg-slate-200 text-slate-400 cursor-not-allowed opacity-50'
