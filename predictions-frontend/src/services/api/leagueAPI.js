@@ -183,8 +183,20 @@ const leagueAPI = {
       console.log('✅ Mapped predictions with userDisplayName and date:', {
         count: mappedPredictions.length,
         sampleNames: mappedPredictions.slice(0, 3).map(p => p.userDisplayName),
-        sampleDates: mappedPredictions.slice(0, 3).map(p => p.date)
+        sampleDates: mappedPredictions.slice(0, 3).map(p => p.date),
+        allUniqueUsernames: [...new Set(mappedPredictions.map(p => p.username))],
+        allUniqueUserDisplayNames: [...new Set(mappedPredictions.map(p => p.userDisplayName))]
       });
+      
+      // Log full details of first few predictions to debug grouping
+      console.log('📋 First 3 predictions for grouping debug:', 
+        mappedPredictions.slice(0, 3).map(p => ({
+          username: p.username,
+          userDisplayName: p.userDisplayName,
+          homeTeam: p.homeTeam,
+          awayTeam: p.awayTeam
+        }))
+      );
       
       return mappedPredictions;
     } catch (error) {
