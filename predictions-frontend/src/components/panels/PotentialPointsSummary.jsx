@@ -43,13 +43,13 @@ const PotentialPointsSummary = ({ predictions, teamLogos }) => {
       <div className="h-0.5 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
 
       <div
-        className={`px-5 py-3 border-b ${getThemeStyles(theme, {
+        className={`px-3 sm:px-5 py-2.5 sm:py-4 border-b ${getThemeStyles(theme, {
           dark: "bg-slate-800/50 border-slate-700/50",
           light: "bg-slate-50 border-slate-200",
         })}`}
       >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
               <TargetIcon className="w-4 h-4 text-blue-400" />
             </div>{" "}
@@ -69,12 +69,12 @@ const PotentialPointsSummary = ({ predictions, teamLogos }) => {
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setShowRulesModal(true)}
-              className={`p-2 rounded-lg transition-all duration-200 border ${getThemeStyles(
+              className={`p-1 sm:p-2 rounded-md sm:rounded-lg transition-all duration-200 border ${getThemeStyles(
                 theme,
                 {
                   dark: "bg-slate-700/50 hover:bg-slate-700/70 text-slate-300 hover:text-slate-200 border-slate-600/50 hover:border-slate-500/50",
@@ -90,7 +90,7 @@ const PotentialPointsSummary = ({ predictions, teamLogos }) => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setIsCollapsed(!isCollapsed)}
-              className={`p-2 rounded-lg transition-all duration-200 border ${getThemeStyles(
+              className={`p-1 sm:p-2 rounded-md sm:rounded-lg transition-all duration-200 border ${getThemeStyles(
                 theme,
                 {
                   dark: "bg-slate-700/50 hover:bg-slate-700/70 text-slate-300 hover:text-slate-200 border-slate-600/50 hover:border-slate-500/50",
