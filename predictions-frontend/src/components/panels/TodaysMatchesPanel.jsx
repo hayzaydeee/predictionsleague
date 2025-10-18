@@ -15,7 +15,13 @@ import { LOGO_SIZES } from "../../utils/teamLogos";
 const TodaysMatchesPanel = ({ matches = [], onViewAll, onViewPrediction }) => {
   const { theme } = useContext(ThemeContext);
 
+  console.log('🎯 TodaysMatchesPanel render:', {
+    matchesReceived: matches?.length || 0,
+    matches: matches
+  });
+
   if (!matches || matches.length === 0) {
+    console.log('❌ TodaysMatchesPanel: No matches, not rendering');
     return null; // Don't render if no matches
   }
 

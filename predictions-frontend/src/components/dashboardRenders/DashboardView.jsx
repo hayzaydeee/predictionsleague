@@ -184,6 +184,13 @@ const DashboardView = ({
       const tomorrow = new Date(today);
       tomorrow.setDate(tomorrow.getDate() + 1);
       
+      console.log('🔍 Today\'s Matches Filter:', {
+        todayStart: today.toISOString(),
+        tomorrowStart: tomorrow.toISOString(),
+        totalFixtures: memoizedExternalFixtures.length,
+        fixtureStatuses: memoizedExternalFixtures.map(f => ({ id: f.id, status: f.status, date: f.date }))
+      });
+      
       const todaysFixtures = memoizedExternalFixtures
         .filter(fixture => {
           const fixtureDate = new Date(fixture.date);
@@ -195,6 +202,18 @@ const DashboardView = ({
             fixture.status === 'completed' || 
             fixture.status === 'finished' || 
             fixture.status === 'FT';
+          
+          console.log('🏟️ Fixture check:', {
+            id: fixture.id,
+            homeTeam: fixture.homeTeam,
+            awayTeam: fixture.awayTeam,
+            date: fixture.date,
+            fixtureDate: fixtureDate.toISOString(),
+            status: fixture.status,
+            isToday,
+            isLiveOrFinished,
+            passed: isToday && isLiveOrFinished
+          });
           
           return isToday && isLiveOrFinished;
         })
@@ -225,6 +244,11 @@ const DashboardView = ({
           predicted: userPredictions?.some(p => p.fixtureId === fixture.id),
           userPrediction: userPredictions?.find(p => p.fixtureId === fixture.id),
         }));
+      
+      console.log('📊 Today\'s matches result:', {
+        count: todaysFixtures.length,
+        matches: todaysFixtures.map(f => ({ home: f.homeTeam, away: f.awayTeam, status: f.status }))
+      });
       
       setTodaysMatches(todaysFixtures);
     };
@@ -574,6 +598,7 @@ const DashboardView = ({
         {/* Main Content - 2/3 width on xl screens */}
         <div className="xl:col-span-2 space-y-5">
           {/* Today's Matches Panel - Live or Finished Today */}
+          {console.log('🎨 Rendering check:', { todaysMatchesLength: todaysMatches?.length, todaysMatches })}
           {todaysMatches && todaysMatches.length > 0 && (
             <motion.div variants={itemVariants}>
               <TodaysMatchesPanel
