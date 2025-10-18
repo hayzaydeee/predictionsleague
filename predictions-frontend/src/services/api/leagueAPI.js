@@ -148,25 +148,36 @@ const leagueAPI = {
   },
 
   // Get league predictions (all member predictions for league fixtures)
-  getLeaguePredictions: async (leagueId) => {
+  // Default call returns current gameweek
+  // Pass gameweek parameter to fetch specific gameweek
+  getLeaguePredictions: async (leagueId, gameweek = null) => {
     try {
-      console.log('📊 Fetching league predictions...', { leagueId });
+      console.log('📊 Fetching league predictions...', { leagueId, gameweek });
+      
+      // Build URL based on whether gameweek is specified
+      // Default: /leagues/{id}/predictions (returns current gameweek)
+      // Specific: /leagues/{id}/predictions/{gameweek}
+      const url = gameweek 
+        ? `/leagues/${leagueId}/predictions/${gameweek}`
+        : `/leagues/${leagueId}/predictions`;
       
       const response = await apiCall({
         method: 'GET',
-        url: `/leagues/${leagueId}/predictions`
+        url
       });
       
       console.log('✅ League predictions fetched:', {
         predictionsCount: response.data?.length || 0,
-        leagueId
+        leagueId,
+        gameweek: gameweek || 'current'
       });
       
       return response.data || [];
     } catch (error) {
       console.error('❌ Failed to fetch league predictions:', {
         error: error.message,
-        leagueId
+        leagueId,
+        gameweek
       });
       throw new Error(`Failed to load league predictions: ${error.message}`);
     }

@@ -24,13 +24,17 @@ import LeaguePredictionContentView from "../predictions/LeaguePredictionContentV
 import LeaguePredictionFilters from "../predictions/LeaguePredictionFilters";
 
 
-const LeagueDetailView = ({ leagueId, league, onBack, onManage }) => {
+const LeagueDetailView = ({ leagueId, league, onBack, onManage, essentialData }) => {
   const [activeTab, setActiveTab] = useState("leaderboard");
 
   // Get theme context
   const { theme } = useContext(ThemeContext);
 
-  console.log('LeagueDetailView props:', { leagueId, league: league ? 'present' : 'missing' });
+  console.log('LeagueDetailView props:', { 
+    leagueId, 
+    league: league ? 'present' : 'missing',
+    currentGameweek: essentialData?.season?.currentGameweek
+  });
 
   // Use the passed league object, with fallback to loading state
   if (!league) {
@@ -571,7 +575,10 @@ const PredictionsContent = ({ leagueId }) => {
   const [predictions, setPredictions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [currentGameweek, setCurrentGameweek] = useState(15); // Default to current gameweek
+  
+  // Get current gameweek from essentialData, fallback to 1
+  const currentGameweek = essentialData?.season?.currentGameweek || 1;
+  
   const [selectedPrediction, setSelectedPrediction] = useState(null);
   const [selectedViewMode, setSelectedViewMode] = useState(
     preferences?.defaultLeaguePredictionsView || 'teams'
@@ -581,16 +588,31 @@ const PredictionsContent = ({ leagueId }) => {
   // Filter states - following standard pattern
   const [activeFilter, setActiveFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [gameweekFilter, setGameweekFilter] = useState("all");
+  const [gameweekFilter, setGameweekFilter] = useState("current"); // Default to current gameweek
   const [memberFilter, setMemberFilter] = useState("all");
   const [sortBy, setSortBy] = useState("date");
   const [showFilters, setShowFilters] = useState(false);
 
+  // Fetch predictions with gameweek filter
   useEffect(() => {
     const fetchPredictions = async () => {
       try {
         setLoading(true);
-        const data = await leagueAPI.getLeaguePredictions(leagueId);
+        
+        // Determine which gameweek to fetch
+        // "current" or null = current gameweek (backend default)
+        // Specific number = that gameweek
+        const gameweekToFetch = gameweekFilter === "current" || gameweekFilter === "all"
+          ? null // Backend returns current gameweek by default
+          : parseInt(gameweekFilter);
+        
+        console.log('📊 Fetching league predictions for gameweek:', {
+          filter: gameweekFilter,
+          gameweekToFetch,
+          currentGameweek
+        });
+        
+        const data = await leagueAPI.getLeaguePredictions(leagueId, gameweekToFetch);
         setPredictions(data);
       } catch (err) {
         console.error('Failed to fetch league predictions:', err);
@@ -603,7 +625,7 @@ const PredictionsContent = ({ leagueId }) => {
     if (leagueId) {
       fetchPredictions();
     }
-  }, [leagueId]);
+  }, [leagueId, gameweekFilter, currentGameweek]);
 
   // Handle view mode changes with preferences persistence
   const handleViewModeChange = (viewMode) => {
@@ -612,14 +634,14 @@ const PredictionsContent = ({ leagueId }) => {
   };
 
   // Filter predictions based on active filters
+  // NOTE: Gameweek filtering is done server-side via API call
   const filteredPredictions = predictions.filter((prediction) => {
     // Filter by status
     if (activeFilter === "pending" && prediction.status !== "pending") return false;
     if (activeFilter === "completed" && prediction.status !== "completed") return false;
     if (activeFilter === "correct" && !["exact", "partial"].includes(prediction.correct)) return false;
 
-    // Filter by gameweek
-    if (gameweekFilter !== "all" && prediction.gameweek !== Number(gameweekFilter)) return false;
+    // NOTE: Gameweek filter removed - handled by API call
 
     // Filter by member
     if (memberFilter !== "all" && prediction.userDisplayName !== memberFilter) return false;
@@ -770,6 +792,7 @@ const PredictionsContent = ({ leagueId }) => {
           cardStyle={cardStyle}
           setCardStyle={setCardStyle}
           predictions={predictions}
+          currentGameweek={currentGameweek}
         />
 
 

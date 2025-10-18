@@ -356,6 +356,7 @@ export default function ContentPane({
             league={selectedLeague}
             onBack={handleBackToLeagues}
             onManage={() => setIsManagingLeague(true)}
+            essentialData={essentialData}
           />
         );
       }

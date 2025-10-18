@@ -25,13 +25,20 @@ const LeaguePredictionFilters = ({
   setShowFilters,
   cardStyle,
   setCardStyle,
-  predictions = []
+  predictions = [],
+  currentGameweek = 1, // Add current gameweek prop
+  maxGameweek = 38     // Add max gameweek prop (default to 38 for Premier League)
 }) => {
   const { theme } = useContext(ThemeContext);
   const { preferences, updatePreference } = useUserPreferences();
 
-  // Extract unique values for filter options
-  const availableGameweeks = [...new Set(predictions.map(p => p.gameweek))].sort((a, b) => b - a);
+  // Generate all possible gameweeks (1 to maxGameweek or current, whichever is higher)
+  const allGameweeks = Array.from(
+    { length: Math.max(maxGameweek, currentGameweek) }, 
+    (_, i) => i + 1
+  ).reverse(); // Reverse to show newest first
+
+  // Extract unique members from predictions for member filter
   const availableMembers = [...new Set(predictions.map(p => p.userDisplayName))].sort();
 
   // Filter options
@@ -45,7 +52,7 @@ const LeaguePredictionFilters = ({
   const clearAllFilters = () => {
     setActiveFilter("all");
     setSearchQuery("");
-    setGameweekFilter("all");
+    setGameweekFilter("current"); // Changed from "all" to "current"
     setMemberFilter("all");
     setSortBy("date");
   };
@@ -53,7 +60,7 @@ const LeaguePredictionFilters = ({
   const hasActiveFilters = 
     activeFilter !== "all" || 
     searchQuery !== "" || 
-    gameweekFilter !== "all" || 
+    gameweekFilter !== "current" ||  // Changed from "all" to "current"
     memberFilter !== "all" || 
     sortBy !== "date";
 
@@ -235,8 +242,8 @@ const LeaguePredictionFilters = ({
                         : "bg-white border-slate-300 text-slate-900"
                     } focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 focus:outline-none`}
                   >
-                    <option value="all">All Gameweeks</option>
-                    {availableGameweeks.map((gw) => (
+                    <option value="current">Current Gameweek ({currentGameweek})</option>
+                    {allGameweeks.map((gw) => (
                       <option key={gw} value={gw}>
                         Gameweek {gw}
                       </option>
