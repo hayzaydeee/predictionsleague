@@ -145,6 +145,52 @@ const FixtureCard = ({
           </div>
         )}
       </div>
+      
+      {/* Actual Scorers Section - Only show if match is finished and scorers data exists */}
+      {fixture.status === 'FINISHED' && (fixture.actualHomeScorers || fixture.actualAwayScorers) && (
+        <div className={`mt-2 pt-2 border-t ${theme === "dark" ? "border-slate-700" : "border-slate-200"}`}>
+          <div className="text-2xs sm:text-xs font-medium mb-1 ${theme === 'dark' ? 'text-white/80' : 'text-slate-700'}">
+            ⚽ Scorers
+          </div>
+          <div className="flex justify-between gap-4 text-2xs sm:text-xs">
+            {/* Home Scorers */}
+            <div className="flex-1">
+              <div className={`font-medium mb-0.5 ${theme === 'dark' ? 'text-white/70' : 'text-slate-600'}`}>
+                {fixture.homeTeam}
+              </div>
+              {fixture.actualHomeScorers && fixture.actualHomeScorers.length > 0 ? (
+                <div className={`space-y-0.5 ${theme === 'dark' ? 'text-white/60' : 'text-slate-500'}`}>
+                  {fixture.actualHomeScorers.map((scorer, idx) => (
+                    <div key={idx}>• {scorer}</div>
+                  ))}
+                </div>
+              ) : (
+                <div className={`${theme === 'dark' ? 'text-white/40' : 'text-slate-400'}`}>
+                  No scorers
+                </div>
+              )}
+            </div>
+            
+            {/* Away Scorers */}
+            <div className="flex-1 text-right">
+              <div className={`font-medium mb-0.5 ${theme === 'dark' ? 'text-white/70' : 'text-slate-600'}`}>
+                {fixture.awayTeam}
+              </div>
+              {fixture.actualAwayScorers && fixture.actualAwayScorers.length > 0 ? (
+                <div className={`space-y-0.5 ${theme === 'dark' ? 'text-white/60' : 'text-slate-500'}`}>
+                  {fixture.actualAwayScorers.map((scorer, idx) => (
+                    <div key={idx}>{scorer} •</div>
+                  ))}
+                </div>
+              ) : (
+                <div className={`${theme === 'dark' ? 'text-white/40' : 'text-slate-400'}`}>
+                  No scorers
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 };

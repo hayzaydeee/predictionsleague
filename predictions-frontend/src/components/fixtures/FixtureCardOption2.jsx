@@ -219,6 +219,54 @@ const FixtureCardOption2 = ({
         <span>📍 {fixture.venue}</span>
       </div>
 
+      {/* Actual Scorers Section - Only show if match is finished and scorers data exists */}
+      {fixture.status === 'FINISHED' && (fixture.actualHomeScorers || fixture.actualAwayScorers) && (
+        <div className={`px-3 py-2 border-t ${theme === "dark" ? "bg-slate-900/20 border-slate-700/50" : "bg-slate-50 border-slate-200"}`}>
+          <div className={`text-2xs sm:text-xs font-medium mb-2 text-center ${theme === 'dark' ? 'text-white/80' : 'text-slate-700'}`}>
+            ⚽ Goalscorers
+          </div>
+          <div className={`grid grid-cols-2 gap-3 text-2xs sm:text-xs ${
+            theme === "dark" ? "divide-x divide-slate-700/30" : "divide-x divide-slate-200"
+          }`}>
+            {/* Home Scorers */}
+            <div className="pr-3">
+              {fixture.actualHomeScorers && fixture.actualHomeScorers.length > 0 ? (
+                <div className={`space-y-1 ${theme === 'dark' ? 'text-white/70' : 'text-slate-600'}`}>
+                  {fixture.actualHomeScorers.map((scorer, idx) => (
+                    <div key={idx} className="flex items-center gap-1">
+                      <span className="text-blue-500">⚽</span>
+                      <span>{scorer}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className={`text-center ${theme === 'dark' ? 'text-white/40' : 'text-slate-400'}`}>
+                  No scorers
+                </div>
+              )}
+            </div>
+            
+            {/* Away Scorers */}
+            <div className="pl-3">
+              {fixture.actualAwayScorers && fixture.actualAwayScorers.length > 0 ? (
+                <div className={`space-y-1 ${theme === 'dark' ? 'text-white/70' : 'text-slate-600'}`}>
+                  {fixture.actualAwayScorers.map((scorer, idx) => (
+                    <div key={idx} className="flex items-center gap-1 justify-end">
+                      <span>{scorer}</span>
+                      <span className="text-red-500">⚽</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className={`text-center ${theme === 'dark' ? 'text-white/40' : 'text-slate-400'}`}>
+                  No scorers
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Animated Hover Overlay - Only show if deadline hasn't passed */}
       {!deadlinePassed && (
         <div className={`absolute inset-0 flex items-center justify-center backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none ${

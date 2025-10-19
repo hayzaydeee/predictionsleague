@@ -393,25 +393,6 @@ const FixtureFilters = ({
                 </select>
               </div>
 
-              {/* Gameweek Filter */}
-              <div>
-                <label className={`block text-xs font-medium mb-2 ${text.secondary[theme]}`}>
-                  Gameweek
-                </label>
-                <select
-                  value={dateFilter}
-                  onChange={(e) => setDateFilter(e.target.value)}
-                  className={`w-full px-3 py-2 text-sm rounded-lg border ${
-                    theme === "dark"
-                      ? "bg-slate-800/50 border-slate-700 text-white"
-                      : "bg-white border-slate-300 text-slate-900"
-                  } focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 focus:outline-none transition-colors`}
-                >
-                  <option value="all">All Gameweeks</option>
-                  {/* Gameweek options will be dynamically populated */}
-                </select>
-              </div>
-
               {/* Sort By Filter */}
               <div>
                 <label className={`block text-xs font-medium mb-2 ${text.secondary[theme]}`}>

@@ -190,8 +190,14 @@ export const dataMerging = {
           awayScorers: matchingPrediction.awayScorers || [],
           chips: matchingPrediction.chips || [],
           submittedAt: matchingPrediction.submittedAt,
-          status: matchingPrediction.status || 'pending'
+          status: matchingPrediction.status || 'pending',
+          // Actual results (from backend after match completion)
+          actualHomeScorers: matchingPrediction.actualHomeScorers || null,
+          actualAwayScorers: matchingPrediction.actualAwayScorers || null
         } : null,
+        // Also add actual scorers at fixture level for easier access
+        actualHomeScorers: matchingPrediction?.actualHomeScorers || null,
+        actualAwayScorers: matchingPrediction?.actualAwayScorers || null,
         
         // Merge metadata
         mergeInfo: {
