@@ -14,7 +14,7 @@ import FixtureCard from "./FixtureCardOption2";
 import { ThemeContext } from "../../context/ThemeContext";
 import { textScale, spacing } from "../../utils/mobileScaleUtils";
 import { isPredictionDeadlinePassed } from "../../utils/dateUtils";
-import { useToast } from "../../context/ToastContext";
+import { showToast } from "../../services/notificationService";
 
 export default function FixtureStack({
   fixtures,
@@ -29,7 +29,6 @@ export default function FixtureStack({
 
   // Get theme context
   const { theme } = useContext(ThemeContext);
-  const { showToast } = useToast();
 
   // Filter fixtures based on search query
   const filteredFixtures = React.useMemo(() => {

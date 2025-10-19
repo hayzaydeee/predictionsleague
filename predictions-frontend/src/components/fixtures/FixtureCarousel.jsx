@@ -9,7 +9,7 @@ import { getTeamLogo } from "../../utils/teamLogos";
 import EmptyFixtureState from "./EmptyFixtureState";
 import { ThemeContext } from "../../context/ThemeContext";
 import { isPredictionDeadlinePassed } from "../../utils/dateUtils";
-import { useToast } from "../../context/ToastContext";
+import { showToast } from "../../services/notificationService";
 
 export default function FixtureCarousel({
   fixtures,
@@ -18,7 +18,6 @@ export default function FixtureCarousel({
   searchQuery = ""
 }) {
   const { theme } = useContext(ThemeContext);
-  const { showToast } = useToast();
   const carouselRef = useRef();
   const [selectedFixture, setSelectedFixture] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);

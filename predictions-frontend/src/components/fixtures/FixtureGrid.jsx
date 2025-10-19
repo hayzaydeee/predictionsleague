@@ -5,11 +5,10 @@ import DateHeader from "./DateHeader";
 import EmptyFixtureState from "./EmptyFixtureState";
 import { teamLogos } from "../../data/sampleData";
 import { isPredictionDeadlinePassed } from "../../utils/dateUtils";
-import { useToast } from "../../context/ToastContext";
+import { showToast } from "../../services/notificationService";
 
 function FixtureGrid({ fixtures, onFixtureSelect, searchQuery = "" }) {
   const [selectedFixture, setSelectedFixture] = useState(null);
-  const { showToast } = useToast();
 
   // Filter fixtures based on search query - using common utility function
   const filteredFixtures = filterFixturesByQuery(fixtures, searchQuery);
