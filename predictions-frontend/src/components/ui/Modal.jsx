@@ -23,10 +23,10 @@ const Modal = ({ children, onClose }) => {
           stiffness: 500, 
           duration: 0.3 
         }}
-        className="relative w-full max-w-[95vw] sm:max-w-md bg-slate-900 rounded-2xl shadow-2xl border border-slate-700/60 overflow-hidden"
+        className="relative w-full max-w-[90vw] sm:max-w-md bg-slate-900 rounded-xl sm:rounded-2xl shadow-2xl border border-slate-700/60 overflow-hidden text-sm sm:text-base"
         onClick={e => e.stopPropagation()}
       >
-        <div className="p-4 sm:p-6 font-outfit">
+        <div className="p-3 sm:p-6 font-outfit">
           {children}
         </div>
       </motion.div>

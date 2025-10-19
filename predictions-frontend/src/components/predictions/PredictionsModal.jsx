@@ -301,7 +301,7 @@ export default function PredictionsModal({
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
         transition={{ duration: 0.2, ease: "easeOut" }}
-        className={`w-full max-w-[98vw] sm:max-w-2xl max-h-[90vh] flex flex-col relative rounded-2xl overflow-hidden shadow-2xl ${getThemeStyles(theme, {
+        className={`w-full max-w-[92vw] sm:max-w-2xl max-h-[90vh] flex flex-col relative rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl text-sm sm:text-base ${getThemeStyles(theme, {
           dark: "bg-slate-900 border border-slate-700/60",
           light: "bg-white border border-slate-200",
         })}`}
@@ -309,7 +309,7 @@ export default function PredictionsModal({
       >
         {/* Deadline warning */}
         {deadline.isPast && (
-          <div className={`p-3 sm:p-4 border-b ${getThemeStyles(theme, {
+          <div className={`p-2 sm:p-4 border-b text-xs sm:text-sm ${getThemeStyles(theme, {
             dark: 'bg-red-900/20 border-red-700/30',
             light: 'bg-red-50 border-red-200'
           })}`}>
@@ -345,7 +345,7 @@ export default function PredictionsModal({
         />
 
         {/* Step indicator */}
-        <div className={`p-4 sm:p-6 pb-3 sm:pb-4 border-b ${getThemeStyles(theme, {
+        <div className={`p-3 sm:p-6 pb-2 sm:pb-4 border-b ${getThemeStyles(theme, {
           dark: 'border-slate-700/60',
           light: 'border-slate-200'
         })}`}>
@@ -353,7 +353,7 @@ export default function PredictionsModal({
         </div>
 
         {/* Content area */}
-        <div className="overflow-y-auto flex-1 p-4 sm:p-6">
+        <div className="overflow-y-auto flex-1 p-3 sm:p-6">
           <form onSubmit={handleSubmit}>
             <AnimatePresence mode="wait">
               {/* Step 1: Score Prediction */}

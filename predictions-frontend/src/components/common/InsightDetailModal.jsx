@@ -74,7 +74,7 @@ const InsightDetailModal = ({ insight, isOpen, onClose }) => {
             theme === 'dark'
               ? 'bg-slate-800 border-slate-700'
               : 'bg-white border-slate-200'
-          } rounded-xl border p-4 sm:p-6 max-w-[95vw] sm:max-w-md w-full shadow-xl`}
+          } rounded-xl border p-3 sm:p-6 max-w-[90vw] sm:max-w-md w-full shadow-xl text-sm sm:text-base`}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
