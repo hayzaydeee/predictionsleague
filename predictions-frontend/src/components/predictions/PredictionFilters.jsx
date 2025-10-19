@@ -315,8 +315,11 @@ const PredictionFilters = ({
                           } focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 focus:outline-none transition-colors`}
                         >
                           <option value="date">Date (Newest First)</option>
+                          <option value="date-asc">Date (Oldest First)</option>
                           <option value="team">Team (A-Z)</option>
+                          <option value="team-desc">Team (Z-A)</option>
                           <option value="points">Points (High to Low)</option>
+                          <option value="points-asc">Points (Low to High)</option>
                         </select>
                       </div>
                     </div>
@@ -559,8 +562,11 @@ const PredictionFilters = ({
                   } focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 focus:outline-none transition-colors`}
                 >
                   <option value="date">Date (Newest First)</option>
+                  <option value="date-asc">Date (Oldest First)</option>
                   <option value="team">Team (A-Z)</option>
+                  <option value="team-desc">Team (Z-A)</option>
                   <option value="points">Points (High to Low)</option>
+                  <option value="points-asc">Points (Low to High)</option>
                 </select>
               </div>
             </div>

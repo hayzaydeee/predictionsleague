@@ -98,16 +98,20 @@ const PredictionsView = ({ handleEditPrediction }) => {
 
   // Sort predictions
   const sortedPredictions = [...filteredPredictions].sort((a, b) => {
-    if (sortBy === "date") {
-      return new Date(b.date) - new Date(a.date);
-    } else if (sortBy === "team") {
-      return a.homeTeam?.name?.localeCompare(b.homeTeam?.name) || 0;
-    } else if (sortBy === "points") {
+    if (sortBy === "date" || sortBy === "date-asc") {
+      const dateA = new Date(a.date);
+      const dateB = new Date(b.date);
+      return sortBy === "date" ? dateB - dateA : dateA - dateB; // Default: newest first
+    } else if (sortBy === "team" || sortBy === "team-desc") {
+      const comparison = a.homeTeam?.localeCompare(b.homeTeam) || 0;
+      return sortBy === "team" ? comparison : -comparison; // Default: A-Z
+    } else if (sortBy === "points" || sortBy === "points-asc") {
       // Handle null points (pending predictions)
       if (a.points === null && b.points !== null) return 1;
       if (a.points !== null && b.points === null) return -1;
       if (a.points === null && b.points === null) return 0;
-      return b.points - a.points;
+      const comparison = b.points - a.points;
+      return sortBy === "points" ? comparison : -comparison; // Default: high to low
     }
     return 0;
   });

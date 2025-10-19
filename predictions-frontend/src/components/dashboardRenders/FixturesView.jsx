@@ -90,13 +90,16 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
     sortBy,
     setSortBy,
     showFilters,
-    setShowFilters
+    setShowFilters,
+    filterTeam,
+    setFilterTeam
   } = usePersistentFilters('fixtures', {
     activeFilter: 'all',
     dateFilter: 'all',
     searchQuery: '',
     sortBy: 'date',
-    showFilters: false
+    showFilters: false,
+    filterTeam: 'all'
   });
 
   // Wrapper function to update both state and preferences
@@ -153,12 +156,44 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
   const filteredFixtures = useMemo(() => {
     if (!enhancedFixtures) return [];
     
-    return fixtureFilters.applyFilters(enhancedFixtures, {
+    let filtered = fixtureFilters.applyFilters(enhancedFixtures, {
       date: dateFilter,
       status: activeFilter,
       search: searchQuery
     });
-  }, [enhancedFixtures, dateFilter, activeFilter, searchQuery]);
+    
+    // Apply team filter
+    if (filterTeam && filterTeam !== 'all') {
+      filtered = filtered.filter(fixture => 
+        fixture.homeTeam === filterTeam || fixture.awayTeam === filterTeam
+      );
+    }
+    
+    return filtered;
+  }, [enhancedFixtures, dateFilter, activeFilter, searchQuery, filterTeam]);
+
+  // Sort the filtered fixtures
+  const sortedFixtures = useMemo(() => {
+    if (!filteredFixtures) return [];
+    
+    return [...filteredFixtures].sort((a, b) => {
+      if (sortBy === "date" || sortBy === "date-asc") {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        return sortBy === "date" ? dateB - dateA : dateA - dateB; // Default: newest first
+      } else if (sortBy === "gameweek" || sortBy === "gameweek-asc") {
+        const comparison = (b.gameweek || 0) - (a.gameweek || 0);
+        return sortBy === "gameweek" ? comparison : -comparison; // Default: high to low
+      } else if (sortBy === "team" || sortBy === "team-desc") {
+        const comparison = (a.homeTeam || "").localeCompare(b.homeTeam || "");
+        return sortBy === "team" ? comparison : -comparison; // Default: A-Z
+      } else if (sortBy === "competition" || sortBy === "competition-desc") {
+        const comparison = (a.competition || "").localeCompare(b.competition || "");
+        return sortBy === "competition" ? comparison : -comparison; // Default: A-Z
+      }
+      return 0;
+    });
+  }, [filteredFixtures, sortBy]);
 
   // Handle fixture selection - Smart Click: Edit if predicted, Create if not
   const onFixtureSelect = (fixture) => {
@@ -372,6 +407,8 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
             setSortBy={setSortBy}
             showFilters={showFilters}
             setShowFilters={setShowFilters}
+            filterTeam={filterTeam}
+            setFilterTeam={setFilterTeam}
             fixtures={enhancedFixtures || []}
           />
         </div>
@@ -380,7 +417,7 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
         <div className={padding.cardCompact}>
           <ContentView
             viewMode={viewMode}
-            fixtures={filteredFixtures}
+            fixtures={sortedFixtures}
             onFixtureSelect={onFixtureSelect}
             activeGameweekChips={activeGameweekChips}
             searchQuery={searchQuery}

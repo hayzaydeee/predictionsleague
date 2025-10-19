@@ -20,6 +20,8 @@ const FixtureFilters = ({
   setSortBy,
   showFilters,
   setShowFilters,
+  filterTeam,
+  setFilterTeam,
   fixtures = [], // Add fixtures prop to calculate counts
 }) => {
   const { theme } = useContext(ThemeContext);
@@ -32,12 +34,16 @@ const FixtureFilters = ({
     { value: "predicted", label: "Predicted", count: fixtures.filter(f => f.hasPrediction).length },
     { value: "unpredicted", label: "Unpredicted", count: fixtures.filter(f => !f.hasPrediction).length },
   ];
+  
+  // Extract unique teams for team filter
+  const availableTeams = [...new Set(fixtures.flatMap(f => [f.homeTeam, f.awayTeam]))].sort();
 
   const clearAllFilters = () => {
     setActiveFilter("all");
     setSearchQuery("");
     setDateFilter("all");
     setSortBy("date");
+    setFilterTeam("all");
     setShowSearchOnMobile(false);
   };
 
@@ -52,7 +58,8 @@ const FixtureFilters = ({
     activeFilter !== "all" || 
     searchQuery !== "" || 
     dateFilter !== "all" || 
-    sortBy !== "date";
+    sortBy !== "date" ||
+    filterTeam !== "all";
 
   return (
     <div>
@@ -218,6 +225,29 @@ const FixtureFilters = ({
                         </select>
                       </div>
 
+                      {/* Team Filter */}
+                      <div>
+                        <label className={`block text-xs font-medium mb-2 ${text.secondary[theme]}`}>
+                          Team
+                        </label>
+                        <select
+                          value={filterTeam}
+                          onChange={(e) => setFilterTeam(e.target.value)}
+                          className={`w-full px-3 py-2 text-sm rounded-lg border ${
+                            theme === "dark"
+                              ? "bg-slate-800/50 border-slate-700 text-white"
+                              : "bg-white border-slate-300 text-slate-900"
+                          } focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 focus:outline-none transition-colors`}
+                        >
+                          <option value="all">All Teams</option>
+                          {availableTeams.map((team) => (
+                            <option key={team} value={team}>
+                              {team}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
                       {/* Sort By Filter */}
                       <div>
                         <label className={`block text-xs font-medium mb-2 ${text.secondary[theme]}`}>
@@ -233,9 +263,13 @@ const FixtureFilters = ({
                           } focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 focus:outline-none transition-colors`}
                         >
                           <option value="date">Date (Newest First)</option>
-                          <option value="gameweek">Gameweek</option>
+                          <option value="date-asc">Date (Oldest First)</option>
+                          <option value="gameweek">Gameweek (High to Low)</option>
+                          <option value="gameweek-asc">Gameweek (Low to High)</option>
                           <option value="team">Home Team (A-Z)</option>
-                          <option value="competition">Competition</option>
+                          <option value="team-desc">Home Team (Z-A)</option>
+                          <option value="competition">Competition (A-Z)</option>
+                          <option value="competition-desc">Competition (Z-A)</option>
                         </select>
                       </div>
                     </div>
@@ -393,6 +427,29 @@ const FixtureFilters = ({
                 </select>
               </div>
 
+              {/* Team Filter */}
+              <div>
+                <label className={`block text-xs font-medium mb-2 ${text.secondary[theme]}`}>
+                  Team
+                </label>
+                <select
+                  value={filterTeam}
+                  onChange={(e) => setFilterTeam(e.target.value)}
+                  className={`w-full px-3 py-2 text-sm rounded-lg border ${
+                    theme === "dark"
+                      ? "bg-slate-800/50 border-slate-700 text-white"
+                      : "bg-white border-slate-300 text-slate-900"
+                  } focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 focus:outline-none transition-colors`}
+                >
+                  <option value="all">All Teams</option>
+                  {availableTeams.map((team) => (
+                    <option key={team} value={team}>
+                      {team}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               {/* Sort By Filter */}
               <div>
                 <label className={`block text-xs font-medium mb-2 ${text.secondary[theme]}`}>
@@ -408,9 +465,13 @@ const FixtureFilters = ({
                   } focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 focus:outline-none transition-colors`}
                 >
                   <option value="date">Date (Newest First)</option>
-                  <option value="gameweek">Gameweek</option>
+                  <option value="date-asc">Date (Oldest First)</option>
+                  <option value="gameweek">Gameweek (High to Low)</option>
+                  <option value="gameweek-asc">Gameweek (Low to High)</option>
                   <option value="team">Home Team (A-Z)</option>
-                  <option value="competition">Competition</option>
+                  <option value="team-desc">Home Team (Z-A)</option>
+                  <option value="competition">Competition (A-Z)</option>
+                  <option value="competition-desc">Competition (Z-A)</option>
                 </select>
               </div>
             </div>
