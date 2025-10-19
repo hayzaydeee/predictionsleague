@@ -315,11 +315,11 @@ export const EXTERNAL_LOGO_URLS = {
 
   // Fallback URLs for teams not in current PL (Championship teams that might get promoted)
   Sunderland:
-    "https://logos-world.net/wp-content/uploads/2020/06/Sunderland-Logo.png",
+    "https://upload.wikimedia.org/wikipedia/en/7/77/Logo_Sunderland.svg",
   "Norwich City":
-    "https://logos-world.net/wp-content/uploads/2020/06/Norwich-City-Logo.png",
+    "https://upload.wikimedia.org/wikipedia/en/8/8c/Norwich_City.svg",
   "Blackburn Rovers":
-    "https://logos-world.net/wp-content/uploads/2020/06/Blackburn-Rovers-Logo.png",
+    "https://upload.wikimedia.org/wikipedia/en/0/0f/Blackburn_Rovers.svg",
 };
 
 /**
