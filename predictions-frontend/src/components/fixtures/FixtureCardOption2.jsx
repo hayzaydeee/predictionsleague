@@ -210,20 +210,11 @@ const FixtureCardOption2 = ({
         </div>
       </div>
 
-      {/* Footer - Venue */}
-      <div className={`flex items-center justify-center px-3 py-1.5 sm:py-2 border-t text-2xs sm:text-xs ${
-        theme === "dark"
-          ? "bg-slate-900/30 border-slate-700/50 text-slate-500"
-          : "bg-slate-50 border-slate-200 text-slate-600"
-      }`}>
-        <span>📍 {fixture.venue}</span>
-      </div>
-
-      {/* Actual Scorers Section - Only show if match is finished and scorers data exists */}
+            {/* Actual Scorers Section - Only show if match is finished and scorers data exists */}
       {fixture.status === 'FINISHED' && (fixture.actualHomeScorers || fixture.actualAwayScorers) && (
         <div className={`px-3 py-2 border-t ${theme === "dark" ? "bg-slate-900/20 border-slate-700/50" : "bg-slate-50 border-slate-200"}`}>
           <div className={`text-2xs sm:text-xs font-medium mb-2 text-center ${theme === 'dark' ? 'text-white/80' : 'text-slate-700'}`}>
-            ⚽ Goalscorers
+            Goalscorers
           </div>
           <div className={`grid grid-cols-2 gap-3 text-2xs sm:text-xs ${
             theme === "dark" ? "divide-x divide-slate-700/30" : "divide-x divide-slate-200"
@@ -266,6 +257,17 @@ const FixtureCardOption2 = ({
           </div>
         </div>
       )}
+
+
+      {/* Footer - Venue */}
+      <div className={`flex items-center justify-center px-3 py-1.5 sm:py-2 border-t text-2xs sm:text-xs ${
+        theme === "dark"
+          ? "bg-slate-900/30 border-slate-700/50 text-slate-500"
+          : "bg-slate-50 border-slate-200 text-slate-600"
+      }`}>
+        <span>📍 {fixture.venue}</span>
+      </div>
+
 
       {/* Animated Hover Overlay - Only show if deadline hasn't passed */}
       {!deadlinePassed && (
