@@ -7,12 +7,6 @@ import { backgrounds } from "../../utils/themeUtils";
 import { useClientSideFixtures } from "../../hooks/useClientSideFixtures";
 
 // Import from centralized data file for non-dashboard views
-import {
-  upcomingMatches,
-  recentPredictions,
-  leagues,
-} from "../../data/sampleData";
-
 // Import all view components
 import {
   DashboardView,
@@ -367,12 +361,12 @@ export default function ContentPane({
       case "dashboard":
         return (
           <DashboardView
-            // Use real API data when available, fallback to mock data for other views
+            // Use real API data only - no fallbacks
             essentialData={essentialData}
             essentialLoading={essentialLoading || false}
-            upcomingMatches={apiUpcomingMatches || upcomingMatches}
-            recentPredictions={apiRecentPredictions || recentPredictions}
-            leagues={apiLeagues || leagues}
+            upcomingMatches={apiUpcomingMatches || []}
+            recentPredictions={apiRecentPredictions || []}
+            leagues={apiLeagues || []}
             secondaryLoading={secondaryLoading || {}}
             errors={errors || {}}
             // Replace the goToPredictions prop with this inline function
@@ -434,9 +428,9 @@ export default function ContentPane({
       default:
         return (
           <DashboardView
-            upcomingMatches={upcomingMatches}
-            recentPredictions={recentPredictions}
-            leagues={leagues}
+            upcomingMatches={[]}
+            recentPredictions={[]}
+            leagues={[]}
             // Replace the goToPredictions prop with this inline function
             goToPredictions={(match) =>
               handleFixtureSelect({

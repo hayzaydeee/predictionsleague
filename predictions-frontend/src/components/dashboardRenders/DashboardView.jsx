@@ -24,7 +24,6 @@ import { ThemeContext } from "../../context/ThemeContext";
 import { useChipManagement } from "../../context/ChipManagementContext";
 import { text } from "../../utils/themeUtils";
 import { generatePerformanceInsights, getInsightColorClass } from "../../utils/performanceInsights";
-import { extendedPredictionHistory } from "../../data/sampleData";
 import InsightDetailModal from "../common/InsightDetailModal";
 import { normalizeTeamName } from "../../utils/teamUtils";
 import { useExternalFixtures } from "../../hooks/useExternalFixtures";
@@ -346,9 +345,9 @@ const DashboardView = ({
       return [];
     }
     
-    // In production, this would come from the API
-    // For demo purposes, we'll use sample data if available
-    const predictionHistory = extendedPredictionHistory || [];
+    // TODO: Fetch real prediction history from API
+    // For now, return empty array until API endpoint is available
+    const predictionHistory = [];
     const stats = essentialData?.stats || {};
     
     return generatePerformanceInsights(predictionHistory, stats);

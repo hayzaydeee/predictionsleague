@@ -12,12 +12,6 @@ import { Box } from "@radix-ui/themes";
 import { ThemeContext } from "../context/ThemeContext";
 import useDashboardData from "../hooks/useDashboardData";
 
-// Import from centralized data file
-import {
-  recentPredictions,
-  leagues,
-} from "../data/sampleData";
-
 import {
   HamburgerMenuIcon,
   MagnifyingGlassIcon,

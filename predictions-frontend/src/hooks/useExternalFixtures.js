@@ -37,19 +37,7 @@ export const useExternalFixtures = (options = {}) => {
 
         return result.data;
       } catch (error) {        
-        // Fallback to sample data if enabled and API fails
-        if (fallbackToSample) {
-          const { upcomingMatches } = await import('../data/sampleData');
-          return {
-            fixtures: upcomingMatches || [],
-            source: 'sample-data',
-            gameweek: 1,
-            totalCount: upcomingMatches?.length || 0,
-            timestamp: new Date().toISOString(),
-            fallback: true
-          };
-        }
-        
+        // No fallback - always throw error to show proper error states
         throw error;
       }
     },
