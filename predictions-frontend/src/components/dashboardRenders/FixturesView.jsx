@@ -17,6 +17,7 @@ import { useFixtures } from "../../hooks/useFixtures";
 import { fixtureFilters } from "../../services/api/externalFixturesAPI";
 import { useUserPredictions } from "../../hooks/useClientSideFixtures";
 import { spacing, padding, textScale } from "../../utils/mobileScaleUtils";
+import { usePersistentFilters } from "../../hooks/usePersistentState";
 
 const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
   // Get theme context and user preferences
@@ -77,17 +78,32 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
   }, [currentGameweekFromData]);
   const [activeGameweekChips, setActiveGameweekChips] = useState([]);
   const [viewMode, setViewMode] = useState(preferences.defaultFixturesView);
-  const [searchQuery, setSearchQuery] = useState("");
+  
+  // Use persistent filters that survive navigation
+  const {
+    activeFilter,
+    setActiveFilter,
+    dateFilter,
+    setDateFilter,
+    searchQuery,
+    setSearchQuery,
+    sortBy,
+    setSortBy,
+    showFilters,
+    setShowFilters
+  } = usePersistentFilters('fixtures', {
+    activeFilter: 'all',
+    dateFilter: 'all',
+    searchQuery: '',
+    sortBy: 'date',
+    showFilters: false
+  });
 
   // Wrapper function to update both state and preferences
   const handleViewModeChange = (newViewMode) => {
     setViewMode(newViewMode);
     updatePreference("defaultFixturesView", newViewMode);
   };
-  const [activeFilter, setActiveFilter] = useState("all");
-  const [dateFilter, setDateFilter] = useState("all"); // New: all or today
-  const [sortBy, setSortBy] = useState("date");
-  const [showFilters, setShowFilters] = useState(false);
 
   // Handle applying gameweek chips
   const handleApplyGameweekChip = (chipId, gameweek, isRemoval = false) => {

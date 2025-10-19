@@ -4,12 +4,13 @@ import PotentialPointsSummary from "../panels/PotentialPointsSummary";
 import PredictionContentView from "../predictions/PredictionContentView";
 import PredictionBreakdownModal from "../predictions/PredictionBreakdownModal";
 import ViewToggleBarHybrid from "../ui/ViewToggleBarHybrid";
-import EmptyState from "../common/EmptyState";
+import EmptyPredictionState from "../predictions/EmptyPredictionState";
 import { ThemeContext } from "../../context/ThemeContext";
 import { useUserPreferences } from "../../context/UserPreferencesContext";
 import { text } from "../../utils/themeUtils";
 import { useUserPredictions } from "../../hooks/useClientSideFixtures";
 import { spacing, padding } from "../../utils/mobileScaleUtils";
+import { usePersistentFilters } from "../../hooks/usePersistentState";
 
 const PredictionsView = ({ handleEditPrediction }) => {
   // Get theme context and user preferences
@@ -21,12 +22,29 @@ const PredictionsView = ({ handleEditPrediction }) => {
     status: 'all'
   });
   
-  const [activeFilter, setActiveFilter] = useState("all");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [gameweekFilter, setGameweekFilter] = useState("all");
-  const [sortBy, setSortBy] = useState("date");
-  const [filterTeam, setFilterTeam] = useState("all");
-  const [showFilters, setShowFilters] = useState(false);
+  // Use persistent filters that survive navigation
+  const {
+    activeFilter,
+    setActiveFilter,
+    searchQuery,
+    setSearchQuery,
+    gameweekFilter,
+    setGameweekFilter,
+    sortBy,
+    setSortBy,
+    filterTeam,
+    setFilterTeam,
+    showFilters,
+    setShowFilters
+  } = usePersistentFilters('predictions', {
+    activeFilter: 'all',
+    searchQuery: '',
+    gameweekFilter: 'all',
+    sortBy: 'date',
+    filterTeam: 'all',
+    showFilters: false
+  });
+  
   const [viewMode, setViewMode] = useState(preferences.defaultPredictionsView);
   const [cardStyle, setCardStyle] = useState(preferences.cardStyle);
   const [selectedPrediction, setSelectedPrediction] = useState(null);
@@ -233,7 +251,10 @@ const PredictionsView = ({ handleEditPrediction }) => {
         {/* PREDICTIONS CONTENT - Main focus area with breathing room */}
         <div className={padding.cardCompact}>
           {sortedPredictions.length === 0 ? (
-            <EmptyState />
+            <EmptyPredictionState 
+              searchQuery={searchQuery}
+              activeFilter={activeFilter}
+            />
           ) : (
             <PredictionContentView
               viewMode={viewMode}
