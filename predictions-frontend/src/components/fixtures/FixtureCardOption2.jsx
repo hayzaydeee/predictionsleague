@@ -6,6 +6,7 @@ import TeamLogo from "../ui/TeamLogo";
 import { LOGO_SIZES } from "../../utils/teamLogos";
 import { ThemeContext } from "../../context/ThemeContext";
 import { isPredictionDeadlinePassed } from "../../utils/dateUtils";
+import { showToast } from "../../services/notificationService";
 
 /**
  * OPTION 2: "SPLIT PANEL" DESIGN
@@ -30,11 +31,19 @@ const FixtureCardOption2 = ({
   const userPrediction = fixture.userPrediction;
   const deadlinePassed = isPredictionDeadlinePassed(fixture.date);
 
+  const handleClick = () => {
+    if (deadlinePassed) {
+      showToast('Deadline has passed for this match', 'error');
+      return;
+    }
+    onClick(fixture);
+  };
+
   return (
     <motion.div
       whileHover={{ scale: 1.01 }}
       whileTap={{ scale: 0.99 }}
-      onClick={() => onClick(fixture)}
+      onClick={handleClick}
       className={`group relative rounded-xl overflow-hidden cursor-pointer transition-all ${
         theme === "dark"
           ? "bg-slate-800 border border-slate-700/50"

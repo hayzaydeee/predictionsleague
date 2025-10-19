@@ -8,6 +8,7 @@ import { LOGO_SIZES } from "../../utils/teamLogos";
 import { ThemeContext } from "../../context/ThemeContext";
 import { padding, textScale } from "../../utils/mobileScaleUtils";
 import { isPredictionDeadlinePassed } from "../../utils/dateUtils";
+import { showToast } from "../../services/notificationService";
 
 const FixtureCard = ({
   fixture,
@@ -23,11 +24,20 @@ const FixtureCard = ({
   const getLogoSrc = (teamName) => {
     return teamLogos[teamName] || getTeamLogo(teamName);
   };
+  
+  const handleClick = () => {
+    if (deadlinePassed) {
+      showToast('Deadline has passed for this match', 'error');
+      return;
+    }
+    onClick(fixture);
+  };
+  
   return (
     <motion.div
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
-      onClick={() => onClick(fixture)}
+      onClick={handleClick}
       className={`border rounded-lg ${padding.cardCompact} ${
         theme === "dark"
           ? "bg-slate-800/50 border-slate-600/50 shadow-sm"
