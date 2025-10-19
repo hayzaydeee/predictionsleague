@@ -10,7 +10,7 @@ const Modal = ({ children, onClose }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4"
       onClick={onClose}
     >
       <motion.div
@@ -23,10 +23,10 @@ const Modal = ({ children, onClose }) => {
           stiffness: 500, 
           duration: 0.3 
         }}
-        className="relative w-full max-w-md bg-slate-900 rounded-2xl shadow-2xl border border-slate-700/60 overflow-hidden"
+        className="relative w-full max-w-[95vw] sm:max-w-md bg-slate-900 rounded-2xl shadow-2xl border border-slate-700/60 overflow-hidden"
         onClick={e => e.stopPropagation()}
       >
-        <div className="p-6 font-outfit">
+        <div className="p-4 sm:p-6 font-outfit">
           {children}
         </div>
       </motion.div>

@@ -92,7 +92,7 @@ const RulesAndPointsModal = memo(({ isOpen, onClose }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4"
       onClick={onClose}
     >
       <motion.div
@@ -101,7 +101,7 @@ const RulesAndPointsModal = memo(({ isOpen, onClose }) => {
         exit={{ scale: 0.96, opacity: 0, y: 20 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
         onClick={(e) => e.stopPropagation()}
-        className={`${themeStyles.modalBg} rounded-3xl max-w-6xl w-full max-h-[92vh] overflow-hidden shadow-2xl border backdrop-blur-xl relative`}
+        className={`${themeStyles.modalBg} rounded-2xl sm:rounded-3xl max-w-[98vw] sm:max-w-6xl w-full max-h-[92vh] overflow-hidden shadow-2xl border backdrop-blur-xl relative`}
       >
         {/* Animated background gradients */}
         <div className="absolute inset-0 opacity-30">
@@ -116,7 +116,7 @@ const RulesAndPointsModal = memo(({ isOpen, onClose }) => {
         </div>
 
         {/* Header */}
-        <div className={`${themeStyles.headerBg} p-8 border-b relative z-10`}>
+        <div className={`${themeStyles.headerBg} p-4 sm:p-8 border-b relative z-10`}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${themeStyles.iconBg} border shadow-lg`}>
@@ -144,7 +144,7 @@ const RulesAndPointsModal = memo(({ isOpen, onClose }) => {
         </div>
 
         {/* Content */}
-        <div className="p-8 overflow-y-auto max-h-[calc(92vh-140px)] relative z-10">
+        <div className="p-4 sm:p-8 overflow-y-auto max-h-[calc(92vh-140px)] relative z-10">
           <div className="space-y-10">
             
             {/* Game Rules Section */}

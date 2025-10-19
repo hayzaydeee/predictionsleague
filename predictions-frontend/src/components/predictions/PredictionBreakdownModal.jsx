@@ -132,7 +132,7 @@ const PredictionBreakdownModal = ({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4">
           {/* Backdrop */}
           <motion.div
             variants={overlayVariants}
@@ -149,11 +149,11 @@ const PredictionBreakdownModal = ({
             initial="hidden"
             animate="visible"
             exit="exit"
-            className={`relative w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden ${getThemeStyles(theme, backgrounds.card)}`}
+            className={`relative w-full max-w-[98vw] sm:max-w-2xl rounded-2xl shadow-2xl overflow-hidden ${getThemeStyles(theme, backgrounds.card)}`}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className={`flex items-center justify-between p-6 border-b ${getThemeStyles(theme, {
+            <div className={`flex items-center justify-between p-4 sm:p-6 border-b ${getThemeStyles(theme, {
               dark: 'border-slate-700/60',
               light: 'border-slate-200'
             })}`}>
@@ -208,7 +208,7 @@ const PredictionBreakdownModal = ({
             </div>
 
             {/* Content */}
-            <div className="p-6 max-h-[80vh] overflow-y-auto">
+            <div className="p-4 sm:p-6 max-h-[80vh] overflow-y-auto">
               {/* Rich Card Header */}
               <div className={`rounded-xl p-6 mb-6 ${getThemeStyles(theme, backgrounds.secondary)}`}>
                 <div className="flex items-center justify-between mb-6">

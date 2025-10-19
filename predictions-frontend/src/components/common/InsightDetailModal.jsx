@@ -63,7 +63,7 @@ const InsightDetailModal = ({ insight, isOpen, onClose }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4"
         onClick={onClose}
       >
         <motion.div
@@ -74,7 +74,7 @@ const InsightDetailModal = ({ insight, isOpen, onClose }) => {
             theme === 'dark'
               ? 'bg-slate-800 border-slate-700'
               : 'bg-white border-slate-200'
-          } rounded-xl border p-6 max-w-md w-full shadow-xl`}
+          } rounded-xl border p-4 sm:p-6 max-w-[95vw] sm:max-w-md w-full shadow-xl`}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
