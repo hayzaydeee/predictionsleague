@@ -8,6 +8,8 @@ import { normalizeTeamName } from "../../utils/teamUtils";
 import { getTeamLogo } from "../../utils/teamLogos";
 import EmptyFixtureState from "./EmptyFixtureState";
 import { ThemeContext } from "../../context/ThemeContext";
+import { isPredictionDeadlinePassed } from "../../utils/dateUtils";
+import { useToast } from "../../context/ToastContext";
 
 export default function FixtureCarousel({
   fixtures,
@@ -16,6 +18,7 @@ export default function FixtureCarousel({
   searchQuery = ""
 }) {
   const { theme } = useContext(ThemeContext);
+  const { showToast } = useToast();
   const carouselRef = useRef();
   const [selectedFixture, setSelectedFixture] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -46,6 +49,12 @@ export default function FixtureCarousel({
 
   // Handle selection
   const handleFixtureClick = (fixture) => {
+    // Check if deadline has passed
+    if (isPredictionDeadlinePassed(fixture.date)) {
+      showToast('Deadline has passed for this match', 'error');
+      return;
+    }
+    
     setSelectedFixture(fixture);
     if (onFixtureSelect) {
       onFixtureSelect(fixture);

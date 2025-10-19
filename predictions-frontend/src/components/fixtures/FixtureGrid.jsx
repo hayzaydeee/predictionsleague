@@ -4,9 +4,12 @@ import FixtureCard from "./FixtureCardOption2";
 import DateHeader from "./DateHeader";
 import EmptyFixtureState from "./EmptyFixtureState";
 import { teamLogos } from "../../data/sampleData";
+import { isPredictionDeadlinePassed } from "../../utils/dateUtils";
+import { useToast } from "../../context/ToastContext";
 
 function FixtureGrid({ fixtures, onFixtureSelect, searchQuery = "" }) {
   const [selectedFixture, setSelectedFixture] = useState(null);
+  const { showToast } = useToast();
 
   // Filter fixtures based on search query - using common utility function
   const filteredFixtures = filterFixturesByQuery(fixtures, searchQuery);
@@ -16,6 +19,12 @@ function FixtureGrid({ fixtures, onFixtureSelect, searchQuery = "" }) {
 
   // Handle selection
   const handleFixtureClick = (fixture) => {
+    // Check if deadline has passed
+    if (isPredictionDeadlinePassed(fixture.date)) {
+      showToast('Deadline has passed for this match', 'error');
+      return;
+    }
+    
     setSelectedFixture(fixture);
     if (onFixtureSelect) {
       onFixtureSelect(fixture);

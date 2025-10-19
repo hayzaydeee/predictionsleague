@@ -165,10 +165,13 @@ export default function PredictionsModal({
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Block if deadline passed and editing
+    // Block if deadline has passed (for both creating and editing)
     const currentDeadline = deadlineStatus();
-    if (currentDeadline.isPast && isEditing) {
-      showToast('Deadline has passed - cannot edit prediction', 'error');
+    if (currentDeadline.isPast) {
+      showToast(
+        `Deadline has passed - cannot ${isEditing ? 'edit' : 'submit'} prediction`, 
+        'error'
+      );
       onClose();
       return;
     }
