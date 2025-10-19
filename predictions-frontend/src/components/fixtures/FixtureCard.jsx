@@ -7,6 +7,7 @@ import TeamLogo from "../ui/TeamLogo";
 import { LOGO_SIZES } from "../../utils/teamLogos";
 import { ThemeContext } from "../../context/ThemeContext";
 import { padding, textScale } from "../../utils/mobileScaleUtils";
+import { isPredictionDeadlinePassed } from "../../utils/dateUtils";
 
 const FixtureCard = ({
   fixture,
@@ -16,6 +17,7 @@ const FixtureCard = ({
 }) => {
   // Get theme context
   const { theme } = useContext(ThemeContext);
+  const deadlinePassed = isPredictionDeadlinePassed(fixture.date);
 
   // Use getTeamLogo utility with fallback to context logos
   const getLogoSrc = (teamName) => {
@@ -111,24 +113,27 @@ const FixtureCard = ({
         >
           {fixture.venue}
         </div>
-        <div
-          className={`text-2xs sm:text-xs py-0.5 px-1.5 sm:py-1 sm:px-2 rounded whitespace-nowrap flex-shrink-0 ${
-            fixture.predicted
-              ? theme === "dark"
-                ? "bg-indigo-900/30 text-indigo-300"
-                : "bg-indigo-100 text-indigo-700 border border-indigo-200"
-              : theme === "dark"
-              ? "bg-teal-900/30 text-teal-300"
-              : "bg-teal-100 text-teal-700 border border-teal-200"
-          }`}
-        >
-          <span className="hidden sm:inline">
-            {fixture.predicted ? "Prediction Made" : "Prediction Required"}
-          </span>
-          <span className="sm:hidden">
-            {fixture.predicted ? "Done" : "TODO"}
-          </span>
-        </div>
+        {/* Only show prediction status badge if deadline hasn't passed */}
+        {!deadlinePassed && (
+          <div
+            className={`text-2xs sm:text-xs py-0.5 px-1.5 sm:py-1 sm:px-2 rounded whitespace-nowrap flex-shrink-0 ${
+              fixture.predicted
+                ? theme === "dark"
+                  ? "bg-indigo-900/30 text-indigo-300"
+                  : "bg-indigo-100 text-indigo-700 border border-indigo-200"
+                : theme === "dark"
+                ? "bg-teal-900/30 text-teal-300"
+                : "bg-teal-100 text-teal-700 border border-teal-200"
+            }`}
+          >
+            <span className="hidden sm:inline">
+              {fixture.predicted ? "Prediction Made" : "Prediction Required"}
+            </span>
+            <span className="sm:hidden">
+              {fixture.predicted ? "Done" : "TODO"}
+            </span>
+          </div>
+        )}
       </div>
     </motion.div>
   );

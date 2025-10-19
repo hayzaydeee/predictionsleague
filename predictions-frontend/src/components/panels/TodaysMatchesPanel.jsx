@@ -43,14 +43,14 @@ const TodaysMatchesPanel = ({ matches = [], onViewAll, onViewPrediction }) => {
   });
 
   const hasLiveMatches = liveMatches.length > 0;
-  const panelTitle = hasLiveMatches ? "Live Matches" : "Finished Today";
-  const panelIcon = hasLiveMatches ? "🔴" : "✅";
+  const panelTitle = "Today's Matches";
+  const panelIcon = hasLiveMatches ? "🔴" : "⚽";
   const iconColorClass = hasLiveMatches 
     ? theme === "dark" ? "bg-red-500/10 border-red-500/20" : "bg-red-50 border-red-200"
-    : theme === "dark" ? "bg-green-500/10 border-green-500/20" : "bg-green-50 border-green-200";
+    : theme === "dark" ? "bg-teal-500/10 border-teal-500/20" : "bg-teal-50 border-teal-200";
   const titleColorClass = hasLiveMatches
     ? theme === "dark" ? "text-red-200" : "text-red-700"
-    : theme === "dark" ? "text-green-200" : "text-green-700";
+    : theme === "dark" ? "text-teal-200" : "text-teal-700";
 
   return (
     <div
