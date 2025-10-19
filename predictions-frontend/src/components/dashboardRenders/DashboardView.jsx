@@ -134,37 +134,6 @@ const DashboardView = ({
         })
         .slice(0, 3); // Get next 3 matches for dashboard (earliest first)
       
-      // If external API returned empty results, fallback to sample data for development
-      if (upcoming.length === 0 && !externalFixturesError) {
-        try {
-          const { fixtures: sampleFixtures } = await import('../../data/sampleData');
-          const sampleUpcoming = sampleFixtures
-            .filter(fixture => {
-              const fixtureDate = new Date(fixture.date);
-              return fixtureDate > now;
-            })
-            .sort((a, b) => new Date(a.date) - new Date(b.date))
-            .slice(0, 3)
-            .map(fixture => ({
-              id: fixture.id,
-              gameweek: fixture.gameweek,
-              homeTeam: normalizeTeamName(fixture.homeTeam),
-              awayTeam: normalizeTeamName(fixture.awayTeam),
-              date: fixture.date,
-              venue: fixture.venue || "Stadium",
-              competition: fixture.competition || "Premier League",
-              status: 'SCHEDULED',
-              isSampleData: true,
-            }));
-          setUpcomingFixtures(sampleUpcoming);
-          return;
-        } catch (error) {
-          console.error('Failed to load sample data:', error);
-          setUpcomingFixtures([]);
-          return;
-        }
-      }
-      
       const processedFixtures = upcoming.map(fixture => ({
         id: fixture.id,
         gameweek: fixture.gameweek,
