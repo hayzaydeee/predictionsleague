@@ -183,7 +183,7 @@ export default function PredictionsModal({
       awayScore,
       homeScorers,
       awayScorers,
-      // DON'T include chips in prediction payload - will be recorded separately
+      chips: allChips // Include chips in prediction payload for backend
     };
 
     try {
