@@ -6,6 +6,7 @@ import { backgrounds, text, getThemeStyles } from "../../utils/themeUtils";
 import { InfoCircledIcon, ClockIcon, ExclamationTriangleIcon, CheckIcon } from "@radix-ui/react-icons";
 import { userPredictionsAPI } from "../../services/api/userPredictionsAPI";
 import { showToast } from "../../services/notificationService";
+import { transformChipsFromBackend } from "../../utils/backendMappings";
 import { useChipManagement } from "../../context/ChipManagementContext";
 
 // Import modular components
@@ -180,8 +181,19 @@ export default function PredictionsModal({
     
     setSubmitting(true);
 
-    // Merge match chips (selectedChips) with gameweek chips (activeGameweekChips)
-    const allChips = [...new Set([...selectedChips, ...activeGameweekChips])];
+    // Normalize all chips to frontend format before merging
+    // activeGameweekChips might come from backend (UPPER_CASE) if editing
+    const normalizedGameweekChips = transformChipsFromBackend(activeGameweekChips);
+    
+    // Merge match chips (selectedChips) with normalized gameweek chips
+    const allChips = [...new Set([...selectedChips, ...normalizedGameweekChips])];
+    
+    console.log('🔄 Chip normalization:', {
+      selectedChips,
+      activeGameweekChips,
+      normalizedGameweekChips,
+      allChips
+    });
 
     const frontendPrediction = {
       homeScore,

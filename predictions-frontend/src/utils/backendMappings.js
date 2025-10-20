@@ -87,9 +87,27 @@ export const REVERSE_TEAM_NAME_MAPPING = Object.fromEntries(
  * @returns {string[]} Array of backend chip enums
  */
 export const transformChipsToBackend = (frontendChips = []) => {
-  return frontendChips
-    .map(chip => CHIP_MAPPING[chip])
+  console.log('🔄 transformChipsToBackend INPUT:', {
+    frontendChips,
+    isArray: Array.isArray(frontendChips),
+    length: frontendChips?.length,
+    type: typeof frontendChips
+  });
+  
+  const transformed = frontendChips
+    .map(chip => {
+      const backendChip = CHIP_MAPPING[chip];
+      console.log(`  → Mapping: ${chip} → ${backendChip || 'UNMAPPED'}`);
+      return backendChip;
+    })
     .filter(Boolean); // Remove any unmapped chips
+  
+  console.log('🔄 transformChipsToBackend OUTPUT:', {
+    transformed,
+    count: transformed.length
+  });
+  
+  return transformed;
 };
 
 /**
