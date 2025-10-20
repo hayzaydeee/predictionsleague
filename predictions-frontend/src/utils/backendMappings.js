@@ -129,6 +129,18 @@ export const transformTeamNameToBackend = (frontendTeamName) => {
 };
 
 /**
+ * Preferred display names for teams (cleaner versions)
+ */
+export const DISPLAY_TEAM_NAMES = {
+  'Brighton Hove': 'Brighton',
+  'Man City': 'Man City',
+  'Man United': 'Man United',
+  'Nottingham': 'Nottingham Forest',
+  'Wolverhampton': 'Wolves',
+  // Add other teams if you want custom display names
+};
+
+/**
  * Transform backend team name to frontend format
  * @param {string} backendTeamName - Backend standardized team name
  * @returns {string} Frontend display team name
@@ -136,9 +148,8 @@ export const transformTeamNameToBackend = (frontendTeamName) => {
 export const transformTeamNameFromBackend = (backendTeamName) => {
   if (!backendTeamName) return '';
   
-  // For display purposes, we'll use the backend name as-is since they're standardized
-  // But you could customize this for specific display preferences
-  return backendTeamName;
+  // Use preferred display name if available, otherwise use backend name
+  return DISPLAY_TEAM_NAMES[backendTeamName] || backendTeamName;
 };
 
 /**
