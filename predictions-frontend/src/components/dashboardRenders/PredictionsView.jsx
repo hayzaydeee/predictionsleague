@@ -5,22 +5,42 @@ import PredictionContentView from "../predictions/PredictionContentView";
 import PredictionBreakdownModal from "../predictions/PredictionBreakdownModal";
 import ViewToggleBarHybrid from "../ui/ViewToggleBarHybrid";
 import EmptyPredictionState from "../predictions/EmptyPredictionState";
+import ChipSyncBanner from "../ui/ChipSyncBanner";
 import { ThemeContext } from "../../context/ThemeContext";
 import { useUserPreferences } from "../../context/UserPreferencesContext";
 import { text } from "../../utils/themeUtils";
 import { useUserPredictions } from "../../hooks/useClientSideFixtures";
 import { spacing, padding } from "../../utils/mobileScaleUtils";
 import { usePersistentFilters } from "../../hooks/usePersistentState";
+import { useChipManagement } from "../../context/ChipManagementContext";
+import { useChipValidation } from "../../hooks/useChipValidation";
+import { syncPredictionsWithActiveChips, markDismissed } from "../../utils/chips/chipValidation";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 const PredictionsView = ({ handleEditPrediction }) => {
   // Get theme context and user preferences
   const { theme } = useContext(ThemeContext);
   const { preferences, updatePreference } = useUserPreferences();
   
+  // Get chip management context
+  const { activeGameweekChips, currentGameweek } = useChipManagement();
+  const queryClient = useQueryClient();
+  
   // Fetch user predictions from backend
   const { data: predictions = [], isLoading, error } = useUserPredictions({
     status: 'all'
   });
+  
+  // Chip validation - check if predictions need syncing with active chips
+  const { data: validation, refetch: refetchValidation } = useChipValidation(
+    predictions,
+    activeGameweekChips,
+    currentGameweek
+  );
+  
+  // Syncing state
+  const [isSyncing, setIsSyncing] = useState(false);
   
   // Use persistent filters that survive navigation
   const {
@@ -137,6 +157,56 @@ const PredictionsView = ({ handleEditPrediction }) => {
     handleCloseModal();
     handleEditPrediction(prediction);
   };
+  
+  // Handle auto-sync of predictions with active chips
+  const handleAutoSync = async () => {
+    if (!validation || isSyncing) return;
+    
+    setIsSyncing(true);
+    try {
+      const result = await syncPredictionsWithActiveChips(
+        validation.predictions,
+        activeGameweekChips,
+        currentGameweek
+      );
+      
+      if (result.success) {
+        // Invalidate predictions query to refetch
+        await queryClient.invalidateQueries(['userPredictions']);
+        
+        // Refetch validation to update banner
+        await refetchValidation();
+        
+        toast.success(
+          `✅ Synced ${result.synced} prediction${result.synced === 1 ? '' : 's'} successfully`,
+          {
+            description: result.chipNames?.join(', ') 
+              ? `Applied: ${result.chipNames.join(', ')}`
+              : undefined
+          }
+        );
+      } else {
+        toast.error('Failed to sync predictions', {
+          description: result.error || 'Please try again'
+        });
+      }
+    } catch (error) {
+      console.error('[PredictionsView] Auto-sync error:', error);
+      toast.error('Sync failed', {
+        description: error.message || 'An unexpected error occurred'
+      });
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+  
+  // Handle dismissal of sync banner
+  const handleDismiss = () => {
+    if (!validation) return;
+    
+    markDismissed(validation.predictions.map(p => p.predictionId));
+    refetchValidation();
+  };
   // Show loading state
   if (isLoading) {
     return (
@@ -193,6 +263,16 @@ const PredictionsView = ({ handleEditPrediction }) => {
       {pendingPredictions.length > 0 && (
         <PotentialPointsSummary
           predictions={pendingPredictions}
+        />
+      )}
+      
+      {/* CHIP SYNC BANNER - Notification for predictions missing active chips */}
+      {validation?.shouldShow && (
+        <ChipSyncBanner
+          validation={validation}
+          onAutoSync={handleAutoSync}
+          onDismiss={handleDismiss}
+          syncing={isSyncing}
         />
       )}
 
