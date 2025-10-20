@@ -8,6 +8,7 @@ import { userPredictionsAPI } from "../../services/api/userPredictionsAPI";
 import { showToast } from "../../services/notificationService";
 import { transformChipsFromBackend } from "../../utils/backendMappings";
 import { useChipManagement } from "../../context/ChipManagementContext";
+import { CHIP_CONFIG } from "../../utils/chipManager";
 
 // Import modular components
 import ModalHeader from "./modal/ModalHeader";
@@ -407,22 +408,29 @@ export default function PredictionsModal({
                       return;
                     }
                     
-                    // FRONTEND VALIDATION: Check gameweek limits (e.g., Double Down once per gameweek)
+                    // FRONTEND VALIDATION: Check gameweek limits for MATCH-SCOPED chips
+                    // (e.g., Double Down can only be used on ONE match per gameweek)
+                    // Gameweek-scoped chips (Defense++, All-In Week) should apply to ALL predictions
                     if (!selectedChips.includes(chipId)) {
-                      const alreadyUsed = isChipUsedInGameweek(
-                        chipId, 
-                        fixture.gameweek, 
-                        userPredictions,
-                        fixture.id // Exclude current match if editing
-                      );
+                      const chipConfig = CHIP_CONFIG[chipId];
+                      const isMatchScopedWithLimit = chipConfig?.scope === 'match' && chipConfig?.gameweekLimit;
                       
-                      if (alreadyUsed) {
-                        console.log('🚫 Chip already used in this gameweek:', chipId);
-                        showToast(
-                          'Double Down can only be used once per gameweek', 
-                          'error'
+                      if (isMatchScopedWithLimit) {
+                        const alreadyUsed = isChipUsedInGameweek(
+                          chipId, 
+                          fixture.gameweek, 
+                          userPredictions,
+                          fixture.id // Exclude current match if editing
                         );
-                        return;
+                        
+                        if (alreadyUsed) {
+                          console.log('🚫 Match-scoped chip already used in this gameweek:', chipId);
+                          showToast(
+                            `${chipConfig.name} can only be used on one match per gameweek`, 
+                            'error'
+                          );
+                          return;
+                        }
                       }
                     }
                     

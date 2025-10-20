@@ -93,8 +93,17 @@ export default function ChipSelector({
   // Check if a chip is locked (cannot be removed)
   const isChipLocked = (chipId) => lockedChips.includes(chipId);
   
-  // Check if a chip has a gameweek limit and is already used
+  // Check if a MATCH-SCOPED chip with gameweek limit is already used
+  // (e.g., Double Down can only be used on one match per gameweek)
+  // Gameweek-scoped chips should NOT be blocked by this check
   const isGameweekLimitReached = (chipId) => {
+    const chipInfo = getChipInfo(chipId);
+    const isMatchScopedWithLimit = chipInfo?.scope === 'match' && chipInfo?.gameweekLimit;
+    
+    if (!isMatchScopedWithLimit) {
+      return false; // Gameweek-scoped chips are never "limit reached"
+    }
+    
     return isChipUsedInGameweek(chipId, gameweek, userPredictions, currentMatchId);
   };
   
