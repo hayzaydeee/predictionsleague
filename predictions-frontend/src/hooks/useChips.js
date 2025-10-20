@@ -9,6 +9,13 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { chipAPI } from '../services/api/chipAPI';
 import { CHIP_CONFIG } from '../utils/chipManager';
+import { 
+  getActiveGameweekChips, 
+  getActiveChipsDetailed,
+  isChipActiveInGameweek,
+  calculateActivationGameweek,
+  getChipActivationStatus
+} from '../utils/chipActivation';
 
 // Query keys
 export const CHIP_QUERY_KEYS = {
@@ -188,11 +195,25 @@ export const useChips = () => {
     return refetch();
   };
 
+  // Calculate active gameweek chips
+  const currentGameweek = data?.currentGameweek || 1;
+  const activeGameweekChipIds = data?.chips 
+    ? getActiveGameweekChips(data.chips, currentGameweek)
+    : [];
+  const activeGameweekChipsDetailed = data?.chips
+    ? getActiveChipsDetailed(data.chips, currentGameweek)
+    : [];
+
   return {
     // Data
     chips: data?.chips || [],
-    currentGameweek: data?.currentGameweek || 1,
+    currentGameweek,
     currentSeason: data?.currentSeason || '2025',
+    
+    // Active chip tracking (derived from cooldown state)
+    activeGameweekChips: activeGameweekChipIds, // Array of chip IDs active this gameweek
+    activeGameweekChipsDetailed, // Array of objects with full details
+    hasActiveGameweekChips: activeGameweekChipIds.length > 0,
     
     // Helpers
     getChip: (chipId) => data?.chips?.find(c => c.chipId === chipId) || null,
@@ -202,6 +223,20 @@ export const useChips = () => {
     },
     getAvailableChips: () => data?.chips?.filter(c => c.available) || [],
     getUnavailableChips: () => data?.chips?.filter(c => !c.available) || [],
+    
+    // Activation helpers
+    isChipActive: (chipId) => {
+      const chip = data?.chips?.find(c => c.chipId === chipId);
+      return chip ? isChipActiveInGameweek(chip, currentGameweek) : false;
+    },
+    getActivationGameweek: (chipId) => {
+      const chip = data?.chips?.find(c => c.chipId === chipId);
+      return chip ? calculateActivationGameweek(chip, currentGameweek) : null;
+    },
+    getChipStatus: (chipId) => {
+      const chip = data?.chips?.find(c => c.chipId === chipId);
+      return chip ? getChipActivationStatus(chip, currentGameweek) : null;
+    },
     
     // Actions
     refresh,

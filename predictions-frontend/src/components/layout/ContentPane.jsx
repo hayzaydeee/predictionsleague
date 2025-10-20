@@ -5,6 +5,7 @@ import ChipStrategyModal from "../predictions/ChipStrategyModal";
 import { ThemeContext } from "../../context/ThemeContext";
 import { backgrounds } from "../../utils/themeUtils";
 import { useClientSideFixtures } from "../../hooks/useClientSideFixtures";
+import { useChipManagement } from "../../context/ChipManagementContext";
 
 // Import from centralized data file for non-dashboard views
 // Import all view components
@@ -32,6 +33,9 @@ export default function ContentPane({
   const fixturesResponse = useClientSideFixtures();
   const fixturesData = fixturesResponse;
   const userPredictions = fixturesResponse?.rawData?.predictions || [];
+
+  // Get active gameweek chips (derived from cooldown state)
+  const { activeGameweekChips } = useChipManagement();
 
   // Extract dashboard data from props
   const {
@@ -96,7 +100,8 @@ export default function ContentPane({
       fixture: fixture,
       initialValues: initialValues,
       isEditing: isEditing,
-      activeGameweekChips: gameweekChips || [],
+      // Use derived active chips from chip management context
+      activeGameweekChips: activeGameweekChips || [],
     });
   };
 

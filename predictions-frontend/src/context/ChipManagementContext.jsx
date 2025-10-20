@@ -26,6 +26,12 @@ export function ChipManagementProvider({ children }) {
   const {
     chips: availableChips,
     currentGameweek: backendGameweek,
+    activeGameweekChips,
+    activeGameweekChipsDetailed,
+    hasActiveGameweekChips,
+    isChipActive,
+    getActivationGameweek,
+    getChipStatus,
     isLoading: chipsLoading,
     error: chipsError,
     refresh: refreshChips
@@ -326,6 +332,11 @@ export function ChipManagementProvider({ children }) {
     chipManager,
     compatibilityRules: COMPATIBILITY_RULES,
     
+    // Active chip state (derived from cooldown data)
+    activeGameweekChips, // Array of chip IDs active this gameweek
+    activeGameweekChipsDetailed, // Array with full chip details
+    hasActiveGameweekChips, // Boolean for quick check
+    
     // Loading states
     isLoading: chipsLoading || authLoading,
     error: chipsError,
@@ -338,6 +349,11 @@ export function ChipManagementProvider({ children }) {
     getMatchChips,
     getGameweekChips,
     getChipsByScope,
+    
+    // Chip activation tracking (derived from cooldown state)
+    isChipActive, // Check if chip is active this gameweek
+    getActivationGameweek, // Get gameweek when chip was activated
+    getChipStatus, // Get full status with color/message
     
     // Chip usage validation (frontend - until backend implements)
     isChipUsedInGameweek,
