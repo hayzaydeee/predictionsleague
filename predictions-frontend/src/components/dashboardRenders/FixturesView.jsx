@@ -330,6 +330,7 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
           toggleChipInfoModal={toggleChipInfoModal}
           activeMatchChips={[]}
           upcomingFixtures={liveFixtures || []}
+          userPredictions={userPredictions}
         />
       </motion.div>
 

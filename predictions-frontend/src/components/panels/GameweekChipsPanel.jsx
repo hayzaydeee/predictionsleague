@@ -111,11 +111,42 @@ const GameweekChipsPanel = ({
     setApplyProgress({ current: 0, total: 0 });
 
     try {
+      console.log('🔍 Filtering predictions for chip application:', {
+        chipId,
+        activeGameweek,
+        totalUserPredictions: userPredictions.length,
+        allPredictionsData: userPredictions.map(p => ({
+          match: `${p.homeTeam} vs ${p.awayTeam}`,
+          gameweek: p.gameweek,
+          status: p.status,
+          statusType: typeof p.status,
+          matchId: p.matchId
+        }))
+      });
+
       // Filter pending predictions in current gameweek
-      const pendingPredictions = userPredictions.filter(pred => 
-        pred.gameweek === activeGameweek && 
-        pred.status === 'pending'
-      );
+      const pendingPredictions = userPredictions.filter(pred => {
+        const gameweekMatch = pred.gameweek === activeGameweek;
+        const isPending = pred.status === 'pending';
+        
+        console.log('🔎 Checking prediction:', {
+          match: `${pred.homeTeam} vs ${pred.awayTeam}`,
+          gameweek: pred.gameweek,
+          expectedGameweek: activeGameweek,
+          gameweekMatch,
+          status: pred.status,
+          statusType: typeof pred.status,
+          isPending,
+          willInclude: gameweekMatch && isPending
+        });
+        
+        return gameweekMatch && isPending;
+      });
+
+      console.log('✅ Filtered pending predictions:', {
+        count: pendingPredictions.length,
+        predictions: pendingPredictions.map(p => `${p.homeTeam} vs ${p.awayTeam}`)
+      });
 
       if (pendingPredictions.length === 0) {
         showToast('No pending predictions to apply chip to', 'info');
