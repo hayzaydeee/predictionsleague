@@ -591,7 +591,7 @@ const PredictionsContent = ({ leagueId, essentialData }) => {
   const [gameweekFilter, setGameweekFilter] = useState("current"); // Default to current gameweek
   const [memberFilter, setMemberFilter] = useState("all");
   const [sortBy, setSortBy] = useState("date");
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFilters, setShowFilters] = useState(true);
 
   // Fetch predictions with gameweek filter
   useEffect(() => {

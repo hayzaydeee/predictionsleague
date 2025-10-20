@@ -17,7 +17,7 @@ import { useChipValidation } from "../../hooks/useChipValidation";
 import { syncPredictionsWithActiveChips, markDismissed } from "../../utils/chips/chipValidation";
 import { CHIP_CONFIG } from "../../utils/chipManager";
 import { useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { showToast } from "../../services/notificationService";
 
 const PredictionsView = ({ handleEditPrediction }) => {
   // Get theme context and user preferences
@@ -179,34 +179,30 @@ const PredictionsView = ({ handleEditPrediction }) => {
         await refetchValidation();
         
         // Build success message
-        let description = activeGameweekChips.map(id => 
+        let message = `✅ Synced ${result.successful} prediction${result.successful === 1 ? '' : 's'} successfully`;
+        
+        const chipNames = activeGameweekChips.map(id => 
           CHIP_CONFIG[id]?.name
         ).filter(Boolean).join(', ');
         
-        if (result.skipped?.length > 0) {
-          description += ` (${result.skipped.length} skipped - no clean sheet)`;
+        if (chipNames) {
+          message += ` - ${chipNames}`;
         }
         
-        toast.success(
-          `✅ Synced ${result.successful} prediction${result.successful === 1 ? '' : 's'} successfully`,
-          {
-            description: description || undefined
-          }
-        );
+        if (result.skipped?.length > 0) {
+          message += ` (${result.skipped.length} skipped - no clean sheet)`;
+        }
+        
+        showToast(message, 'success');
       } else if (result.skipped?.length > 0 && result.successful === 0) {
-        toast.info('No predictions updated', {
-          description: 'Defense++ only applies to clean sheet predictions (0-X or X-0)'
-        });
+        showToast('No predictions updated - Defense++ only applies to clean sheet predictions (0-X or X-0)', 'info');
       } else {
-        toast.error('Failed to sync predictions', {
-          description: result.errors?.[0]?.error || 'Please try again'
-        });
+        const errorMsg = result.errors?.[0]?.error || 'Please try again';
+        showToast(`Failed to sync predictions: ${errorMsg}`, 'error');
       }
     } catch (error) {
       console.error('[PredictionsView] Auto-sync error:', error);
-      toast.error('Sync failed', {
-        description: error.message || 'An unexpected error occurred'
-      });
+      showToast(`Sync failed: ${error.message || 'An unexpected error occurred'}`, 'error');
     } finally {
       setIsSyncing(false);
     }
