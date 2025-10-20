@@ -6,6 +6,35 @@
 import { CHIP_CONFIG } from './chipManager';
 
 /**
+ * Check if a prediction has a clean sheet predicted
+ * @param {Object} prediction - Prediction object with homeScore and awayScore
+ * @returns {boolean} - True if clean sheet predicted (0-X or X-0)
+ */
+export function hasPredictedCleanSheet(prediction) {
+  return prediction.homeScore === 0 || prediction.awayScore === 0;
+}
+
+/**
+ * Check if a chip should be applied to a prediction based on its requirements
+ * @param {string} chipId - Chip ID (camelCase)
+ * @param {Object} prediction - Prediction object
+ * @returns {Object} - { applicable: boolean, reason?: string }
+ */
+export function isChipApplicableToPrediction(chipId, prediction) {
+  // Defense++ only applies to predictions with a clean sheet
+  if (chipId === 'defensePlusPlus') {
+    const hasCleanSheet = hasPredictedCleanSheet(prediction);
+    return {
+      applicable: hasCleanSheet,
+      reason: hasCleanSheet ? null : 'Defense++ only applies to clean sheet predictions (0-X or X-0)'
+    };
+  }
+  
+  // All other chips are always applicable
+  return { applicable: true };
+}
+
+/**
  * Check if a single prediction is missing any active gameweek chips
  * @param {Object} prediction - Prediction object
  * @param {Array<string>} activeGameweekChips - Array of active chip IDs (camelCase)
@@ -27,9 +56,17 @@ export function validatePredictionChips(prediction, activeGameweekChips, current
   const predictionChips = prediction.chips || [];
   
   // Find which active chips are missing from this prediction
-  const missingChips = activeGameweekChips.filter(
-    chipId => !predictionChips.includes(chipId)
-  );
+  // BUT only include chips that are actually applicable to this prediction
+  const missingChips = activeGameweekChips.filter(chipId => {
+    // Skip if chip is already on prediction
+    if (predictionChips.includes(chipId)) {
+      return false;
+    }
+    
+    // Check if chip is applicable to this prediction
+    const applicability = isChipApplicableToPrediction(chipId, prediction);
+    return applicability.applicable;
+  });
   
   // If no chips are missing, prediction is valid
   if (missingChips.length === 0) {
@@ -189,7 +226,8 @@ export async function syncPredictionsWithActiveChips(predictionsToSync, activeCh
     successful: 0,
     failed: 0,
     errors: [],
-    synced: []
+    synced: [],
+    skipped: [] // Predictions skipped due to chip requirements
   };
   
   console.log('🔄 [CHIP SYNC] Starting sync:', {
@@ -201,14 +239,34 @@ export async function syncPredictionsWithActiveChips(predictionsToSync, activeCh
     const prediction = item.prediction;
     
     try {
-      // Merge existing chips with active chips (remove duplicates)
+      // Filter active chips to only those applicable to this prediction
+      const applicableChips = activeChips.filter(chipId => {
+        const applicability = isChipApplicableToPrediction(chipId, prediction);
+        if (!applicability.applicable) {
+          console.log(`⚠️ [CHIP SYNC] Skipping ${CHIP_CONFIG[chipId]?.name} for ${item.fixture}:`, applicability.reason);
+        }
+        return applicability.applicable;
+      });
+      
+      // If no applicable chips, skip this prediction
+      if (applicableChips.length === 0) {
+        results.skipped.push({
+          fixture: item.fixture,
+          reason: 'No applicable chips for this prediction'
+        });
+        console.log(`⏭️ [CHIP SYNC] Skipped: ${item.fixture} - No applicable chips`);
+        continue;
+      }
+      
+      // Merge existing chips with applicable active chips (remove duplicates)
       const mergedChips = [...new Set([
         ...(prediction.chips || []),
-        ...activeChips
+        ...applicableChips
       ])];
       
       console.log(`🔄 [CHIP SYNC] Syncing: ${item.fixture}`, {
         before: prediction.chips || [],
+        applicableChips,
         after: mergedChips
       });
       
@@ -261,6 +319,7 @@ export async function syncPredictionsWithActiveChips(predictionsToSync, activeCh
   console.log('✅ [CHIP SYNC] Complete:', {
     successful: results.successful,
     failed: results.failed,
+    skipped: results.skipped.length,
     total: results.total
   });
   

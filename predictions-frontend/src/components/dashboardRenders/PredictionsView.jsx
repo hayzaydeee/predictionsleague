@@ -15,6 +15,7 @@ import { usePersistentFilters } from "../../hooks/usePersistentState";
 import { useChipManagement } from "../../context/ChipManagementContext";
 import { useChipValidation } from "../../hooks/useChipValidation";
 import { syncPredictionsWithActiveChips, markDismissed } from "../../utils/chips/chipValidation";
+import { CHIP_CONFIG } from "../../utils/chipManager";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -170,24 +171,35 @@ const PredictionsView = ({ handleEditPrediction }) => {
         currentGameweek
       );
       
-      if (result.success) {
+      if (result.successful > 0) {
         // Invalidate predictions query to refetch
         await queryClient.invalidateQueries(['userPredictions']);
         
         // Refetch validation to update banner
         await refetchValidation();
         
+        // Build success message
+        let description = activeGameweekChips.map(id => 
+          CHIP_CONFIG[id]?.name
+        ).filter(Boolean).join(', ');
+        
+        if (result.skipped?.length > 0) {
+          description += ` (${result.skipped.length} skipped - no clean sheet)`;
+        }
+        
         toast.success(
-          `✅ Synced ${result.synced} prediction${result.synced === 1 ? '' : 's'} successfully`,
+          `✅ Synced ${result.successful} prediction${result.successful === 1 ? '' : 's'} successfully`,
           {
-            description: result.chipNames?.join(', ') 
-              ? `Applied: ${result.chipNames.join(', ')}`
-              : undefined
+            description: description || undefined
           }
         );
+      } else if (result.skipped?.length > 0 && result.successful === 0) {
+        toast.info('No predictions updated', {
+          description: 'Defense++ only applies to clean sheet predictions (0-X or X-0)'
+        });
       } else {
         toast.error('Failed to sync predictions', {
-          description: result.error || 'Please try again'
+          description: result.errors?.[0]?.error || 'Please try again'
         });
       }
     } catch (error) {

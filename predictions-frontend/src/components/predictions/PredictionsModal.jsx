@@ -184,14 +184,31 @@ export default function PredictionsModal({
     
     setSubmitting(true);
 
+    // Filter activeGameweekChips to only include chips applicable to this prediction
+    // e.g., Defense++ only applies to clean sheet predictions (0-X or X-0)
+    const hasPredictedCleanSheet = homeScore === 0 || awayScore === 0;
+    const applicableGameweekChips = activeGameweekChips.filter(chipId => {
+      // Defense++ only applies to clean sheet predictions
+      if (chipId === 'defensePlusPlus') {
+        if (!hasPredictedCleanSheet) {
+          console.log('⚠️ Defense++ not applicable - no clean sheet predicted');
+          return false;
+        }
+      }
+      // All other chips are always applicable
+      return true;
+    });
+
     // activeGameweekChips from context are already in frontend format (camelCase)
     // selectedChips are also in frontend format
     // Only merge them together - no transformation needed
-    const allChips = [...new Set([...selectedChips, ...activeGameweekChips])];
+    const allChips = [...new Set([...selectedChips, ...applicableGameweekChips])];
     
     console.log('🔄 Chip merging:', {
       selectedChips,
       activeGameweekChips,
+      applicableGameweekChips,
+      hasPredictedCleanSheet,
       allChips,
       note: 'Both arrays already in frontend format (camelCase)'
     });
