@@ -9,12 +9,10 @@
  */
 export const getNextMatch = (fixtures) => {
   if (!fixtures || !Array.isArray(fixtures)) {
-    console.log('❌ getNextMatch: Invalid fixtures array');
     return null;
   }
 
   const now = new Date();
-  console.log('🕐 Current time:', now.toISOString());
   
   // Filter for future matches and sort by date
   const upcomingMatches = fixtures
@@ -23,16 +21,9 @@ export const getNextMatch = (fixtures) => {
       const isUpcoming = fixture.status === 'SCHEDULED' || fixture.status === 'TIMED';
       const isFuture = matchDate > now;
       
-      console.log(`🔍 Checking fixture: ${fixture.homeTeam} vs ${fixture.awayTeam}`);
-      console.log(`   Date: ${fixture.date} → Parsed: ${matchDate.toISOString()}`);
-      console.log(`   Status: ${fixture.status} → Is upcoming: ${isUpcoming}`);
-      console.log(`   Is future: ${isFuture} (${matchDate.getTime()} > ${now.getTime()})`);
-      
       return isFuture && isUpcoming;
     })
     .sort((a, b) => new Date(a.date) - new Date(b.date));
-  
-  console.log(`📊 Found ${upcomingMatches.length} upcoming matches`);
 
   if (upcomingMatches.length === 0) {
     return null;

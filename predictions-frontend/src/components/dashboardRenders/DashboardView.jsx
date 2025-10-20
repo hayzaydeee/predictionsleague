@@ -189,23 +189,7 @@ const DashboardView = ({
           
           const isLiveOrFinished = hasLiveStatus || hasFinishedStatus || isProbablyLive;
           
-          console.log('🏟️ Fixture check:', {
-            id: fixture.id,
-            homeTeam: fixture.homeTeam,
-            awayTeam: fixture.awayTeam,
-            date: fixture.date,
-            fixtureDate: fixtureDate.toISOString(),
-            now: now.toISOString(),
-            status: fixture.status,
-            statusLower,
-            isToday,
-            kickoffPassed,
-            hasLiveStatus,
-            hasFinishedStatus,
-            isProbablyLive,
-            isLiveOrFinished,
-            passed: isToday && isLiveOrFinished
-          });
+          // Removed verbose fixture checking logs
           
           return isToday && isLiveOrFinished;
         })

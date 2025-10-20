@@ -67,7 +67,7 @@ export const useChipStatus = (options = {}) => {
             
             config = CHIP_CONFIG[normalized];
             if (config) {
-              console.log(`📝 Converted chip ID: ${backendChip.chipId} -> ${normalized}`);
+              // Silently converted - removed verbose logging
               chipId = normalized;
             }
           }

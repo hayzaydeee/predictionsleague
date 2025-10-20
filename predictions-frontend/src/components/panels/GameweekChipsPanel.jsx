@@ -24,6 +24,7 @@ import { padding, textScale } from "../../utils/mobileScaleUtils";
 import { userPredictionsAPI } from "../../services/api/userPredictionsAPI";
 import { showToast } from "../../services/notificationService";
 import { isGameweekChip } from "../../utils/chipManager";
+import { getChipInfo } from "../../utils/chipUtils";
 
 const GameweekChipsPanel = ({
   currentGameweek,
@@ -143,29 +144,44 @@ const GameweekChipsPanel = ({
         return gameweekMatch && isPending;
       });
 
-      console.log('✅ Filtered pending predictions:', {
+      console.log('✅ Filtered pending predictions (by gameweek & status):', {
         count: pendingPredictions.length,
-        predictions: pendingPredictions.map(p => `${p.homeTeam} vs ${p.awayTeam}`)
+        predictions: pendingPredictions.map(p => `${p.homeTeam} vs ${p.awayTeam} (${p.homeScore}-${p.awayScore})`)
       });
 
-      if (pendingPredictions.length === 0) {
-        showToast('No pending predictions to apply chip to', 'info');
+      // CHIP-SPECIFIC FILTERING: Only apply chip to predictions that qualify
+      let applicablePredictions = pendingPredictions;
+      
+      if (chipId === 'defensePlusPlus') {
+        // Defense++: Only apply to predictions with clean sheets (0 goals for either team)
+        applicablePredictions = pendingPredictions.filter(pred => {
+          const hasCleanSheet = pred.homeScore === 0 || pred.awayScore === 0;
+          console.log(`🛡️ Defense++ check: ${pred.homeTeam} vs ${pred.awayTeam} (${pred.homeScore}-${pred.awayScore}) → ${hasCleanSheet ? 'ELIGIBLE' : 'NOT ELIGIBLE'}`);
+          return hasCleanSheet;
+        });
+        
+        console.log(`🛡️ Defense++ filtering: ${applicablePredictions.length}/${pendingPredictions.length} predictions have clean sheets`);
+      }
+
+      if (applicablePredictions.length === 0) {
+        const chipName = getChipInfo(chipId)?.name || chipId;
+        showToast(`No eligible predictions for ${chipName}`, 'info');
         setIsApplying(false);
         return;
       }
 
-      console.log(`🎯 Applying ${chipId} to ${pendingPredictions.length} pending predictions`, {
+      console.log(`🎯 Applying ${chipId} to ${applicablePredictions.length} eligible predictions`, {
         chipId,
         gameweek: activeGameweek,
-        predictions: pendingPredictions.map(p => `${p.homeTeam} vs ${p.awayTeam}`)
+        predictions: applicablePredictions.map(p => `${p.homeTeam} vs ${p.awayTeam} (${p.homeScore}-${p.awayScore})`)
       });
 
-      setApplyProgress({ current: 0, total: pendingPredictions.length });
+      setApplyProgress({ current: 0, total: applicablePredictions.length });
 
       // Update each prediction with the new chip
       const results = [];
-      for (let i = 0; i < pendingPredictions.length; i++) {
-        const prediction = pendingPredictions[i];
+      for (let i = 0; i < applicablePredictions.length; i++) {
+        const prediction = applicablePredictions[i];
         
         // Add chip to existing chips (if not already present)
         const updatedChips = prediction.chips || [];
@@ -201,7 +217,7 @@ const GameweekChipsPanel = ({
           results.push({ success: result.success, match: `${prediction.homeTeam} vs ${prediction.awayTeam}` });
           setApplyProgress({ current: i + 1, total: pendingPredictions.length });
 
-          console.log(`✅ Updated prediction ${i + 1}/${pendingPredictions.length}`, {
+          console.log(`✅ Updated prediction ${i + 1}/${applicablePredictions.length}`, {
             match: `${prediction.homeTeam} vs ${prediction.awayTeam}`,
             success: result.success
           });
@@ -214,14 +230,15 @@ const GameweekChipsPanel = ({
       // Count successes and failures
       const successes = results.filter(r => r.success).length;
       const failures = results.filter(r => !r.success).length;
+      const chipName = getChipInfo(chipId)?.name || chipId;
 
       if (successes > 0) {
         showToast(
-          `${chipId} applied to ${successes} prediction${successes > 1 ? 's' : ''}${failures > 0 ? ` (${failures} failed)` : ''}`,
+          `${chipName} applied to ${successes} prediction${successes > 1 ? 's' : ''}${failures > 0 ? ` (${failures} failed)` : ''}`,
           failures > 0 ? 'warning' : 'success'
         );
       } else {
-        showToast(`Failed to apply ${chipId} to predictions`, 'error');
+        showToast(`Failed to apply ${chipName} to predictions`, 'error');
       }
 
       // Refresh chip status from backend

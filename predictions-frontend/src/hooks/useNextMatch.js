@@ -40,15 +40,15 @@ export const useNextMatch = () => {
         const now = new Date();
         
         if (matchTime > now) {
-          console.log('✅ Using cached next match:', parsedCache);
+          // Silently use cached match - removed verbose logging
           return parsedCache;
         } else {
-          console.log('⚠️ Cached next match expired, clearing cache');
+          // Cached match expired, clearing cache
           localStorage.removeItem(NEXT_MATCH_CACHE_KEY);
         }
       }
     } catch (error) {
-      console.warn('Failed to load cached next match:', error);
+      // Failed to load cached next match - clearing
       localStorage.removeItem(NEXT_MATCH_CACHE_KEY);
     }
     return null;

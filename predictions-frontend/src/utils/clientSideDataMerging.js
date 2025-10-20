@@ -113,27 +113,8 @@ export const fixtureMatching = {
     const match = userPredictions.find(prediction => {
       const isMatch = this.fixturesMatch(externalFixture, prediction);
       
-      // Log each comparison attempt
-      if (!isMatch) {
-        console.log('🔍 Fixture match attempt:', {
-          external: {
-            id: externalFixture.id,
-            home: externalFixture.homeTeam,
-            away: externalFixture.awayTeam,
-            date: externalFixture.date,
-            key: this.generateFixtureKey(externalFixture)
-          },
-          prediction: {
-            id: prediction.id,
-            matchId: prediction.matchId,
-            home: prediction.homeTeam,
-            away: prediction.awayTeam,
-            date: prediction.date,
-            key: this.generateFixtureKey(prediction)
-          },
-          matched: false
-        });
-      } else {
+      // Only log successful matches to reduce console noise
+      if (isMatch) {
         console.log('✅ Fixture matched:', {
           externalId: externalFixture.id,
           predictionId: prediction.id,

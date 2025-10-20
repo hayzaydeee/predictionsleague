@@ -1,17 +1,15 @@
 import React, { useState, useContext, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import GameweekChipsPanel from "../panels/GameweekChipsPanel";
 import ViewToggleBar from "../ui/ViewToggleBar";
 import ViewToggleBarOption1 from "../ui/ViewToggleBarOption1";
 import ViewToggleBarOption2 from "../ui/ViewToggleBarOption2";
 import ViewToggleBarOption3 from "../ui/ViewToggleBarOption3";
 import ViewToggleBarHybrid from "../ui/ViewToggleBarHybrid";
-import ActiveChipsBanner from "../ui/ActiveChipsBanner";
 import ContentView from "../fixtures/ContentView";
 import FixtureFilters from "../fixtures/FixtureFilters";
 import { ThemeContext } from "../../context/ThemeContext";
 import { useUserPreferences } from "../../context/UserPreferencesContext";
-import { useChipManagement } from "../../context/ChipManagementContext";
 import { backgrounds, text } from "../../utils/themeUtils";
 import { useFixtures } from "../../hooks/useFixtures";
 import { fixtureFilters } from "../../services/api/externalFixturesAPI";
@@ -23,9 +21,6 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
   // Get theme context and user preferences
   const { theme } = useContext(ThemeContext);
   const { preferences, updatePreference } = useUserPreferences();
-  
-  // Get chip management context
-  const { useChip, undoChipUsage } = useChipManagement();
 
   // Fetch fixtures using the external API only
   const {
@@ -76,7 +71,7 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
   React.useEffect(() => {
     setCurrentGameweek(currentGameweekFromData);
   }, [currentGameweekFromData]);
-  const [activeGameweekChips, setActiveGameweekChips] = useState([]);
+  
   const [viewMode, setViewMode] = useState(preferences.defaultFixturesView);
   
   // Use persistent filters that survive navigation
@@ -106,31 +101,6 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
   const handleViewModeChange = (newViewMode) => {
     setViewMode(newViewMode);
     updatePreference("defaultFixturesView", newViewMode);
-  };
-
-  // Handle applying gameweek chips
-  const handleApplyGameweekChip = (chipId, gameweek, isRemoval = false) => {
-    if (isRemoval) {
-      // Remove from local state
-      setActiveGameweekChips((prev) => prev.filter((id) => id !== chipId));
-      
-      // Undo chip usage in chip management context
-      undoChipUsage(chipId, gameweek);
-      
-      console.log(`✅ Removed gameweek chip ${chipId} for gameweek ${gameweek}`);
-    } else {
-      // Use chip through chip management context
-      const result = useChip(chipId, gameweek);
-      
-      if (result.success) {
-        // Add to local state only if successful
-        setActiveGameweekChips((prev) => [...prev, chipId]);
-        console.log(`✅ Applied gameweek chip ${chipId} for gameweek ${gameweek}`);
-      } else {
-        console.error(`❌ Failed to apply chip ${chipId}:`, result.reason);
-        // Optionally show an error message to the user
-      }
-    }
   };
   
   // First, enhance ALL fixtures with prediction status from backend data (before filtering)
@@ -203,7 +173,7 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
     if (existingPrediction) {
       // Edit mode: Open modal with existing prediction data
       console.log('🔄 Opening edit mode for existing prediction:', existingPrediction);
-      handleFixtureSelect(fixture, activeGameweekChips, {
+      handleFixtureSelect(fixture, {
         isEditing: true,
         initialValues: {
           homeScore: existingPrediction.homeScore,
@@ -216,7 +186,7 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
     } else {
       // Create mode: Open modal for new prediction
       console.log('➕ Opening create mode for new prediction');
-      handleFixtureSelect(fixture, activeGameweekChips);
+      handleFixtureSelect(fixture);
     }
   };
 
@@ -326,7 +296,6 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
       >
         <GameweekChipsPanel
           currentGameweek={currentGameweek}
-          onApplyChip={handleApplyGameweekChip}
           toggleChipInfoModal={toggleChipInfoModal}
           activeMatchChips={[]}
           upcomingFixtures={liveFixtures || []}
@@ -379,17 +348,6 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
             : "border-slate-200 bg-white/80 backdrop-blur-sm shadow-lg shadow-slate-900/5"
         } rounded-xl border mb-5 overflow-hidden font-outfit`}
       >
-        {/* Active gameweek chips banner */}
-        <AnimatePresence>
-          {activeGameweekChips.length > 0 && (
-            <div className="border-b border-slate-700/30">
-              <ActiveChipsBanner
-                activeGameweekChips={activeGameweekChips}
-                currentGameweek={currentGameweek}
-              />
-            </div>
-          )}
-        </AnimatePresence>
 
         {/* FILTERS SECTION - Separated and de-emphasized */}
         <div className={`${
@@ -420,7 +378,6 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
             viewMode={viewMode}
             fixtures={sortedFixtures}
             onFixtureSelect={onFixtureSelect}
-            activeGameweekChips={activeGameweekChips}
             searchQuery={searchQuery}
           />
         </div>

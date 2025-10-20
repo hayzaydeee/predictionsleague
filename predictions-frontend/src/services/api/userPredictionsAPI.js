@@ -119,11 +119,7 @@ export const userPredictionsAPI = {
         // This fixes the backend returning 0 instead of null for pending predictions
         if (normalized.status === 'pending' && normalized.points === 0) {
           normalized.points = null;
-          console.log('🔧 Fixed points for pending prediction:', {
-            match: `${normalized.homeTeam} vs ${normalized.awayTeam}`,
-            oldPoints: 0,
-            newPoints: null
-          });
+          // Silently fixed - removed verbose logging
         }
         
         // Ensure actualScores are truly null if match hasn't been played
