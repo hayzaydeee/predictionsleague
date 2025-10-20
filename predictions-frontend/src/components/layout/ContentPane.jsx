@@ -234,7 +234,8 @@ export default function ContentPane({
         chips: prediction.chips || [],
       },
       isEditing: true,
-      activeGameweekChips: [],
+      // Use derived active chips from chip management context
+      activeGameweekChips: activeGameweekChips || [],
     });
   };
 
