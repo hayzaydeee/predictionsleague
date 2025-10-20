@@ -665,4 +665,44 @@ export function disablePremiumRestrictions() {
  */
 export const CHIP_IDS = Object.keys(CHIP_CONFIG);
 
+/**
+ * Check if a chip is a match-scoped chip
+ * @param {string} chipId - Chip identifier
+ * @returns {boolean} True if chip is match-scoped
+ */
+export function isMatchChip(chipId) {
+  const chip = CHIP_CONFIG[chipId];
+  return chip?.scope === 'match';
+}
+
+/**
+ * Check if a chip is a gameweek-scoped chip
+ * @param {string} chipId - Chip identifier
+ * @returns {boolean} True if chip is gameweek-scoped
+ */
+export function isGameweekChip(chipId) {
+  const chip = CHIP_CONFIG[chipId];
+  return chip?.scope === 'gameweek';
+}
+
+/**
+ * Count match chips in a chip array
+ * @param {Array<string>} chipIds - Array of chip IDs
+ * @returns {number} Number of match chips
+ */
+export function countMatchChips(chipIds) {
+  if (!Array.isArray(chipIds)) return 0;
+  return chipIds.filter(isMatchChip).length;
+}
+
+/**
+ * Count gameweek chips in a chip array
+ * @param {Array<string>} chipIds - Array of chip IDs
+ * @returns {number} Number of gameweek chips
+ */
+export function countGameweekChips(chipIds) {
+  if (!Array.isArray(chipIds)) return 0;
+  return chipIds.filter(isGameweekChip).length;
+}
+
 export default ChipManager;

@@ -429,9 +429,9 @@ const ChipStrategyModal = memo(({ isOpen, onClose }) => {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                   <div className="space-y-4">
                     {[
-                      "You can use multiple chips every gameweek based on availability and cooldowns",
-                      "Each chip has unique cooldown periods or season usage limits",
-                      "Gameweek chips apply to all your predictions in that gameweek"
+                      "Gameweek chips apply retroactively to all pending predictions in that gameweek - apply them anytime!",
+                      "Match chips are limited to 2 per prediction, but gameweek chips have no limits",
+                      "Once a chip is applied to a prediction, it cannot be removed (immutable)"
                     ].map((guideline, index) => (
                       <motion.div 
                         key={index}
@@ -452,9 +452,9 @@ const ChipStrategyModal = memo(({ isOpen, onClose }) => {
                   
                   <div className="space-y-4">
                     {[
-                      "Match chips must be selected during individual match predictions",
-                      "Strategic timing and fixture analysis are key to maximizing chip effectiveness",
-                      "Monitor community trends but trust your own analysis for optimal results"
+                      "Defense++ applies only to predictions with clean sheets (0 goals conceded)",
+                      "All-In Week applies to all pending predictions automatically when activated",
+                      "Strategic timing and fixture analysis are key to maximizing chip effectiveness"
                     ].map((guideline, index) => (
                       <motion.div 
                         key={index}

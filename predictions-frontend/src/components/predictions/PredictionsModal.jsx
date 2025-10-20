@@ -42,16 +42,18 @@ export default function PredictionsModal({
   const [awayScorers, setAwayScorers] = useState(initialValues?.awayScorers || []);
   const [selectedChips, setSelectedChips] = useState(initialValues?.chips || []);
   
-  // Track if chips were already applied to this prediction (for immutability)
-  const hasExistingChips = isEditing && (initialValues?.chips || []).length > 0;
-  const canModifyChips = !hasExistingChips; // Can only add/remove chips if none exist yet
+  // Chip immutability: Track which chips were already applied (cannot be removed)
+  const lockedChips = isEditing ? (initialValues?.chips || []) : [];
   
-  console.log('🔒 Chip modification rules:', {
+  // Check if a specific chip is locked (already applied, cannot be removed)
+  const isChipLocked = (chipId) => lockedChips.includes(chipId);
+  
+  console.log('🔒 Chip locking state:', {
     isEditing,
     initialChips: initialValues?.chips,
-    hasExistingChips,
-    canModifyChips,
-    message: hasExistingChips ? 'Chips are immutable once applied' : 'Can add chips'
+    lockedChips,
+    selectedChips,
+    message: isEditing ? 'Chips applied to original prediction are locked' : 'New prediction - no chips locked'
   });
   
   // UI state
@@ -386,23 +388,24 @@ export default function PredictionsModal({
                     setAwayScorers(newScorers);
                   }}
                   onToggleChip={(chipId) => {
-                    // Chips are immutable once applied
-                    // Only allow toggling if no chips existed on the original prediction
-                    if (canModifyChips) {
-                      setSelectedChips(prev => 
-                        prev.includes(chipId) 
-                          ? prev.filter(id => id !== chipId)
-                          : [...prev, chipId]
-                      );
-                    } else {
-                      console.log('⚠️ Cannot modify chips - chips are immutable once applied');
-                      showToast('Chips cannot be changed once applied', 'error');
+                    // Check if this chip is locked (already applied to original prediction)
+                    if (isChipLocked(chipId)) {
+                      console.log('⚠️ Cannot remove locked chip:', chipId);
+                      showToast('This chip cannot be removed once applied', 'error');
+                      return;
                     }
+                    
+                    // Toggle chip selection
+                    setSelectedChips(prev => 
+                      prev.includes(chipId) 
+                        ? prev.filter(id => id !== chipId)
+                        : [...prev, chipId]
+                    );
                   }}
                   toggleChipInfoModal={toggleChipInfoModal}
                   errors={errors}
                   isEditing={isEditing}
-                  canModifyChips={canModifyChips}
+                  lockedChips={lockedChips}
                 />
               )}
 

@@ -10,6 +10,7 @@ import {
   StarIcon,
   TargetIcon,
   InfoCircledIcon,
+  UpdateIcon,
 } from "@radix-ui/react-icons";
 import { ThemeContext } from "../../context/ThemeContext";
 import { useChipManagement } from "../../context/ChipManagementContext";
@@ -20,18 +21,23 @@ import {
   buttons,
 } from "../../utils/themeUtils";
 import { padding, textScale } from "../../utils/mobileScaleUtils";
+import { userPredictionsAPI } from "../../services/api/userPredictionsAPI";
+import { showToast } from "../../services/notificationService";
+import { isGameweekChip } from "../../utils/chipManager";
 
 const GameweekChipsPanel = ({
   currentGameweek,
   onApplyChip,
   activeMatchChips = [],
   toggleChipInfoModal,
+  userPredictions = [], // Array of user's predictions for retroactive application
 }) => {
-  const [activeChips, setActiveChips] = useState([]);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [selectedChip, setSelectedChip] = useState(null);
   const [selectedTab, setSelectedTab] = useState("gameweek");
   const [isPanelCollapsed, setIsPanelCollapsed] = useState(true);
+  const [isApplying, setIsApplying] = useState(false);
+  const [applyProgress, setApplyProgress] = useState({ current: 0, total: 0 });
 
   // Get theme context
   const { theme } = useContext(ThemeContext);
@@ -42,6 +48,8 @@ const GameweekChipsPanel = ({
     getMatchChips,
     getGameweekChips,
     currentGameweek: contextGameweek,
+    activeGameweekChips, // Get active gameweek chips from backend
+    refreshChips,
   } = useChipManagement();
 
   // Use context gameweek if currentGameweek prop not provided
@@ -83,6 +91,7 @@ const GameweekChipsPanel = ({
       gameweekChipsCount: gameweekChips.length,
       matchChips: matchChips.length,
       allChips: allChips.length,
+      activeGameweekChips, // Backend-derived active chips
       gameweekChipsData: gameweekChips,
       matchChipsData: matchChips,
     });
@@ -93,16 +102,130 @@ const GameweekChipsPanel = ({
     gameweekChips,
     matchChips,
     allChips,
+    activeGameweekChips,
   ]);
+
+  // Apply gameweek chip with retroactive application to all pending predictions
+  const handleApplyGameweekChip = async (chipId) => {
+    setIsApplying(true);
+    setApplyProgress({ current: 0, total: 0 });
+
+    try {
+      // Filter pending predictions in current gameweek
+      const pendingPredictions = userPredictions.filter(pred => 
+        pred.gameweek === activeGameweek && 
+        pred.status === 'pending'
+      );
+
+      if (pendingPredictions.length === 0) {
+        showToast('No pending predictions to apply chip to', 'info');
+        setIsApplying(false);
+        return;
+      }
+
+      console.log(`🎯 Applying ${chipId} to ${pendingPredictions.length} pending predictions`, {
+        chipId,
+        gameweek: activeGameweek,
+        predictions: pendingPredictions.map(p => `${p.homeTeam} vs ${p.awayTeam}`)
+      });
+
+      setApplyProgress({ current: 0, total: pendingPredictions.length });
+
+      // Update each prediction with the new chip
+      const results = [];
+      for (let i = 0; i < pendingPredictions.length; i++) {
+        const prediction = pendingPredictions[i];
+        
+        // Add chip to existing chips (if not already present)
+        const updatedChips = prediction.chips || [];
+        if (!updatedChips.includes(chipId)) {
+          updatedChips.push(chipId);
+        }
+
+        // Create updated prediction payload
+        const updatedPrediction = {
+          homeScore: prediction.homeScore,
+          awayScore: prediction.awayScore,
+          homeScorers: prediction.homeScorers || [],
+          awayScorers: prediction.awayScorers || [],
+          chips: updatedChips
+        };
+
+        // Create fixture object for API call
+        const fixture = {
+          id: prediction.matchId,
+          homeTeam: prediction.homeTeam,
+          awayTeam: prediction.awayTeam,
+          date: prediction.matchDate,
+          gameweek: prediction.gameweek
+        };
+
+        try {
+          const result = await userPredictionsAPI.makePrediction(
+            updatedPrediction,
+            fixture,
+            true // isEditing = true
+          );
+
+          results.push({ success: result.success, match: `${prediction.homeTeam} vs ${prediction.awayTeam}` });
+          setApplyProgress({ current: i + 1, total: pendingPredictions.length });
+
+          console.log(`✅ Updated prediction ${i + 1}/${pendingPredictions.length}`, {
+            match: `${prediction.homeTeam} vs ${prediction.awayTeam}`,
+            success: result.success
+          });
+        } catch (error) {
+          console.error(`❌ Failed to update prediction:`, error);
+          results.push({ success: false, match: `${prediction.homeTeam} vs ${prediction.awayTeam}`, error: error.message });
+        }
+      }
+
+      // Count successes and failures
+      const successes = results.filter(r => r.success).length;
+      const failures = results.filter(r => !r.success).length;
+
+      if (successes > 0) {
+        showToast(
+          `${chipId} applied to ${successes} prediction${successes > 1 ? 's' : ''}${failures > 0 ? ` (${failures} failed)` : ''}`,
+          failures > 0 ? 'warning' : 'success'
+        );
+      } else {
+        showToast(`Failed to apply ${chipId} to predictions`, 'error');
+      }
+
+      // Refresh chip status from backend
+      await refreshChips();
+
+      // Call parent callback if provided
+      if (onApplyChip) {
+        onApplyChip(chipId, activeGameweek);
+      }
+
+    } catch (error) {
+      console.error('❌ Error applying gameweek chip:', error);
+      showToast(`Failed to apply chip: ${error.message}`, 'error');
+    } finally {
+      setIsApplying(false);
+      setApplyProgress({ current: 0, total: 0 });
+      setShowConfirmModal(false);
+      setSelectedChip(null);
+    }
+  };
 
   // Toggle chip selection
   const selectChipForConfirmation = (chipId) => {
-    // Check if trying to remove or apply
-    const alreadyActive = activeChips.some((c) => c.id === chipId);
+    // Check if this is a gameweek chip
+    if (!isGameweekChip(chipId)) {
+      console.warn('⚠️ Only gameweek chips can be applied from this panel');
+      return;
+    }
+
+    // Check if already active (from backend)
+    const alreadyActive = activeGameweekChips?.includes(chipId);
 
     if (alreadyActive) {
-      // Directly remove if already active (no confirmation needed)
-      removeChip(chipId);
+      // Cannot remove gameweek chips once applied (immutability)
+      showToast('Gameweek chips cannot be removed once applied', 'error');
       return;
     }
 
@@ -116,31 +239,7 @@ const GameweekChipsPanel = ({
   // Handle chip application after confirmation
   const confirmChipApplication = () => {
     if (!selectedChip) return;
-
-    // Add to active chips
-    setActiveChips((prev) => {
-      // Only allow one of each type
-      if (prev.find((c) => c.id === selectedChip.id)) return prev;
-      return [...prev, selectedChip];
-    });
-
-    // Call parent handler
-    if (onApplyChip) {
-      onApplyChip(selectedChip.id, activeGameweek);
-    }
-
-    setShowConfirmModal(false);
-    setSelectedChip(null);
-  };
-
-  // Remove an applied chip
-  const removeChip = (chipId) => {
-    setActiveChips((prev) => prev.filter((chip) => chip.id !== chipId));
-
-    // Call parent handler to remove the chip
-    if (onApplyChip) {
-      onApplyChip(chipId, activeGameweek, true); // true indicates removal
-    }
+    handleApplyGameweekChip(selectedChip.id);
   };
 
   // Format fixture name helper
@@ -152,7 +251,7 @@ const GameweekChipsPanel = ({
   };
 
   // Get count of active chips (for the header)
-  const activeChipsCount = activeChips.length + activeMatchChips.length;
+  const activeChipsCount = (activeGameweekChips?.length || 0) + activeMatchChips.length;
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
@@ -354,9 +453,7 @@ const GameweekChipsPanel = ({
                       <div className="p-2">
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5">
                           {gameweekChips.map((chip) => {
-                            const isActive = activeChips.some(
-                              (c) => c.id === chip.id
-                            );
+                            const isActive = activeGameweekChips?.includes(chip.id);
                             const isAvailable = chip.available && !isActive;
 
                             return (
@@ -483,7 +580,7 @@ const GameweekChipsPanel = ({
                                       )}
                                   </div>
                                 </div>{" "}
-                                {/* Apply/Remove button */}{" "}
+                                {/* Apply/Locked button */}{" "}
                                 <div
                                   className={`mt-auto border-t ${getThemeStyles(
                                     theme,
@@ -494,22 +591,18 @@ const GameweekChipsPanel = ({
                                   )}`}
                                 >
                                   {isActive ? (
-                                    <motion.button
-                                      whileHover={{ scale: 1.02 }}
-                                      whileTap={{ scale: 0.98 }}
-                                      onClick={() => removeChip(chip.id)}
+                                    <div
                                       className={`w-full text-xs py-1.5 transition-all duration-200 flex items-center justify-center ${getThemeStyles(
                                         theme,
                                         {
-                                          dark: "text-slate-300 hover:text-slate-100 hover:bg-slate-700/40",
-                                          light:
-                                            "text-slate-600 hover:text-slate-800 hover:bg-slate-100",
+                                          dark: "text-teal-300 bg-teal-900/20",
+                                          light: "text-teal-700 bg-teal-100",
                                         }
                                       )}`}
+                                      title="Gameweek chips cannot be removed once applied"
                                     >
-                                      <Cross2Icon className="w-3 h-3 mr-1" />
-                                      Remove
-                                    </motion.button>
+                                      🔒 Active (Locked)
+                                    </div>
                                   ) : isAvailable ? (
                                     <motion.button
                                       whileHover={{ scale: 1.02 }}
@@ -517,9 +610,10 @@ const GameweekChipsPanel = ({
                                       onClick={() =>
                                         selectChipForConfirmation(chip.id)
                                       }
-                                      className="w-full bg-indigo-600/60 hover:bg-indigo-600/80 text-white text-xs py-1.5 transition-all duration-200"
+                                      disabled={isApplying}
+                                      className="w-full bg-indigo-600/60 hover:bg-indigo-600/80 text-white text-xs py-1.5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
-                                      Apply
+                                      {isApplying ? 'Applying...' : 'Apply'}
                                     </motion.button>
                                   ) : (
                                     <div
@@ -795,7 +889,7 @@ const GameweekChipsPanel = ({
           </motion.div>
         )}
       </AnimatePresence>
-      {/* Confirmation Modal */}
+      {/* Confirmation Modal with Progress */}
       <AnimatePresence>
         {showConfirmModal && selectedChip && (
           <motion.div
@@ -809,14 +903,14 @@ const GameweekChipsPanel = ({
                 light: "bg-white/85",
               }
             )}`}
-            onClick={() => setShowConfirmModal(false)}
+            onClick={() => !isApplying && setShowConfirmModal(false)}
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ type: "spring", damping: 15 }}
-              className={`rounded-xl p-4 max-w-[281px] w-full font-outfit shadow-xl border ${getThemeStyles(
+              className={`rounded-xl p-4 max-w-[320px] w-full font-outfit shadow-xl border ${getThemeStyles(
                 theme,
                 {
                   dark: "bg-gradient-to-b from-slate-800 to-slate-900 border-slate-600/50",
@@ -851,6 +945,7 @@ const GameweekChipsPanel = ({
                   </p>
                 </div>
               </div>{" "}
+              
               {/* Description */}
               <div
                 className={`rounded-lg p-3 mb-3 border ${getThemeStyles(theme, {
@@ -864,25 +959,77 @@ const GameweekChipsPanel = ({
                     text.secondary
                   )}`}
                 >
-                  This chip affects{" "}
+                  This will apply to{" "}
                   <span
                     className={`font-medium ${getThemeStyles(theme, {
                       dark: "text-teal-300",
                       light: "text-teal-600",
                     })}`}
                   >
-                    all predictions
+                    all pending predictions
                   </span>{" "}
-                  for this gameweek.
+                  in this gameweek.
+                </p>
+                <p
+                  className={`text-xs ${getThemeStyles(theme, {
+                    dark: "text-amber-400",
+                    light: "text-amber-700",
+                  })}`}
+                >
+                  ⚠️ Cannot be removed once applied
                 </p>
               </div>{" "}
+              
+              {/* Progress indicator */}
+              {isApplying && (
+                <div
+                  className={`rounded-lg p-3 mb-3 border ${getThemeStyles(theme, {
+                    dark: "bg-blue-900/20 border-blue-700/30",
+                    light: "bg-blue-50 border-blue-200",
+                  })}`}
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    <UpdateIcon className="w-4 h-4 animate-spin text-blue-400" />
+                    <span
+                      className={`text-sm font-medium ${getThemeStyles(theme, {
+                        dark: "text-blue-300",
+                        light: "text-blue-700",
+                      })}`}
+                    >
+                      Applying chip...
+                    </span>
+                  </div>
+                  <div className="w-full bg-slate-700/30 rounded-full h-2 overflow-hidden">
+                    <motion.div
+                      className="h-full bg-blue-500"
+                      initial={{ width: '0%' }}
+                      animate={{ 
+                        width: applyProgress.total > 0 
+                          ? `${(applyProgress.current / applyProgress.total) * 100}%` 
+                          : '0%' 
+                      }}
+                      transition={{ duration: 0.3 }}
+                    />
+                  </div>
+                  <p
+                    className={`text-xs mt-1 text-center ${getThemeStyles(theme, {
+                      dark: "text-blue-400",
+                      light: "text-blue-600",
+                    })}`}
+                  >
+                    {applyProgress.current} / {applyProgress.total} predictions
+                  </p>
+                </div>
+              )}
+              
               {/* Actions */}
               <div className="flex gap-2">
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => setShowConfirmModal(false)}
-                  className={`flex-1 px-3 py-2 border rounded-lg transition-all duration-200 text-sm ${getThemeStyles(
+                  disabled={isApplying}
+                  className={`flex-1 px-3 py-2 border rounded-lg transition-all duration-200 text-sm disabled:opacity-50 disabled:cursor-not-allowed ${getThemeStyles(
                     theme,
                     {
                       dark: "border-slate-600/50 text-slate-300 hover:text-slate-100 hover:bg-slate-700/30 hover:border-slate-500/50",
@@ -897,10 +1044,20 @@ const GameweekChipsPanel = ({
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={confirmChipApplication}
-                  className="flex-1 px-3 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-all duration-200 text-sm flex items-center justify-center font-medium border border-teal-500/50 hover:border-teal-400/50"
+                  disabled={isApplying}
+                  className="flex-1 px-3 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-all duration-200 text-sm flex items-center justify-center font-medium border border-teal-500/50 hover:border-teal-400/50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <CheckIcon className="mr-1.5 w-4 h-4" />
-                  Apply
+                  {isApplying ? (
+                    <>
+                      <UpdateIcon className="mr-1.5 w-4 h-4 animate-spin" />
+                      Applying...
+                    </>
+                  ) : (
+                    <>
+                      <CheckIcon className="mr-1.5 w-4 h-4" />
+                      Apply
+                    </>
+                  )}
                 </motion.button>
               </div>
             </motion.div>

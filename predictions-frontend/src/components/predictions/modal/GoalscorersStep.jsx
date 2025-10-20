@@ -22,7 +22,7 @@ export default function GoalscorersStep({
   chipWarning,
   errors,
   isEditing = false,
-  canModifyChips = true // New prop: whether chips can be added/removed
+  lockedChips = [] // Array of chips that cannot be removed (already applied)
 }) {
   const { theme } = useContext(ThemeContext);
 
@@ -129,64 +129,13 @@ export default function GoalscorersStep({
       </div>
 
       {/* Chips section */}
-      {!canModifyChips ? (
-        /* Show chips as read-only when chips exist and are immutable */
-        <div className={`rounded-xl p-6 ${getThemeStyles(theme, {
-          dark: 'bg-slate-800/50 border border-slate-700/60',
-          light: 'bg-slate-50 border border-slate-200'
-        })}`}>
-          <div className="flex items-center gap-2 mb-3">
-            <div className={`text-xs font-medium font-outfit ${getThemeStyles(theme, {
-              dark: 'text-slate-400',
-              light: 'text-slate-600'
-            })}`}>
-              Applied Chips
-            </div>
-            <div className={`px-2 py-0.5 rounded text-2xs font-medium font-outfit ${getThemeStyles(theme, {
-              dark: 'bg-amber-900/20 text-amber-400 border border-amber-700/30',
-              light: 'bg-amber-100 text-amber-700 border border-amber-300'
-            })}`}>
-              🔒 Immutable
-            </div>
-          </div>
-          {selectedChips && selectedChips.length > 0 ? (
-            <div className="flex flex-wrap gap-2">
-              {selectedChips.map(chipId => (
-                <div
-                  key={chipId}
-                  className={`px-3 py-2 rounded-lg text-sm font-medium font-outfit ${getThemeStyles(theme, {
-                    dark: 'bg-slate-700 text-slate-300 border border-slate-600',
-                    light: 'bg-slate-200 text-slate-700 border border-slate-300'
-                  })}`}
-                >
-                  {chipId.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className={`text-sm font-outfit ${getThemeStyles(theme, {
-              dark: 'text-slate-500',
-              light: 'text-slate-600'
-            })}`}>
-              No chips applied to this prediction
-            </p>
-          )}
-          <p className={`text-xs font-outfit mt-3 ${getThemeStyles(theme, {
-            dark: 'text-amber-400',
-            light: 'text-amber-700'
-          })}`}>
-            ℹ️ Chips cannot be changed once applied
-          </p>
-        </div>
-      ) : (
-        /* Show chip selector when chips can be modified */
-        <ChipSelector
-          selectedChips={selectedChips}
-          onToggleChip={onToggleChip}
-          toggleChipInfoModal={toggleChipInfoModal}
-          gameweek={gameweek}
-        />
-      )}
+      <ChipSelector
+        selectedChips={selectedChips}
+        onToggleChip={onToggleChip}
+        toggleChipInfoModal={toggleChipInfoModal}
+        gameweek={gameweek}
+        lockedChips={lockedChips}
+      />
 
       {/* Chip warning banner */}
       {chipWarning && (
