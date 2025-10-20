@@ -25,12 +25,14 @@ export default function PredictionsModal({
   initialValues = null,
   isEditing = false,
   toggleChipInfoModal,
+  userPredictions = [], // For validating gameweek-limited chips like Double Down
 }) {
   const { theme } = useContext(ThemeContext);
   
   // Chip management - only need refreshChips since backend handles recording
   const { 
-    refreshChips
+    refreshChips,
+    isChipUsedInGameweek
   } = useChipManagement();
   
   // Step management
@@ -407,6 +409,25 @@ export default function PredictionsModal({
                       return;
                     }
                     
+                    // FRONTEND VALIDATION: Check gameweek limits (e.g., Double Down once per gameweek)
+                    if (!selectedChips.includes(chipId)) {
+                      const alreadyUsed = isChipUsedInGameweek(
+                        chipId, 
+                        fixture.gameweek, 
+                        userPredictions,
+                        fixture.id // Exclude current match if editing
+                      );
+                      
+                      if (alreadyUsed) {
+                        console.log('🚫 Chip already used in this gameweek:', chipId);
+                        showToast(
+                          'Double Down can only be used once per gameweek', 
+                          'error'
+                        );
+                        return;
+                      }
+                    }
+                    
                     // Toggle chip selection
                     setSelectedChips(prev => 
                       prev.includes(chipId) 
@@ -418,6 +439,8 @@ export default function PredictionsModal({
                   errors={errors}
                   isEditing={isEditing}
                   lockedChips={lockedChips}
+                  userPredictions={userPredictions}
+                  gameweek={fixture.gameweek}
                 />
               )}
 

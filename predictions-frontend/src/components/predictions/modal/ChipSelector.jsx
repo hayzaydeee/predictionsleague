@@ -80,16 +80,23 @@ export default function ChipSelector({
   toggleChipInfoModal,
   gameweek,
   maxChips = 2,
-  lockedChips = [] // Chips that cannot be removed (already applied)
+  lockedChips = [], // Chips that cannot be removed (already applied)
+  userPredictions = [], // For validating gameweek-limited chips
+  currentMatchId = null // Current match ID (to exclude when checking usage)
 }) {
   const { theme } = useContext(ThemeContext);
-  const { getMatchChips, canUseChip, getChipInfo } = useChipManagement();
+  const { getMatchChips, canUseChip, getChipInfo, isChipUsedInGameweek } = useChipManagement();
 
   // Get match-scoped chips with availability info
   const matchChips = getMatchChips();
   
   // Check if a chip is locked (cannot be removed)
   const isChipLocked = (chipId) => lockedChips.includes(chipId);
+  
+  // Check if a chip has a gameweek limit and is already used
+  const isGameweekLimitReached = (chipId) => {
+    return isChipUsedInGameweek(chipId, gameweek, userPredictions, currentMatchId);
+  };
   
   // DEBUG: Log chip data
   console.log('🎯 ChipSelector - Match Chips:', {
@@ -126,7 +133,10 @@ export default function ChipSelector({
           const isSelected = selectedChips.includes(chip.id);
           const isLocked = isChipLocked(chip.id);
           const chipAvailable = chip.available;
-          const isDisabled = (!isSelected && selectedChips.length >= maxChips) || (!chipAvailable && !isLocked);
+          const gameweekLimitReached = !isSelected && !isLocked && isGameweekLimitReached(chip.id);
+          const isDisabled = (!isSelected && selectedChips.length >= maxChips) || 
+                            (!chipAvailable && !isLocked) || 
+                            gameweekLimitReached;
           const cooldownDisplay = formatCooldownDisplay(chip);
           const seasonLimitDisplay = formatSeasonLimitDisplay(chip.id, chip.usageCount || 0);
 
@@ -156,7 +166,9 @@ export default function ChipSelector({
               }`}
               title={
                 isLocked 
-                  ? 'This chip cannot be removed once applied' 
+                  ? 'This chip cannot be removed once applied'
+                  : gameweekLimitReached
+                  ? 'This chip has already been used in this gameweek'
                   : !chipAvailable 
                   ? chip.reason 
                   : chip.description
@@ -194,9 +206,14 @@ export default function ChipSelector({
                     </div>
                   )}
                 </div>
-                {!chipAvailable && !isSelected && !isLocked && (
+                {!chipAvailable && !isSelected && !isLocked && !gameweekLimitReached && (
                   <div className="text-xs text-red-400 mt-0.5">
                     {cooldownDisplay || seasonLimitDisplay || 'Unavailable'}
+                  </div>
+                )}
+                {gameweekLimitReached && !isSelected && !isLocked && (
+                  <div className="text-xs text-amber-400 mt-0.5">
+                    Already used this gameweek
                   </div>
                 )}
                 {chipAvailable && seasonLimitDisplay && !isSelected && (

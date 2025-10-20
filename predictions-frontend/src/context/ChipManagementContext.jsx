@@ -224,6 +224,36 @@ export function ChipManagementProvider({ children }) {
   }, [getChipsByScope]);
 
   /**
+   * Check if a chip has already been used in a specific gameweek
+   * @param {string} chipId - Chip to check
+   * @param {number} gameweek - Gameweek to check
+   * @param {Array} userPredictions - User's predictions for validation
+   * @param {string} excludeMatchId - Match ID to exclude (when editing)
+   * @returns {boolean} - True if chip is already used
+   */
+  const isChipUsedInGameweek = useCallback((chipId, gameweek, userPredictions = [], excludeMatchId = null) => {
+    if (!userPredictions || userPredictions.length === 0) return false;
+    
+    const gameweekPredictions = userPredictions.filter(pred => 
+      pred.gameweek === gameweek && 
+      pred.matchId !== excludeMatchId // Exclude current match when editing
+    );
+    
+    const usedInPrediction = gameweekPredictions.some(pred => 
+      pred.chips && pred.chips.includes(chipId)
+    );
+    
+    if (usedInPrediction) {
+      console.log(`🚫 ${chipId} already used in gameweek ${gameweek}:`, {
+        gameweekPredictions: gameweekPredictions.length,
+        foundInPrediction: gameweekPredictions.find(p => p.chips?.includes(chipId))
+      });
+    }
+    
+    return usedInPrediction;
+  }, []);
+
+  /**
    * Check if chips can be used together (async - validates with backend)
    */
   const checkCompatibility = useCallback(async (chipIds, gameweek, matchId = null) => {
@@ -308,6 +338,9 @@ export function ChipManagementProvider({ children }) {
     getMatchChips,
     getGameweekChips,
     getChipsByScope,
+    
+    // Chip usage validation (frontend - until backend implements)
+    isChipUsedInGameweek,
     
     // Compatibility checking (local - frontend rules)
     checkCompatibility,

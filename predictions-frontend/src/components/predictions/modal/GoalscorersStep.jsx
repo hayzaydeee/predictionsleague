@@ -22,7 +22,8 @@ export default function GoalscorersStep({
   chipWarning,
   errors,
   isEditing = false,
-  lockedChips = [] // Array of chips that cannot be removed (already applied)
+  lockedChips = [], // Array of chips that cannot be removed (already applied)
+  userPredictions = [] // For validating gameweek-limited chips
 }) {
   const { theme } = useContext(ThemeContext);
 
@@ -135,6 +136,8 @@ export default function GoalscorersStep({
         toggleChipInfoModal={toggleChipInfoModal}
         gameweek={gameweek}
         lockedChips={lockedChips}
+        userPredictions={userPredictions}
+        currentMatchId={fixture?.id}
       />
 
       {/* Chip warning banner */}

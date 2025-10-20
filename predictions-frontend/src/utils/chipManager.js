@@ -39,6 +39,7 @@ export const CHIP_CONFIG = {
     color: "teal",
     cooldown: 0, // Available every gameweek - no cooldown
     seasonLimit: null, // Unlimited uses
+    gameweekLimit: 1, // Can only be used once per gameweek
     scope: "match" // Applied per match
   },
   wildcard: {

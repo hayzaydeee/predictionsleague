@@ -28,8 +28,10 @@ export default function ContentPane({
   // Access theme context
   const { theme } = useContext(ThemeContext);
 
-  // Get fixtures data (includes player squads)
-  const { data: fixturesData } = useClientSideFixtures();
+  // Get fixtures data (includes player squads) and user predictions
+  const fixturesResponse = useClientSideFixtures();
+  const fixturesData = fixturesResponse;
+  const userPredictions = fixturesResponse?.rawData?.predictions || [];
 
   // Extract dashboard data from props
   const {
@@ -479,6 +481,7 @@ export default function ContentPane({
               isEditing={modalData.isEditing}
               activeGameweekChips={modalData.activeGameweekChips}
               toggleChipInfoModal={toggleChipInfoModal}
+              userPredictions={userPredictions}
             />
           </motion.div>
         )}
