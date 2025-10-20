@@ -173,7 +173,7 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
     if (existingPrediction) {
       // Edit mode: Open modal with existing prediction data
       console.log('🔄 Opening edit mode for existing prediction:', existingPrediction);
-      handleFixtureSelect(fixture, {
+      handleFixtureSelect(fixture, [], {
         isEditing: true,
         initialValues: {
           homeScore: existingPrediction.homeScore,
@@ -186,7 +186,7 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
     } else {
       // Create mode: Open modal for new prediction
       console.log('➕ Opening create mode for new prediction');
-      handleFixtureSelect(fixture);
+      handleFixtureSelect(fixture, []);
     }
   };
 
