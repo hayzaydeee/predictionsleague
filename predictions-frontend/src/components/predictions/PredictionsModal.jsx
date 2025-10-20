@@ -183,18 +183,16 @@ export default function PredictionsModal({
     
     setSubmitting(true);
 
-    // Normalize all chips to frontend format before merging
-    // activeGameweekChips might come from backend (UPPER_CASE) if editing
-    const normalizedGameweekChips = transformChipsFromBackend(activeGameweekChips);
+    // activeGameweekChips from context are already in frontend format (camelCase)
+    // selectedChips are also in frontend format
+    // Only merge them together - no transformation needed
+    const allChips = [...new Set([...selectedChips, ...activeGameweekChips])];
     
-    // Merge match chips (selectedChips) with normalized gameweek chips
-    const allChips = [...new Set([...selectedChips, ...normalizedGameweekChips])];
-    
-    console.log('🔄 Chip normalization:', {
+    console.log('🔄 Chip merging:', {
       selectedChips,
       activeGameweekChips,
-      normalizedGameweekChips,
-      allChips
+      allChips,
+      note: 'Both arrays already in frontend format (camelCase)'
     });
 
     const frontendPrediction = {
