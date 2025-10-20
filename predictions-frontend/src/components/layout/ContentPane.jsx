@@ -31,7 +31,7 @@ export default function ContentPane({
 
   // Get fixtures data (includes player squads) and user predictions
   const fixturesResponse = useClientSideFixtures();
-  const fixturesData = fixturesResponse;
+  const fixturesData = fixturesResponse?.fixtures || [];
   const userPredictions = fixturesResponse?.rawData?.predictions || [];
 
   // Get active gameweek chips (derived from cooldown state)
