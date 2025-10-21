@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ExclamationTriangleIcon, CheckIcon, Cross2Icon } from '@radix-ui/react-icons';
-import { useTheme } from '../../context/ThemeContext';
+import { useTheme } from '../../hooks/useTheme';
 import { getThemeStyles } from '../../utils/themeUtils';
 
 /**
