@@ -33,12 +33,23 @@ const PredictionsView = ({ handleEditPrediction }) => {
     status: 'all'
   });
   
+  // DEBUG: Log chip validation inputs
+  console.log('🔍 [PredictionsView] Chip validation inputs:', {
+    predictionsCount: predictions?.length,
+    activeGameweekChips,
+    currentGameweek,
+    hasActiveChips: activeGameweekChips?.length > 0
+  });
+  
   // Chip validation - check if predictions need syncing with active chips
   const { data: validation, refetch: refetchValidation } = useChipValidation(
     predictions,
     activeGameweekChips,
     currentGameweek
   );
+  
+  // DEBUG: Log validation result
+  console.log('🔍 [PredictionsView] Validation result:', validation);
   
   // Syncing state
   const [isSyncing, setIsSyncing] = useState(false);
@@ -212,7 +223,7 @@ const PredictionsView = ({ handleEditPrediction }) => {
   const handleDismiss = () => {
     if (!validation) return;
     
-    markDismissed(validation.predictions.map(p => p.predictionId));
+    markDismissed(currentGameweek, activeGameweekChips);
     refetchValidation();
   };
   // Show loading state
