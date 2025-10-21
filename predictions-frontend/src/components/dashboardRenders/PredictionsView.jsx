@@ -14,7 +14,7 @@ import { spacing, padding } from "../../utils/mobileScaleUtils";
 import { usePersistentFilters } from "../../hooks/usePersistentState";
 import { useChipManagement } from "../../context/ChipManagementContext";
 import { useChipValidation } from "../../hooks/useChipValidation";
-import { syncPredictionsWithActiveChips, markDismissed } from "../../utils/chips/chipValidation";
+import { syncPredictionsWithActiveChips, markDismissed } from "../../utils/chipValidation";
 import { CHIP_CONFIG } from "../../utils/chipManager";
 import { useQueryClient } from "@tanstack/react-query";
 import { showToast } from "../../services/notificationService";
