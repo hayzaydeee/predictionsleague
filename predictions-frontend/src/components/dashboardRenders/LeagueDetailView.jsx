@@ -348,7 +348,9 @@ const LeaderboardContent = ({ leagueId, formatSafeDate }) => {
       try {
         setLoading(true);
         const data = await leagueAPI.getLeagueStandings(leagueId);
-        setStandings(data.standings || []);
+        // Sort standings by points in descending order
+        const sortedStandings = (data.standings || []).sort((a, b) => b.points - a.points);
+        setStandings(sortedStandings);
       } catch (err) {
         console.error('Failed to fetch league standings:', err);
         setError(err.message);
