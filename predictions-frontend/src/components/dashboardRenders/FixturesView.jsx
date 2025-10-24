@@ -167,21 +167,43 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
   }, [filteredFixtures, sortBy]);
 
   // Handle fixture selection - Smart Click: Edit if predicted, Create if not
-  const onFixtureSelect = (fixture) => {
+  const onFixtureSelect = async (fixture) => {
     // Check if user has already predicted this fixture
     const existingPrediction = fixture.userPrediction;
     
     if (existingPrediction) {
-      // Edit mode: Open modal with existing prediction data
-      console.log('🔄 Opening edit mode for existing prediction:', existingPrediction);
+      // 🔄 CRITICAL FIX: Refetch predictions to get fresh chip data before editing
+      console.log('🔄 Refetching predictions to ensure fresh chip data for edit...');
+      let freshPrediction = existingPrediction;
+      
+      if (refetchPredictions) {
+        const refetchResult = await refetchPredictions();
+        const freshPredictions = refetchResult.data || userPredictions;
+        
+        // Find the fresh version of this specific prediction
+        freshPrediction = freshPredictions.find(p => p.matchId === existingPrediction.matchId) || existingPrediction;
+        
+        console.log('✅ Fresh prediction data fetched:', {
+          matchId: freshPrediction.matchId,
+          match: `${freshPrediction.homeTeam} vs ${freshPrediction.awayTeam}`,
+          staleChips: existingPrediction.chips || [],
+          freshChips: freshPrediction.chips || [],
+          chipsChanged: JSON.stringify(existingPrediction.chips) !== JSON.stringify(freshPrediction.chips)
+        });
+      } else {
+        console.warn('⚠️ refetchPredictions not available, using potentially stale chip data');
+      }
+      
+      // Edit mode: Open modal with FRESH prediction data
+      console.log('🔄 Opening edit mode for existing prediction with fresh data');
       handleFixtureSelect(fixture, [], {
         isEditing: true,
         initialValues: {
-          homeScore: existingPrediction.homeScore,
-          awayScore: existingPrediction.awayScore,
-          homeScorers: existingPrediction.homeScorers || [],
-          awayScorers: existingPrediction.awayScorers || [],
-          chips: existingPrediction.chips || [],
+          homeScore: freshPrediction.homeScore,
+          awayScore: freshPrediction.awayScore,
+          homeScorers: freshPrediction.homeScorers || [],
+          awayScorers: freshPrediction.awayScorers || [],
+          chips: freshPrediction.chips || [],  // ✅ Now using fresh chips
         }
       });
     } else {

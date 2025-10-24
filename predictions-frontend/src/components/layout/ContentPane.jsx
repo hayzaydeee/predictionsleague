@@ -4,7 +4,7 @@ import PredictionsModal from "../predictions/PredictionsModal";
 import ChipStrategyModal from "../predictions/ChipStrategyModal";
 import { ThemeContext } from "../../context/ThemeContext";
 import { backgrounds } from "../../utils/themeUtils";
-import { useClientSideFixtures } from "../../hooks/useClientSideFixtures";
+import { useClientSideFixtures, useHybridFixturesUtils } from "../../hooks/useClientSideFixtures";
 import { useChipManagement } from "../../context/ChipManagementContext";
 
 // Import from centralized data file for non-dashboard views
@@ -33,6 +33,9 @@ export default function ContentPane({
   const fixturesResponse = useClientSideFixtures();
   const fixturesData = fixturesResponse?.fixtures || [];
   const userPredictions = fixturesResponse?.rawData?.predictions || [];
+  
+  // Get utilities for invalidating/refetching hybrid data
+  const { invalidateUserPredictions } = useHybridFixturesUtils();
 
   // Get active gameweek chips (derived from cooldown state)
   const { activeGameweekChips } = useChipManagement();
@@ -109,6 +112,24 @@ export default function ContentPane({
   const handleEditPrediction = async (prediction) => {
     console.log('🔧 Editing prediction:', prediction);
     
+    // 🔄 CRITICAL FIX: Invalidate and refetch predictions to get fresh chip data
+    console.log('🔄 Invalidating predictions cache to ensure fresh chip data...');
+    invalidateUserPredictions();
+    
+    // Wait a moment for the invalidation to trigger a refetch
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    // Get fresh prediction data from the refetched cache
+    const freshPrediction = userPredictions.find(p => p.matchId === prediction.matchId) || prediction;
+    
+    console.log('✅ Using prediction data:', {
+      matchId: freshPrediction.matchId,
+      match: `${freshPrediction.homeTeam} vs ${freshPrediction.awayTeam}`,
+      originalChips: prediction.chips || [],
+      freshChips: freshPrediction.chips || [],
+      chipsChanged: JSON.stringify(prediction.chips) !== JSON.stringify(freshPrediction.chips)
+    });
+    
     // Log available fixtures for debugging
     console.log('🔍 Available fixtures:', {
       fixturesCount: fixturesData?.length || 0,
@@ -123,15 +144,15 @@ export default function ContentPane({
     
     // Try to find the full fixture data (including player squads) from current fixtures
     let fullFixture = fixturesData?.find(f => 
-      f.id === prediction.matchId || 
-      f.matchId === prediction.matchId ||
-      (f.homeTeam === prediction.homeTeam && f.awayTeam === prediction.awayTeam && f.gameweek === prediction.gameweek)
+      f.id === freshPrediction.matchId || 
+      f.matchId === freshPrediction.matchId ||
+      (f.homeTeam === freshPrediction.homeTeam && f.awayTeam === freshPrediction.awayTeam && f.gameweek === freshPrediction.gameweek)
     );
     
     console.log('🔍 Fixture search result:', {
-      searchingForMatchId: prediction.matchId,
-      searchingForTeams: `${prediction.homeTeam} vs ${prediction.awayTeam}`,
-      searchingForGameweek: prediction.gameweek,
+      searchingForMatchId: freshPrediction.matchId,
+      searchingForTeams: `${freshPrediction.homeTeam} vs ${freshPrediction.awayTeam}`,
+      searchingForGameweek: freshPrediction.gameweek,
       found: !!fullFixture,
       foundFixture: fullFixture ? {
         id: fullFixture.id,
@@ -146,10 +167,10 @@ export default function ContentPane({
       
       try {
         // Try to fetch fixture from backend by gameweek
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/fixtures?gameweek=${prediction.gameweek}`);
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/fixtures?gameweek=${freshPrediction.gameweek}`);
         if (response.ok) {
           const data = await response.json();
-          console.log('📥 Fetched fixtures for gameweek', prediction.gameweek, {
+          console.log('📥 Fetched fixtures for gameweek', freshPrediction.gameweek, {
             fixturesCount: data.length,
             allFixtures: data.map(f => ({
               id: f.id,
@@ -163,9 +184,9 @@ export default function ContentPane({
           
           // Find the specific fixture
           fullFixture = data.find(f => 
-            f.id === prediction.matchId || 
-            f.matchId === prediction.matchId ||
-            (f.homeTeam === prediction.homeTeam && f.awayTeam === prediction.awayTeam)
+            f.id === freshPrediction.matchId || 
+            f.matchId === freshPrediction.matchId ||
+            (f.homeTeam === freshPrediction.homeTeam && f.awayTeam === freshPrediction.awayTeam)
           );
           
           if (fullFixture) {
@@ -228,7 +249,8 @@ export default function ContentPane({
       fixtureId: fullFixture.id,
       teams: `${fullFixture.homeTeam} vs ${fullFixture.awayTeam}`,
       isEditing: true,
-      initialScores: `${prediction.homeScore}-${prediction.awayScore}`,
+      initialScores: `${freshPrediction.homeScore}-${freshPrediction.awayScore}`,
+      chips: freshPrediction.chips || [],
       hasActiveChips: activeGameweekChips?.length > 0
     });
 
@@ -236,11 +258,11 @@ export default function ContentPane({
       isOpen: true,
       fixture: fullFixture,
       initialValues: {
-        homeScore: prediction.homeScore,
-        awayScore: prediction.awayScore,
-        homeScorers: prediction.homeScorers || [],
-        awayScorers: prediction.awayScorers || [],
-        chips: prediction.chips || [],
+        homeScore: freshPrediction.homeScore,
+        awayScore: freshPrediction.awayScore,
+        homeScorers: freshPrediction.homeScorers || [],
+        awayScorers: freshPrediction.awayScorers || [],
+        chips: freshPrediction.chips || [],  // ✅ Now using fresh chips
       },
       isEditing: true,
       // Use derived active chips from chip management context

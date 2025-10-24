@@ -73,6 +73,7 @@ const DashboardView = ({
     data: userPredictions = [],
     isLoading: predictionsLoading,
     error: predictionsError,
+    refetch: refetchPredictions,
   } = useUserPredictions({
     status: 'all',
     staleTime: 2 * 60 * 1000, // 2 minutes
@@ -293,17 +294,40 @@ const DashboardView = ({
   };
 
   // Handler for editing from breakdown modal
-  const handleEditFromBreakdown = (prediction) => {
+  const handleEditFromBreakdown = async (prediction) => {
     console.log('✏️ Edit triggered from breakdown modal:', prediction);
+    handleCloseBreakdown();
+    
+    // 🔄 CRITICAL FIX: Refetch predictions to get fresh chip data before editing
+    console.log('🔄 Refetching predictions to ensure fresh chip data for edit...');
+    let freshPrediction = prediction;
+    
+    if (refetchPredictions) {
+      const refetchResult = await refetchPredictions();
+      const freshPredictions = refetchResult.data || userPredictions;
+      
+      // Find the fresh version of this specific prediction
+      freshPrediction = freshPredictions.find(p => p.matchId === prediction.matchId) || prediction;
+      
+      console.log('✅ Fresh prediction data fetched:', {
+        matchId: freshPrediction.matchId,
+        match: `${freshPrediction.homeTeam} vs ${freshPrediction.awayTeam}`,
+        staleChips: prediction.chips || [],
+        freshChips: freshPrediction.chips || [],
+        chipsChanged: JSON.stringify(prediction.chips) !== JSON.stringify(freshPrediction.chips)
+      });
+    } else {
+      console.warn('⚠️ refetchPredictions not available, using potentially stale chip data');
+    }
+    
     console.log('🔍 Searching for match in upcomingFixtures:', {
-      matchId: prediction.matchId,
+      matchId: freshPrediction.matchId,
       upcomingFixturesCount: upcomingFixtures.length,
       upcomingFixtureIds: upcomingFixtures.map(f => f.id)
     });
-    handleCloseBreakdown();
     
     // Find the match in upcomingFixtures (which has player data)
-    const match = upcomingFixtures.find(f => f.id === prediction.matchId);
+    const match = upcomingFixtures.find(f => f.id === freshPrediction.matchId);
     
     if (match && handleFixtureSelect) {
       console.log('✅ Found match in upcomingFixtures, opening edit modal directly:', {
@@ -313,22 +337,22 @@ const DashboardView = ({
         awayPlayersCount: match.awayPlayers?.length || 0
       });
       
-      // We have the full match data with players, call handleFixtureSelect directly
+      // We have the full match data with players, call handleFixtureSelect directly with FRESH data
       handleFixtureSelect(match, [], {
         isEditing: true,
         initialValues: {
-          homeScore: prediction.homeScore,
-          awayScore: prediction.awayScore,
-          homeScorers: prediction.homeScorers || [],
-          awayScorers: prediction.awayScorers || [],
-          chips: prediction.chips || [],
+          homeScore: freshPrediction.homeScore,
+          awayScore: freshPrediction.awayScore,
+          homeScorers: freshPrediction.homeScorers || [],
+          awayScorers: freshPrediction.awayScorers || [],
+          chips: freshPrediction.chips || [],  // ✅ Now using fresh chips
         }
       });
     } else {
       console.warn('⚠️ Match not found in upcomingFixtures or handleFixtureSelect not available, trying handleEditPrediction');
       // Fall back to parent handler which will try to find fixture
       if (handleEditPrediction) {
-        handleEditPrediction(prediction);
+        handleEditPrediction(freshPrediction);  // Pass fresh prediction
       }
     }
   };
