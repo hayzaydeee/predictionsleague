@@ -25,7 +25,7 @@ import { useChipManagement } from "../../context/ChipManagementContext";
 import { text } from "../../utils/themeUtils";
 import { generatePerformanceInsights, getInsightColorClass } from "../../utils/performanceInsights";
 import InsightDetailModal from "../common/InsightDetailModal";
-import PredictionBreakdownModal from "../common/PredictionBreakdownModal";
+import PredictionBreakdownModal from "../predictions/PredictionBreakdownModal";
 import { normalizeTeamName } from "../../utils/teamUtils";
 import { useExternalFixtures } from "../../hooks/useExternalFixtures";
 import { useUserPredictions } from "../../hooks/useClientSideFixtures";
