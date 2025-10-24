@@ -6,13 +6,14 @@ import {
   PlusIcon,
   ClockIcon,
   ChevronRightIcon,
+  EyeOpenIcon,
 } from "@radix-ui/react-icons";
 import { ThemeContext } from "../../context/ThemeContext";
 import { normalizeTeamName } from "../../utils/teamUtils";
 import TeamLogo from "../ui/TeamLogo";
 import { LOGO_SIZES } from "../../utils/teamLogos";
 
-const UpcomingMatchesPanel = ({ matches, onViewAll, onPredictMatch }) => {
+const UpcomingMatchesPanel = ({ matches, onViewAll, onPredictMatch, onViewPrediction }) => {
   const { theme } = useContext(ThemeContext);
 
   return (
@@ -183,7 +184,7 @@ const UpcomingMatchesPanel = ({ matches, onViewAll, onPredictMatch }) => {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => onPredictMatch(match)}
+                  onClick={() => match.predicted ? onViewPrediction(match) : onPredictMatch(match)}
                   className={`flex items-center gap-1 sm:gap-1.5 border rounded px-2 sm:px-3 py-1 sm:py-1.5 text-2xs sm:text-xs font-medium transition-all duration-200 opacity-70 hover:opacity-100 ${
                     !match.predicted
                       ? theme === "dark"
@@ -202,9 +203,9 @@ const UpcomingMatchesPanel = ({ matches, onViewAll, onPredictMatch }) => {
                     </>
                   ) : (
                     <>
-                      <LightningBoltIcon className="w-3 h-3 hidden sm:block" />
-                      <span className="hidden sm:inline">Edit</span>
-                      <span className="sm:hidden">✎</span>
+                      <EyeOpenIcon className="w-3 h-3 hidden sm:block" />
+                      <span className="hidden sm:inline">View</span>
+                      <span className="sm:hidden">👁</span>
                     </>
                   )}
                 </motion.button>

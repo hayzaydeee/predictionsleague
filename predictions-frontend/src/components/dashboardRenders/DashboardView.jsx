@@ -25,6 +25,7 @@ import { useChipManagement } from "../../context/ChipManagementContext";
 import { text } from "../../utils/themeUtils";
 import { generatePerformanceInsights, getInsightColorClass } from "../../utils/performanceInsights";
 import InsightDetailModal from "../common/InsightDetailModal";
+import PredictionBreakdownModal from "../common/PredictionBreakdownModal";
 import { normalizeTeamName } from "../../utils/teamUtils";
 import { useExternalFixtures } from "../../hooks/useExternalFixtures";
 import { useUserPredictions } from "../../hooks/useClientSideFixtures";
@@ -36,6 +37,7 @@ const DashboardView = ({
   recentPredictions,
   leagues,
   goToPredictions,
+  handleEditPrediction,
   navigateToSection,
   // Essential data with new backend structure
   essentialData,
@@ -91,6 +93,8 @@ const DashboardView = ({
   const [upcomingFixtures, setUpcomingFixtures] = useState([]);
   const [todaysMatches, setTodaysMatches] = useState([]);
   const [selectedInsight, setSelectedInsight] = useState(null);
+  const [selectedPrediction, setSelectedPrediction] = useState(null);
+  const [showBreakdownModal, setShowBreakdownModal] = useState(false);
 
   // Get chip management context
   const { availableChips, currentGameweek } = useChipManagement();
@@ -272,7 +276,33 @@ const DashboardView = ({
     };
   }, [todaysMatches, refetchFixtures]);
 
-  // Helper function to format match data for the predictions modal
+  // Handler for viewing existing predictions (opens breakdown modal)
+  const handleViewPrediction = (match) => {
+    if (match.userPrediction) {
+      console.log('👁️ Opening prediction breakdown for match:', match.id);
+      setSelectedPrediction(match.userPrediction);
+      setShowBreakdownModal(true);
+    }
+  };
+
+  // Handler for closing breakdown modal
+  const handleCloseBreakdown = () => {
+    setShowBreakdownModal(false);
+    setSelectedPrediction(null);
+  };
+
+  // Handler for editing from breakdown modal
+  const handleEditFromBreakdown = (prediction) => {
+    console.log('✏️ Edit triggered from breakdown modal:', prediction);
+    handleCloseBreakdown();
+    
+    // Use the parent's handleEditPrediction which properly opens modal in edit mode
+    if (handleEditPrediction) {
+      handleEditPrediction(prediction);
+    }
+  };
+
+  // Helper function to format match data for the predictions modal (create mode only)
   const formatMatchForPrediction = (match) => {
     console.log('🔧 formatMatchForPrediction:', {
       matchId: match.id,
@@ -280,7 +310,6 @@ const DashboardView = ({
       hasAwayPlayers: !!match.awayPlayers,
       homePlayersCount: match.homePlayers?.length || 0,
       awayPlayersCount: match.awayPlayers?.length || 0,
-      hasUserPrediction: !!match.userPrediction
     });
     
     return {
@@ -294,8 +323,6 @@ const DashboardView = ({
       // Include player data for goalscorer selection
       homePlayers: match.homePlayers || [],
       awayPlayers: match.awayPlayers || [],
-      // Include existing prediction data for edit mode
-      userPrediction: match.userPrediction || null,
     };
   };
 
@@ -618,6 +645,7 @@ const DashboardView = ({
                 onPredictMatch={(match) =>
                   goToPredictions(formatMatchForPrediction(match))
                 }
+                onViewPrediction={handleViewPrediction}
               />
             ) : externalFixturesError ? (
               <DashboardEmptyState
@@ -886,6 +914,16 @@ const DashboardView = ({
         isOpen={!!selectedInsight}
         onClose={() => setSelectedInsight(null)}
       />
+
+      {/* Prediction Breakdown Modal */}
+      {showBreakdownModal && selectedPrediction && (
+        <PredictionBreakdownModal
+          prediction={selectedPrediction}
+          isOpen={showBreakdownModal}
+          onClose={handleCloseBreakdown}
+          onEdit={handleEditFromBreakdown}
+        />
+      )}
     </ResponsiveStack>
   );
 };
