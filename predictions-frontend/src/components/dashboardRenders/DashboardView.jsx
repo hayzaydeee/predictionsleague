@@ -38,6 +38,7 @@ const DashboardView = ({
   leagues,
   goToPredictions,
   handleEditPrediction,
+  handleFixtureSelect,
   navigateToSection,
   // Essential data with new backend structure
   essentialData,
@@ -304,15 +305,27 @@ const DashboardView = ({
     // Find the match in upcomingFixtures (which has player data)
     const match = upcomingFixtures.find(f => f.id === prediction.matchId);
     
-    if (match) {
-      console.log('✅ Found match in upcomingFixtures, calling goToPredictions with edit data');
-      // We have the full match data with players, open modal directly
-      // Since goToPredictions expects create mode, we need to call handleEditPrediction
-      if (handleEditPrediction) {
-        handleEditPrediction(prediction);
-      }
+    if (match && handleFixtureSelect) {
+      console.log('✅ Found match in upcomingFixtures, opening edit modal directly:', {
+        matchId: match.id,
+        hasPlayers: !!(match.homePlayers?.length || match.awayPlayers?.length),
+        homePlayersCount: match.homePlayers?.length || 0,
+        awayPlayersCount: match.awayPlayers?.length || 0
+      });
+      
+      // We have the full match data with players, call handleFixtureSelect directly
+      handleFixtureSelect(match, [], {
+        isEditing: true,
+        initialValues: {
+          homeScore: prediction.homeScore,
+          awayScore: prediction.awayScore,
+          homeScorers: prediction.homeScorers || [],
+          awayScorers: prediction.awayScorers || [],
+          chips: prediction.chips || [],
+        }
+      });
     } else {
-      console.warn('⚠️ Match not found in upcomingFixtures, trying handleEditPrediction');
+      console.warn('⚠️ Match not found in upcomingFixtures or handleFixtureSelect not available, trying handleEditPrediction');
       // Fall back to parent handler which will try to find fixture
       if (handleEditPrediction) {
         handleEditPrediction(prediction);

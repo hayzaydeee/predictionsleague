@@ -464,6 +464,7 @@ export default function ContentPane({
               });
             }}
             handleEditPrediction={handleEditPrediction}
+            handleFixtureSelect={handleFixtureSelect}
             navigateToSection={navigateToSection}
             toggleChipInfoModal={toggleChipInfoModal}
           />
