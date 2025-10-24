@@ -439,21 +439,49 @@ export default function ContentPane({
             upcomingMatches={[]}
             recentPredictions={[]}
             leagues={[]}
-            // Replace the goToPredictions prop with this inline function
-            goToPredictions={(match) =>
-              handleFixtureSelect({
-                id: match.id,
-                homeTeam: match.homeTeam,
-                awayTeam: match.awayTeam,
-                date: match.date,
-                venue: match.venue,
-                gameweek: match.gameweek,
-                competition: match.competition,
-                // Include player data for goalscorer selection
-                homePlayers: match.homePlayers || [],
-                awayPlayers: match.awayPlayers || [],
-              })
-            }
+            // Smart prediction handler: detects edit vs create mode
+            goToPredictions={(match) => {
+              const existingPrediction = match.userPrediction;
+              
+              if (existingPrediction) {
+                // Edit mode: Pass existing prediction data
+                console.log('🔄 Opening edit mode for existing prediction:', existingPrediction);
+                handleFixtureSelect({
+                  id: match.id,
+                  homeTeam: match.homeTeam,
+                  awayTeam: match.awayTeam,
+                  date: match.date,
+                  venue: match.venue,
+                  gameweek: match.gameweek,
+                  competition: match.competition,
+                  homePlayers: match.homePlayers || [],
+                  awayPlayers: match.awayPlayers || [],
+                }, [], {
+                  isEditing: true,
+                  initialValues: {
+                    homeScore: existingPrediction.homeScore,
+                    awayScore: existingPrediction.awayScore,
+                    homeScorers: existingPrediction.homeScorers || [],
+                    awayScorers: existingPrediction.awayScorers || [],
+                    chips: existingPrediction.chips || [],
+                  }
+                });
+              } else {
+                // Create mode: New prediction
+                console.log('➕ Opening create mode for new prediction');
+                handleFixtureSelect({
+                  id: match.id,
+                  homeTeam: match.homeTeam,
+                  awayTeam: match.awayTeam,
+                  date: match.date,
+                  venue: match.venue,
+                  gameweek: match.gameweek,
+                  competition: match.competition,
+                  homePlayers: match.homePlayers || [],
+                  awayPlayers: match.awayPlayers || [],
+                });
+              }
+            }}
             navigateToSection={navigateToSection}
             toggleChipInfoModal={toggleChipInfoModal}
           />
