@@ -53,18 +53,6 @@ export const CHIP_CONFIG = {
     seasonLimit: null, // Unlimited uses (respecting cooldown)
     scope: "match"
   },
-  opportunist: {
-    id: "opportunist",
-    name: "Opportunist",
-    type: "gameweek",
-    description: "Change all predictions up to 30 minutes before each match kicks off",
-    icon: "⏱️",
-    color: "amber",
-    cooldown: 0, // No cooldown
-    seasonLimit: 2, // Can only use 2 times per season
-    scope: "gameweek", // Applied to entire gameweek
-    behavior: "rolling_deadline" // Can change predictions before each match individually
-  },
   scorerFocus: {
     id: "scorerFocus",
     name: "Scorer Focus",
@@ -105,13 +93,12 @@ import { chipAPI } from '../services/api/chipAPI';
 /**
  * ChipManager Class - Backend-driven chip state management
  * NOW A THIN WRAPPER around chipAPI.js
+ * 
+ * NOTE: No caching here - React Query handles all caching at the hook level
  */
 export class ChipManager {
   constructor(userId) {
     this.userId = userId;
-    this.cachedState = null; // Local cache of backend state
-    this.lastFetch = null; // Timestamp of last fetch
-    this.cacheTimeout = 30000; // 30 seconds
   }
 
   /**
@@ -119,45 +106,18 @@ export class ChipManager {
    * @returns {Promise<Object>} Chip state from server
    */
   async fetchState() {
-    const now = Date.now();
-    
-    // Return cached state if still valid
-    if (this.cachedState && this.lastFetch && (now - this.lastFetch) < this.cacheTimeout) {
-      return this.cachedState;
-    }
-
     try {
       const result = await chipAPI.getChipStatus();
       
       if (!result.success) {
         throw new Error(result.error?.message || 'Failed to fetch chip state');
       }
-
-      this.cachedState = result.data;
-      this.lastFetch = now;
       
-      return this.cachedState;
+      return result.data;
     } catch (error) {
       console.error('❌ Failed to fetch chip state:', error);
       throw error;
     }
-  }
-
-  /**
-   * Invalidate cache to force fresh fetch
-   */
-  invalidateCache() {
-    this.cachedState = null;
-    this.lastFetch = null;
-    console.log('🔄 Chip cache invalidated');
-  }
-
-  /**
-   * Clear chip state (for logout)
-   */
-  clearState() {
-    this.invalidateCache();
-    console.log('🗑️ Chip state cleared');
   }
 
   /**
@@ -191,76 +151,6 @@ export class ChipManager {
   }
 
   /**
-   * Use a chip - records usage via backend
-   * @deprecated Backend now handles chip validation and recording automatically.
-   * Use the prediction submission API with chipIds in the payload instead.
-   * @param {string} chipId - Chip identifier
-   * @param {number} gameweek - Gameweek where chip is used
-   * @param {string} matchId - Match identifier (for match-scoped chips)
-   * @param {string} predictionId - Prediction ID from backend
-   * @returns {Promise<Object>} Success status with updated availability
-   */
-  async useChip(chipId, gameweek, matchId = null, predictionId) {
-    console.warn('⚠️ chipManager.useChip() is deprecated. Backend handles chip recording automatically.');
-    console.warn('   Include chipIds in prediction submission payload instead.');
-    
-    return {
-      success: false,
-      reason: 'This method is deprecated. Backend handles chip recording automatically.',
-      deprecated: true
-    };
-
-    /* DEPRECATED CODE - Backend now handles validation and recording
-    try {
-      // Validate chips first
-      const validation = await chipAPI.validateChips([chipId], gameweek, matchId);
-      
-      if (!validation.success || !validation.data.valid) {
-        return {
-          success: false,
-          reason: validation.data?.conflicts?.[0]?.message || 'Chip validation failed',
-          conflicts: validation.data?.conflicts
-        };
-      }
-
-      // Record usage
-      const result = await chipAPI.recordChipUsage(predictionId, [chipId], gameweek, matchId);
-      
-      if (!result.success) {
-        throw new Error(result.error?.message || 'Failed to record chip usage');
-      }
-
-      // Invalidate cache to force refresh
-      this.invalidateCache();
-
-      console.log(`✅ Chip used: ${chipId} (GW${gameweek})`, result.data);
-
-      return {
-        success: true,
-        data: result.data
-      };
-    } catch (error) {
-      console.error('❌ useChip error:', error);
-      return {
-        success: false,
-        reason: error.message
-      };
-    }
-    */
-  }
-
-  /**
-   * Undo chip usage (for prediction cancellation)
-   * @deprecated Backend handles this when prediction is deleted
-   * @param {string} chipId - Chip identifier
-   * @param {number} gameweek - Gameweek where chip was used
-   */
-  async undoChipUsage(chipId, gameweek) {
-    console.warn('⚠️ undoChipUsage is deprecated. Backend handles this when prediction is deleted.');
-    this.invalidateCache();
-  }
-
-  /**
    * Get all available chips for a gameweek
    * @param {number} currentGameweek - Current gameweek number (optional)
    * @param {string} scope - Filter by scope: 'match' or 'gameweek'
@@ -282,117 +172,6 @@ export class ChipManager {
       console.error('❌ getAvailableChips error:', error);
       return [];
     }
-  }
-
-  /**
-   * Get chip usage statistics
-   * @deprecated Backend returns usage stats in /chips/status response
-   * @returns {Promise<Object>} Usage statistics from backend
-   */
-  async getUsageStats() {
-    console.warn('⚠️ getUsageStats is deprecated. Use chip.seasonUsageCount from /chips/status instead.');
-    
-    return {
-      totalChipsUsed: 0,
-      chipBreakdown: {},
-      deprecated: true
-    };
-
-    /* DEPRECATED CODE - Backend includes usage in status endpoint
-    try {
-      const history = await chipAPI.getChipHistory();
-      
-      if (!history.success) {
-        throw new Error('Failed to fetch chip history');
-      }
-
-      const usageData = history.data.usage || [];
-      const totalChipsUsed = usageData.reduce((sum, chip) => sum + chip.usageCount, 0);
-      
-      // Find most used chip
-      let mostUsedChip = null;
-      if (usageData.length > 0) {
-        const sorted = [...usageData].sort((a, b) => b.usageCount - a.usageCount);
-        mostUsedChip = {
-          chipId: sorted[0].chipId,
-          name: sorted[0].chipId, // Backend should return chip name
-          count: sorted[0].usageCount
-        };
-      }
-
-      return {
-        totalChipsUsed,
-        chipsOnCooldown: history.data.cooldowns?.length || 0,
-        seasonUsage: usageData.reduce((acc, chip) => {
-          acc[chip.chipId] = chip.usageCount;
-          return acc;
-        }, {}),
-        mostUsedChip,
-        recentHistory: history.data.history?.slice(-10) || []
-      };
-    } catch (error) {
-      console.error('❌ getUsageStats error:', error);
-      return {
-        totalChipsUsed: 0,
-        chipsOnCooldown: 0,
-        seasonUsage: {},
-        mostUsedChip: null,
-        recentHistory: []
-      };
-    }
-    */
-  }
-
-  /**
-   * Get most used chip
-   * @deprecated Use chip.seasonUsageCount from /chips/status instead
-   * @returns {Promise<Object>} Most used chip with count
-   */
-  async getMostUsedChip() {
-    console.warn('⚠️ getMostUsedChip is deprecated. Use chip.seasonUsageCount from /chips/status instead.');
-    return null;
-  }
-
-  /**
-   * Check if specific chips can be used together
-   * @deprecated Backend validates compatibility automatically
-   * Use checkChipCompatibilityLocal() for frontend-only validation
-   * @param {Array} chipIds - Array of chip IDs to check
-   * @param {number} gameweek - Target gameweek
-   * @param {string} matchId - Match ID (for match-scoped chips)
-   * @returns {Promise<Object>} Compatibility check result from backend
-   */
-  async checkChipCompatibility(chipIds, gameweek, matchId = null) {
-    console.warn('⚠️ checkChipCompatibility is deprecated. Backend validates automatically on submission.');
-    console.warn('   Use checkChipCompatibilityLocal() for frontend-only validation.');
-    
-    // Fall back to local validation
-    return this.checkChipCompatibilityLocal(chipIds);
-
-    /* DEPRECATED CODE - Backend handles validation
-    try {
-      const result = await chipAPI.validateChips(chipIds, gameweek, matchId);
-      
-      if (!result.success) {
-        throw new Error(result.error?.message || 'Validation failed');
-      }
-
-      return {
-        compatible: result.data.valid,
-        reason: result.data.valid ? 'Chips can be used together' : 'Validation failed',
-        conflicts: result.data.conflicts || [],
-        strictMode: true // Backend always enforces rules
-      };
-    } catch (error) {
-      console.error('❌ checkChipCompatibility error:', error);
-      return {
-        compatible: false,
-        reason: error.message,
-        conflicts: [],
-        strictMode: true
-      };
-    }
-    */
   }
 
   /**
@@ -469,104 +248,6 @@ export class ChipManager {
       reason: 'Chips can be used together',
       strictMode: true
     };
-  }
-
-  /**
-   * Simulate chip usage (for prediction preview without committing)
-  /**
-   * Simulate chip usage to see what would happen
-   * @deprecated Backend validates automatically on submission
-   * @param {Array} chipIds - Chips to simulate
-   * @param {number} gameweek - Target gameweek
-   * @param {string} matchId - Match ID (for match-scoped chips)
-   * @returns {Promise<Object>} Simulation results from backend
-   */
-  async simulateChipUsage(chipIds, gameweek, matchId = null) {
-    console.warn('⚠️ simulateChipUsage is deprecated. Use checkChipCompatibilityLocal() for frontend validation.');
-    
-    // Use local compatibility check
-    const compatibility = this.checkChipCompatibilityLocal(chipIds);
-    
-    return {
-      chips: chipIds.map(chipId => ({
-        chipId,
-        name: CHIP_CONFIG[chipId]?.name || chipId,
-        available: true,
-        reason: 'Check /chips/status for availability'
-      })),
-      compatibility,
-      allAvailable: compatibility.compatible
-    };
-
-    /* DEPRECATED CODE - Backend validates on submission
-    try {
-      const [statusResult, validationResult] = await Promise.all([
-        this.fetchState(),
-        chipAPI.validateChips(chipIds, gameweek, matchId)
-      ]);
-
-      const results = chipIds.map(chipId => {
-        const chip = statusResult.chips.find(c => c.chipId === chipId);
-        return {
-          chipId,
-          name: chip?.name || chipId,
-          available: chip?.available || false,
-          reason: chip?.reason || 'Unknown'
-        };
-      });
-
-      const compatibility = {
-        compatible: validationResult.data?.valid || false,
-        conflicts: validationResult.data?.conflicts || []
-      };
-
-      return {
-        chips: results,
-        compatibility,
-        allAvailable: results.every(r => r.available) && compatibility.compatible
-      };
-    } catch (error) {
-      console.error('❌ simulateChipUsage error:', error);
-      return {
-        chips: [],
-        compatibility: { compatible: false, conflicts: [] },
-        allAvailable: false
-      };
-    }
-    */
-  }
-
-  /**
-   * Reset chips for new season (admin only)
-   * @deprecated Backend should provide admin endpoint for this
-   * @returns {Promise<Object>} Reset result
-   */
-  async resetChips() {
-    console.warn('⚠️ resetChips is deprecated. Use backend admin endpoint for season resets.');
-    
-    return {
-      success: false,
-      reason: 'This method is deprecated. Use backend admin endpoint.',
-      deprecated: true
-    };
-
-    /* DEPRECATED CODE - Backend should handle admin functions
-    try {
-      const result = await chipAPI.resetChips();
-      
-      if (!result.success) {
-        throw new Error(result.error?.message || 'Failed to reset chips');
-      }
-
-      this.invalidateCache();
-      console.log('♻️ Chips reset for new season');
-      
-      return { success: true, data: result.data };
-    } catch (error) {
-      console.error('❌ resetChips error:', error);
-      return { success: false, reason: error.message };
-    }
-    */
   }
 }
 

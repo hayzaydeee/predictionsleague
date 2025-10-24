@@ -79,7 +79,6 @@ export function calculatePoints(prediction) {
     }
 
     // Note: allInWeek is applied at gameweek level, not individual match level
-    // Note: opportunist provides partial credit, complex logic not implemented here
   }
 
   return Math.max(0, finalPoints); // Ensure non-negative points

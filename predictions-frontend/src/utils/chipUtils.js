@@ -2,64 +2,10 @@
  * Utilities for handling prediction chips
  */
 
-// Chip definitions (synchronized with chipManager.js)
-export const predictionChips = {
-  doubleDown: {
-    id: "doubleDown",
-    name: "Double Down",
-    type: "match",
-    description: "Double all points earned from one selected match",
-    icon: "2x",
-    cooldown: 0,
-    seasonLimit: null,
-  },
-  wildcard: {
-    id: "wildcard",
-    name: "Wildcard",
-    type: "match",
-    description: "Triple all points earned from one selected match",
-    icon: "3x",
-    cooldown: 7,
-    seasonLimit: null,
-  },
-  opportunist: {
-    id: "opportunist",
-    name: "Opportunist",
-    type: "gameweek",
-    description: "Change all predictions up to 30 minutes before each match kicks off",
-    icon: "⏱️",
-    cooldown: 0,
-    seasonLimit: 2,
-    behavior: "rolling_deadline"
-  },
-  scorerFocus: {
-    id: "scorerFocus",
-    name: "Scorer Focus",
-    type: "match",
-    description: "Doubles all points from goalscorer predictions in one match",
-    icon: "⚽",
-    cooldown: 5,
-    seasonLimit: null,
-  },
-  defensePlusPlus: {
-    id: "defensePlusPlus",
-    name: "Defense++",
-    type: "gameweek",
-    description: "Earn 10 bonus points if you correctly predict clean sheets across all matches where you predicted them",
-    icon: "🛡️",
-    cooldown: 5,
-    seasonLimit: null,
-  },
-  allInWeek: {
-    id: "allInWeek",
-    name: "All-In Week",
-    type: "gameweek",
-    description: "Doubles the entire gameweek score (including deductions)",
-    icon: "🎯",
-    cooldown: 0,
-    seasonLimit: 4,
-  },
-};
+import { CHIP_CONFIG } from './chipManager';
+
+// Re-export CHIP_CONFIG as predictionChips for backward compatibility
+export const predictionChips = CHIP_CONFIG;
 
 /**
  * Get chip information by ID
@@ -67,7 +13,7 @@ export const predictionChips = {
  * @returns {Object} The chip information object
  */
 export const getChipInfo = (chipId) => {
-  return predictionChips[chipId] || { name: chipId, description: "" };
+  return CHIP_CONFIG[chipId] || { name: chipId, description: "" };
 };
 
 /**
@@ -76,7 +22,7 @@ export const getChipInfo = (chipId) => {
  * @returns {Array} Array of chips of the specified type
  */
 export const getChipsByType = (type) => {
-  return Object.values(predictionChips).filter(chip => chip.type === type);
+  return Object.values(CHIP_CONFIG).filter(chip => chip.type === type);
 };
 
 /**

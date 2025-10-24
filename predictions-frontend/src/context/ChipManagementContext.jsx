@@ -113,74 +113,10 @@ export function ChipManagementProvider({ children }) {
   }, [availableChips]);
 
   /**
-   * Use chip (async - called AFTER prediction is submitted to backend)
-   * @param {string} chipId - Chip to use
-   * @param {number} gameweek - Gameweek number
-   * @param {string} matchId - Match ID
-   * @param {string} predictionId - Prediction ID from backend response
-   * @returns {Promise<Object>} Result with success/error
+   * DEPRECATED: Backend records chips automatically on prediction submission
+   * Chips are included in prediction payload and validated/recorded server-side
+   * Just refresh chip status after prediction created/updated/deleted
    */
-  const useChip = useCallback(async (chipId, gameweek, matchId, predictionId) => {
-    if (!chipManager) {
-      return { success: false, reason: 'Chip manager not initialized' };
-    }
-
-    try {
-      const result = await chipManager.useChip(chipId, gameweek, matchId, predictionId);
-      
-      if (result.success) {
-        // React Query will auto-invalidate and refresh
-        console.log('✅ Chip recorded:', chipId);
-      }
-      
-      return result;
-    } catch (error) {
-      console.error('❌ useChip error:', error);
-      return { success: false, reason: error.message };
-    }
-  }, [chipManager]);
-
-  /**
-   * Use multiple chips at once (async - called AFTER prediction submission)
-   * @param {Array} chipIds - Chips to use
-   * @param {number} gameweek - Gameweek number
-   * @param {string} matchId - Match ID
-   * @param {string} predictionId - Prediction ID from backend
-   * @returns {Promise<Object>} Result with success/error
-   */
-  const useMultipleChips = useCallback(async (chipIds, gameweek, matchId, predictionId) => {
-    console.warn('⚠️ useMultipleChips is deprecated. Backend records chips automatically on prediction submission.');
-    
-    if (!chipIds || chipIds.length === 0) {
-      return { success: true, reason: 'No chips to record' };
-    }
-
-    // Just refresh chip status to get updated availability
-    await refreshChips();
-    
-    console.log('✅ Chip status refreshed after prediction submission');
-    return { success: true, data: { chipsRecorded: chipIds } };
-  }, [refreshChips]);
-
-  /**
-   * Undo chip usage - NOW HANDLED BY BACKEND
-   * When a prediction is deleted, backend automatically releases chips
-   * Frontend just needs to refresh the chip status
-   */
-  const undoChipUsage = useCallback(async (chipId, gameweek) => {
-    console.warn('⚠️ undoChipUsage: Backend should handle this when prediction is deleted');
-    // Just refresh chip status from backend
-    await refreshChips();
-  }, [refreshChips]);
-
-  /**
-   * Undo multiple chips - NOW HANDLED BY BACKEND
-   */
-  const undoChipsUsage = useCallback(async (chipIds, gameweek) => {
-    console.warn('⚠️ undoChipsUsage: Backend should handle this when prediction is deleted');
-    // Just refresh chip status from backend
-    await refreshChips();
-  }, [refreshChips]);
 
   /**
    * Get chips filtered by scope (match or gameweek)
@@ -268,52 +204,11 @@ export function ChipManagementProvider({ children }) {
     }
     
     try {
-      return await chipManager.checkChipCompatibility(chipIds, gameweek, matchId);
+      // Use local validation only (backend validates on submission)
+      return chipManager.checkChipCompatibilityLocal(chipIds);
     } catch (error) {
       console.error('❌ checkCompatibility error:', error);
       return { compatible: false, reason: error.message };
-    }
-  }, [chipManager]);
-
-  /**
-   * Simulate chip usage (async - validates with backend)
-   */
-  const simulateUsage = useCallback(async (chipIds, gameweek = currentGameweek, matchId = null) => {
-    if (!chipManager) return null;
-    
-    try {
-      return await chipManager.simulateChipUsage(chipIds, gameweek, matchId);
-    } catch (error) {
-      console.error('❌ simulateUsage error:', error);
-      return null;
-    }
-  }, [chipManager, currentGameweek]);
-
-  /**
-   * Get usage statistics (async - fetches from backend)
-   */
-  const getUsageStats = useCallback(async () => {
-    if (!chipManager) return null;
-    
-    try {
-      return await chipManager.getUsageStats();
-    } catch (error) {
-      console.error('❌ getUsageStats error:', error);
-      return null;
-    }
-  }, [chipManager]);
-
-  /**
-   * Reset chip state (async - calls backend reset endpoint)
-   */
-  const resetChipsState = useCallback(async () => {
-    if (!chipManager) return;
-    
-    try {
-      await chipManager.resetChips();
-      console.log('🔄 All chips reset (backend)');
-    } catch (error) {
-      console.error('❌ resetChips error:', error);
     }
   }, [chipManager]);
 
@@ -360,16 +255,8 @@ export function ChipManagementProvider({ children }) {
     
     // Compatibility checking (local - frontend rules)
     checkCompatibility,
-    simulateUsage,
     
-    // Chip usage (Note: backend handles validation and recording)
-    // These are kept for UI flow but backend does the actual work
-    useChip,
-    useMultipleChips,
-    
-    // Statistics and management
-    getUsageStats,
-    resetChips: resetChipsState,
+    // Management
     updateGameweek,
     refreshChips, // Manual refresh trigger (refetches /chips/status)
     

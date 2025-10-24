@@ -3,6 +3,7 @@ import { InfoCircledIcon, StarIcon, LightningBoltIcon, TargetIcon, RocketIcon, C
 import { useContext, useMemo, memo } from "react";
 import { ThemeContext } from "../../context/ThemeContext";
 import { backgrounds, text, getThemeStyles } from "../../utils/themeUtils";
+import { CHIP_CONFIG } from "../../utils/chipManager";
 
 const ChipStrategyModal = memo(({ isOpen, onClose }) => {
   const { theme } = useContext(ThemeContext);
@@ -42,77 +43,62 @@ const ChipStrategyModal = memo(({ isOpen, onClose }) => {
     })
   }), [theme]);
 
-  // Memoize chip data to prevent recreation on every render
-  const chipData = useMemo(() => ({
-    matchChips: [
-      {
-        id: 'doubleDown',
-        icon: '2x',
-        name: 'Double Down',
-        cooldown: 'Available every gameweek',
-        description: 'Double all points earned from one selected match.',
-        bgColor: 'teal',
-        hoverColor: 'teal-500/30',
+  // Generate chip data from CHIP_CONFIG with UI enhancements
+  const chipData = useMemo(() => {
+    // Strategy tips for each chip
+    const chipTips = {
+      doubleDown: 'Ideal for high-confidence predictions, especially exact scorelines or when you\'ve predicted multiple correct goalscorers. Use freely - available every gameweek!',
+      wildcard: 'Reserve for your most confident predictions. Use strategically - 7 gameweek cooldown means you can only use it a few times per season!',
+      scorerFocus: 'Perfect for matches featuring prolific goalscorers or games expected to be high-scoring. Research team news and recent form to maximize effectiveness.',
+      defensePlusPlus: 'Analyze defensive statistics and upcoming fixtures. Best used when strong defensive teams face weaker attacking sides. Must get ALL clean sheet predictions correct to earn the bonus.',
+      allInWeek: 'Use when extremely confident across all matches in the gameweek. Ideal for gameweeks with many predictable fixtures. Be careful - negative points are also doubled!'
+    };
+
+    // Hover colors for each chip color
+    const hoverColors = {
+      teal: 'teal-500/30',
+      purple: 'purple-500/30',
+      green: 'green-500/30',
+      blue: 'blue-500/30',
+      red: 'red-500/30'
+    };
+
+    // Generate match chips (scope: match)
+    const matchChips = Object.values(CHIP_CONFIG)
+      .filter(chip => chip.scope === 'match')
+      .map(chip => ({
+        id: chip.id,
+        icon: chip.icon,
+        name: chip.name,
+        cooldown: chip.cooldown === 0 ? 'Available every gameweek' : `Cooldown: ${chip.cooldown} gameweeks between uses`,
+        description: chip.description,
+        bgColor: chip.color,
+        hoverColor: hoverColors[chip.color],
         tipTitle: 'Strategic Usage:',
-        tip: 'Ideal for high-confidence predictions, especially exact scorelines or when you\'ve predicted multiple correct goalscorers. Use freely - available every gameweek!'
-      },
-      {
-        id: 'wildcard',
-        icon: '3x', 
-        name: 'Wildcard',
-        cooldown: 'Cooldown: 7 gameweeks between uses',
-        description: 'Triple all points earned from one selected match.',
-        bgColor: 'purple',
-        hoverColor: 'purple-500/30',
+        tip: chipTips[chip.id]
+      }));
+
+    // Generate gameweek chips (scope: gameweek)
+    const gameweekChips = Object.values(CHIP_CONFIG)
+      .filter(chip => chip.scope === 'gameweek')
+      .map(chip => ({
+        id: chip.id,
+        icon: chip.icon,
+        name: chip.name,
+        usage: chip.seasonLimit 
+          ? `Limited use: ${chip.seasonLimit} per season`
+          : chip.cooldown > 0 
+            ? `Cooldown: ${chip.cooldown} gameweeks between uses`
+            : 'Available every gameweek',
+        description: chip.description,
+        bgColor: chip.color,
+        hoverColor: hoverColors[chip.color],
         tipTitle: 'Strategic Usage:',
-        tip: 'Reserve for your most confident predictions. Use strategically - 7 gameweek cooldown means you can only use it a few times per season!'
-      },
-      {
-        id: 'scorerFocus',
-        icon: '⚽',
-        name: 'Scorer Focus', 
-        cooldown: 'Cooldown: 5 gameweeks between uses',
-        description: 'Doubles all points from goalscorer predictions in one selected match.',
-        bgColor: 'green',
-        hoverColor: 'green-500/30',
-        tipTitle: 'Strategic Usage:',
-        tip: 'Perfect for matches featuring prolific goalscorers or games expected to be high-scoring. Research team news and recent form to maximize effectiveness.'
-      }
-    ],
-    gameweekChips: [
-      {
-        id: 'opportunist',
-        icon: '⏱️',
-        name: 'Opportunist',
-        usage: 'Limited use: Available twice per season', 
-        description: 'Change all predictions up to 30 minutes before each match kicks off.',
-        bgColor: 'amber',
-        hoverColor: 'amber-500/30',
-        tipTitle: 'Strategic Usage:',
-        tip: 'Save for gameweeks with significant late team news. You can adjust predictions for each match individually up to 30 minutes before that match starts.'
-      },
-      {
-        id: 'defenseBoost',
-        icon: '🛡️',
-        name: 'Defense++',
-        usage: 'Cooldown: 5 gameweeks between uses',
-        description: 'Earn 10 bonus points if you correctly predict clean sheets across all matches where you predicted them.',
-        bgColor: 'blue',
-        tipTitle: 'Strategic Usage:',
-        tip: 'Analyze defensive statistics and upcoming fixtures. Best used when strong defensive teams face weaker attacking sides. Must get ALL clean sheet predictions correct to earn the bonus.'
-      },
-      {
-        id: 'allInWeek', 
-        icon: '🎯',
-        name: 'All-In Week',
-        usage: 'Limited use: 4 per season',
-        description: 'Doubles the entire gameweek score (including deductions).',
-        bgColor: 'red',
-        tipTitle: 'Strategic Usage:',  
-        tip: 'Use when extremely confident across all matches in the gameweek. Ideal for gameweeks with many predictable fixtures. Be careful - negative points are also doubled!'
-      }
-    ]
-  }), []);
+        tip: chipTips[chip.id]
+      }));
+
+    return { matchChips, gameweekChips };
+  }, []);
   
   // Memoized chip card component to prevent unnecessary re-renders
   const ChipCard = memo(({ chip, type = 'match' }) => {

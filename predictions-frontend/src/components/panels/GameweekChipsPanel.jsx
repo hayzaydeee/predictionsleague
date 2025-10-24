@@ -25,6 +25,7 @@ import { userPredictionsAPI } from "../../services/api/userPredictionsAPI";
 import { showToast } from "../../services/notificationService";
 import { isGameweekChip } from "../../utils/chipManager";
 import { getChipInfo } from "../../utils/chipUtils";
+import { isChipApplicableToPrediction } from "../../utils/chipValidation";
 
 const GameweekChipsPanel = ({
   currentGameweek,
@@ -149,19 +150,10 @@ const GameweekChipsPanel = ({
         predictions: pendingPredictions.map(p => `${p.homeTeam} vs ${p.awayTeam} (${p.homeScore}-${p.awayScore})`)
       });
 
-      // CHIP-SPECIFIC FILTERING: Only apply chip to predictions that qualify
-      let applicablePredictions = pendingPredictions;
-      
-      if (chipId === 'defensePlusPlus') {
-        // Defense++: Only apply to predictions with clean sheets (0 goals for either team)
-        applicablePredictions = pendingPredictions.filter(pred => {
-          const hasCleanSheet = pred.homeScore === 0 || pred.awayScore === 0;
-          console.log(`🛡️ Defense++ check: ${pred.homeTeam} vs ${pred.awayTeam} (${pred.homeScore}-${pred.awayScore}) → ${hasCleanSheet ? 'ELIGIBLE' : 'NOT ELIGIBLE'}`);
-          return hasCleanSheet;
-        });
-        
-        console.log(`🛡️ Defense++ filtering: ${applicablePredictions.length}/${pendingPredictions.length} predictions have clean sheets`);
-      }
+      // CHIP-SPECIFIC FILTERING: Use centralized isChipApplicableToPrediction()
+      const applicablePredictions = pendingPredictions.filter(pred =>
+        isChipApplicableToPrediction(chipId, pred).applicable
+      );
 
       if (applicablePredictions.length === 0) {
         const chipName = getChipInfo(chipId)?.name || chipId;

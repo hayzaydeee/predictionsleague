@@ -9,6 +9,7 @@ import { showToast } from "../../services/notificationService";
 import { transformChipsFromBackend } from "../../utils/backendMappings";
 import { useChipManagement } from "../../context/ChipManagementContext";
 import { CHIP_CONFIG } from "../../utils/chipManager";
+import { isChipApplicableToPrediction } from "../../utils/chipValidation";
 
 // Import modular components
 import ModalHeader from "./modal/ModalHeader";
@@ -185,19 +186,11 @@ export default function PredictionsModal({
     setSubmitting(true);
 
     // Filter activeGameweekChips to only include chips applicable to this prediction
-    // e.g., Defense++ only applies to clean sheet predictions (0-X or X-0)
-    const hasPredictedCleanSheet = homeScore === 0 || awayScore === 0;
-    const applicableGameweekChips = activeGameweekChips.filter(chipId => {
-      // Defense++ only applies to clean sheet predictions
-      if (chipId === 'defensePlusPlus') {
-        if (!hasPredictedCleanSheet) {
-          console.log('⚠️ Defense++ not applicable - no clean sheet predicted');
-          return false;
-        }
-      }
-      // All other chips are always applicable
-      return true;
-    });
+    // Uses centralized isChipApplicableToPrediction() for consistency
+    const predictionData = { homeScore, awayScore };
+    const applicableGameweekChips = activeGameweekChips.filter(chipId => 
+      isChipApplicableToPrediction(chipId, predictionData).applicable
+    );
 
     // activeGameweekChips from context are already in frontend format (camelCase)
     // selectedChips are also in frontend format
@@ -208,7 +201,6 @@ export default function PredictionsModal({
       selectedChips,
       activeGameweekChips,
       applicableGameweekChips,
-      hasPredictedCleanSheet,
       allChips,
       note: 'Both arrays already in frontend format (camelCase)'
     });

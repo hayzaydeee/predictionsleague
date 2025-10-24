@@ -17,7 +17,6 @@ export default function PointsPotential({
     let max = 10 + (homeScore + awayScore) * 2;
 
     // Apply match chip effects
-    if (selectedChips.includes("opportunist")) max += 15;
     if (selectedChips.includes("scorerFocus")) max += (homeScore + awayScore) * 2;
     if (selectedChips.includes("doubleDown")) max *= 2;
     if (selectedChips.includes("wildcard")) max *= 3;
@@ -157,28 +156,6 @@ export default function PointsPotential({
               })}`}
             >
               3x points
-            </span>
-          </div>
-        )}
-
-        {selectedChips.includes("opportunist") && (
-          <div className="flex justify-between items-center text-sm">
-            <span
-              className={`flex items-center ${getThemeStyles(theme, {
-                dark: "text-amber-300",
-                light: "text-amber-700",
-              })}`}
-            >
-              <div className="w-2 h-2 bg-amber-500 rounded-full mr-2"></div>
-              <span className="mr-1">💰</span> Opportunist bonus
-            </span>
-            <span
-              className={`font-medium ${getThemeStyles(theme, {
-                dark: "text-amber-300",
-                light: "text-amber-700",
-              })}`}
-            >
-              +15 points
             </span>
           </div>
         )}

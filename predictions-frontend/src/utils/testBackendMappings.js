@@ -27,11 +27,11 @@ export const testChipMappings = () => {
   console.log('Expected:', ['DOUBLE_DOWN', 'WILDCARD', 'SCORER_FOCUS']);
   
   // Test backend to frontend
-  const backendChipsReverse = ['OPPORTUNIST', 'DEFENSE_PLUS_PLUS', 'ALL_IN_WEEK'];
+  const backendChipsReverse = ['DEFENSE_PLUS_PLUS', 'ALL_IN_WEEK'];
   const frontendChipsReverse = transformChipsFromBackend(backendChipsReverse);
   console.log('Backend chips (reverse):', backendChipsReverse);
   console.log('Frontend chips (reverse):', frontendChipsReverse);
-  console.log('Expected:', ['opportunist', 'defensePlusPlus', 'allInWeek']);
+  console.log('Expected:', ['defensePlusPlus', 'allInWeek']);
 };
 
 /**

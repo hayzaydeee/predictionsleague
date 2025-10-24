@@ -11,7 +11,6 @@ export const CHIP_MAPPING = {
   doubleDown: 'DOUBLE_DOWN',
   wildcard: 'WILDCARD', 
   scorerFocus: 'SCORER_FOCUS',
-  opportunist: 'OPPORTUNIST',
   defensePlusPlus: 'DEFENSE_PLUS_PLUS',
   allInWeek: 'ALL_IN_WEEK'
 };

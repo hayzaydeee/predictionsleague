@@ -4,6 +4,7 @@ import { format, parseISO, addMinutes } from 'date-fns';
 import { ThemeContext } from '../../context/ThemeContext';
 import { backgrounds, text, getThemeStyles } from '../../utils/themeUtils';
 import { calculatePoints, getPointsBreakdown } from '../../utils/pointsCalculation';
+import { CHIP_CONFIG } from '../../utils/chipManager';
 import { 
   Cross2Icon, 
   CalendarIcon,
@@ -422,20 +423,10 @@ const PredictionBreakdownModal = ({
                           </span>
                           <div>
                             <div className={`text-sm font-medium font-outfit ${getThemeStyles(theme, text.primary)}`}>
-                              {chip === 'doubleDown' && 'Double Down'}
-                              {chip === 'wildcard' && 'Wildcard'}
-                              {chip === 'scorerFocus' && 'Scorer Focus'}
-                              {chip === 'opportunist' && 'Opportunist'}
-                              {chip === 'defensePlusPlus' && 'Defense++'}
-                              {chip === 'allInWeek' && 'All-In Week'}
+                              {CHIP_CONFIG[chip]?.name || chip}
                             </div>
                             <div className={`text-xs font-outfit ${getThemeStyles(theme, text.muted)}`}>
-                              {chip === 'doubleDown' && 'Double all match points (2x)'}
-                              {chip === 'wildcard' && 'Triple all match points (3x)'}
-                              {chip === 'scorerFocus' && 'Double goalscorer points (2x)'}
-                              {chip === 'opportunist' && 'Change predictions until 30min before kickoff'}
-                              {chip === 'defensePlusPlus' && '+10 bonus for each correct clean sheet prediction'}
-                              {chip === 'allInWeek' && 'Double all gameweek points (2x)'}
+                              {CHIP_CONFIG[chip]?.description || ''}
                             </div>
                           </div>
                         </div>
@@ -443,7 +434,6 @@ const PredictionBreakdownModal = ({
                           {chip === 'doubleDown' && '×2'}
                           {chip === 'wildcard' && '×3'}
                           {chip === 'scorerFocus' && '×2'}
-                          {chip === 'opportunist' && '⏱️'}
                           {chip === 'defensePlusPlus' && '+10'}
                           {chip === 'allInWeek' && '×2'}
                         </div>
@@ -740,20 +730,14 @@ const PredictionBreakdownModal = ({
                                   {chip}
                                 </span>
                                 <span className={`text-sm font-outfit ${getThemeStyles(theme, text.secondary)}`}>
-                                  {chip === 'doubleDown' && 'Double all match points (2x)'}
-                                  {chip === 'wildcard' && 'Triple all match points (3x)'}
-                                  {chip === 'scorerFocus' && 'Double goalscorer points (2x)'}
-                                  {chip === 'opportunist' && 'Partial goalscorer credit'}
-                                  {chip === 'defensePlus' && '+10 for clean sheet prediction'}
-                                  {chip === 'allInWeek' && 'Double all gameweek points (2x)'}
+                                  {CHIP_CONFIG[chip]?.description || ''}
                                 </span>
                               </div>
                               <span className={`text-sm font-semibold font-outfit text-purple-400`}>
                                 {chip === 'doubleDown' && '×2'}
                                 {chip === 'wildcard' && '×3'}
                                 {chip === 'scorerFocus' && '×2 (scorers)'}
-                                {chip === 'opportunist' && 'Bonus'}
-                                {chip === 'defensePlus' && '+10'}
+                                {chip === 'defensePlusPlus' && '+10'}
                                 {chip === 'allInWeek' && '×2 (all)'}
                               </span>
                             </div>
