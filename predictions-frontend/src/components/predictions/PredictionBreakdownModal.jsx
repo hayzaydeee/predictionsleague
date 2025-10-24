@@ -33,15 +33,6 @@ const PredictionBreakdownModal = ({
   // For now, only allow editing if match status is still 'pending'
   // Backend should also validate deadline on their end
   const canEdit = prediction.status === 'pending';
-  
-  console.log('🔍 PredictionBreakdownModal - Checking edit permission:', {
-    predictionId: prediction.id,
-    status: prediction.status,
-    canEdit,
-    predictionDate: prediction.date,
-    predictionMatchDate: prediction.matchDate,
-    note: 'Backend date fields contain prediction timestamp, not fixture date'
-  });
 
   // Calculate accurate points using utility function
   const calculatedPoints = calculatePoints(prediction);

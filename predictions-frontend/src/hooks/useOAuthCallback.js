@@ -34,7 +34,6 @@ export const useOAuthCallback = () => {
         const urlParams = new URLSearchParams(window.location.search);
         
         // Delegate all OAuth logic to AuthContext
-        console.log('OAuth Callback - Delegating to AuthContext');
         await handleOAuthCallback(urlParams);
         
         setLocalState({

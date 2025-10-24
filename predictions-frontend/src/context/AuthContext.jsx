@@ -75,7 +75,6 @@ const authReducer = (state, action) => {
       };
       
     case AUTH_ACTIONS.LOGIN_SUCCESS:
-      console.log('AuthContext - LOGIN_SUCCESS action received:', action.payload);
       const newState = {
         ...state,
         status: AUTH_STATES.AUTHENTICATED,
@@ -87,7 +86,6 @@ const authReducer = (state, action) => {
         error: null,
         lastAuthCheck: Date.now(),
       };
-      console.log('AuthContext - New state after LOGIN_SUCCESS:', newState);
       return newState;
       
     case AUTH_ACTIONS.LOGOUT:
@@ -220,14 +218,11 @@ export const AuthProvider = ({ children }) => {
       dispatch({ type: AUTH_ACTIONS.INIT_START });
       
       try {
-        console.log('AuthContext - Starting enhanced initialization');
-        
         // Check if we're in an OAuth callback
         const currentPath = window.location.pathname;
         const urlParams = new URLSearchParams(window.location.search);
         
         if (currentPath === '/auth/callback') {
-          console.log('AuthContext - OAuth callback detected during initialization');
           // OAuth callback will be handled by useOAuthCallback hook
           // Just set initial state and let the callback handler take over
           dispatch({ type: AUTH_ACTIONS.INIT_SUCCESS });
@@ -237,7 +232,6 @@ export const AuthProvider = ({ children }) => {
         // Check for existing OAuth session data
         const oauthEmail = sessionStorage.getItem('oauth_user_email');
         if (oauthEmail) {
-          console.log('AuthContext - OAuth session data found:', oauthEmail);
           dispatch({ 
             type: AUTH_ACTIONS.OAUTH_DATA_RECEIVED, 
             payload: { email: oauthEmail } 
@@ -247,38 +241,30 @@ export const AuthProvider = ({ children }) => {
         // Always attempt server verification (ignore localStorage)
         // Let HTTP-only cookies be the source of truth
         try {
-          console.log('AuthContext - Attempting server authentication verification');
           const authResult = await authService.checkAuth({ 
             source: 'auth-context-enhanced-init-always-verify' 
           });
           
           if (authResult.isAuthenticated && authResult.user) {
-            console.log('AuthContext - Server confirmed authentication');
             dispatch({
               type: AUTH_ACTIONS.LOGIN_SUCCESS,
               payload: { user: authResult.user },
             });
             return;
-          } else {
-            console.log('AuthContext - Server says not authenticated');
-            // Don't dispatch LOGOUT here, just continue to determine state
           }
         } catch (error) {
-          console.log('AuthContext - Server auth check failed:', error.message);
-          // Don't dispatch LOGOUT here, just continue to determine state
+          // Server auth check failed, continue to determine state
         }
         
         // No valid JWT found - determine user state
         if (oauthEmail) {
           // OAuth user without JWT - needs onboarding
-          console.log('AuthContext - OAuth user needs onboarding');
           dispatch({ 
             type: AUTH_ACTIONS.OAUTH_USER_TYPE_DETERMINED, 
             payload: { needsOnboarding: true } 
           });
         } else {
           // Regular unauthenticated user
-          console.log('AuthContext - No auth found, setting unauthenticated');
           dispatch({ type: AUTH_ACTIONS.INIT_SUCCESS });
         }
         
@@ -414,7 +400,6 @@ export const AuthProvider = ({ children }) => {
       // Store email in session storage if provided by backend (SAME as current)
       if (email) {
         sessionStorage.setItem('oauth_user_email', email);
-        console.log('AuthContext - OAuth Callback - Email stored in session:', email);
         
         // Store in AuthContext state too
         dispatch({ 
@@ -429,7 +414,6 @@ export const AuthProvider = ({ children }) => {
         
         if (userResponse.success && userResponse.user) {
           // User already authenticated - returning user flow
-          console.log('AuthContext - OAuth user already authenticated, completing login');
           dispatch({ 
             type: AUTH_ACTIONS.LOGIN_SUCCESS, 
             payload: { user: userResponse.user } 
@@ -438,12 +422,10 @@ export const AuthProvider = ({ children }) => {
         }
       } catch (authError) {
         // No JWT or invalid JWT - proceed with OAuth flow
-        console.log('AuthContext - No existing auth, proceeding with OAuth flow');
       }
       
       // No JWT found - user needs onboarding (SAME decision logic as current)
       if (email) {
-        console.log('AuthContext - OAuth user needs onboarding');
         dispatch({ 
           type: AUTH_ACTIONS.OAUTH_USER_TYPE_DETERMINED, 
           payload: { needsOnboarding: true } 
@@ -474,7 +456,6 @@ export const AuthProvider = ({ children }) => {
       const email = state.oauthData.email || sessionStorage.getItem('oauth_user_email');
       if (email) {
         dataWithEmail.email = email;
-        console.log('AuthContext - Including email in profile completion:', email);
       }
       
       // Call the SAME API as current implementation
@@ -490,7 +471,6 @@ export const AuthProvider = ({ children }) => {
           payload: { user: result.user },
         });
         
-        console.log('AuthContext - OAuth profile completion successful');
         return { success: true, user: result.user };
       } else {
         throw new Error(result.error || 'Failed to complete profile');
@@ -535,7 +515,6 @@ export const AuthProvider = ({ children }) => {
       const response = await authAPI.getCurrentUser();
       return response.success ? response : null;
     } catch (error) {
-      console.log('AuthContext - getCurrentUser failed:', error.message);
       return null;
     }
   };

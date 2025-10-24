@@ -111,18 +111,7 @@ export const fixtureMatching = {
     }
 
     const match = userPredictions.find(prediction => {
-      const isMatch = this.fixturesMatch(externalFixture, prediction);
-      
-      // Only log successful matches to reduce console noise
-      if (isMatch) {
-        console.log('✅ Fixture matched:', {
-          externalId: externalFixture.id,
-          predictionId: prediction.id,
-          teams: `${externalFixture.homeTeam} vs ${externalFixture.awayTeam}`
-        });
-      }
-      
-      return isMatch;
+      return this.fixturesMatch(externalFixture, prediction);
     });
 
     return match || null;
@@ -151,11 +140,6 @@ export const dataMerging = {
       console.warn('External fixtures is not an array', { externalFixtures });
       return [];
     }
-
-    console.log('Starting fixture merge', {
-      externalCount: externalFixtures.length,
-      predictionsCount: userPredictions.length
-    });
 
     const mergedFixtures = externalFixtures.map(fixture => {
       const matchingPrediction = fixtureMatching.findMatchingPrediction(fixture, userPredictions);
@@ -209,12 +193,6 @@ export const dataMerging = {
     const sortedFixtures = sortByDate 
       ? filteredFixtures.sort((a, b) => new Date(a.date) - new Date(b.date))
       : filteredFixtures;
-
-    console.log('Fixture merge completed', {
-      totalMerged: sortedFixtures.length,
-      predicted: sortedFixtures.filter(f => f.predicted).length,
-      unpredicted: sortedFixtures.filter(f => !f.predicted).length
-    });
 
     return sortedFixtures;
   },
@@ -498,8 +476,6 @@ export const clientSideDataService = {
    */
   async processMergedData(externalFixtures, userPredictions, options = {}) {
     try {
-      console.log('Starting complete data merge workflow');
-
       // Merge the data
       const mergedFixtures = dataMerging.mergeFixturesWithPredictions(
         externalFixtures, 

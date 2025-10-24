@@ -110,10 +110,7 @@ export default function ContentPane({
 
   // Handler for editing predictions
   const handleEditPrediction = async (prediction) => {
-    console.log('🔧 Editing prediction:', prediction);
-    
     // 🔄 CRITICAL FIX: Invalidate and refetch predictions to get fresh chip data
-    console.log('🔄 Invalidating predictions cache to ensure fresh chip data...');
     invalidateUserPredictions();
     
     // Wait a moment for the invalidation to trigger a refetch
@@ -122,44 +119,14 @@ export default function ContentPane({
     // Get fresh prediction data from the refetched cache
     const freshPrediction = userPredictions.find(p => p.matchId === prediction.matchId) || prediction;
     
-    console.log('✅ Using prediction data:', {
-      matchId: freshPrediction.matchId,
-      match: `${freshPrediction.homeTeam} vs ${freshPrediction.awayTeam}`,
-      originalChips: prediction.chips || [],
-      freshChips: freshPrediction.chips || [],
-      chipsChanged: JSON.stringify(prediction.chips) !== JSON.stringify(freshPrediction.chips)
-    });
     
     // Log available fixtures for debugging
-    console.log('🔍 Available fixtures:', {
-      fixturesCount: fixturesData?.length || 0,
-      fixtures: fixturesData?.map(f => ({
-        id: f.id,
-        matchId: f.matchId,
-        match: `${f.homeTeam} vs ${f.awayTeam}`,
-        gameweek: f.gameweek,
-        date: f.date
-      }))
-    });
-    
     // Try to find the full fixture data (including player squads) from current fixtures
     let fullFixture = fixturesData?.find(f => 
       f.id === freshPrediction.matchId || 
       f.matchId === freshPrediction.matchId ||
       (f.homeTeam === freshPrediction.homeTeam && f.awayTeam === freshPrediction.awayTeam && f.gameweek === freshPrediction.gameweek)
     );
-    
-    console.log('🔍 Fixture search result:', {
-      searchingForMatchId: freshPrediction.matchId,
-      searchingForTeams: `${freshPrediction.homeTeam} vs ${freshPrediction.awayTeam}`,
-      searchingForGameweek: freshPrediction.gameweek,
-      found: !!fullFixture,
-      foundFixture: fullFixture ? {
-        id: fullFixture.id,
-        matchId: fullFixture.matchId,
-        hasPlayers: !!(fullFixture.homePlayers?.length || fullFixture.awayPlayers?.length)
-      } : null
-    });
     
     // If not found in loaded fixtures, try to fetch from backend
     if (!fullFixture) {
@@ -170,36 +137,13 @@ export default function ContentPane({
         const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/fixtures?gameweek=${freshPrediction.gameweek}`);
         if (response.ok) {
           const data = await response.json();
-          console.log('📥 Fetched fixtures for gameweek', freshPrediction.gameweek, {
-            fixturesCount: data.length,
-            allFixtures: data.map(f => ({
-              id: f.id,
-              matchId: f.matchId,
-              teams: `${f.homeTeam} vs ${f.awayTeam}`,
-              date: f.date,
-              utcDate: f.utcDate,
-              dateFields: Object.keys(f).filter(k => k.toLowerCase().includes('date'))
-            }))
-          });
           
           // Find the specific fixture
           fullFixture = data.find(f => 
             f.id === freshPrediction.matchId || 
-            f.matchId === freshPrediction.matchId ||
+            f.matchId === freshPrediction.matchId||
             (f.homeTeam === freshPrediction.homeTeam && f.awayTeam === freshPrediction.awayTeam)
           );
-          
-          if (fullFixture) {
-            console.log('✅ Found fixture from backend:', {
-              id: fullFixture.id,
-              matchId: fullFixture.matchId,
-              teams: `${fullFixture.homeTeam} vs ${fullFixture.awayTeam}`,
-              date: fullFixture.date,
-              utcDate: fullFixture.utcDate,
-              allDateFields: Object.keys(fullFixture).filter(k => k.toLowerCase().includes('date')),
-              hasPlayers: !!(fullFixture.homePlayers?.length || fullFixture.awayPlayers?.length)
-            });
-          }
         }
       } catch (error) {
         console.error('❌ Failed to fetch fixture from backend:', error);
@@ -209,19 +153,9 @@ export default function ContentPane({
     // If still not found, construct basic fixture object
     // Note: Player squads may not be available for completed/past matches
     if (!fullFixture) {
-      console.warn('⚠️ Could not find fixture data anywhere, using basic fixture structure');
-      
       // IMPORTANT: Backend bug - matchDate contains prediction timestamp, not fixture datetime
       // For now, we'll use a placeholder but this needs backend fix
       const fixtureDate = prediction.matchDate || prediction.date;
-      
-      console.log('📅 Date fields in prediction:', {
-        date: prediction.date,
-        matchDate: prediction.matchDate,
-        predictedAt: prediction.predictedAt,
-        usingDate: fixtureDate,
-        WARNING: 'Backend is sending prediction timestamp in matchDate field!'
-      });
       
       fullFixture = {
         id: prediction.matchId,
@@ -235,24 +169,6 @@ export default function ContentPane({
         awayPlayers: [],
       };
     }
-
-    console.log('📋 Fixture data for edit:', {
-      fixtureId: fullFixture.id,
-      hasHomePlayers: !!fullFixture.homePlayers?.length,
-      hasAwayPlayers: !!fullFixture.awayPlayers?.length,
-      homePlayersCount: fullFixture.homePlayers?.length || 0,
-      awayPlayersCount: fullFixture.awayPlayers?.length || 0
-    });
-
-    console.log('🚀 Opening edit modal with data:', {
-      isOpen: true,
-      fixtureId: fullFixture.id,
-      teams: `${fullFixture.homeTeam} vs ${fullFixture.awayTeam}`,
-      isEditing: true,
-      initialScores: `${freshPrediction.homeScore}-${freshPrediction.awayScore}`,
-      chips: freshPrediction.chips || [],
-      hasActiveChips: activeGameweekChips?.length > 0
-    });
 
     setModalData({
       isOpen: true,

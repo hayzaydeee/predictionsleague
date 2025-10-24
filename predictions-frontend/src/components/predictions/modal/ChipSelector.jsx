@@ -106,16 +106,6 @@ export default function ChipSelector({
     
     return isChipUsedInGameweek(chipId, gameweek, userPredictions, currentMatchId);
   };
-  
-  // DEBUG: Log chip data
-  console.log('🎯 ChipSelector - Match Chips:', {
-    matchChips,
-    matchChipsCount: matchChips?.length || 0,
-    matchChipsType: Array.isArray(matchChips) ? 'array' : typeof matchChips,
-    selectedChips,
-    lockedChips,
-    gameweek
-  });
 
   return (
     <div className="mb-6">

@@ -39,15 +39,6 @@ export default function Home() {
     refreshLeagues,
   } = useDashboardData();
 
-  // Add debugging for OAuth redirect detection
-  useEffect(() => {
-    console.log("🏠 Home page loaded:", {
-      view,
-      currentPath: window.location.pathname,
-      referrer: document.referrer,
-    });
-  }, [view]);
-
   // Valid views
   const validViews = [
     "dashboard",

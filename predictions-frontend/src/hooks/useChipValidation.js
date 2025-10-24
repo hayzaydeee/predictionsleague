@@ -27,8 +27,6 @@ export const useChipValidation = (predictions, activeGameweekChips, currentGamew
     
     // Query function is a pure calculation (no API call)
     queryFn: () => {
-      console.log('⚡ [CHIP VALIDATION] Running validation query');
-      
       const validationResult = validatePredictionsWithActiveChips(
         predictions,
         activeGameweekChips,
@@ -68,21 +66,7 @@ export const useChipValidation = (predictions, activeGameweekChips, currentGamew
     refetchOnReconnect: false,
     
     // Retry disabled (not a network request)
-    retry: false,
-    
-    // Log on success/error
-    onSuccess: (data) => {
-      if (data.shouldShow) {
-        console.log('🔔 [CHIP VALIDATION] Notification ready to show:', {
-          count: data.count,
-          summary: data.summary
-        });
-      }
-    },
-    
-    onError: (error) => {
-      console.error('❌ [CHIP VALIDATION] Query error:', error);
-    }
+    retry: false
   });
 };
 

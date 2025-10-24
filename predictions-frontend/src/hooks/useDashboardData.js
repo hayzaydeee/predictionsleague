@@ -43,14 +43,11 @@ const useDashboardData = () => {
         setEssentialLoading(true);
         setStatusBarLoading(true);
         
-        console.log('🚀 Fetching essential dashboard data...');
-        
         let userData = null;
         
         try {
           // Try to call real API for essential data (user info only)
           const essentialResponse = await dashboardAPI.getEssentialData();
-          console.log('✅ Essential data received:', essentialResponse);
           
           setEssentialData(essentialResponse);
           userData = essentialResponse.user;
@@ -106,9 +103,7 @@ const useDashboardData = () => {
     const fetchSecondaryData = async () => {
       // Fetch user leagues
       try {
-        console.log('🚀 Fetching user leagues...');
         const leagues = await leagueAPI.getUserLeagues(); // Use proper leagueAPI instead of dashboardAPI
-        console.log('✅ User leagues received:', leagues);
         setSecondaryData(prev => ({ ...prev, leagues }));
         setSecondaryLoading(prev => ({ ...prev, leagues: false }));
       } catch (error) {
@@ -118,19 +113,6 @@ const useDashboardData = () => {
       }
 
       // Performance insights - commented out for later implementation
-      /*
-      try {
-        console.log('🚀 Fetching performance insights...');
-        const insights = await dashboardAPI.getPerformanceInsights();
-        console.log('✅ Performance insights received:', insights);
-        setSecondaryData(prev => ({ ...prev, insights }));
-        setSecondaryLoading(prev => ({ ...prev, insights: false }));
-      } catch (error) {
-        console.error('❌ Failed to fetch performance insights:', error);
-        setErrors(prev => ({ ...prev, insights: error }));
-        setSecondaryLoading(prev => ({ ...prev, insights: false }));
-      }
-      */
       
       // Set insights loading to false since we're not fetching it
       setSecondaryLoading(prev => ({ ...prev, insights: false }));

@@ -53,14 +53,6 @@ export default function PredictionsModal({
   // Check if a specific chip is locked (already applied, cannot be removed)
   const isChipLocked = (chipId) => lockedChips.includes(chipId);
   
-  console.log('🔒 Chip locking state:', {
-    isEditing,
-    initialChips: initialValues?.chips,
-    lockedChips,
-    selectedChips,
-    message: isEditing ? 'Chips applied to original prediction are locked' : 'New prediction - no chips locked'
-  });
-  
   // UI state
   const [errors, setErrors] = useState({});
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -104,19 +96,6 @@ export default function PredictionsModal({
     
     const matchDate = parseISO(dateString);
     const deadline = addMinutes(matchDate, -30); // 30 minutes before kickoff
-    
-    console.log('⏰ Deadline calculation:', {
-      fixtureDate: fixture.date,
-      fixedDateString: dateString,
-      parsedMatchDate: matchDate.toISOString(),
-      parsedMatchDateLocal: matchDate.toString(),
-      deadline: deadline.toISOString(),
-      deadlineLocal: deadline.toString(),
-      now: now.toISOString(),
-      nowLocal: now.toString(),
-      isPast: now > deadline,
-      timeLeft: deadline.getTime() - now.getTime()
-    });
     
     return {
       isPast: now > deadline,

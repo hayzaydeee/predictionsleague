@@ -104,29 +104,10 @@ export function findPredictionsMissingActiveChips(predictions, activeGameweekChi
     return [];
   }
   
-  console.log('🔍 [CHIP VALIDATION] Analyzing predictions:', {
-    totalPredictions: predictions.length,
-    activeChips: activeGameweekChips,
-    currentGameweek,
-    chipNames: activeGameweekChips.map(id => CHIP_CONFIG[id]?.name)
-  });
-  
   // Filter and validate each prediction
   const missingChipsPredictions = predictions
     .map(pred => validatePredictionChips(pred, activeGameweekChips, currentGameweek))
     .filter(Boolean); // Remove null entries (valid predictions)
-  
-  console.log('📊 [CHIP VALIDATION] Analysis complete:', {
-    totalChecked: predictions.length,
-    pendingInGameweek: predictions.filter(p => 
-      p.status === 'pending' && p.gameweek === currentGameweek
-    ).length,
-    needingSync: missingChipsPredictions.length,
-    details: missingChipsPredictions.map(p => ({
-      fixture: p.fixture,
-      missing: p.missingChipNames
-    }))
-  });
   
   return missingChipsPredictions;
 }
@@ -158,12 +139,6 @@ export function validatePredictionsWithActiveChips(predictions, activeGameweekCh
       ? `${missingChipsPredictions.length} prediction${missingChipsPredictions.length === 1 ? '' : 's'} missing ${activeGameweekChips.map(id => CHIP_CONFIG[id]?.name).join(', ')}`
       : 'All predictions up to date'
   };
-  
-  if (needsSync) {
-    console.log('⚠️ [CHIP VALIDATION] Sync needed:', validationState.summary);
-  } else {
-    console.log('✅ [CHIP VALIDATION] All predictions synchronized');
-  }
   
   return validationState;
 }

@@ -29,19 +29,6 @@ const PrivateRoute = ({
   } = useAuth();
   const location = useLocation();
   
-  // Enhanced debugging with OAuth states
-  React.useEffect(() => {
-    console.log('🔒 Enhanced PrivateRoute check:', {
-      path: location.pathname,
-      authState,
-      canAccessDashboard: canAccessDashboard(),
-      isAuthenticated,
-      contextIsLoading,
-      hasUser: !!user,
-      requiredRoute: getRequiredRoute()
-    });
-  }, [location.pathname, authState, isAuthenticated, contextIsLoading, user]);
-  
   // Show loading state while AuthContext is processing
   if (contextIsLoading) {
     return fallback || <LoadingState message="Checking authentication..." />;
@@ -52,8 +39,6 @@ const PrivateRoute = ({
     // Get smart routing decision from AuthContext
     const requiredRoute = getRequiredRoute();
     const targetRoute = redirectTo || requiredRoute || '/login';
-    
-    console.log('🔒 PrivateRoute - Redirecting to:', targetRoute);
     
     return (
       <Navigate 

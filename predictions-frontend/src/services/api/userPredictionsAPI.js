@@ -35,61 +35,6 @@ export const userPredictionsAPI = {
         params: { status }
       });
 
-      // Log RAW backend response BEFORE any transformations
-      console.log('🔍 RAW BACKEND RESPONSE (before any transformations):', {
-        status,
-        responseType: typeof response,
-        responseKeys: Object.keys(response || {}),
-        fullRawResponse: JSON.parse(JSON.stringify(response)), // Deep clone to see original
-        dataLength: response.data?.length || 0,
-        firstPredictionRaw: response.data?.[0] ? JSON.parse(JSON.stringify(response.data[0])) : null
-      });
-
-      console.log('📥 User predictions fetched successfully', {
-        count: response.data?.length || 0,
-        status,
-        rawResponse: response
-      });
-
-      // Log detailed prediction data
-      if (response.data && response.data.length > 0) {
-        console.log('📊 First prediction sample:', {
-          prediction: response.data[0],
-          hasStatus: 'status' in response.data[0],
-          statusValue: response.data[0].status,
-          hasPoints: 'points' in response.data[0],
-          pointsValue: response.data[0].points,
-          hasActualScores: 'actualHomeScore' in response.data[0],
-          actualHomeScore: response.data[0].actualHomeScore,
-          actualAwayScore: response.data[0].actualAwayScore
-        });
-        
-        // Log date fields to debug matchDate vs predictedAt issue
-        console.log('📅 Backend date fields received:', 
-          response.data.map(p => ({
-            id: p.id,
-            match: `${p.homeTeam} vs ${p.awayTeam}`,
-            date: p.date,
-            matchDate: p.matchDate,
-            predictedAt: p.predictedAt,
-            createdAt: p.createdAt,
-            updatedAt: p.updatedAt
-          }))
-        );
-        
-        // Log all predictions with their status
-        console.log('📋 All predictions status breakdown:', 
-          response.data.map(p => ({
-            id: p.id,
-            match: `${p.homeTeam} vs ${p.awayTeam}`,
-            status: p.status,
-            points: p.points,
-            actualScores: `${p.actualHomeScore ?? 'null'}-${p.actualAwayScore ?? 'null'}`,
-            date: p.date || p.matchDate
-          }))
-        );
-      }
-
       // 🔧 NORMALIZE DATA: Fix backend inconsistencies
       const normalizedData = (response.data || []).map(prediction => {
         const normalized = { ...prediction };

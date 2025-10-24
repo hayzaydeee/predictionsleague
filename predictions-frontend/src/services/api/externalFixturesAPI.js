@@ -302,29 +302,15 @@ export const externalFixturesAPI = {
    */
   async getFixtures() {
     try {
-      console.log('🔄 Fetching fixtures from backend API...');
       const response = await apiClient.request('');
 
       // Backend returns direct array of fixtures, not wrapped in {fixtures: []}
       const fixturesArray = Array.isArray(response) ? response : (response.fixtures || []);
       
-      console.log(`📦 Received ${fixturesArray.length} fixtures from backend`);
-      
-      // Log response structure for monitoring
-      if (fixturesArray.length > 0) {
-        console.log('📋 Sample fixture structure:', {
-          sampleFixture: fixturesArray[0],
-          allFields: Object.keys(fixturesArray[0]),
-          totalFixtures: fixturesArray.length
-        });
-      }
-      
       // Transform fixtures (filter out nulls from failed transforms)
       const transformedFixtures = fixturesArray
         .map((fixture, index) => transformers.transformFixture(fixture, index))
         .filter(fixture => fixture !== null);
-
-      console.log(`✅ Successfully transformed ${transformedFixtures.length} fixtures`);
 
       // Deduplicate fixtures by ID (defensive against backend duplicates)
       const uniqueFixtures = transformedFixtures.filter((fixture, index, array) => 
