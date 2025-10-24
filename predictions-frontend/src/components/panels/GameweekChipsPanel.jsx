@@ -33,6 +33,7 @@ const GameweekChipsPanel = ({
   activeMatchChips = [],
   toggleChipInfoModal,
   userPredictions = [], // Array of user's predictions for retroactive application
+  refetchPredictions, // Function to refetch fresh prediction data before applying chips
 }) => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [selectedChip, setSelectedChip] = useState(null);
@@ -113,11 +114,31 @@ const GameweekChipsPanel = ({
     setApplyProgress({ current: 0, total: 0 });
 
     try {
+      // 🔄 CRITICAL FIX: Refetch predictions to ensure we have the latest chip data
+      // This prevents knocking off recently applied chips
+      console.log('🔄 Refetching predictions to get fresh chip data before applying gameweek chip...');
+      let freshPredictions = userPredictions; // Default to current if refetch not available
+      
+      if (refetchPredictions) {
+        const refetchResult = await refetchPredictions();
+        freshPredictions = refetchResult.data || userPredictions;
+        console.log('✅ Fresh predictions fetched:', {
+          count: freshPredictions.length,
+          withChips: freshPredictions.filter(p => p.chips?.length > 0).length,
+          sampleChips: freshPredictions.slice(0, 3).map(p => ({
+            match: `${p.homeTeam} vs ${p.awayTeam}`,
+            chips: p.chips
+          }))
+        });
+      } else {
+        console.warn('⚠️ refetchPredictions not available, using current predictions (may be stale)');
+      }
+
       console.log('🔍 Filtering predictions for chip application:', {
         chipId,
         activeGameweek,
-        totalUserPredictions: userPredictions.length,
-        allPredictionsData: userPredictions.map(p => ({
+        totalUserPredictions: freshPredictions.length,
+        allPredictionsData: freshPredictions.map(p => ({
           match: `${p.homeTeam} vs ${p.awayTeam}`,
           gameweek: p.gameweek,
           status: p.status,
@@ -126,8 +147,8 @@ const GameweekChipsPanel = ({
         }))
       });
 
-      // Filter pending predictions in current gameweek
-      const pendingPredictions = userPredictions.filter(pred => {
+      // Filter pending predictions in current gameweek using FRESH data
+      const pendingPredictions = freshPredictions.filter(pred => {
         const gameweekMatch = pred.gameweek === activeGameweek;
         const isPending = pred.status === 'pending';
         
@@ -175,11 +196,19 @@ const GameweekChipsPanel = ({
       for (let i = 0; i < applicablePredictions.length; i++) {
         const prediction = applicablePredictions[i];
         
-        // Add chip to existing chips (if not already present)
+        // ✅ CRITICAL: prediction.chips now contains FRESH data from refetch
+        // This ensures we preserve recently applied match-level chips
         const updatedChips = prediction.chips || [];
         if (!updatedChips.includes(chipId)) {
           updatedChips.push(chipId);
         }
+        
+        console.log(`🎯 Updating prediction with chips:`, {
+          match: `${prediction.homeTeam} vs ${prediction.awayTeam}`,
+          existingChips: prediction.chips || [],
+          newChip: chipId,
+          finalChips: updatedChips
+        });
 
         // Create updated prediction payload
         const updatedPrediction = {

@@ -38,6 +38,7 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
   const {
     data: userPredictions = [],
     isLoading: predictionsLoading,
+    refetch: refetchPredictions,
   } = useUserPredictions({
     status: 'all',
     staleTime: 2 * 60 * 1000,
@@ -300,6 +301,7 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
           activeMatchChips={[]}
           upcomingFixtures={liveFixtures || []}
           userPredictions={userPredictions}
+          refetchPredictions={refetchPredictions}
         />
       </motion.div>
 
