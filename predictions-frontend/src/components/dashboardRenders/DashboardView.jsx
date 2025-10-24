@@ -133,16 +133,28 @@ const DashboardView = ({
         })
         .slice(0, 3); // Get next 3 matches for dashboard (earliest first)
       
-      const processedFixtures = upcoming.map(fixture => ({
-        id: fixture.id,
-        gameweek: fixture.gameweek,
-        homeTeam: normalizeTeamName(fixture.homeTeam),
-        awayTeam: normalizeTeamName(fixture.awayTeam),
-        date: fixture.date,
-        venue: fixture.venue || "Stadium",
-        competition: fixture.competition || "Premier League",
-        status: fixture.status,
-      }));
+      const processedFixtures = upcoming.map(fixture => {
+        // Find matching prediction if exists
+        const userPrediction = userPredictions?.find(p => p.matchId === fixture.id);
+        
+        return {
+          id: fixture.id,
+          gameweek: fixture.gameweek,
+          homeTeam: normalizeTeamName(fixture.homeTeam),
+          awayTeam: normalizeTeamName(fixture.awayTeam),
+          date: fixture.date,
+          venue: fixture.venue || "Stadium",
+          competition: fixture.competition || "Premier League",
+          status: fixture.status,
+          // Preserve player data for goalscorer selection
+          homePlayers: fixture.homePlayers || [],
+          awayPlayers: fixture.awayPlayers || [],
+          // Include prediction data for edit mode
+          userPrediction: userPrediction || null,
+          hasPrediction: !!userPrediction,
+          predicted: !!userPrediction, // For button display logic
+        };
+      });
       
       setUpcomingFixtures(processedFixtures);
       
@@ -267,7 +279,8 @@ const DashboardView = ({
       hasHomePlayers: !!match.homePlayers,
       hasAwayPlayers: !!match.awayPlayers,
       homePlayersCount: match.homePlayers?.length || 0,
-      awayPlayersCount: match.awayPlayers?.length || 0
+      awayPlayersCount: match.awayPlayers?.length || 0,
+      hasUserPrediction: !!match.userPrediction
     });
     
     return {
@@ -281,6 +294,8 @@ const DashboardView = ({
       // Include player data for goalscorer selection
       homePlayers: match.homePlayers || [],
       awayPlayers: match.awayPlayers || [],
+      // Include existing prediction data for edit mode
+      userPrediction: match.userPrediction || null,
     };
   };
 
