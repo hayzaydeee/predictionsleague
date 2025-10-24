@@ -198,16 +198,20 @@ const GameweekChipsPanel = ({
         
         // ✅ CRITICAL: prediction.chips now contains FRESH data from refetch
         // This ensures we preserve recently applied match-level chips
-        const updatedChips = prediction.chips || [];
+        // ⚠️ MUST create a new array to avoid mutating the original
+        const existingChips = prediction.chips || [];
+        const updatedChips = [...existingChips]; // Create a new array copy
+        
         if (!updatedChips.includes(chipId)) {
           updatedChips.push(chipId);
         }
         
         console.log(`🎯 Updating prediction with chips:`, {
           match: `${prediction.homeTeam} vs ${prediction.awayTeam}`,
-          existingChips: prediction.chips || [],
+          existingChips: existingChips,
           newChip: chipId,
-          finalChips: updatedChips
+          finalChips: updatedChips,
+          isNewArray: existingChips !== updatedChips
         });
 
         // Create updated prediction payload
