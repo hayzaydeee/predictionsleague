@@ -294,11 +294,29 @@ const DashboardView = ({
   // Handler for editing from breakdown modal
   const handleEditFromBreakdown = (prediction) => {
     console.log('✏️ Edit triggered from breakdown modal:', prediction);
+    console.log('🔍 Searching for match in upcomingFixtures:', {
+      matchId: prediction.matchId,
+      upcomingFixturesCount: upcomingFixtures.length,
+      upcomingFixtureIds: upcomingFixtures.map(f => f.id)
+    });
     handleCloseBreakdown();
     
-    // Use the parent's handleEditPrediction which properly opens modal in edit mode
-    if (handleEditPrediction) {
-      handleEditPrediction(prediction);
+    // Find the match in upcomingFixtures (which has player data)
+    const match = upcomingFixtures.find(f => f.id === prediction.matchId);
+    
+    if (match) {
+      console.log('✅ Found match in upcomingFixtures, calling goToPredictions with edit data');
+      // We have the full match data with players, open modal directly
+      // Since goToPredictions expects create mode, we need to call handleEditPrediction
+      if (handleEditPrediction) {
+        handleEditPrediction(prediction);
+      }
+    } else {
+      console.warn('⚠️ Match not found in upcomingFixtures, trying handleEditPrediction');
+      // Fall back to parent handler which will try to find fixture
+      if (handleEditPrediction) {
+        handleEditPrediction(prediction);
+      }
     }
   };
 

@@ -223,6 +223,15 @@ export default function ContentPane({
       awayPlayersCount: fullFixture.awayPlayers?.length || 0
     });
 
+    console.log('🚀 Opening edit modal with data:', {
+      isOpen: true,
+      fixtureId: fullFixture.id,
+      teams: `${fullFixture.homeTeam} vs ${fullFixture.awayTeam}`,
+      isEditing: true,
+      initialScores: `${prediction.homeScore}-${prediction.awayScore}`,
+      hasActiveChips: activeGameweekChips?.length > 0
+    });
+
     setModalData({
       isOpen: true,
       fixture: fullFixture,
