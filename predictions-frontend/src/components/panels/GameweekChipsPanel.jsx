@@ -82,93 +82,25 @@ const GameweekChipsPanel = ({
   // Combined chips for display
   const allChips = [...gameweekChips, ...matchChips];
 
-  // Debug logging
-  useEffect(() => {
-    console.log("🎮 GameweekChipsPanel Debug:", {
-      activeGameweek,
-      contextGameweek,
-      availableChips,
-      availableChipsCount: availableChips?.length || 0,
-      availableChipsType: Array.isArray(availableChips) ? 'array' : typeof availableChips,
-      gameweekChips,
-      gameweekChipsCount: gameweekChips.length,
-      matchChips: matchChips.length,
-      allChips: allChips.length,
-      activeGameweekChips, // Backend-derived active chips
-      gameweekChipsData: gameweekChips,
-      matchChipsData: matchChips,
-    });
-  }, [
-    activeGameweek,
-    contextGameweek,
-    availableChips,
-    gameweekChips,
-    matchChips,
-    allChips,
-    activeGameweekChips,
-  ]);
-
   // Apply gameweek chip with retroactive application to all pending predictions
   const handleApplyGameweekChip = async (chipId) => {
     setIsApplying(true);
     setApplyProgress({ current: 0, total: 0 });
 
     try {
-      // 🔄 CRITICAL FIX: Refetch predictions to ensure we have the latest chip data
-      // This prevents knocking off recently applied chips
-      console.log('🔄 Refetching predictions to get fresh chip data before applying gameweek chip...');
-      let freshPredictions = userPredictions; // Default to current if refetch not available
+      // Refetch predictions to ensure we have the latest chip data
+      let freshPredictions = userPredictions;
       
       if (refetchPredictions) {
         const refetchResult = await refetchPredictions();
         freshPredictions = refetchResult.data || userPredictions;
-        console.log('✅ Fresh predictions fetched:', {
-          count: freshPredictions.length,
-          withChips: freshPredictions.filter(p => p.chips?.length > 0).length,
-          sampleChips: freshPredictions.slice(0, 3).map(p => ({
-            match: `${p.homeTeam} vs ${p.awayTeam}`,
-            chips: p.chips
-          }))
-        });
-      } else {
-        console.warn('⚠️ refetchPredictions not available, using current predictions (may be stale)');
       }
 
-      console.log('🔍 Filtering predictions for chip application:', {
-        chipId,
-        activeGameweek,
-        totalUserPredictions: freshPredictions.length,
-        allPredictionsData: freshPredictions.map(p => ({
-          match: `${p.homeTeam} vs ${p.awayTeam}`,
-          gameweek: p.gameweek,
-          status: p.status,
-          statusType: typeof p.status,
-          matchId: p.matchId
-        }))
-      });
-
-      // Filter pending predictions in current gameweek using FRESH data
+      // Filter pending predictions in current gameweek using fresh data
       const pendingPredictions = freshPredictions.filter(pred => {
         const gameweekMatch = pred.gameweek === activeGameweek;
         const isPending = pred.status === 'pending';
-        
-        console.log('🔎 Checking prediction:', {
-          match: `${pred.homeTeam} vs ${pred.awayTeam}`,
-          gameweek: pred.gameweek,
-          expectedGameweek: activeGameweek,
-          gameweekMatch,
-          status: pred.status,
-          statusType: typeof pred.status,
-          isPending,
-          willInclude: gameweekMatch && isPending
-        });
-        
         return gameweekMatch && isPending;
-      });
-
-      console.log('✅ Filtered pending predictions (by gameweek & status):', {
-        count: pendingPredictions.length,
-        predictions: pendingPredictions.map(p => `${p.homeTeam} vs ${p.awayTeam} (${p.homeScore}-${p.awayScore})`)
       });
 
       // CHIP-SPECIFIC FILTERING: Use centralized isChipApplicableToPrediction()
@@ -183,12 +115,6 @@ const GameweekChipsPanel = ({
         return;
       }
 
-      console.log(`🎯 Applying ${chipId} to ${applicablePredictions.length} eligible predictions`, {
-        chipId,
-        gameweek: activeGameweek,
-        predictions: applicablePredictions.map(p => `${p.homeTeam} vs ${p.awayTeam} (${p.homeScore}-${p.awayScore})`)
-      });
-
       setApplyProgress({ current: 0, total: applicablePredictions.length });
 
       // Update each prediction with the new chip
@@ -196,23 +122,13 @@ const GameweekChipsPanel = ({
       for (let i = 0; i < applicablePredictions.length; i++) {
         const prediction = applicablePredictions[i];
         
-        // ✅ CRITICAL: prediction.chips now contains FRESH data from refetch
-        // This ensures we preserve recently applied match-level chips
-        // ⚠️ MUST create a new array to avoid mutating the original
+        // Create a new array to avoid mutating the original
         const existingChips = prediction.chips || [];
-        const updatedChips = [...existingChips]; // Create a new array copy
+        const updatedChips = [...existingChips];
         
         if (!updatedChips.includes(chipId)) {
           updatedChips.push(chipId);
         }
-        
-        console.log(`🎯 Updating prediction with chips:`, {
-          match: `${prediction.homeTeam} vs ${prediction.awayTeam}`,
-          existingChips: existingChips,
-          newChip: chipId,
-          finalChips: updatedChips,
-          isNewArray: existingChips !== updatedChips
-        });
 
         // Create updated prediction payload
         const updatedPrediction = {
@@ -241,11 +157,6 @@ const GameweekChipsPanel = ({
 
           results.push({ success: result.success, match: `${prediction.homeTeam} vs ${prediction.awayTeam}` });
           setApplyProgress({ current: i + 1, total: pendingPredictions.length });
-
-          console.log(`✅ Updated prediction ${i + 1}/${applicablePredictions.length}`, {
-            match: `${prediction.homeTeam} vs ${prediction.awayTeam}`,
-            success: result.success
-          });
         } catch (error) {
           console.error(`❌ Failed to update prediction:`, error);
           results.push({ success: false, match: `${prediction.homeTeam} vs ${prediction.awayTeam}`, error: error.message });

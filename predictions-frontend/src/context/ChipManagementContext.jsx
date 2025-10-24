@@ -37,27 +37,6 @@ export function ChipManagementProvider({ children }) {
     refresh: refreshChips
   } = useChips();
   
-  // DEBUG: Log chip data from React Query
-  useEffect(() => {
-    console.log('🔍 ChipManagementContext - Chip Data Updated:', {
-      availableChips,
-      availableChipsCount: availableChips?.length || 0,
-      availableChipsType: Array.isArray(availableChips) ? 'array' : typeof availableChips,
-      backendGameweek,
-      chipsLoading,
-      chipsError,
-      hasError: !!chipsError
-    });
-    
-    if (availableChips && availableChips.length > 0) {
-      console.log('📊 Available Chips Breakdown:', availableChips.map(chip => ({
-        chipId: chip.chipId,
-        available: chip.available,
-        scope: chip.scope
-      })));
-    }
-  }, [availableChips, backendGameweek, chipsLoading, chipsError]);
-  
   // Determine current gameweek (prefer backend, fallback to manual override)
   const currentGameweek = useMemo(() => {
     if (manualGameweek !== null) return manualGameweek;
@@ -68,24 +47,14 @@ export function ChipManagementProvider({ children }) {
   useEffect(() => {
     const userId = user?.id || user?.username;
     
-    console.log('👤 ChipManagementContext: User changed', {
-      userId,
-      userName: user?.username,
-      isAuthenticated,
-      authLoading
-    });
-    
     if (authLoading) {
-      console.log('⏳ Waiting for authentication to complete...');
       return;
     }
     
     if (userId && isAuthenticated) {
       const manager = getChipManager(userId);
-      console.log('🎯 ChipManager initialized (backend wrapper) for user:', userId);
       setChipManager(manager);
     } else {
-      console.log('❌ No user or not authenticated, clearing chip manager');
       setChipManager(null);
     }
   }, [user?.id, user?.username, isAuthenticated, authLoading]);
@@ -122,38 +91,17 @@ export function ChipManagementProvider({ children }) {
    * Get chips filtered by scope (match or gameweek)
    */
   const getChipsByScope = useCallback((scope) => {
-    console.log('🔍 getChipsByScope called:', {
-      scope,
-      availableChips,
-      availableChipsCount: availableChips?.length || 0,
-      isArray: Array.isArray(availableChips),
-      firstChipStructure: availableChips?.[0] ? Object.keys(availableChips[0]) : [],
-      firstChipFull: availableChips?.[0],
-      allChipScopes: availableChips?.map(c => ({ chipId: c.chipId, scope: c.scope, hasScope: 'scope' in c }))
-    });
-    
     if (!availableChips || !Array.isArray(availableChips)) {
-      console.warn('⚠️ availableChips is not an array:', {
-        availableChips,
-        type: typeof availableChips
-      });
       return [];
     }
     
-    const filtered = availableChips.filter(chip => chip.scope === scope);
-    console.log(`📊 Filtered ${scope} chips:`, {
-      count: filtered.length,
-      chips: filtered.map(c => ({ chipId: c.chipId, available: c.available }))
-    });
-    
-    return filtered;
+    return availableChips.filter(chip => chip.scope === scope);
   }, [availableChips]);
 
   /**
    * Get match-scoped chips (for prediction modal)
    */
   const getMatchChips = useCallback(() => {
-    console.log('🎯 getMatchChips called');
     return getChipsByScope('match');
   }, [getChipsByScope]);
 
@@ -161,7 +109,6 @@ export function ChipManagementProvider({ children }) {
    * Get gameweek-scoped chips
    */
   const getGameweekChips = useCallback(() => {
-    console.log('🏆 getGameweekChips called');
     return getChipsByScope('gameweek');
   }, [getChipsByScope]);
 
@@ -181,18 +128,9 @@ export function ChipManagementProvider({ children }) {
       pred.matchId !== excludeMatchId // Exclude current match when editing
     );
     
-    const usedInPrediction = gameweekPredictions.some(pred => 
+    return gameweekPredictions.some(pred => 
       pred.chips && pred.chips.includes(chipId)
     );
-    
-    if (usedInPrediction) {
-      console.log(`🚫 ${chipId} already used in gameweek ${gameweek}:`, {
-        gameweekPredictions: gameweekPredictions.length,
-        foundInPrediction: gameweekPredictions.find(p => p.chips?.includes(chipId))
-      });
-    }
-    
-    return usedInPrediction;
   }, []);
 
   /**
@@ -216,7 +154,6 @@ export function ChipManagementProvider({ children }) {
    * Update current gameweek (manual override)
    */
   const updateGameweek = useCallback((gameweek) => {
-    console.log('📅 Manually updating gameweek to:', gameweek);
     setManualGameweek(gameweek);
   }, []);
 

@@ -38,23 +38,13 @@ export const useChipStatus = (options = {}) => {
   return useQuery({
     queryKey: [CHIP_QUERY_KEYS.STATUS],
     queryFn: async () => {
-      console.log('🔄 useChipStatus: Fetching chip status...');
       const result = await chipAPI.getChipStatus();
       
-      console.log('📦 useChipStatus: chipAPI result:', {
-        success: result.success,
-        hasData: !!result.data,
-        dataKeys: result.data ? Object.keys(result.data) : [],
-        chipsCount: result.data?.chips?.length || 0,
-        error: result.error
-      });
-      
       if (!result.success) {
-        console.error('❌ useChipStatus: Failed to fetch', result.error);
         throw new Error(result.error?.message || 'Failed to fetch chip status');
       }
       
-      // 🔧 MERGE backend data with frontend CHIP_CONFIG to add missing fields (scope, etc.)
+      // Merge backend data with frontend CHIP_CONFIG to add missing fields (scope, etc.)
       const enhancedData = {
         ...result.data,
         chips: (result.data?.chips || []).map(backendChip => {
@@ -65,36 +55,27 @@ export const useChipStatus = (options = {}) => {
           // If not found, try converting from various backend formats
           if (!config && chipId) {
             // Convert UPPER_SNAKE_CASE or snake_case to camelCase
-            // e.g., "WILDCARD" -> "wildcard"
-            // e.g., "DEFENSE_PLUS_PLUS" -> "defensePlusPlus"
-            // e.g., "defense_plus_plus" -> "defensePlusPlus"
             const normalized = chipId
-              .toLowerCase() // Convert to lowercase first
-              .replace(/_([a-z])/g, (g) => g[1].toUpperCase()); // Convert to camelCase
+              .toLowerCase()
+              .replace(/_([a-z])/g, (g) => g[1].toUpperCase());
             
             config = CHIP_CONFIG[normalized];
             if (config) {
-              // Silently converted - removed verbose logging
               chipId = normalized;
             }
           }
           
           if (!config) {
-            console.warn(`⚠️ Unknown chip from backend:`, {
-              chipId: backendChip.chipId,
-              availableConfigIds: Object.keys(CHIP_CONFIG),
-              backendChip
-            });
-            // Return backend chip as-is but mark it
+            console.warn(`⚠️ Unknown chip from backend:`, backendChip.chipId);
             return { ...backendChip, scope: 'unknown' };
           }
           
           // Merge backend state with frontend config
           return {
-            ...config, // Frontend config (has scope, name, description, etc.)
-            ...backendChip, // Backend state (has available, usageCount, cooldowns, etc.)
-            id: chipId, // Use normalized chipId as id (for ChipSelector compatibility)
-            chipId, // Also keep chipId
+            ...config,
+            ...backendChip,
+            id: chipId,
+            chipId,
             // Ensure critical fields from config aren't overwritten
             scope: config.scope,
             name: config.name,
@@ -105,7 +86,7 @@ export const useChipStatus = (options = {}) => {
         })
       };
       
-      // 🎯 ADD DOUBLE DOWN - Always available, no backend tracking needed
+      // Add Double Down - Always available, no backend tracking needed
       const hasDoubleDown = enhancedData.chips.some(chip => 
         chip.chipId === 'doubleDown' || chip.id === 'doubleDown'
       );
@@ -116,33 +97,15 @@ export const useChipStatus = (options = {}) => {
           ...doubleDownConfig,
           id: 'doubleDown',
           chipId: 'doubleDown',
-          available: true, // Always available
+          available: true,
           reason: 'Available',
-          usageCount: 0, // Not tracked
+          usageCount: 0,
           seasonLimit: null,
           remainingUses: null,
           cooldownExpires: null,
           remainingGameweeks: 0
         });
-        console.log('✅ Added Double Down chip (always available, no backend tracking)');
       }
-      
-      console.log('✅ useChipStatus: Enhanced data with CHIP_CONFIG:', {
-        originalChipsCount: result.data?.chips?.length || 0,
-        enhancedChipsCount: enhancedData.chips?.length || 0,
-        chipsWithScope: enhancedData.chips?.filter(c => c.scope).length || 0,
-        scopeBreakdown: {
-          match: enhancedData.chips?.filter(c => c.scope === 'match').length || 0,
-          gameweek: enhancedData.chips?.filter(c => c.scope === 'gameweek').length || 0
-        },
-        enhancedChips: enhancedData.chips?.map(c => ({
-          chipId: c.chipId,
-          id: c.id,
-          name: c.name,
-          scope: c.scope,
-          available: c.available
-        }))
-      });
       
       return enhancedData;
     },
@@ -153,13 +116,6 @@ export const useChipStatus = (options = {}) => {
     retry: 2,
     onError: (error) => {
       console.error('❌ useChipStatus error:', error);
-    },
-    onSuccess: (data) => {
-      console.log('✅ useChipStatus success:', {
-        hasChips: !!data?.chips,
-        chipsCount: data?.chips?.length || 0,
-        currentGameweek: data?.currentGameweek
-      });
     }
   });
 };
@@ -173,18 +129,6 @@ export const useChipStatus = (options = {}) => {
 export const useChips = () => {
   const queryClient = useQueryClient();
   const { data, isLoading, error, refetch } = useChipStatus();
-
-  // DEBUG: Log data transformation
-  console.log('🔍 useChips: Data transformation', {
-    rawData: data,
-    hasData: !!data,
-    dataType: typeof data,
-    dataKeys: data ? Object.keys(data) : [],
-    chipsArray: data?.chips,
-    chipsCount: data?.chips?.length || 0,
-    isLoading,
-    hasError: !!error
-  });
 
   /**
    * Manually refresh chip status

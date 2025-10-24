@@ -172,8 +172,7 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
     const existingPrediction = fixture.userPrediction;
     
     if (existingPrediction) {
-      // 🔄 CRITICAL FIX: Refetch predictions to get fresh chip data before editing
-      console.log('🔄 Refetching predictions to ensure fresh chip data for edit...');
+      // Refetch predictions to get fresh chip data before editing
       let freshPrediction = existingPrediction;
       
       if (refetchPredictions) {
@@ -182,20 +181,9 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
         
         // Find the fresh version of this specific prediction
         freshPrediction = freshPredictions.find(p => p.matchId === existingPrediction.matchId) || existingPrediction;
-        
-        console.log('✅ Fresh prediction data fetched:', {
-          matchId: freshPrediction.matchId,
-          match: `${freshPrediction.homeTeam} vs ${freshPrediction.awayTeam}`,
-          staleChips: existingPrediction.chips || [],
-          freshChips: freshPrediction.chips || [],
-          chipsChanged: JSON.stringify(existingPrediction.chips) !== JSON.stringify(freshPrediction.chips)
-        });
-      } else {
-        console.warn('⚠️ refetchPredictions not available, using potentially stale chip data');
       }
       
       // Edit mode: Open modal with FRESH prediction data
-      console.log('🔄 Opening edit mode for existing prediction with fresh data');
       handleFixtureSelect(fixture, [], {
         isEditing: true,
         initialValues: {
@@ -203,12 +191,11 @@ const FixturesView = ({ handleFixtureSelect, toggleChipInfoModal }) => {
           awayScore: freshPrediction.awayScore,
           homeScorers: freshPrediction.homeScorers || [],
           awayScorers: freshPrediction.awayScorers || [],
-          chips: freshPrediction.chips || [],  // ✅ Now using fresh chips
+          chips: freshPrediction.chips || [],
         }
       });
     } else {
       // Create mode: Open modal for new prediction
-      console.log('➕ Opening create mode for new prediction');
       handleFixtureSelect(fixture, []);
     }
   };
