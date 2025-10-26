@@ -728,28 +728,7 @@ const PredictionsContent = ({ leagueId, essentialData }) => {
     );
   }
 
-  // Show empty state only if no raw predictions exist, let filtered empty state be handled in render
-  if (!predictions || predictions.length === 0) {
-    return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        className="text-center py-12"
-      >
-        <TargetIcon className={`w-12 h-12 ${text.muted[theme]} mx-auto mb-4`} />
-        <h3
-          className={`text-lg font-semibold ${text.primary[theme]} mb-2 font-outfit`}
-        >
-          No Predictions Yet
-        </h3>
-        <p className={`${text.muted[theme]} font-outfit`}>
-          League members will appear here once they start making predictions
-        </p>
-      </motion.div>
-    );
-  }
-
+  // Handler for prediction selection
   const handlePredictionSelect = (prediction) => {
     setSelectedPrediction(prediction);
     // Could open a detailed modal here if needed
@@ -826,8 +805,10 @@ const PredictionsContent = ({ leagueId, essentialData }) => {
               No Predictions Found
             </h3>
             <p className={`${text.secondary[theme]} font-outfit`}>
-              {activeFilter !== "all" || searchQuery || gameweekFilter !== "all" || memberFilter !== "all"
+              {activeFilter !== "all" || searchQuery || memberFilter !== "all"
                 ? "Try adjusting your filters to see more predictions."
+                : predictions.length === 0
+                ? `No predictions have been made for Gameweek ${gameweekFilter === "current" ? currentGameweek : gameweekFilter} yet.`
                 : "League members will appear here once they start making predictions."}
             </p>
           </div>
