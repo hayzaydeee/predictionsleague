@@ -161,7 +161,7 @@ export function canMakePrediction(fixture) {
  */
 export function getPlayersByPosition(players, position) {
   if (!players || !Array.isArray(players)) return [];
-  return players.filter(player => player.position === position);
+  return players.filter(player => player && player.position === position);
 }
 
 /**
