@@ -45,10 +45,18 @@ export default function PredictionsModal({
   const [awayScore, setAwayScore] = useState(initialValues?.awayScore || 0);
   const [homeScorers, setHomeScorers] = useState(initialValues?.homeScorers || []);
   const [awayScorers, setAwayScorers] = useState(initialValues?.awayScorers || []);
-  const [selectedChips, setSelectedChips] = useState(initialValues?.chips || []);
-  
-  // Chip immutability: Track which chips were already applied (cannot be removed)
-  const lockedChips = isEditing ? (initialValues?.chips || []) : [];
+
+  // 🔧 FIX: selectedChips should ONLY contain MATCH-SCOPED chips
+  // Gameweek chips are applied retroactively and merged at submission time
+  // This prevents gameweek chips from counting toward the 2-match-chip limit
+  const initialMatchChips = (initialValues?.chips || []).filter(chipId => {
+    const chipConfig = CHIP_CONFIG[chipId];
+    return chipConfig?.scope === 'match';
+  });
+  const [selectedChips, setSelectedChips] = useState(initialMatchChips);
+
+  // Chip immutability: Track which MATCH chips were already applied (cannot be removed)
+  const lockedChips = isEditing ? initialMatchChips : [];
   
   // Check if a specific chip is locked (already applied, cannot be removed)
   const isChipLocked = (chipId) => lockedChips.includes(chipId);
@@ -167,21 +175,26 @@ export default function PredictionsModal({
     // Filter activeGameweekChips to only include chips applicable to this prediction
     // Uses centralized isChipApplicableToPrediction() for consistency
     const predictionData = { homeScore, awayScore };
-    const applicableGameweekChips = activeGameweekChips.filter(chipId => 
+    const applicableGameweekChips = activeGameweekChips.filter(chipId =>
       isChipApplicableToPrediction(chipId, predictionData).applicable
     );
 
-    // activeGameweekChips from context are already in frontend format (camelCase)
-    // selectedChips are also in frontend format
-    // Only merge them together - no transformation needed
+    // 🔄 MERGE CHIPS: Combine match chips (from selection) + gameweek chips (from context)
+    // - selectedChips: Only MATCH-SCOPED chips (user selected in this modal)
+    // - applicableGameweekChips: Only GAMEWEEK-SCOPED chips (applied retroactively)
+    // - This separation ensures gameweek chips don't count toward the 2-match-chip limit
+    // - Both arrays are already in frontend format (camelCase) - no transformation needed
     const allChips = [...new Set([...selectedChips, ...applicableGameweekChips])];
-    
-    console.log('🔄 Chip merging:', {
-      selectedChips,
-      activeGameweekChips,
-      applicableGameweekChips,
-      allChips,
-      note: 'Both arrays already in frontend format (camelCase)'
+
+    console.log('🔄 [CHIP MERGE] Merging match and gameweek chips:', {
+      matchChips: selectedChips,
+      gameweekChips: applicableGameweekChips,
+      mergedChips: allChips,
+      counts: {
+        match: selectedChips.length,
+        gameweek: applicableGameweekChips.length,
+        total: allChips.length
+      }
     });
 
     const frontendPrediction = {

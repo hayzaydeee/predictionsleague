@@ -26,6 +26,7 @@ import { showToast } from "../../services/notificationService";
 import { isGameweekChip } from "../../utils/chipManager";
 import { getChipInfo } from "../../utils/chipUtils";
 import { isChipApplicableToPrediction } from "../../utils/chipValidation";
+import { CHIP_MAPPING } from "../../utils/backendMappings";
 
 const GameweekChipsPanel = ({
   currentGameweek,
@@ -121,14 +122,47 @@ const GameweekChipsPanel = ({
       const results = [];
       for (let i = 0; i < applicablePredictions.length; i++) {
         const prediction = applicablePredictions[i];
-        
-        // Create a new array to avoid mutating the original
-        const existingChips = prediction.chips || [];
+
+        // 🔧 DEFENSIVE: Ensure chips are in frontend format (camelCase)
+        // Backend should send camelCase, but add transformation as safety net
+        const existingChips = (prediction.chips || []).map(chip => {
+          // If already camelCase (starts with lowercase), return as-is
+          if (chip && chip[0] === chip[0].toLowerCase()) {
+            return chip;
+          }
+          // If UPPER_CASE, try to transform (defensive coding)
+          const transformed = Object.keys(CHIP_MAPPING).find(
+            key => CHIP_MAPPING[key] === chip
+          );
+          if (transformed) {
+            console.warn('⚠️ [CHIP FORMAT] Found backend-format chip, transforming:', {
+              original: chip,
+              transformed,
+              match: `${prediction.homeTeam} vs ${prediction.awayTeam}`
+            });
+            return transformed;
+          }
+          return chip; // Fallback to original
+        });
+
+        console.log('🔍 [CHIP MERGE] Before merge:', {
+          matchId: prediction.matchId,
+          match: `${prediction.homeTeam} vs ${prediction.awayTeam}`,
+          existingChips,
+          chipToAdd: chipId
+        });
+
         const updatedChips = [...existingChips];
-        
+
         if (!updatedChips.includes(chipId)) {
           updatedChips.push(chipId);
         }
+
+        console.log('🔍 [CHIP MERGE] After merge:', {
+          matchId: prediction.matchId,
+          updatedChips,
+          count: updatedChips.length
+        });
 
         // Create updated prediction payload
         const updatedPrediction = {

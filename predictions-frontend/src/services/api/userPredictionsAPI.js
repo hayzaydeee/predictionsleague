@@ -38,7 +38,18 @@ export const userPredictionsAPI = {
       // 🔧 NORMALIZE DATA: Fix backend inconsistencies
       const normalizedData = (response.data || []).map(prediction => {
         const normalized = { ...prediction };
-        
+
+        // 🔄 TRANSFORM CHIPS: Backend sends UPPER_CASE, frontend expects camelCase
+        if (normalized.chips && Array.isArray(normalized.chips)) {
+          const originalChips = normalized.chips;
+          normalized.chips = transformChipsFromBackend(normalized.chips);
+          console.log('🔄 [CHIP TRANSFORM] Transformed chips from backend:', {
+            before: originalChips,
+            after: normalized.chips,
+            match: `${normalized.homeTeam} vs ${normalized.awayTeam}`
+          });
+        }
+
         // Normalize date fields to prevent confusion between fixture date and prediction timestamp
         // Backend may send: date (fixture datetime), matchDate (fixture datetime), predictedAt (when prediction was made)
         if (!normalized.matchDate && normalized.date) {
@@ -54,19 +65,19 @@ export const userPredictionsAPI = {
             predictedAt: normalized.predictedAt
           });
         }
-        
+
         // Convert backend "PENDING" status to lowercase "pending"
         if (normalized.status) {
           normalized.status = normalized.status.toLowerCase();
         }
-        
+
         // If status is pending and points is 0, set to null
         // This fixes the backend returning 0 instead of null for pending predictions
         if (normalized.status === 'pending' && normalized.points === 0) {
           normalized.points = null;
           // Silently fixed - removed verbose logging
         }
-        
+
         // Ensure actualScores are truly null if match hasn't been played
         if (normalized.status === 'pending') {
           if (normalized.actualHomeScore === 0 || normalized.actualHomeScore === undefined) {
@@ -76,7 +87,7 @@ export const userPredictionsAPI = {
             normalized.actualAwayScore = null;
           }
         }
-        
+
         return normalized;
       });
 
