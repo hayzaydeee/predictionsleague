@@ -539,14 +539,14 @@ const PotentialPointsSummary = ({ predictions, teamLogos }) => {
                         if (points.hasWildcard) {
                           breakdown.push({
                             label: "Wildcard (3x)",
-                            value: points.pointsBeforeMultiplier * 2,
+                            value: "×3",
                             type: "multiplier",
                             multiply: 3,
                           });
                         } else if (points.hasDoubleDown) {
                           breakdown.push({
                             label: "Double Down (2x)",
-                            value: points.pointsBeforeMultiplier,
+                            value: "×2",
                             type: "multiplier",
                             multiply: 2,
                           });
@@ -771,11 +771,9 @@ const DetailedBreakdown = ({
                         : getThemeStyles(theme, text.primary)
                     }`}
                   >
-                    {item.type === "multiplier"
-                      ? `+${item.value}`
-                      : typeof item.value === 'string'
-                        ? item.value
-                        : item.value}
+                    {typeof item.value === 'string'
+                      ? item.value
+                      : item.value}
                   </td>
                 </tr>
               ))}
