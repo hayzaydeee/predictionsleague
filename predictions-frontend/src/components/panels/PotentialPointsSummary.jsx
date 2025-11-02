@@ -13,6 +13,7 @@ import RulesAndPointsModal from "../common/RulesAndPointsModal";
 import { calculatePredictionPoints } from "../../utils/chipUtils";
 import { ThemeContext } from "../../context/ThemeContext";
 import { getThemeStyles, text } from "../../utils/themeUtils";
+import { getTeamLogoSync } from "../../utils/teamLogos";
 
 const PotentialPointsSummary = ({ predictions, teamLogos }) => {
   const [showDetailedPointsBreakdown, setShowDetailedPointsBreakdown] =
@@ -321,7 +322,7 @@ const PotentialPointsSummary = ({ predictions, teamLogos }) => {
                           <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
                             {/* Home team logo */}
                             <img
-                              src={teamLogos?.[prediction.homeTeam] || '/assets/clubs/default.png'}
+                              src={getTeamLogoSync(prediction.homeTeam)}
                               alt={prediction.homeTeam}
                               className="w-4 h-4 sm:w-5 sm:h-5 object-contain flex-shrink-0"
                             />
@@ -335,7 +336,7 @@ const PotentialPointsSummary = ({ predictions, teamLogos }) => {
                             </span>
                             {/* Away team logo */}
                             <img
-                              src={teamLogos?.[prediction.awayTeam] || '/assets/clubs/default.png'}
+                              src={getTeamLogoSync(prediction.awayTeam)}
                               alt={prediction.awayTeam}
                               className="w-4 h-4 sm:w-5 sm:h-5 object-contain flex-shrink-0"
                             />
@@ -619,7 +620,7 @@ const DetailedBreakdown = ({
         <div className="flex items-center gap-2">
           {/* Home team logo */}
           <img
-            src={teamLogos?.[prediction.homeTeam] || '/assets/clubs/default.png'}
+            src={getTeamLogoSync(prediction.homeTeam)}
             alt={prediction.homeTeam}
             className="w-5 h-5 object-contain flex-shrink-0"
           />
@@ -634,7 +635,7 @@ const DetailedBreakdown = ({
           </span>
           {/* Away team logo */}
           <img
-            src={teamLogos?.[prediction.awayTeam] || '/assets/clubs/default.png'}
+            src={getTeamLogoSync(prediction.awayTeam)}
             alt={prediction.awayTeam}
             className="w-5 h-5 object-contain flex-shrink-0"
           />
