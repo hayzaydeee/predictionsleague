@@ -166,13 +166,11 @@ const PotentialPointsSummary = ({ predictions, teamLogos }) => {
                     )}`}
                   >
                     {pendingPredictions.reduce((total, prediction) => {
-                      const outcomePoints = 5;
-                      const exactScorePoints = 10;
-                      const baseGoalScorerPoints =
-                        (prediction.homeScore + prediction.awayScore) * 2;
-                      const basePoints =
-                        outcomePoints + exactScorePoints + baseGoalScorerPoints;
-                      return total + basePoints;
+                      // 🔧 FIXED: Correct base calculation
+                      // Perfect prediction = 15 points (exact scoreline + all scorers)
+                      const basePoints = 15;
+                      const goalscorerPoints = (prediction.homeScore + prediction.awayScore) * 2;
+                      return total + basePoints + goalscorerPoints;
                     }, 0)}
                   </div>
                   <div
@@ -321,21 +319,12 @@ const PotentialPointsSummary = ({ predictions, teamLogos }) => {
                           )}`}
                         >
                           <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
-                            <div
-                              className={`w-5 h-5 sm:w-6 sm:h-6 rounded-md flex items-center justify-center flex-shrink-0 ${getThemeStyles(
-                                theme,
-                                {
-                                  dark: "bg-slate-600/50",
-                                  light: "bg-slate-100",
-                                }
-                              )}`}
-                            >
-                              <img
-                                src={teamLogos?.[prediction.homeTeam] || '/assets/clubs/default.png'}
-                                alt={prediction.homeTeam}
-                                className="w-3 h-3 sm:w-4 sm:h-4 object-contain"
-                              />
-                            </div>
+                            {/* Home team logo */}
+                            <img
+                              src={teamLogos?.[prediction.homeTeam] || '/assets/clubs/default.png'}
+                              alt={prediction.homeTeam}
+                              className="w-4 h-4 sm:w-5 sm:h-5 object-contain flex-shrink-0"
+                            />
                             <span
                               className={`text-xs sm:text-sm font-medium truncate ${getThemeStyles(
                                 theme,
@@ -344,6 +333,12 @@ const PotentialPointsSummary = ({ predictions, teamLogos }) => {
                             >
                               {prediction.homeTeam} vs {prediction.awayTeam}
                             </span>
+                            {/* Away team logo */}
+                            <img
+                              src={teamLogos?.[prediction.awayTeam] || '/assets/clubs/default.png'}
+                              alt={prediction.awayTeam}
+                              className="w-4 h-4 sm:w-5 sm:h-5 object-contain flex-shrink-0"
+                            />
                           </div>
                           <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm flex-shrink-0">
                             <span
@@ -497,23 +492,34 @@ const PotentialPointsSummary = ({ predictions, teamLogos }) => {
                       {pendingPredictions.map((prediction) => {
                         const points = calculatePredictionPoints(prediction);
 
+                        // 🔧 FIXED: Correct breakdown matching actual scoring rules
+                        const totalScorers = prediction.homeScore + prediction.awayScore;
+                        let goalscorerPoints = totalScorers * 2;
+
+                        // Scorer Focus doubles goalscorer points
+                        const hasScorerFocus = prediction.chips?.includes("scorerFocus");
+                        if (hasScorerFocus) {
+                          goalscorerPoints *= 2;
+                        }
+
                         const breakdown = [
-                          { label: "Outcome", value: 5, type: "base" },
-                          { label: "Exact Score", value: 10, type: "base" },
                           {
-                            label: "Goal Scorers",
-                            value:
-                              (prediction.homeScore + prediction.awayScore) * 2,
+                            label: "Exact scoreline + all scorers",
+                            value: 15,
+                            type: "base"
+                          },
+                          {
+                            label: `Goalscorers (${totalScorers} × ${hasScorerFocus ? 4 : 2})`,
+                            value: goalscorerPoints,
                             type: "base",
                           },
                         ];
 
-                        if (prediction.chips.includes("scorerFocus")) {
+                        if (hasScorerFocus) {
                           breakdown.push({
-                            label: "Scorer Focus",
-                            value:
-                              (prediction.homeScore + prediction.awayScore) * 2,
-                            type: "bonus",
+                            label: "Scorer Focus (2x scorer pts)",
+                            value: `Included above`,
+                            type: "info",
                           });
                         }
 
@@ -611,23 +617,14 @@ const DetailedBreakdown = ({
         whileTap={{ scale: 0.995 }}
       >
         <div className="flex items-center gap-2">
-          <div
-            className={`w-6 h-6 rounded-lg flex items-center justify-center ${getThemeStyles(
-              theme,
-              {
-                dark: "bg-slate-600/50",
-                light: "bg-slate-100",
-              }
-            )}`}
-          >
-            <img
-              src={teamLogos?.[prediction.homeTeam] || '/assets/clubs/default.png'}
-              alt={prediction.homeTeam}
-              className="w-4 h-4 object-contain"
-            />
-          </div>
+          {/* Home team logo */}
+          <img
+            src={teamLogos?.[prediction.homeTeam] || '/assets/clubs/default.png'}
+            alt={prediction.homeTeam}
+            className="w-5 h-5 object-contain flex-shrink-0"
+          />
           <span
-            className={` text-sm ${getThemeStyles(
+            className={`text-sm ${getThemeStyles(
               theme,
               text.primary
             )}`}
@@ -635,6 +632,12 @@ const DetailedBreakdown = ({
             {prediction.homeTeam} {prediction.homeScore} -{" "}
             {prediction.awayScore} {prediction.awayTeam}
           </span>
+          {/* Away team logo */}
+          <img
+            src={teamLogos?.[prediction.awayTeam] || '/assets/clubs/default.png'}
+            alt={prediction.awayTeam}
+            className="w-5 h-5 object-contain flex-shrink-0"
+          />
         </div>
         <div className="flex items-center gap-2">
           <span className={`text-sm font-medium ${getThemeStyles(theme, text.secondary)}`}>
@@ -762,10 +765,16 @@ const DetailedBreakdown = ({
                             dark: "text-purple-300",
                             light: "text-purple-600",
                           })
+                        : item.type === "info"
+                        ? getThemeStyles(theme, text.muted)
                         : getThemeStyles(theme, text.primary)
                     }`}
                   >
-                    {item.type === "multiplier" ? `+${item.value}` : item.value}
+                    {item.type === "multiplier"
+                      ? `+${item.value}`
+                      : typeof item.value === 'string'
+                        ? item.value
+                        : item.value}
                   </td>
                 </tr>
               ))}

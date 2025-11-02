@@ -12,7 +12,7 @@ export default function PointsPotential({
 }) {
   const { theme } = useContext(ThemeContext);
 
-  // 🔧 FIXED: Calculate maximum potential points using correct scoring rules
+
   // References: chipUtils.js:72-150, RulesAndPointsModal.jsx:47-54
   const calculateMaxPotential = useMemo(() => {
     // STEP 1: Base Points - Assume best case (exact scoreline + all scorers correct)
@@ -89,46 +89,6 @@ export default function PointsPotential({
       </h4>
 
       <div className="space-y-3">
-        {/* Team matchup with logos */}
-        {fixture && (
-          <div className="flex items-center justify-center gap-2 pb-3 mb-3 border-b border-slate-700/30">
-            <div className="flex items-center gap-2">
-              {fixture.homeTeam?.crest && (
-                <img
-                  src={fixture.homeTeam.crest}
-                  alt={fixture.homeTeam.name}
-                  className="w-6 h-6 object-contain"
-                />
-              )}
-              <span className={`text-sm font-medium ${getThemeStyles(theme, {
-                dark: "text-slate-200",
-                light: "text-slate-800",
-              })}`}>
-                {fixture.homeTeam?.shortName || fixture.homeTeam?.name}
-              </span>
-            </div>
-            <span className={`text-xs ${getThemeStyles(theme, {
-              dark: "text-slate-500",
-              light: "text-slate-400",
-            })}`}>vs</span>
-            <div className="flex items-center gap-2">
-              <span className={`text-sm font-medium ${getThemeStyles(theme, {
-                dark: "text-slate-200",
-                light: "text-slate-800",
-              })}`}>
-                {fixture.awayTeam?.shortName || fixture.awayTeam?.name}
-              </span>
-              {fixture.awayTeam?.crest && (
-                <img
-                  src={fixture.awayTeam.crest}
-                  alt={fixture.awayTeam.name}
-                  className="w-6 h-6 object-contain"
-                />
-              )}
-            </div>
-          </div>
-        )}
-
         {/* Base points - exact scoreline with all scorers */}
         <div className="flex justify-between items-center text-sm">
           <span
@@ -206,7 +166,7 @@ export default function PointsPotential({
               })}`}
             >
               <div className="w-2 h-2 bg-purple-500 rounded-full mr-2"></div>
-              <span className="mr-1">🃏</span> Wildcard (3x match)
+              Wildcard (3x match)
             </span>
             <span
               className={`font-medium ${getThemeStyles(theme, {
@@ -228,7 +188,7 @@ export default function PointsPotential({
               })}`}
             >
               <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2"></div>
-              <span className="mr-1">2x</span> Double Down (2x match)
+              Double Down (2x match)
             </span>
             <span
               className={`font-medium ${getThemeStyles(theme, {
