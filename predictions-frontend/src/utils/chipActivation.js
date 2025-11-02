@@ -25,18 +25,22 @@ export function calculateActivationGameweek(chip, currentGameweek) {
     return null;
   }
 
-  // 🔧 FIX: For chips with no cooldown (e.g., All-In Week), check lastUsedGameweek
-  // This allows chips without cooldowns to still be marked as "active" when used
-  if (config.cooldown === 0) {
-    // If backend provides lastUsedGameweek, use it directly
-    if (lastUsedGameweek !== undefined && lastUsedGameweek !== null) {
+  // 🔧 PRIMARY SOURCE: Use lastUsedGameweek if provided by backend
+  // This is the most reliable source of truth
+  if (lastUsedGameweek !== undefined && lastUsedGameweek !== null) {
+    // Only return it if the chip is actually in cooldown or was used this gameweek
+    // Don't return old usage if chip is now available again
+    if (!available || lastUsedGameweek === currentGameweek) {
       return lastUsedGameweek;
     }
-    // Otherwise, can't determine activation
+  }
+
+  // 🔧 FIX: For chips with no cooldown (e.g., All-In Week), can't determine activation from cooldown
+  if (config.cooldown === 0) {
     return null;
   }
 
-  // Original cooldown-based logic for chips with cooldowns
+  // FALLBACK: Cooldown-based calculation (less reliable due to currentGameweek inconsistencies)
   // If chip is available, it's not in cooldown
   if (available) {
     return null;
@@ -58,7 +62,8 @@ export function calculateActivationGameweek(chip, currentGameweek) {
       currentGameweek,
       cooldown: config.cooldown,
       remainingGameweeks,
-      calculated: activationGameweek
+      calculated: activationGameweek,
+      lastUsedGameweek
     });
     return null;
   }
@@ -111,17 +116,23 @@ export function getActiveGameweekChips(chips, currentGameweek) {
     totalChips: chips.length,
     gameweekChips: chips.filter(c => CHIP_CONFIG[c.chipId]?.scope === 'gameweek').length,
     activeChips,
+    activeChipCount: activeChips.length,
     calculations: chips
       .filter(c => CHIP_CONFIG[c.chipId]?.scope === 'gameweek')
-      .map(c => ({
-        chipId: c.chipId,
-        available: c.available,
-        remainingGameweeks: c.remainingGameweeks,
-        lastUsedGameweek: c.lastUsedGameweek,
-        cooldown: CHIP_CONFIG[c.chipId]?.cooldown,
-        activationGW: calculateActivationGameweek(c, currentGameweek),
-        isActive: isChipActiveInGameweek(c, currentGameweek)
-      }))
+      .map(c => {
+        const activationGW = calculateActivationGameweek(c, currentGameweek);
+        const isActive = isChipActiveInGameweek(c, currentGameweek);
+        return {
+          chipId: c.chipId,
+          available: c.available,
+          remainingGameweeks: c.remainingGameweeks,
+          lastUsedGameweek: c.lastUsedGameweek,
+          cooldown: CHIP_CONFIG[c.chipId]?.cooldown,
+          activationGW,
+          isActive,
+          reason: !isActive ? (c.available ? 'Available' : `Last used GW${c.lastUsedGameweek || '?'}`) : `Active in GW${activationGW}`
+        };
+      })
   });
   
   return activeChips;

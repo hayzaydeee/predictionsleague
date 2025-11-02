@@ -107,6 +107,15 @@ export const useChipStatus = (options = {}) => {
         });
       }
       
+      // Add logging to track chip status
+      console.log('🎯 CHIP DETAILS:', enhancedData.chips);
+      console.log('✅ Chip status fetched successfully', {
+        chipsCount: enhancedData.chips.length,
+        availableCount: enhancedData.chips.filter(c => c.available).length,
+        currentGameweek: enhancedData.currentGameweek,
+        currentSeason: enhancedData.currentSeason
+      });
+      
       return enhancedData;
     },
     enabled,
