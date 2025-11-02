@@ -157,6 +157,7 @@ export default function ReviewStep({
 
       {/* Points potential */}
       <PointsPotential
+        fixture={fixture}
         homeScore={homeScore}
         awayScore={awayScore}
         selectedChips={selectedChips}
