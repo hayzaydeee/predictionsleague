@@ -67,7 +67,8 @@ export const chipAPI = {
           seasonLimit: chip.seasonLimit,
           remainingUses: chip.remainingUses,
           cooldownExpires: chip.cooldownExpires,
-          remainingGameweeks: chip.remainingGameweeks
+          remainingGameweeks: chip.remainingGameweeks,
+          lastUsedGameweek: chip.lastUsedGameweek // For chips without cooldowns
         })));
       }
 

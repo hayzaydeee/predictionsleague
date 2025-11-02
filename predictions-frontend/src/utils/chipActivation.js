@@ -11,35 +11,46 @@
 import { CHIP_CONFIG } from './chipManager';
 
 /**
- * Calculate which gameweek a chip was activated based on cooldown state
+ * Calculate which gameweek a chip was activated based on cooldown state or lastUsedGameweek
  * @param {Object} chip - Chip object from /chips/status
  * @param {number} currentGameweek - Current gameweek number
  * @returns {number|null} - Gameweek when chip was activated, or null if not active
  */
 export function calculateActivationGameweek(chip, currentGameweek) {
-  const { chipId, remainingGameweeks, available } = chip;
-  
+  const { chipId, remainingGameweeks, available, lastUsedGameweek } = chip;
+
   // Get chip config to check cooldown period
   const config = CHIP_CONFIG[chipId];
-  if (!config || !config.cooldown) {
-    // No cooldown = can't determine activation from cooldown state
+  if (!config) {
     return null;
   }
-  
+
+  // 🔧 FIX: For chips with no cooldown (e.g., All-In Week), check lastUsedGameweek
+  // This allows chips without cooldowns to still be marked as "active" when used
+  if (config.cooldown === 0) {
+    // If backend provides lastUsedGameweek, use it directly
+    if (lastUsedGameweek !== undefined && lastUsedGameweek !== null) {
+      return lastUsedGameweek;
+    }
+    // Otherwise, can't determine activation
+    return null;
+  }
+
+  // Original cooldown-based logic for chips with cooldowns
   // If chip is available, it's not in cooldown
   if (available) {
     return null;
   }
-  
+
   // If remaining gameweeks is undefined or null, can't calculate
   if (remainingGameweeks === undefined || remainingGameweeks === null) {
     return null;
   }
-  
+
   // Calculate: If cooldown is 5 and remaining is 4, chip was used 1 gameweek ago
   const gameweeksSinceActivation = config.cooldown - remainingGameweeks;
   const activationGameweek = currentGameweek - gameweeksSinceActivation;
-  
+
   // Validate the calculation makes sense
   if (activationGameweek < 1 || activationGameweek > currentGameweek) {
     console.warn('⚠️ Invalid activation gameweek calculated:', {
@@ -51,7 +62,7 @@ export function calculateActivationGameweek(chip, currentGameweek) {
     });
     return null;
   }
-  
+
   return activationGameweek;
 }
 
@@ -106,6 +117,7 @@ export function getActiveGameweekChips(chips, currentGameweek) {
         chipId: c.chipId,
         available: c.available,
         remainingGameweeks: c.remainingGameweeks,
+        lastUsedGameweek: c.lastUsedGameweek,
         cooldown: CHIP_CONFIG[c.chipId]?.cooldown,
         activationGW: calculateActivationGameweek(c, currentGameweek),
         isActive: isChipActiveInGameweek(c, currentGameweek)
